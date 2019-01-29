@@ -885,6 +885,7 @@ vic_restore(void)
 
     // routing ring
     vic_restore_rout_extension(&(filenames.init_state), state_metadata);
+    plugin_restore();
 
     free(ivar);
     free(dvar);
@@ -1118,4 +1119,6 @@ check_init_state_file(void)
         }
     }
     free(dvar);
+    
+    plugin_check_init_state_file();
 }

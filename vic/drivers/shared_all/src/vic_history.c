@@ -320,6 +320,9 @@ get_default_outvar_aggtype(unsigned int varid)
     default:
         agg_type = AGG_TYPE_AVG;
     }
+    
+    plugin_get_default_outvar_aggtype(varid);
+    
     return agg_type;
 }
 

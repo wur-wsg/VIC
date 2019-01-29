@@ -324,6 +324,8 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining time bounds dimension in %s",
                     stream->filename);
 
+    plugin_add_history_dimensions(nc, stream);
+    
     // define the netcdf variable time
     status = nc_def_var(nc->nc_id, "time", NC_DOUBLE, 1,
                         &(nc->time_dimid), &(nc->time_varid));
@@ -702,6 +704,9 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->time_size = NC_UNLIMITED;
     nc_file->veg_size = options.NVEGTYPES;
 
+    // Plugin
+    plugin_initialize_nc_file(nc_file);
+    
     // allocate memory for nc_vars
     nc_file->nc_vars = calloc(nvars, sizeof(*(nc_file->nc_vars)));
     check_alloc_status(nc_file->nc_vars, "Memory allocation error.");

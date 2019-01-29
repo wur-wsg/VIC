@@ -125,7 +125,12 @@ vic_start(void)
             options.NLAKENODES = get_nc_dimension(&(filenames.params),
                                                   "lake_node");
         }
-
+        
+        // plugin start
+        plugin_compare_ncdomain_with_global_domain();
+        plugin_get_forcing_file_info();
+        plugin_start();
+        
         // Check that model parameters are valid
         validate_parameters();
     }

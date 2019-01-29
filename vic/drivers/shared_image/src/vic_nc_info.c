@@ -106,6 +106,9 @@ set_nc_var_info(unsigned int       varid,
         nc_var->nc_counts[1] = nc_hist_file->nj_size;
         nc_var->nc_counts[2] = nc_hist_file->ni_size;
     }
+    
+    // Plugin
+    plugin_set_nc_var_info(varid, nc_hist_file, nc_var);
 }
 
 /******************************************************************************
@@ -183,6 +186,9 @@ set_nc_var_dimids(unsigned int    varid,
         nc_var->nc_dimids[1] = nc_hist_file->nj_dimid;
         nc_var->nc_dimids[2] = nc_hist_file->ni_dimid;
     }
+    
+    // Plugin
+    plugin_set_nc_var_dimids(varid, nc_hist_file, nc_var);
 }
 
 /******************************************************************************

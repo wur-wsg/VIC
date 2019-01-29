@@ -114,12 +114,16 @@ main(int    argc,
 
     // allocate memory
     vic_alloc();
+    plugin_alloc();
 
     // allocate memory for routing
     rout_alloc();   // Routing routine (extension)
 
     // initialize model parameters from parameter files
     vic_image_init();
+    plugin_init();
+    plugin_set_state_meta_data_info();
+    plugin_set_output_met_data_info();
 
     // initialize routing parameters from parameter files
     rout_init();    // Routing routine (extension)
@@ -147,6 +151,7 @@ main(int    argc,
         // read forcing data
         timer_continue(&(global_timers[TIMER_VIC_FORCE]));
         vic_force();
+        plugin_force();
         timer_stop(&(global_timers[TIMER_VIC_FORCE]));
 
         // run vic over the domain
@@ -169,6 +174,7 @@ main(int    argc,
     // start vic final timer
     timer_start(&(global_timers[TIMER_VIC_FINAL]));
     // clean up
+    plugin_finalize();
     vic_image_finalize();
 
     // clean up routing

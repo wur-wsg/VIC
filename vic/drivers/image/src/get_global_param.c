@@ -541,6 +541,13 @@ get_global_param(FILE *gp)
             }
 
             /***********************************
+               Get Plugin Global Parameters
+            ***********************************/
+            else if (plugin_get_global_param(optstr)){
+                ; // do nothing
+            }
+            
+            /***********************************
                Unrecognized Global Parameter Flag
             ***********************************/
             else {
@@ -1000,6 +1007,11 @@ get_global_param(FILE *gp)
         options.STATE_FORMAT = NETCDF4_CLASSIC;
     }
 
+    /******************************************
+       Check for plugin undefined required parameters
+    ******************************************/
+    plugin_validate_global_param();
+    
     /*********************************
        Output major options
     *********************************/
