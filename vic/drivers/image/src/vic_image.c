@@ -114,16 +114,12 @@ main(int    argc,
 
     // allocate memory
     vic_alloc();
-    plugin_alloc();
 
     // allocate memory for routing
     rout_alloc();   // Routing routine (extension)
 
     // initialize model parameters from parameter files
     vic_image_init();
-    plugin_init();
-    plugin_set_state_meta_data_info();
-    plugin_set_output_met_data_info();
 
     // initialize routing parameters from parameter files
     rout_init();    // Routing routine (extension)

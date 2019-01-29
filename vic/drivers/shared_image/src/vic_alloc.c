@@ -166,4 +166,6 @@ vic_alloc(void)
             alloc_veg_hist(&(veg_hist[i][j]));
         }
     }
+    
+    plugin_alloc();
 }

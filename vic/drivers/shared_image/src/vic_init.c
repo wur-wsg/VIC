@@ -1585,6 +1585,8 @@ vic_init(void)
         param.MAX_ITER_GRND_CANOPY = 0;
     }
 
+    plugin_init();
+    
     // set state metadata structure
     set_state_meta_data_info();
 

@@ -711,4 +711,5 @@ set_state_meta_data_info()
 
     // STATE_ROUT_RING
     state_metadata_rout_extension();
+    plugin_set_state_meta_data_info();
 }
