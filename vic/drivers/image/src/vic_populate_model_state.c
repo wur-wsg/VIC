@@ -31,6 +31,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    This function handles tasks related to populating model state.

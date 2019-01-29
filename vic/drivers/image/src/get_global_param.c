@@ -26,6 +26,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Read the VIC model global control file, getting values for
@@ -255,6 +256,10 @@ get_global_param(FILE *gp)
             else if (strcasecmp("TFALLBACK", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.TFALLBACK = str_to_bool(flgstr);
+            }
+            else if (strcasecmp("MATRIC", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                options.MATRIC = str_to_bool(flgstr);
             }
             else if (strcasecmp("SHARE_LAYER_MOIST", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);

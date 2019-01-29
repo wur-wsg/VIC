@@ -26,7 +26,6 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
-#include <rout.h>
 
 /******************************************************************************
  * @brief    Display the current settings of options defined in the header
@@ -74,11 +73,6 @@ display_current_settings(int mode)
             MIN_SUBDAILY_STEPS_PER_DAY);
     fprintf(LOG_DEST, "MAX_SUBDAILY_STEPS_PER_DAY %d\n",
             MAX_SUBDAILY_STEPS_PER_DAY);
-    fprintf(LOG_DEST, "\n");
-
-    fprintf(LOG_DEST, "Extensions:\n");
-    fprintf(LOG_DEST, "-----------\n");
-    fprintf(LOG_DEST, "ROUTING\t\t\t%2s\n", ROUT_EXT);
     fprintf(LOG_DEST, "\n");
 
     if (mode == DISP_COMPILE_TIME) {
@@ -230,6 +224,12 @@ display_current_settings(int mode)
     }
     else {
         fprintf(LOG_DEST, "TFALLBACK\t\tFALSE\n");
+    }
+    if (options.MATRIC) {
+        fprintf(LOG_DEST, "MATRIC\t\tTRUE\n");
+    }
+    else {
+        fprintf(LOG_DEST, "MATRIC\t\tFALSE\n");
     }
     fprintf(LOG_DEST, "WIND_H\t\t\t%f\n", global_param.wind_h);
     fprintf(LOG_DEST, "NODES\t\t\t%zu\n", options.Nnode);

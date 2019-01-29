@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Perform temporal aggregation on stream data
@@ -34,7 +35,7 @@ agg_stream_data(stream_struct *stream,
                 dmy_struct    *dmy_current,
                 double      ***out_data)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     alarm_struct          *alarm;
     size_t                 i;

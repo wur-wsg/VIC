@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
-#include <rout.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Read initial model state.
@@ -40,7 +40,7 @@ vic_restore(void)
     extern option_struct       options;
     extern veg_con_map_struct *veg_con_map;
     extern filenames_struct    filenames;
-    extern metadata_struct     state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
+    extern metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
 
     int                        v;
     size_t                     i;
@@ -883,8 +883,6 @@ vic_restore(void)
         }
     }
 
-    // routing ring
-    vic_restore_rout_extension(&(filenames.init_state), state_metadata);
     plugin_restore();
 
     free(ivar);

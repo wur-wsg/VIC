@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
-#include <rout.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Run VIC for one timestep and store output data
@@ -74,10 +74,9 @@ vic_image_run(dmy_struct *dmy_current)
                  veg_lib[i], &lake_con, out_data[i], &(save_data[i]),
                  &timer);
     }
-
-    // run routing over the domain
-    rout_run();     // Routing routine (extension)
+    
     plugin_run();
+    plugin_put_data();
 
     for (i = 0; i < options.Noutstreams; i++) {
         agg_stream_data(&(output_streams[i]), dmy_current, out_data);

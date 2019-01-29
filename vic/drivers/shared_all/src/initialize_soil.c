@@ -55,6 +55,7 @@ initialize_soil(cell_data_struct **cell,
                 }
                 cell[veg][band].layer[lindex].kappa = 0.0;
                 cell[veg][band].layer[lindex].moist = 0.0;
+                cell[veg][band].layer[lindex].eff_sat = 0.0;
                 cell[veg][band].layer[lindex].phi = 0.0;
             }
             cell[veg][band].rootmoist = 0.0;

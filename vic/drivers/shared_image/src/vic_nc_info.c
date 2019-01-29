@@ -61,6 +61,7 @@ set_nc_var_info(unsigned int       varid,
     case OUT_SOIL_ICE_FRAC:
     case OUT_SOIL_LIQ_FRAC:
     case OUT_SOIL_MOIST:
+    case OUT_SOIL_EFF_SAT:
     case OUT_SOIL_TEMP:
         nc_var->nc_dims = 4;
         nc_var->nc_counts[1] = nc_hist_file->layer_size;
@@ -106,9 +107,6 @@ set_nc_var_info(unsigned int       varid,
         nc_var->nc_counts[1] = nc_hist_file->nj_size;
         nc_var->nc_counts[2] = nc_hist_file->ni_size;
     }
-    
-    // Plugin
-    plugin_set_nc_var_info(varid, nc_hist_file, nc_var);
 }
 
 /******************************************************************************
@@ -186,9 +184,6 @@ set_nc_var_dimids(unsigned int    varid,
         nc_var->nc_dimids[1] = nc_hist_file->nj_dimid;
         nc_var->nc_dimids[2] = nc_hist_file->ni_dimid;
     }
-    
-    // Plugin
-    plugin_set_nc_var_dimids(varid, nc_hist_file, nc_var);
 }
 
 /******************************************************************************

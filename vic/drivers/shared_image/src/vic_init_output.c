@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Initialzie output structures and determine which variables to
@@ -201,7 +202,7 @@ initialize_history_file(nc_file_struct *nc,
     extern domain_struct       global_domain;
     extern option_struct       options;
     extern global_param_struct global_param;
-    extern metadata_struct     out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct     out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     int                        status;
     int                        old_fill_mode;
@@ -441,7 +442,11 @@ initialize_history_file(nc_file_struct *nc,
     for (j = 0; j < stream->nvars; j++) {
         varid = stream->varid[j];
 
-        set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        if (varid < N_OUTVAR_TYPES) {
+            set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        } else if (varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES){
+            plugin_set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        }
 
         // define the variable
         status = nc_def_var(nc->nc_id,
@@ -704,7 +709,6 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->time_size = NC_UNLIMITED;
     nc_file->veg_size = options.NVEGTYPES;
 
-    // Plugin
     plugin_initialize_nc_file(nc_file);
     
     // allocate memory for nc_vars
@@ -712,6 +716,10 @@ initialize_nc_file(nc_file_struct     *nc_file,
     check_alloc_status(nc_file->nc_vars, "Memory allocation error.");
 
     for (i = 0; i < nvars; i++) {
-        set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+        if(varids[i] < N_OUTVAR_TYPES){
+            set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+        } else if (varids[i] < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES){
+            plugin_set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+        }
     }
 }

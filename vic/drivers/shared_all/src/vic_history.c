@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    This routine creates the list of output data.
@@ -33,7 +34,7 @@ void
 alloc_out_data(size_t    ngridcells,
                double ***out_data)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     size_t                 i;
     size_t                 j;
@@ -162,7 +163,7 @@ validate_streams(stream_struct **streams)
 void
 alloc_aggdata(stream_struct *stream)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     size_t                 i;
     size_t                 j;
@@ -201,7 +202,7 @@ void
 reset_stream(stream_struct *stream,
              dmy_struct    *dmy_current)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     size_t                 i;
     size_t                 j;
@@ -253,6 +254,7 @@ get_default_outvar_aggtype(unsigned int varid)
     case OUT_SOIL_ICE:
     case OUT_SOIL_LIQ:
     case OUT_SOIL_MOIST:
+    case OUT_SOIL_EFF_SAT:
     case OUT_SOIL_WET:
     case OUT_SURFSTOR:
     case OUT_SURF_FROST_FRAC:
@@ -339,7 +341,7 @@ set_output_var(stream_struct     *stream,
                double             mult,
                unsigned short int aggtype)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     int                    varid;
     int                    found = false;
@@ -349,7 +351,7 @@ set_output_var(stream_struct     *stream,
                 "in the stream %zu", varnum, stream->nvars);
     }
     // Find the output varid by looping through out_metadata, comparing to varname
-    for (varid = 0; varid < N_OUTVAR_TYPES; varid++) {
+    for (varid = 0; varid < N_OUTVAR_TYPES + N_OUTVAR_TYPES; varid++) {
         if (strcmp(out_metadata[varid].varname, varname) == 0) {
             found = true;
             break;
@@ -399,7 +401,7 @@ void
 free_streams(stream_struct **streams)
 {
     extern option_struct   options;
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     size_t                 streamnum;
     size_t                 i;

@@ -38,17 +38,8 @@ SHAREDIMAGEPATH = ../shared_image
 # VIC RUN PATH
 VICPATH = ../../vic_run
 
-# VIC EXTENTIONS PATH
-EXTPATH = ../../extensions
-
-# Set the routing model extension
-# | Level      | Value                              |
-# |----------  |---------------------------------   |
-# | rout_stub  | Stub routing model (no routing)    |
-# | rout_rvic  | Use RVIC routing scheme            |
-ROUT=rout_stub
-
-include ${EXTPATH}/${ROUT}/rout.mk
+# VIC PLUGINS PATH
+PLUGINPATH = ../../plugins
 
 ifndef NC_LIBS
 NC_LIBS = $(shell nc-config --libs)
@@ -84,7 +75,7 @@ INCLUDES = -I ${DRIVERPATH}/include \
 		   -I ${VICPATH}/include \
 		   -I ${SHAREDPATH}/include \
 		   -I ${SHAREDIMAGEPATH}/include \
-		   -I ${EXTPATH}/${ROUT}/include
+		   -I ${PLUGINPATH}/**/include
 
 # Uncomment to include debugging information
 CFLAGS  =  ${INCLUDES} ${NC_CFLAGS} -ggdb -O0 -Wall -Wextra -std=c99 \
@@ -113,14 +104,14 @@ HDRS = \
 	$(wildcard ${DRIVERPATH}/include/*.h) \
 	$(wildcard ${SHAREDPATH}/include/*.h) \
 	$(wildcard ${SHAREDIMAGEPATH}/include/*.h) \
-	$(wildcard ${EXTPATH}/${ROUT}/include/*.h)
+	$(wildcard ${PLUGINPATH}/**/include/*.h)
 
 SRCS = \
 	$(wildcard ${VICPATH}/src/*.c) \
 	$(wildcard ${DRIVERPATH}/src/*.c) \
 	$(wildcard ${SHAREDPATH}/src/*.c) \
 	$(wildcard ${SHAREDIMAGEPATH}/src/*.c) \
-	$(wildcard ${EXTPATH}/${ROUT}/src/*.c)
+	$(wildcard ${PLUGINPATH}/**/src/*.c)
 
 OBJS = $(SRCS:%.o=%.c)
 

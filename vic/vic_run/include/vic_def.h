@@ -262,6 +262,8 @@ typedef struct {
                             FALSE = when iterations fail to converge, report an error
                                     and abort simulation for current grid cell
                             Default = TRUE */
+    bool MATRIC;         /**< TRUE = use matric potential to calculate drainage
+                            Default = FALSE */
 
     // input options
     unsigned short int BASEFLOW;     /**< ARNO: read Ds, Dm, Ws, c; NIJSSEN2001: read d1, d2, d3, d4 */
@@ -770,6 +772,7 @@ typedef struct {
                                layer (W/m/K) */
     double moist;           /**< moisture content of the unfrozen sublayer
                                (mm) */
+    double eff_sat;         /**< effective saturation of the soil layer [-] */
     double phi;             /**< moisture diffusion parameter */
     double zwt;             /**< water table position relative to soil surface within the layer (cm) */
     // Fluxes

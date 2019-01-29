@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Finalize VIC run by freeing memory and closing open files.
@@ -37,5 +38,6 @@ vic_image_finalize(void)
     // free data structures specific to to image driver
     free(dmy);
 
+    plugin_finalize();
     vic_finalize();
 }

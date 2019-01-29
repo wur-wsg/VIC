@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Set output met data information
@@ -35,7 +36,7 @@ set_output_met_data_info()
     size_t                 v;
 
     extern option_struct   options;
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 
     // Build the list of supported output variables
 
@@ -243,6 +244,14 @@ set_output_met_data_info()
     strcpy(out_metadata[OUT_SOIL_MOIST].units, "mm");
     strcpy(out_metadata[OUT_SOIL_MOIST].description,
            "soil total moisture content");
+
+    /* soil effective saturation [-] for each soil layer */
+    strcpy(out_metadata[OUT_SOIL_EFF_SAT].varname, "OUT_SOIL_EFF_SAT");
+    strcpy(out_metadata[OUT_SOIL_EFF_SAT].long_name, "soil_effective_saturation");
+    strcpy(out_metadata[OUT_SOIL_EFF_SAT].standard_name, "soil_effective_saturation");
+    strcpy(out_metadata[OUT_SOIL_EFF_SAT].units, "-");
+    strcpy(out_metadata[OUT_SOIL_EFF_SAT].description,
+           "soil effective saturation (between residual- and maximum moisture content)");
 
     /* vertical average of (soil moisture - wilting point)/(maximum soil moisture - wilting point) [mm/mm] */
     strcpy(out_metadata[OUT_SOIL_WET].varname, "OUT_SOIL_WET");

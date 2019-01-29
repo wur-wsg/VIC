@@ -488,7 +488,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 53;
+    nitems = 54;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -656,6 +656,10 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // bool TFALLBACK;
     offsets[i] = offsetof(option_struct, TFALLBACK);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool MATRIC;
+    offsets[i] = offsetof(option_struct, MATRIC);
     mpi_types[i++] = MPI_C_BOOL;
 
     // bool BASEFLOW;

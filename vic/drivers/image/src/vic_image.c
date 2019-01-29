@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
-#include <rout.h>   // Routing routine (extension)
+#include <plugin.h>
 
 size_t              NF, NR;
 size_t              current;
@@ -60,15 +60,12 @@ veg_con_map_struct *veg_con_map = NULL;
 veg_con_struct    **veg_con = NULL;
 veg_hist_struct   **veg_hist = NULL;
 veg_lib_struct    **veg_lib = NULL;
-metadata_struct     state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
-metadata_struct     out_metadata[N_OUTVAR_TYPES];
+metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+metadata_struct     out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 save_data_struct   *save_data;  // [ncells]
 double           ***out_data = NULL;  // [ncells, nvars, nelem]
 stream_struct      *output_streams = NULL;  // [nstreams]
 nc_file_struct     *nc_hist_files = NULL;  // [nstreams]
-
-// Extensions
-rout_struct         rout; // Routing routine (extension)
 
 /******************************************************************************
  * @brief   Stand-alone image mode driver of the VIC model
@@ -115,14 +112,8 @@ main(int    argc,
     // allocate memory
     vic_alloc();
 
-    // allocate memory for routing
-    rout_alloc();   // Routing routine (extension)
-
     // initialize model parameters from parameter files
     vic_image_init();
-
-    // initialize routing parameters from parameter files
-    rout_init();    // Routing routine (extension)
 
     // populate model state, either using a cold start or from a restart file
     vic_populate_model_state(&(dmy[0]));
@@ -147,7 +138,6 @@ main(int    argc,
         // read forcing data
         timer_continue(&(global_timers[TIMER_VIC_FORCE]));
         vic_force();
-        plugin_force();
         timer_stop(&(global_timers[TIMER_VIC_FORCE]));
 
         // run vic over the domain
@@ -169,12 +159,9 @@ main(int    argc,
     timer_stop(&(global_timers[TIMER_VIC_RUN]));
     // start vic final timer
     timer_start(&(global_timers[TIMER_VIC_FINAL]));
+    
     // clean up
-    plugin_finalize();
     vic_image_finalize();
-
-    // clean up routing
-    rout_finalize();    // Routing routine (extension)
 
     // finalize MPI
     status = MPI_Finalize();
