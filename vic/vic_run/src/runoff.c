@@ -71,7 +71,9 @@ runoff(cell_data_struct  *cell,
     double                     dt_runoff;
     double                     runoff[MAX_FROST_AREAS];
     double                     tmp_dt_runoff[MAX_FROST_AREAS];
+    double                     recharge[MAX_FROST_AREAS];
     double                     baseflow[MAX_FROST_AREAS];
+    double                     dt_recharge;
     double                     dt_baseflow;
     double                     rel_moist;
     double                     evap[MAX_LAYERS][MAX_FROST_AREAS];
@@ -96,6 +98,7 @@ runoff(cell_data_struct  *cell,
     layer = cell->layer;
 
     cell->runoff = 0;
+    cell->recharge = 0;
     cell->baseflow = 0;
     cell->asat = 0;
 
@@ -103,6 +106,7 @@ runoff(cell_data_struct  *cell,
                           global_param.model_steps_per_day;
 
     for (fidx = 0; fidx < (int)options.Nfrost; fidx++) {
+        recharge[fidx] = 0;
         baseflow[fidx] = 0;
     }
 
@@ -374,6 +378,9 @@ runoff(cell_data_struct  *cell,
                 dt_baseflow = 0;
             }
 
+            /** Register recharge **/
+            dt_recharge = Q12[lindex - 1];
+            
             /** Extract baseflow from the bottom soil layer **/
 
             liq[lindex] +=
@@ -395,6 +402,7 @@ runoff(cell_data_struct  *cell,
             if ((liq[lindex] + ice[lindex]) > max_moist[lindex]) {
                 /* soil moisture above maximum */
                 tmp_moist = ((liq[lindex] + ice[lindex]) - max_moist[lindex]);
+                dt_recharge -= tmp_moist;
                 liq[lindex] = max_moist[lindex] - ice[lindex];
                 tmplayer = lindex;
                 while (tmp_moist > 0) {
@@ -421,6 +429,7 @@ runoff(cell_data_struct  *cell,
                 }
             }
 
+            recharge[fidx] += dt_recharge;
             baseflow[fidx] += dt_baseflow;
         } /* end of sub-dt time step loop */
 
@@ -448,6 +457,7 @@ runoff(cell_data_struct  *cell,
         }
         cell->asat += A * frost_fract[fidx];
         cell->runoff += runoff[fidx] * frost_fract[fidx];
+        cell->recharge += recharge[fidx] * frost_fract[fidx];
         cell->baseflow += baseflow[fidx] * frost_fract[fidx];
     }
 

@@ -145,6 +145,7 @@ enum
     OUT_ZWT,              /**< water table position [cm] (zwt within lowest unsaturated layer) */
     OUT_ZWT_LUMPED,       /**< lumped water table position [cm] (zwt of total moisture across all layers, lumped together) */
     // Water Balance Terms - fluxes
+    OUT_RECHARGE,         /**< baseflow to the bottom layer  [mm] */
     OUT_BASEFLOW,         /**< baseflow out of the bottom layer  [mm] */
     OUT_DELINTERCEPT,     /**< change in canopy interception storage  [mm] */
     OUT_DELSOILMOIST,     /**< change in soil water content  [mm] */

@@ -98,17 +98,6 @@ vic_start(void)
         // global domain struct. This just makes life easier
         add_nveg_to_global_domain(&(filenames.params), &global_domain);
 
-        // decompose the mask
-        mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
-                              &mpi_map_local_array_sizes,
-                              &mpi_map_global_array_offsets,
-                              &mpi_map_mapping_array);
-        
-        plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
-                                     &mpi_map_local_array_sizes,
-                                     &mpi_map_global_array_offsets,
-                                     &mpi_map_mapping_array);
-
         // get the indices for the active cells (used in reading and writing)
         filter_active_cells = malloc(global_domain.ncells_active *
                                      sizeof(*filter_active_cells));
@@ -120,6 +109,17 @@ vic_start(void)
                 j++;
             }
         }
+
+        // decompose the mask
+        mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                              &mpi_map_local_array_sizes,
+                              &mpi_map_global_array_offsets,
+                              &mpi_map_mapping_array);
+        
+        plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                                     &mpi_map_local_array_sizes,
+                                     &mpi_map_global_array_offsets,
+                                     &mpi_map_mapping_array);
 
         // get dimensions (number of vegetation types, soil zones, etc)
         options.ROOT_ZONES = get_nc_dimension(&(filenames.params), "root_zone");

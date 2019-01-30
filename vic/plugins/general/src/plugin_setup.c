@@ -47,7 +47,12 @@ plugin_mpi_map_decomp_domain(size_t   ncells,
                              int    **mpi_map_global_array_offsets,
                              size_t **mpi_map_mapping_array)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING && 
+            plugin_options.DECOMPOSITION != RANDOM_DECOMPOSITION)
+        rout_mpi_map_decomp_domain(ncells, mpi_size, mpi_map_local_array_sizes,
+                mpi_map_global_array_offsets, mpi_map_mapping_array);
 }
 
 void
@@ -84,7 +89,7 @@ plugin_init(void)
 }
 
 /******************************************
- Population
+ Population & restoration
 ******************************************/
 void
 plugin_generate_default_state(void)
@@ -95,22 +100,28 @@ plugin_generate_default_state(void)
 void
 plugin_compute_derived_state_vars(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_compute_derived_state_vars();
 }
 
-/******************************************
- Restoration
-******************************************/
 void
 plugin_check_init_state_file(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_check_init_state_file();
 }
 
 void
 plugin_restore(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_restore();
 }
 
 /******************************************
@@ -120,6 +131,15 @@ void
 plugin_finalize(void)
 {
     extern plugin_option_struct    plugin_options;
+    extern MPI_Datatype plugin_mpi_global_struct_type;
+    extern MPI_Datatype plugin_mpi_filenames_struct_type;
+    extern MPI_Datatype plugin_mpi_option_struct_type;
+    extern MPI_Datatype plugin_mpi_param_struct_type;
+
+    MPI_Type_free(&plugin_mpi_global_struct_type);
+    MPI_Type_free(&plugin_mpi_filenames_struct_type);
+    MPI_Type_free(&plugin_mpi_option_struct_type);
+    MPI_Type_free(&plugin_mpi_param_struct_type);
     
     if(plugin_options.ROUTING) 
         rout_finalize();

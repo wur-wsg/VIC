@@ -11,8 +11,8 @@ plugin_print_global_param(void)
     gp = &plugin_global_param;
     
     fprintf(LOG_DEST, "plugin global_param:\n");
-    fprintf(LOG_DEST, "\rout_steps_per_day   : %zu\n", gp->rout_steps_per_day);
-    fprintf(LOG_DEST, "\rout_dt              : %.4f\n", gp->rout_dt);
+    fprintf(LOG_DEST, "\trout_steps_per_day  : %zu\n", gp->rout_steps_per_day);
+    fprintf(LOG_DEST, "\trout_dt             : %.4f\n", gp->rout_dt);
 }
 
 void
@@ -44,4 +44,6 @@ plugin_print_parameters(void)
     plugin_parameters_struct *pa;
     
     pa = &plugin_param;
+    
+    fprintf(LOG_DEST, "plugin parameters:\n");
 }

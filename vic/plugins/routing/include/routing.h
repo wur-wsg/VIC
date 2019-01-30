@@ -34,11 +34,11 @@ typedef struct {
     double *dt_discharge;
 } rout_var_struct;
 
-void get_basins_routing(basin_struct *basins);
-void get_basins_file(basin_struct *basins);
-
-bool rout_get_global_param(char *cmdstr);
+bool rout_get_global_param(char *);
 void rout_validate_global_param(void);
+
+void rout_mpi_map_decomp_domain(size_t, size_t, int **, int **, size_t **);
+
 void rout_start(void);
 void rout_alloc(void);
 void rout_initialize_local_structures(void);
@@ -53,16 +53,20 @@ void rout_set_output_met_data_info(void);
 void rout_set_state_meta_data_info(void);
 void rout_store(nc_file_struct *);
 
+void rout_check_init_state_file(void);
+void rout_restore(void);
+void rout_compute_derived_state_vars(void);
+
 bool rout_history(int, unsigned int *);
 void rout_forcing(void);
-void rout_basin_run(size_t cur_cell);
+void rout_basin_run(size_t);
 void rout_random_run(void);
 void rout_put_data(size_t);
 void rout_finalize(void);
 void rout_add_types(void);
 
-size_t get_downstream_global(size_t id, int direction);
-size_t get_downstream_local(size_t id, int direction, size_t n_nx);
+size_t get_downstream_global(size_t, int);
+size_t get_downstream_local(size_t, int, size_t);
 void convolute(double, double *, double *, size_t, size_t);
 
 size_t          *routing_order;

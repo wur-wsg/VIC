@@ -2,7 +2,8 @@
 #include <plugin.h>
 
 void
-set_basins_downstream(size_t *downstream_basin){
+set_basins_downstream(size_t *downstream_basin)
+{
     extern domain_struct    global_domain;
     extern plugin_filenames_struct plugin_filenames;
 
@@ -165,7 +166,7 @@ get_basins_routing(basin_struct *basins)
 }
 
 void
-get_basins_file(basin_struct *basins)
+get_basins_decomposition(basin_struct *basins)
 {
     extern domain_struct    global_domain;
     extern plugin_filenames_struct plugin_filenames;
@@ -256,4 +257,127 @@ get_basins_file(basin_struct *basins)
     }
 
     free(basin_list);
+}
+
+void
+rout_decomp_domain_from_basins(size_t   ncells,
+                                size_t   mpi_size,
+                                int    **mpi_map_local_array_sizes,
+                                int    **mpi_map_global_array_offsets,
+                                size_t **mpi_map_mapping_array,
+                                basin_struct *basins)
+{
+    size_t                  i;
+    size_t                  j;
+    size_t                  k;
+    size_t                  l;
+
+    size_t                 *node_ids;
+    size_t                 *basin_to_node;
+
+    node_ids = malloc(mpi_size * sizeof(*node_ids));
+    check_alloc_status(node_ids, "Memory allocation error.");
+    basin_to_node = malloc(basins->Nbasin * sizeof(*basin_to_node));
+    check_alloc_status(basin_to_node, "Memory allocation error.");
+
+    for (i = 0; i < mpi_size; i++) {
+        (*mpi_map_local_array_sizes)[i] = 0;
+        (*mpi_map_global_array_offsets)[i] = 0;
+    }
+    for (i = 0; i < ncells; i++) {
+        (*mpi_map_mapping_array)[i] = 0;
+    }
+
+    // determine number of cells per node
+    for (i = 0; i < basins->Nbasin; i++) {
+        // sort nodes by size
+        for (j = 0; j < mpi_size; j++) {
+            node_ids[j] = j;
+        }
+        size_t_sort2(node_ids, (*mpi_map_local_array_sizes), mpi_size, true);
+
+        // find node with lowest amount of cells and add the biggest basin
+        (*mpi_map_local_array_sizes)[node_ids[0]] +=
+            basins->Ncells[basins->sorted_basins[i]];
+        basin_to_node[basins->sorted_basins[i]] = node_ids[0];
+    }
+
+    // determine offsets to use for MPI_Scatterv and MPI_Gatherv
+    for (i = 1; i < mpi_size; i++) {
+        for (j = 0; j < i; j++) {
+            (*mpi_map_global_array_offsets)[i] +=
+                (*mpi_map_local_array_sizes)[j];
+        }
+    }
+
+    // set mapping array
+    for (i = 0, l = 0; i < (size_t) mpi_size; i++) {
+        for (j = 0; j < basins->Nbasin; j++) {
+            if (basin_to_node[j] == i) {
+                for (k = 0; k < basins->Ncells[j]; k++) {
+                    (*mpi_map_mapping_array)[l++] = basins->catchment[j][k];
+                }
+            }
+        }
+    }
+    
+    free(node_ids);
+    free(basin_to_node);
+    
+    for(i = 0; i < basins->Nbasin; i++){
+        free(basins->catchment[i]);
+    }
+    free(basins->Ncells);
+    free(basins->basin_map);
+    free(basins->catchment);
+    free(basins->sorted_basins);
+}
+
+void
+rout_mpi_map_decomp_domain(size_t   ncells,
+                             size_t   mpi_size,
+                             int    **mpi_map_local_array_sizes,
+                             int    **mpi_map_global_array_offsets,
+                             size_t **mpi_map_mapping_array)
+{
+    extern plugin_option_struct    plugin_options;
+    
+    basin_struct            basins;
+    int status;
+    
+    if(plugin_options.DECOMPOSITION == FILE_DECOMPOSITION){
+        // Check domain
+        status = nc_open(plugin_filenames.decomposition.nc_filename, NC_NOWRITE,
+                         &(plugin_filenames.decomposition.nc_id));
+        check_nc_status(status, "Error opening %s",
+                        plugin_filenames.decomposition.nc_filename);
+
+        compare_ncdomain_with_global_domain(&plugin_filenames.decomposition);
+        
+        get_basins_decomposition(&basins);
+        
+        rout_decomp_domain_from_basins(ncells, mpi_size, mpi_map_local_array_sizes,
+                mpi_map_global_array_offsets, mpi_map_mapping_array, &basins);
+
+        status = nc_close(plugin_filenames.decomposition.nc_id);
+        check_nc_status(status, "Error closing %s",
+                        plugin_filenames.decomposition.nc_filename);
+    } else if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION) {
+        // Check domain
+        status = nc_open(plugin_filenames.routing.nc_filename, NC_NOWRITE,
+                         &(plugin_filenames.routing.nc_id));
+        check_nc_status(status, "Error opening %s",
+                        plugin_filenames.routing.nc_filename);
+
+        compare_ncdomain_with_global_domain(&plugin_filenames.routing);
+        
+        get_basins_routing(&basins);
+        
+        rout_decomp_domain_from_basins(ncells, mpi_size, mpi_map_local_array_sizes,
+                mpi_map_global_array_offsets, mpi_map_mapping_array, &basins);
+
+        status = nc_close(plugin_filenames.routing.nc_id);
+        check_nc_status(status, "Error closing %s",
+                        plugin_filenames.routing.nc_filename);
+    }
 }

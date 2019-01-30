@@ -60,6 +60,7 @@ print_cell_data(cell_data_struct *cell,
     // Print fluxes
     fprintf(LOG_DEST, "cell_data - fluxes:\n");
     fprintf(LOG_DEST, "\tpot_evap    : %f\n", cell->pot_evap);
+    fprintf(LOG_DEST, "\trecharge    : %f\n", cell->recharge);
     fprintf(LOG_DEST, "\tbaseflow    : %f\n", cell->baseflow);
     fprintf(LOG_DEST, "\tinflow      : %f\n", cell->inflow);
     fprintf(LOG_DEST, "\trunoff      : %f\n", cell->runoff);

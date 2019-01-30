@@ -111,6 +111,11 @@ void plugin_force(void);
 void plugin_run(void);
 void plugin_put_data(void);
 
+MPI_Datatype plugin_mpi_global_struct_type;
+MPI_Datatype plugin_mpi_filenames_struct_type;
+MPI_Datatype plugin_mpi_option_struct_type;
+MPI_Datatype plugin_mpi_param_struct_type;
+
 plugin_option_struct plugin_options;
 plugin_global_param_struct plugin_global_param;
 plugin_filenames_struct plugin_filenames;

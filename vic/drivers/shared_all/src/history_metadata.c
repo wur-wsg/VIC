@@ -317,6 +317,14 @@ set_output_met_data_info()
            "lumped water table position (zwt of total moisture across all layers, lumped together)");
 
     // Water Balance Terms - fluxes
+    /* recharge to the bottom layer [mm] */
+    strcpy(out_metadata[OUT_RECHARGE].varname, "OUT_RECHARGE");
+    strcpy(out_metadata[OUT_RECHARGE].long_name, "recharge");
+    strcpy(out_metadata[OUT_RECHARGE].standard_name, "recharge_amount");
+    strcpy(out_metadata[OUT_RECHARGE].units, "mm");
+    strcpy(out_metadata[OUT_RECHARGE].description,
+           "recharge to the bottom layer");
+    
     /* baseflow out of the bottom layer [mm] */
     strcpy(out_metadata[OUT_BASEFLOW].varname, "OUT_BASEFLOW");
     strcpy(out_metadata[OUT_BASEFLOW].long_name, "baseflow");

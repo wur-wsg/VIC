@@ -809,6 +809,7 @@ typedef struct {
 
     // Fluxes
     double pot_evap;                   /**< potential evaporation (mm) */
+    double recharge;                   /**< recharge from current cell (mm/TS) */
     double baseflow;                   /**< baseflow from current cell (mm/TS) */
     double runoff;                     /**< runoff from current cell (mm/TS) */
     double inflow;                     /**< moisture that reaches the top of

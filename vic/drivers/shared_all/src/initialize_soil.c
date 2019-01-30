@@ -62,6 +62,7 @@ initialize_soil(cell_data_struct **cell,
             cell[veg][band].wetness = 0.0;
             // Fluxes
             cell[veg][band].pot_evap = 0.0;
+            cell[veg][band].recharge = 0.0;
             cell[veg][band].baseflow = 0.0;
             cell[veg][band].runoff = 0.0;
             cell[veg][band].inflow = 0.0;

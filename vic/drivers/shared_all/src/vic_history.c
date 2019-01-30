@@ -269,6 +269,7 @@ get_default_outvar_aggtype(unsigned int varid)
         agg_type = AGG_TYPE_END;
         break;
     // AGG_TYPE_SUM
+    case OUT_RECHARGE:
     case OUT_BASEFLOW:
     case OUT_DELINTERCEPT:
     case OUT_DELSOILMOIST:
@@ -452,7 +453,7 @@ free_out_data(size_t    ngridcells,
     }
 
     for (i = 0; i < ngridcells; i++) {
-        for (j = 0; j < N_OUTVAR_TYPES; j++) {
+        for (j = 0; j < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; j++) {
             free(out_data[i][j]);
         }
         free(out_data[i]);

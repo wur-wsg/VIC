@@ -15,6 +15,17 @@ rout_get_global_param(char *cmdstr)
 
     if (strcasecmp("ROUT_STEPS_PER_DAY", optstr) == 0) {
         sscanf(cmdstr, "%*s %zu", &plugin_global_param.rout_steps_per_day);
+    } else if (strcasecmp("DECOMPOSITION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        if (strcasecmp("RANDOM", flgstr) == 0) {
+            plugin_options.DECOMPOSITION = RANDOM_DECOMPOSITION;
+        }
+        else if (strcasecmp("BASIN", flgstr) == 0) {
+            plugin_options.DECOMPOSITION = BASIN_DECOMPOSITION;
+        }
+        else if (strcasecmp("FILE", flgstr) == 0) {
+            plugin_options.DECOMPOSITION = FILE_DECOMPOSITION;
+        }
     } else if (strcasecmp("ROUTING", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.ROUTING = str_to_bool(flgstr);
@@ -24,6 +35,9 @@ rout_get_global_param(char *cmdstr)
     }
     else if (strcasecmp("ROUTING_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.routing.nc_filename);
+    }
+    else if (strcasecmp("DECOMPOSITION_PARAMETERS", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", plugin_filenames.decomposition.nc_filename);
     }
     else if (strcasecmp("ROUTING_FORCING_FILE", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.rf_path_pfx);
@@ -93,6 +107,13 @@ rout_validate_global_param(void)
     if(plugin_options.FORCE_ROUTING){
         if (strcasecmp(plugin_filenames.rf_path_pfx, MISSING_S) == 0) {
             log_err("FORCE_ROUTING = TRUE but file is missing");
+        }
+    }
+    
+    // Decomposition
+    if(plugin_options.DECOMPOSITION == FILE_DECOMPOSITION){
+        if (strcasecmp(plugin_filenames.decomposition.nc_filename, MISSING_S) == 0) {
+            log_err("DECOMPOSITION = FILE but file is missing");
         }
     }
 }
