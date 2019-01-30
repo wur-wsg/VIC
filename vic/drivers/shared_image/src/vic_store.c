@@ -1270,6 +1270,8 @@ vic_store(dmy_struct *dmy_state,
         }
     }
     
+    plugin_store(&nc_state_file);
+    
     // close the netcdf file if it is still open
     if (mpi_rank == VIC_MPI_ROOT) {
         if (nc_state_file.open == true) {
@@ -1680,7 +1682,7 @@ initialize_state_file(char           *filename,
             check_nc_status(status, "Error defining lake_node in %s", filename);
         }
 
-        plugin_initialize_state_file(filename, nc_state_file);
+        plugin_add_state_dim(filename, nc_state_file);
 
         set_nc_state_var_info(nc_state_file);
     }
@@ -1888,6 +1890,8 @@ initialize_state_file(char           *filename,
             check_nc_status(status, "Error adding attribute in %s", filename);
             dimids[0] = -1;
         }
+
+        plugin_add_state_dim_var(filename, nc_state_file);
     }
 
     // Define state variables
@@ -1897,7 +1901,7 @@ initialize_state_file(char           *filename,
                 // skip variables not set in set_state_meta_data_info
                 continue;
             }
-
+            
             // create the variable
             status = nc_def_var(nc_state_file->nc_id, state_metadata[i].varname,
                                 nc_state_file->nc_vars[i].nc_type,
@@ -2103,6 +2107,8 @@ initialize_state_file(char           *filename,
             dcount[i] = 0;
         }
         free(ivar);
+
+        plugin_add_state_dim_var_data(filename, nc_state_file);
     }
 
     // initialize dvar for soil thermal node deltas and depths

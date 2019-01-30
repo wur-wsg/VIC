@@ -1,18 +1,27 @@
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************
  Global parameters & parameters
 ******************************************/
 bool
-plugin_get_global_param(char optstr[MAXSTRING])
+plugin_get_global_param(char cmdstr[MAXSTRING])
 {
-    return false;
+    if(rout_get_global_param(cmdstr)){} 
+    else {
+        return false;
+    }
+    
+    return true;
 }
 
 void
 plugin_validate_global_param(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_validate_global_param();
 }
 
 bool
@@ -24,6 +33,7 @@ plugin_get_parameters(char optstr[MAXSTRING])
 void
 plugin_validate_parameters(void)
 {
+    extern plugin_option_struct    plugin_options;
     
 }
 
@@ -31,13 +41,11 @@ plugin_validate_parameters(void)
  Start
 ******************************************/
 void
-plugin_compare_ncdomain_with_global_domain(void)
-{
-    
-}
-
-void
-plugin_get_forcing_file_info(void)
+plugin_mpi_map_decomp_domain(size_t   ncells,
+                             size_t   mpi_size,
+                             int    **mpi_map_local_array_sizes,
+                             int    **mpi_map_global_array_offsets,
+                             size_t **mpi_map_mapping_array)
 {
     
 }
@@ -45,7 +53,10 @@ plugin_get_forcing_file_info(void)
 void
 plugin_start(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_start();
 }
 
 /******************************************
@@ -54,7 +65,10 @@ plugin_start(void)
 void
 plugin_alloc(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_alloc();
 }
 
 /******************************************
@@ -63,7 +77,10 @@ plugin_alloc(void)
 void
 plugin_init(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_init();
 }
 
 /******************************************
@@ -97,31 +114,13 @@ plugin_restore(void)
 }
 
 /******************************************
- Printing
-******************************************/
-void
-plugin_print_global_param(global_param_struct *gp)
-{
-    
-}
-
-void
-plugin_print_options(option_struct *option)
-{
-    
-}
-
-void
-plugin_print_parameters(parameters_struct *param)
-{
-    
-}
-
-/******************************************
  Finalization
 ******************************************/
 void
 plugin_finalize(void)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING) 
+        rout_finalize();
 }

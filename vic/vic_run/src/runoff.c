@@ -110,6 +110,7 @@ runoff(cell_data_struct  *cell,
         evap[lindex][0] = layer[lindex].evap / (double) runoff_steps_per_dt;
         org_moist[lindex] = layer[lindex].moist;
         layer[lindex].moist = 0;
+        layer[lindex].eff_sat = 0;
         if (evap[lindex][0] > 0) { // if there is positive evaporation
             sum_liq = 0;
             // compute available soil moisture for each frost sub area.
@@ -443,7 +444,7 @@ runoff(cell_data_struct  *cell,
             layer[lindex].eff_sat +=
                 ((liq[lindex] + ice[lindex]) - resid_moist[lindex]) /
                 (max_moist[lindex] - resid_moist[lindex]) *
-frost_fract[fidx];
+                frost_fract[fidx];
         }
         cell->asat += A * frost_fract[fidx];
         cell->runoff += runoff[fidx] * frost_fract[fidx];

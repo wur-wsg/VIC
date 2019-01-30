@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Initialize soil con sructure.
@@ -184,4 +185,6 @@ initialize_global_structures(void)
         initialize_domain_info(&global_domain.info);
         initialize_domain(&global_domain);
     }
+    
+    plugin_initialize_global_structures();
 }

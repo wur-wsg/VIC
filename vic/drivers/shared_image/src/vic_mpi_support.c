@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
+#include <plugin.h>
 
 
 /******************************************************************************
@@ -78,6 +79,8 @@ initialize_mpi(void)
     create_MPI_alarm_struct_type(&mpi_alarm_struct_type);
     create_MPI_option_struct_type(&mpi_option_struct_type);
     create_MPI_param_struct_type(&mpi_param_struct_type);
+    
+    plugin_initialize_mpi();
 }
 
 /******************************************************************************

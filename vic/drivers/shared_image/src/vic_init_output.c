@@ -202,7 +202,7 @@ initialize_history_file(nc_file_struct *nc,
     extern domain_struct       global_domain;
     extern option_struct       options;
     extern global_param_struct global_param;
-    extern metadata_struct     out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct     out_metadata[];
 
     int                        status;
     int                        old_fill_mode;

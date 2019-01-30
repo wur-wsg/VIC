@@ -132,6 +132,10 @@ main(int    argc,
     timer_stop(&(global_timers[TIMER_VIC_INIT]));
     // start vic run timer
     timer_start(&(global_timers[TIMER_VIC_RUN]));
+    // start vic force timer
+    timer_start(&(global_timers[TIMER_VIC_FORCE]));
+    // start vic write timer
+    timer_start(&(global_timers[TIMER_VIC_WRITE]));
 
     // loop over all timesteps
     for (current = 0; current < global_param.nrecs; current++) {

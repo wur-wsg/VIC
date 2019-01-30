@@ -308,31 +308,31 @@ typedef struct {
     unsigned short int endday;     /**< Last day of model simulation */
     unsigned short int endmonth;   /**< Last month of model simulation */
     unsigned short int endyear;    /**< Last year of model simulation */
-    unsigned short int forceday[2];  /**< day forcing files starts */
-    unsigned int forcesec[2];          /**< seconds since midnight when forcing
+    unsigned short int forceday;   /**< day forcing files starts */
+    unsigned int forcesec;         /**< seconds since midnight when forcing
                                           files starts */
-    unsigned short int forcemonth[2];  /**< month forcing files starts */
-    unsigned short int forceoffset[2];  /**< counter to keep track of offset in reading
+    unsigned short int forcemonth;  /**< month forcing files starts */
+    unsigned short int forceoffset; /**< counter to keep track of offset in reading
                                            forcing files; updated after every read */
-    unsigned int forceskip[2];   /**< number of model time steps to skip at
+    unsigned int forceskip;         /**< number of model time steps to skip at
                                       the start of the forcing file */
-    unsigned short int forceyear[2];  /**< year forcing files start */
-    size_t nrecs;                /**< Number of time steps simulated */
-    unsigned short int startday;  /**< Starting day of the simulation */
+    unsigned short int forceyear;   /**< year forcing files start */
+    size_t nrecs;                   /**< Number of time steps simulated */
+    unsigned short int startday;    /**< Starting day of the simulation */
     unsigned short int startmonth;  /**< Starting month of the simulation */
     unsigned int startsec;          /**< Seconds since midnight when simulation
                                        will start */
-    unsigned short int startyear;  /**< Starting year of the simulation */
-    unsigned short int stateday;   /**< Day of the simulation at which to save
+    unsigned short int startyear;   /**< Starting year of the simulation */
+    unsigned short int stateday;    /**< Day of the simulation at which to save
                                       model state */
     unsigned short int statemonth;  /**< Month of the simulation at which to save
                                        model state */
     unsigned int statesec;          /**< Seconds since midnight at which to save state */
-    unsigned short int stateyear;  /**< Year of the simulation at which to save
+    unsigned short int stateyear;   /**< Year of the simulation at which to save
                                       model state */
-    unsigned short int calendar;  /**< Date/time calendar */
+    unsigned short int calendar;    /**< Date/time calendar */
     unsigned short int time_units;  /**< Units for numeric times */
-    double time_origin_num;        /**< Numeric date origin */
+    double time_origin_num;         /**< Numeric date origin */
     char time_origin_str[MAXSTRING];  /**< string date origin */
 } global_param_struct;
 

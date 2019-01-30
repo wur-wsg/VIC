@@ -63,6 +63,8 @@ vic_start(void)
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
 
+    plugin_broadcast_filenames();
+    
     // Set Log Destination
     setup_logging(mpi_rank, filenames.log_path, &(filep.logfile));
 
@@ -101,6 +103,11 @@ vic_start(void)
                               &mpi_map_local_array_sizes,
                               &mpi_map_global_array_offsets,
                               &mpi_map_mapping_array);
+        
+        plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                                     &mpi_map_local_array_sizes,
+                                     &mpi_map_global_array_offsets,
+                                     &mpi_map_mapping_array);
 
         // get the indices for the active cells (used in reading and writing)
         filter_active_cells = malloc(global_domain.ncells_active *
@@ -128,8 +135,6 @@ vic_start(void)
         }
         
         // plugin start
-        plugin_compare_ncdomain_with_global_domain();
-        plugin_get_forcing_file_info();
         plugin_start();
         
         // Check that model parameters are valid
@@ -156,6 +161,10 @@ vic_start(void)
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
 
+    plugin_broadcast_global_params();
+    plugin_broadcast_options();
+    plugin_broadcast_params();
+    
     // setup the local domain_structs
 
     // First scatter the array sizes

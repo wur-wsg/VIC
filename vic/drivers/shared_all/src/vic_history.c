@@ -34,16 +34,16 @@ void
 alloc_out_data(size_t    ngridcells,
                double ***out_data)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 i;
     size_t                 j;
 
     for (i = 0; i < ngridcells; i++) {
-        out_data[i] = calloc(N_OUTVAR_TYPES, sizeof(*(out_data[i])));
+        out_data[i] = calloc(N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES, sizeof(*(out_data[i])));
         check_alloc_status(out_data[i], "Memory allocation error.");
         // Allocate space for data
-        for (j = 0; j < N_OUTVAR_TYPES; j++) {
+        for (j = 0; j < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; j++) {
             out_data[i][j] =
                 calloc(out_metadata[j].nelem, sizeof(*(out_data[i][j])));
             check_alloc_status(out_data[i][j], "Memory allocation error.");
@@ -163,7 +163,7 @@ validate_streams(stream_struct **streams)
 void
 alloc_aggdata(stream_struct *stream)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 i;
     size_t                 j;
@@ -202,7 +202,7 @@ void
 reset_stream(stream_struct *stream,
              dmy_struct    *dmy_current)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 i;
     size_t                 j;
@@ -323,7 +323,7 @@ get_default_outvar_aggtype(unsigned int varid)
         agg_type = AGG_TYPE_AVG;
     }
     
-    plugin_get_default_outvar_aggtype(varid);
+    plugin_get_default_outvar_aggtype(varid, &agg_type);
     
     return agg_type;
 }
@@ -341,7 +341,7 @@ set_output_var(stream_struct     *stream,
                double             mult,
                unsigned short int aggtype)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     int                    varid;
     int                    found = false;
@@ -351,7 +351,7 @@ set_output_var(stream_struct     *stream,
                 "in the stream %zu", varnum, stream->nvars);
     }
     // Find the output varid by looping through out_metadata, comparing to varname
-    for (varid = 0; varid < N_OUTVAR_TYPES + N_OUTVAR_TYPES; varid++) {
+    for (varid = 0; varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; varid++) {
         if (strcmp(out_metadata[varid].varname, varname) == 0) {
             found = true;
             break;
@@ -401,7 +401,7 @@ void
 free_streams(stream_struct **streams)
 {
     extern option_struct   options;
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 streamnum;
     size_t                 i;

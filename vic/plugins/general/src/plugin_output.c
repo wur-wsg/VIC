@@ -8,7 +8,25 @@
 void
 plugin_set_output_met_data_info(void)
 {
+    extern plugin_option_struct    plugin_options;
+    extern metadata_struct out_metadata[];
     
+    size_t v;
+    
+    // Set missing and/or default values
+    for (v = N_OUTVAR_TYPES; v < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; v++) {
+        // Set default string values
+        strcpy(out_metadata[v].varname, MISSING_S);
+        strcpy(out_metadata[v].long_name, MISSING_S);
+        strcpy(out_metadata[v].standard_name, MISSING_S);
+        strcpy(out_metadata[v].units, MISSING_S);
+        strcpy(out_metadata[v].description, MISSING_S);
+        // Set default number of elements
+        out_metadata[v].nelem = 1;
+    }
+    
+    if(plugin_options.ROUTING)
+        rout_set_output_met_data_info();
 }
 
 // Initialize outfile dimension size & id
@@ -70,9 +88,12 @@ plugin_set_nc_var_dimids(unsigned int    varid,
 }
 
 void
-plugin_get_default_outvar_aggtype(unsigned int varid)
+plugin_get_default_outvar_aggtype(unsigned int varid, unsigned int *agg_type)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_history(varid, agg_type);
 }
 /******************************************
  State file initialization
@@ -81,6 +102,10 @@ plugin_get_default_outvar_aggtype(unsigned int varid)
 void
 plugin_set_state_meta_data_info(void)
 {
+    extern plugin_option_struct    plugin_options;
+    
+    if(plugin_options.ROUTING)
+        rout_set_state_meta_data_info();
     
 }
 
@@ -88,21 +113,51 @@ plugin_set_state_meta_data_info(void)
 void
 plugin_set_nc_state_file_info(nc_file_struct  *nc_state_file)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_set_nc_state_file_info(nc_state_file);
 }
 
 // Add dimensions to outfile
 void
-plugin_initialize_state_file(char           *filename,
-                                     nc_file_struct *nc_state_file)
+plugin_add_state_dim(char           *filename,
+                             nc_file_struct *nc_state_file)
 {
+    extern plugin_option_struct    plugin_options;
     
+    if(plugin_options.ROUTING)
+        rout_add_state_dim(filename, nc_state_file);
+}
+
+// Add dimensions variable to outfile
+void
+plugin_add_state_dim_var(char           *filename,
+                             nc_file_struct *nc_state_file)
+{
+    extern plugin_option_struct    plugin_options;
+    
+    if(plugin_options.ROUTING)
+        rout_add_state_dim_var(filename, nc_state_file);
+}
+
+// Add dimensions variable data to outfile
+void
+plugin_add_state_dim_var_data(char           *filename,
+                             nc_file_struct *nc_state_file)
+{
+    extern plugin_option_struct    plugin_options;
+    
+    if(plugin_options.ROUTING)
+        rout_add_state_dim_var_data(filename, nc_state_file);
 }
 
 // Set output variable dimension count & ids
 void
 plugin_set_nc_state_var_info(nc_file_struct *nc)
 {
+    extern plugin_option_struct    plugin_options;
+    
     size_t i;
     size_t j;
 
@@ -122,8 +177,20 @@ plugin_set_nc_state_var_info(nc_file_struct *nc)
         nc->nc_vars[i].nc_counts[0] = nc->nj_size;
         nc->nc_vars[i].nc_counts[1] = nc->ni_size;
         
+        if(plugin_options.ROUTING)
+            rout_set_nc_state_var_info(nc, i);
+        
         if (nc->nc_vars[i].nc_dims > MAXDIMS) {
             log_err("Too many dimensions specified in variable %zu", i);
         }
     }
+}
+
+void
+plugin_store(nc_file_struct *state_file)
+{
+    extern plugin_option_struct    plugin_options;
+    
+    if(plugin_options.ROUTING)
+        rout_store(state_file);
 }

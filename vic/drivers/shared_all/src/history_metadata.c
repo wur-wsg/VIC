@@ -36,7 +36,7 @@ set_output_met_data_info()
     size_t                 v;
 
     extern option_struct   options;
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     // Build the list of supported output variables
 
@@ -1507,6 +1507,7 @@ set_output_met_data_info()
     out_metadata[OUT_SOIL_ICE_FRAC].nelem = options.Nlayer;
     out_metadata[OUT_SOIL_LIQ_FRAC].nelem = options.Nlayer;
     out_metadata[OUT_SOIL_MOIST].nelem = options.Nlayer;
+    out_metadata[OUT_SOIL_EFF_SAT].nelem = options.Nlayer;
     out_metadata[OUT_SOIL_TEMP].nelem = options.Nlayer;
     out_metadata[OUT_SOIL_TNODE].nelem = options.Nnode;
     out_metadata[OUT_SOIL_TNODE_WL].nelem = options.Nnode;

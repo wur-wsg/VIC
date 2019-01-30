@@ -142,6 +142,10 @@ typedef struct {
     size_t root_zone_size;
     size_t time_size;
     size_t veg_size;
+    //plugins
+    int rdt_dimid;
+    size_t rdt_size;
+    
     bool open;
     nc_var_struct *nc_vars;
 } nc_file_struct;
@@ -174,8 +178,8 @@ typedef struct {
  * @brief   This structure stores input and output filenames.
  *****************************************************************************/
 typedef struct {
-    nameid_struct forcing[MAX_FORCE_FILES];  /**< atmospheric forcing files */
-    char f_path_pfx[MAX_FORCE_FILES][MAXSTRING]; /**< path and prefix for
+    nameid_struct forcing[N_FORCING_TYPES];  /**< atmospheric forcing files */
+    char f_path_pfx[N_FORCING_TYPES][MAXSTRING]; /**< path and prefix for
                                                     atmospheric forcing files */
     char global[MAXSTRING];     /**< global control file name */
     nameid_struct domain;       /**< domain file name and nc_id*/
@@ -242,7 +246,7 @@ void print_nc_file(nc_file_struct *nc);
 void print_nc_var(nc_var_struct *nc_var);
 void print_veg_con_map(veg_con_map_struct *veg_con_map);
 void put_nc_attr(int nc_id, int var_id, const char *name, const char *value);
-void set_force_type(char *cmdstr, int file_num, int *field);
+void set_force_type(char *cmdstr);
 void set_global_nc_attributes(int ncid, unsigned short int file_type);
 void set_state_meta_data_info();
 void set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,
