@@ -25,8 +25,8 @@ plugin_print_options(void)
     op = &plugin_options;
     
     fprintf(LOG_DEST, "plugin option:\n");
-    fprintf(LOG_DEST, "\tDECOMPOSITION        : %s\n",
-            op->DECOMPOSITION ? "true" : "false");
+    fprintf(LOG_DEST, "\tDECOMPOSITION        : %d\n",
+            op->DECOMPOSITION);
     fprintf(LOG_DEST, "\tROUTING              : %s\n",
             op->ROUTING ? "true" : "false");
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",

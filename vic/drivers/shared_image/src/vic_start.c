@@ -57,6 +57,7 @@ vic_start(void)
     extern int                 mpi_size;
     extern option_struct       options;
     extern parameters_struct   param;
+    extern param_set_struct    param_set;
     size_t                     j;
 
     status = MPI_Bcast(&filenames, 1, mpi_filenames_struct_type,
@@ -87,13 +88,20 @@ vic_start(void)
         check_nc_status(status, "Error opening %s",
                         filenames.domain.nc_filename);
         // read domain info
-        get_global_domain(&(filenames.domain), &(filenames.params),
+        get_global_domain(&(filenames.domain), &(filenames.params), 
                           &global_domain);
         // close domain file
         status = nc_close(filenames.domain.nc_id);
         check_nc_status(status, "Error closing %s",
                         filenames.domain.nc_filename);
 
+        // Validate forcing files and variables
+        for(i = 0; i < N_FORCING_TYPES; i++){
+            if(param_set.TYPE[i].SUPPLIED){
+                compare_ncdomain_with_global_domain(&filenames.forcing[i]);
+            }
+        }
+        
         // add the number of vegetation type to the location info in the
         // global domain struct. This just makes life easier
         add_nveg_to_global_domain(&(filenames.params), &global_domain);

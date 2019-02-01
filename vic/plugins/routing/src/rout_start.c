@@ -34,6 +34,7 @@ rout_start(void)
                 plugin_filenames.routing_forcing.nc_filename);
 
         plugin_get_forcing_file_info(&plugin_filenames.routing_forcing);
+        compare_ncdomain_with_global_domain(&plugin_filenames.routing_forcing);
 
         status = nc_close(plugin_filenames.routing_forcing.nc_id);
         check_nc_status(status, "Error closing %s", 

@@ -81,9 +81,9 @@ get_global_domain(nameid_struct *domain_nc_nameid,
     get_nc_field_int(param_nc_nameid, "run_cell", d2start, d2count,
                      run);
 
-    // Check whether cells with run_cell == 1 are all within the mask domain
+    // Check whether cells within the mask have run_cell == 1
     for (i = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1 && mask[i] != 1) {
+        if (run[i] != 1 && mask[i] == 1) {
             log_err("Run_cell = 1 should only appear within the mask of the "
                     "domain file.");
         }
@@ -91,11 +91,11 @@ get_global_domain(nameid_struct *domain_nc_nameid,
 
     // Store active cell information into variables
     for (i = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1) {
+        if (mask[i] == 1) {
             global_domain->ncells_active++;
         }
     }
-    debug("%zu active grid cells found in run_cell in the parameter file.",
+    debug("%zu active grid cells found in the mask of the domain file.",
           global_domain->ncells_active);
 
     global_domain->locations =
@@ -106,13 +106,13 @@ get_global_domain(nameid_struct *domain_nc_nameid,
     }
 
     for (i = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1) {
+        if (mask[i] == 1) {
             global_domain->locations[i].run = true;
         }
     }
 
     for (i = 0, j = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1) {
+        if (mask[i] == 1) {
             global_domain->locations[i].io_idx = i;
             global_domain->locations[i].global_idx = j;
             j++;
@@ -171,13 +171,20 @@ get_nc_latlon(nameid_struct *nc_nameid,
     size_t  d2start[2];
     size_t  d1count[1];
     size_t  d1start[1];
+    size_t  n_nx;
+    size_t  n_ny;
 
 
-    nc_domain->n_nx = get_nc_dimension(nc_nameid,
+    n_nx = get_nc_dimension(nc_nameid,
                                        nc_domain->info.x_dim);
-    nc_domain->n_ny = get_nc_dimension(nc_nameid,
+    n_ny = get_nc_dimension(nc_nameid,
                                        nc_domain->info.y_dim);
-
+    
+    if(nc_domain->n_nx != n_nx || nc_domain->n_ny != n_ny){
+        log_err("dimensions do not match for file \"%s\"",
+                nc_nameid->nc_filename);
+    }
+    
     // Get number of lat/lon dimensions.
     nc_domain->info.n_coord_dims = get_nc_varndimensions(nc_nameid,
                                                          nc_domain->info.lon_var);

@@ -772,7 +772,9 @@ get_global_param(FILE *gp)
             i == SWDOWN || i == WIND || i == VP ||
            (i == LAI && options.LAI_SRC == FROM_VEGHIST) ||
            (i == FCANOPY && options.FCAN_SRC == FROM_VEGHIST) ||
-           (i == ALBEDO && options.ALB_SRC == FROM_VEGHIST)){
+           (i == ALBEDO && options.ALB_SRC == FROM_VEGHIST) ||
+           (i == CHANNEL_IN && options.LAKES) ||
+           ((i == CATM || i == FDIR || i == PAR) && options.CARBON)){
         
             if (strcmp(filenames.f_path_pfx[i], "MISSING") == 0 ||
                     !param_set.TYPE[i].SUPPLIED) {

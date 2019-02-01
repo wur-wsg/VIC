@@ -166,6 +166,8 @@ rout_random_run()
             for (j = 0; j < nup_global[cur_cell]; j++) {
                 inflow += dis_global[up_global[cur_cell][j]];
             }
+            
+            // Gather inflow from forcing
             if (plugin_options.FORCE_ROUTING) {
                 inflow += force_global[cur_cell];
             }
@@ -176,6 +178,10 @@ rout_random_run()
             // Calculate delta-time inflow & runoff (equal contribution)
             dt_inflow = inflow / rout_steps_per_dt;
             dt_runoff = runoff / rout_steps_per_dt;
+            
+            if(cur_cell == 2){
+                log_info("inflow %4f runoff %.4f", dt_inflow, dt_runoff);
+            }
             
             // Shift and clear previous discharge data
             for(j = 0; j < rout_steps_per_dt; j++){

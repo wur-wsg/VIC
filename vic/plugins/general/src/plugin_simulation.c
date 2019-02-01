@@ -22,14 +22,18 @@ plugin_run(void)
 {
     extern domain_struct       local_domain;
     extern plugin_option_struct       plugin_options;
+    extern size_t             *routing_order;
     
     size_t                     i;
+    size_t                     cur_cell;
     
     if(plugin_options.ROUTING){
         if(plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
                 plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
             for (i = 0; i < local_domain.ncells_active; i++) {
-                rout_basin_run(i);
+                cur_cell = routing_order[i];
+                
+                rout_basin_run(cur_cell);
             }
         } 
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION){

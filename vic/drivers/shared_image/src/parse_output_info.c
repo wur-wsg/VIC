@@ -231,8 +231,13 @@ parse_output_info(FILE           *gp,
                 mult = str_to_out_mult(multstr);
 
                 // Add OUTVAR to stream
-                set_output_var(&((*streams)[streamnum]), varname, outvarnum,
+                found = set_output_var(&((*streams)[streamnum]), varname, outvarnum,
                                format, type, mult, agg_type);
+                
+                if(!found){
+                    outvarnum--;
+                }
+                
                 outvarnum++;
             }
         }

@@ -355,9 +355,6 @@ rout_mpi_map_decomp_domain(size_t   ncells,
         compare_ncdomain_with_global_domain(&plugin_filenames.decomposition);
         
         get_basins_decomposition(&basins);
-        
-        rout_decomp_domain_from_basins(ncells, mpi_size, mpi_map_local_array_sizes,
-                mpi_map_global_array_offsets, mpi_map_mapping_array, &basins);
 
         status = nc_close(plugin_filenames.decomposition.nc_id);
         check_nc_status(status, "Error closing %s",
@@ -372,12 +369,12 @@ rout_mpi_map_decomp_domain(size_t   ncells,
         compare_ncdomain_with_global_domain(&plugin_filenames.routing);
         
         get_basins_routing(&basins);
-        
-        rout_decomp_domain_from_basins(ncells, mpi_size, mpi_map_local_array_sizes,
-                mpi_map_global_array_offsets, mpi_map_mapping_array, &basins);
 
         status = nc_close(plugin_filenames.routing.nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.routing.nc_filename);
     }
+        
+    rout_decomp_domain_from_basins(ncells, mpi_size, mpi_map_local_array_sizes,
+            mpi_map_global_array_offsets, mpi_map_mapping_array, &basins);
 }

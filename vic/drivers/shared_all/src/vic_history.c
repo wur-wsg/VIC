@@ -333,7 +333,7 @@ get_default_outvar_aggtype(unsigned int varid)
  * @brief    This routine updates the output information for a given output
  *           variable.
  *****************************************************************************/
-void
+bool
 set_output_var(stream_struct     *stream,
                char              *varname,
                size_t             varnum,
@@ -359,9 +359,12 @@ set_output_var(stream_struct     *stream,
         }
     }
     if (!found) {
-        log_err("set_output_var: \"%s\" was not found in the list of "
-                "supported output variable names.  Please use the exact name "
-                "listed in vic_driver_shared.h.", varname);
+        log_warn("set_output_var: \"%s\" was not found in the list of "
+                "supported output variable names. Ignoring output variable...", 
+                varname);
+        free(stream->format[stream->nvars - 1]);
+        stream->nvars--;
+        return false;
     }
     // Set stream members
     stream->varid[varnum] = varid;
@@ -393,6 +396,8 @@ set_output_var(stream_struct     *stream,
     else {
         stream->aggtype[varnum] = get_default_outvar_aggtype(varid);
     }
+    
+    return true;
 }
 
 /******************************************************************************

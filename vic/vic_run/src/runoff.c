@@ -185,6 +185,9 @@ runoff(cell_data_struct  *cell,
         }
         compute_runoff_and_asat(soil_con, tmp_moist_for_runoff, inflow, &A,
                                 &(runoff[fidx]));
+        if(runoff[fidx] > 1000){
+            log_info("test");
+        }
 
         // save dt_runoff based on initial runoff estimate,
         // since we will modify total runoff below for the case of completely saturated soil
@@ -459,6 +462,9 @@ runoff(cell_data_struct  *cell,
         cell->runoff += runoff[fidx] * frost_fract[fidx];
         cell->recharge += recharge[fidx] * frost_fract[fidx];
         cell->baseflow += baseflow[fidx] * frost_fract[fidx];
+        if(cell->runoff > 1000){
+            log_info("test");
+        }
     }
 
     /** Compute water table depth **/
