@@ -409,6 +409,7 @@ print_layer_data_states(layer_data_struct *ldata,
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tkappa: %f\n", ldata->kappa);
     fprintf(LOG_DEST, "\tmoist: %f\n", ldata->moist);
+    fprintf(LOG_DEST, "\teff_sat: %f\n", ldata->eff_sat);
     fprintf(LOG_DEST, "\tphi  : %f\n", ldata->phi);
     fprintf(LOG_DEST, "\tzwt  : %f\n", ldata->zwt);
 }

@@ -163,7 +163,6 @@ main(int    argc,
     timer_stop(&(global_timers[TIMER_VIC_RUN]));
     // start vic final timer
     timer_start(&(global_timers[TIMER_VIC_FINAL]));
-    
     // clean up
     vic_image_finalize();
 
