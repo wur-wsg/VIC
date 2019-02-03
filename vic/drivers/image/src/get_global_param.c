@@ -525,9 +525,9 @@ get_global_param(FILE *gp)
             /***********************************
                Get Plugin Global Parameters
             ***********************************/
-            else if (plugin_get_global_param(cmdstr)){
-                ; // do nothing
-            }
+            //else if (plugin_get_global_param(cmdstr)){
+            //    ; // do nothing
+            //}
             
             /***********************************
                Unrecognized Global Parameter Flag

@@ -122,11 +122,17 @@ main(int    argc,
     vic_init_output(&(dmy[0]));
 
     // Initialization is complete, print settings
-    log_info(
-        "Initialization is complete, print global param, parameters and options structures");
-    print_global_param(&global_param);
-    print_option(&options);
-    print_parameters(&param);
+    if(mpi_rank == VIC_MPI_ROOT){
+        log_info(
+            "Initialization is complete, print decomposition, global param, parameters and options structures");
+        //plugin_print_decomposition(mpi_size, &mpi_map_local_array_sizes);
+        print_global_param(&global_param);
+        //plugin_print_global_param(&plugin_global_param);
+        print_option(&options);
+        //plugin_print_options(&plugin_options);
+        print_parameters(&param);
+        //plugin_print_parameters(&plugin_param);
+    }
 
     // stop init timer
     timer_stop(&(global_timers[TIMER_VIC_INIT]));

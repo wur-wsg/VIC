@@ -81,9 +81,10 @@ void plugin_compute_derived_state_vars(void);
 void plugin_check_init_state_file(void);
 void plugin_restore(void);
 
-void plugin_print_global_param(void);
-void plugin_print_options(void);
-void plugin_print_parameters(void);
+void plugin_print_decomposition(size_t, int **);
+void plugin_print_global_param(plugin_global_param_struct *);
+void plugin_print_options(plugin_option_struct *);
+void plugin_print_parameters(plugin_parameters_struct *);
 
 // Output
 void plugin_set_output_met_data_info(void);

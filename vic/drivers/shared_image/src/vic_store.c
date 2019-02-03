@@ -1270,7 +1270,7 @@ vic_store(dmy_struct *dmy_state,
         }
     }
     
-    plugin_store(&nc_state_file);
+    //plugin_store(&nc_state_file);
     
     // close the netcdf file if it is still open
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -1327,7 +1327,7 @@ set_nc_state_file_info(nc_file_struct *nc_state_file)
     nc_state_file->time_size = NC_UNLIMITED;
     nc_state_file->veg_size = options.NVEGTYPES;
 
-    plugin_set_nc_state_file_info(nc_state_file);
+    //plugin_set_nc_state_file_info(nc_state_file);
 
     // allocate memory for nc_vars
     nc_state_file->nc_vars =
@@ -1541,7 +1541,7 @@ set_nc_state_var_info(nc_file_struct *nc)
         }
     }
     
-    plugin_set_nc_state_var_info(nc);
+    //plugin_set_nc_state_var_info(nc);
 }
 
 /******************************************************************************
@@ -1682,7 +1682,7 @@ initialize_state_file(char           *filename,
             check_nc_status(status, "Error defining lake_node in %s", filename);
         }
 
-        plugin_add_state_dim(filename, nc_state_file);
+        //plugin_add_state_dim(filename, nc_state_file);
 
         set_nc_state_var_info(nc_state_file);
     }

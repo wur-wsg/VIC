@@ -36,7 +36,7 @@ set_state_meta_data_info()
     size_t                 v;
 
     extern option_struct   options;
-    extern metadata_struct state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+    extern metadata_struct state_metadata[];
 
     // Build the list of state variables
 
@@ -709,5 +709,5 @@ set_state_meta_data_info()
                "depth of snow on lake ice");
     }
 
-    plugin_set_state_meta_data_info();
+    //plugin_set_state_meta_data_info();
 }

@@ -359,7 +359,7 @@ vic_force(void)
     free(dvar);
     free(t_offset);
     
-    plugin_force();
+    //plugin_force();
 }
 
 /******************************************************************************

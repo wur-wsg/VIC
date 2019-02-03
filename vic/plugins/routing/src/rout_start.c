@@ -17,7 +17,7 @@ rout_start(void)
                     plugin_filenames.routing.nc_filename);
 
     plugin_options.UH_LENGTH = get_nc_dimension(&(plugin_filenames.routing),
-                                           "uh_time");
+                                           "time");
     compare_ncdomain_with_global_domain(&plugin_filenames.routing);
 
     status = nc_close(plugin_filenames.routing.nc_id);

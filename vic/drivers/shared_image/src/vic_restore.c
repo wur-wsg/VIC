@@ -40,7 +40,7 @@ vic_restore(void)
     extern option_struct       options;
     extern veg_con_map_struct *veg_con_map;
     extern filenames_struct    filenames;
-    extern metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+    extern metadata_struct     state_metadata[];
 
     int                        v;
     size_t                     i;
@@ -883,7 +883,7 @@ vic_restore(void)
         }
     }
 
-    plugin_restore();
+    //plugin_restore();
 
     free(ivar);
     free(dvar);
@@ -1118,5 +1118,5 @@ check_init_state_file(void)
     }
     free(dvar);
     
-    plugin_check_init_state_file();
+    //plugin_check_init_state_file();
 }

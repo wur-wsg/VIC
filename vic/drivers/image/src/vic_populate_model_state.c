@@ -64,7 +64,7 @@ vic_populate_model_state(dmy_struct *dmy_current)
         }
         
         // Plugin
-        plugin_generate_default_state();
+        //plugin_generate_default_state();
     }
 
     // compute those state variables that are derived from the others
@@ -77,5 +77,5 @@ vic_populate_model_state(dmy_struct *dmy_current)
     }
     
     // Plugin
-    plugin_compute_derived_state_vars();
+    //plugin_compute_derived_state_vars();
 }

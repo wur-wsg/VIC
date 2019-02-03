@@ -325,7 +325,7 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining time bounds dimension in %s",
                     stream->filename);
 
-    plugin_add_history_dimensions(nc, stream);
+    //plugin_add_history_dimensions(nc, stream);
     
     // define the netcdf variable time
     status = nc_def_var(nc->nc_id, "time", NC_DOUBLE, 1,
@@ -445,7 +445,7 @@ initialize_history_file(nc_file_struct *nc,
         if (varid < N_OUTVAR_TYPES) {
             set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
         } else if (varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES){
-            plugin_set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+            //plugin_set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
         }
 
         // define the variable
@@ -709,7 +709,7 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->time_size = NC_UNLIMITED;
     nc_file->veg_size = options.NVEGTYPES;
 
-    plugin_initialize_nc_file(nc_file);
+    //plugin_initialize_nc_file(nc_file);
     
     // allocate memory for nc_vars
     nc_file->nc_vars = calloc(nvars, sizeof(*(nc_file->nc_vars)));
@@ -719,7 +719,7 @@ initialize_nc_file(nc_file_struct     *nc_file,
         if(varids[i] < N_OUTVAR_TYPES){
             set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
         } else if (varids[i] < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES){
-            plugin_set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+            //plugin_set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
         }
     }
 }

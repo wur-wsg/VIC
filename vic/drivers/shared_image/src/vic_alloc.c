@@ -168,5 +168,5 @@ vic_alloc(void)
         }
     }
     
-    plugin_alloc();
+    //plugin_alloc();
 }

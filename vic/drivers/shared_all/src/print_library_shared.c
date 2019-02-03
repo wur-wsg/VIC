@@ -279,8 +279,6 @@ print_global_param(global_param_struct *gp)
     fprintf(LOG_DEST, "\tstatemonth          : %hu\n", gp->statemonth);
     fprintf(LOG_DEST, "\tstateyear           : %hu\n", gp->stateyear);
     fprintf(LOG_DEST, "\tstatesec            : %u\n", gp->statesec);
-    
-    plugin_print_global_param();
 }
 
 /******************************************************************************
@@ -522,8 +520,6 @@ print_option(option_struct *option)
     fprintf(LOG_DEST, "\tSAVE_STATE           : %s\n",
             option->SAVE_STATE ? "true" : "false");
     fprintf(LOG_DEST, "\tNoutstreams          : %zu\n", option->Noutstreams);
-    
-    plugin_print_options();
 }
 
 /******************************************************************************
@@ -814,8 +810,6 @@ print_parameters(parameters_struct *param)
     fprintf(LOG_DEST, "\tROOT_BRENT_TSTEP: %.4f\n", param->ROOT_BRENT_TSTEP);
     fprintf(LOG_DEST, "\tROOT_BRENT_T: %.4f\n", param->ROOT_BRENT_T);
     fprintf(LOG_DEST, "\tFROZEN_MAXITER: %d\n", param->FROZEN_MAXITER);
-    
-    plugin_print_parameters();
 }
 
 /******************************************************************************

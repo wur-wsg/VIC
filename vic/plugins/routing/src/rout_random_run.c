@@ -141,6 +141,11 @@ rout_random_run()
         if (plugin_options.FORCE_ROUTING) {
             force_local[i] = rout_force[i].discharge[NR];
         }
+        
+        if(mpi_rank == 1 && i == 2){
+                log_info("pre storage %.4f",
+                        rout_var[i].stream);
+        }
     }
 
     // Gather
@@ -160,7 +165,7 @@ rout_random_run()
     if (mpi_rank == VIC_MPI_ROOT) {
         for (i = 0; i < global_domain.ncells_active; i++) {
             cur_cell = routing_order[i];
-
+            
             // Gather inflow from upstream cells
             inflow = 0;
             for (j = 0; j < nup_global[cur_cell]; j++) {
@@ -179,10 +184,6 @@ rout_random_run()
             dt_inflow = inflow / rout_steps_per_dt;
             dt_runoff = runoff / rout_steps_per_dt;
             
-            if(cur_cell == 2){
-                log_info("inflow %4f runoff %.4f", dt_inflow, dt_runoff);
-            }
-            
             // Shift and clear previous discharge data
             for(j = 0; j < rout_steps_per_dt; j++){
                 dt_dis_global[cur_cell][0] = 0.0;
@@ -196,6 +197,11 @@ rout_random_run()
                 convolute(dt_runoff, ruh_global[cur_cell], dt_dis_global[cur_cell],
                      plugin_options.UH_LENGTH, j);
             }
+        
+            if(cur_cell == 7){
+                log_info("global pre storage %.4f",
+                        stream_global[cur_cell]);
+            }
     
             // Aggregate current timestep discharge & stream moisture
             dis_global[cur_cell] = 0.0;
@@ -208,21 +214,53 @@ rout_random_run()
                     stream_global[cur_cell] += dt_dis_global[cur_cell][j];
                 }
             }
+        
+            if(cur_cell == 7){
+                log_info("global after storage %.4f",
+                        stream_global[cur_cell]);
+            }
+            if(stream_global[cur_cell] < 0){
+                log_err("EXIT");
+            }
 
             // Check water balance
             if(abs(prev_stream + (inflow + runoff) - 
                     (dis_global[cur_cell] + stream_global[cur_cell])) >
                     DBL_EPSILON){
-                log_err("Discharge water balance error");
+                log_err("Discharge water balance error [%.4f]. "
+                        "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
+                        prev_stream + (inflow + runoff) - 
+                        (dis_global[cur_cell] + stream_global[cur_cell]),
+                        (inflow + runoff), 
+                        dis_global[cur_cell],
+                        prev_stream,
+                        stream_global[cur_cell]);
             }
         }
     }
-
+    
+    if(mpi_rank == 1){
+        fprintf(LOG_DEST, "\nstream_local %d:\n", mpi_rank);
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            fprintf(LOG_DEST, "%.2f\t", stream_local[i]);
+        }
+        fprintf(LOG_DEST, "\nstream_local %d:\n", mpi_rank);
+    }
+    
     // Scatter discharge
-    scatter_double_2d(dt_dis_global, dt_dis_local, plugin_options.UH_LENGTH + rout_steps_per_dt);
-    scatter_double(dis_global, dis_local);
+    //scatter_double_2d(dt_dis_global, dt_dis_local, plugin_options.UH_LENGTH + rout_steps_per_dt);
     scatter_double(stream_global, stream_local);
-
+    //scatter_double(dis_global, dis_local);
+    
+    if(mpi_rank == 1){
+        fprintf(LOG_DEST, "\nstream_local %d:\n", mpi_rank);
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            fprintf(LOG_DEST, "%.2f\t", stream_local[i]);
+        }
+        fprintf(LOG_DEST, "\nstream_local %d:\n", mpi_rank);
+    }
+    
+    
     // Set discharge
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
@@ -230,6 +268,11 @@ rout_random_run()
         }
         rout_var[i].discharge = dis_local[i];
         rout_var[i].stream = stream_local[i];
+        
+        if(mpi_rank == 1 && i == 2){
+                log_info("after storage %.4f",
+                        rout_var[i].stream);
+        }
     }
 
     // Free

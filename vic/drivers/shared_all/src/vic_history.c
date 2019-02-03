@@ -346,11 +346,7 @@ set_output_var(stream_struct     *stream,
 
     int                    varid;
     int                    found = false;
-
-    if (varnum >= stream->nvars) {
-        log_err("Invalid varnum %zu, must be less than the number of variables "
-                "in the stream %zu", varnum, stream->nvars);
-    }
+    
     // Find the output varid by looping through out_metadata, comparing to varname
     for (varid = 0; varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; varid++) {
         if (strcmp(out_metadata[varid].varname, varname) == 0) {
@@ -362,9 +358,12 @@ set_output_var(stream_struct     *stream,
         log_warn("set_output_var: \"%s\" was not found in the list of "
                 "supported output variable names. Ignoring output variable...", 
                 varname);
-        free(stream->format[stream->nvars - 1]);
-        stream->nvars--;
         return false;
+    }
+
+    if (varnum >= stream->nvars) {
+        log_err("Invalid varnum %zu, must be less than the number of variables "
+                "in the stream %zu", varnum, stream->nvars);
     }
     // Set stream members
     stream->varid[varnum] = varid;

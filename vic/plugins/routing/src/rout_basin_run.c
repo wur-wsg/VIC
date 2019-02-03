@@ -48,10 +48,6 @@ rout_basin_run(size_t cur_cell)
     dt_inflow = inflow / rout_steps_per_dt;
     dt_runoff = runoff / rout_steps_per_dt;
     
-    if(cur_cell == 2){
-        log_info("inflow %4f runoff %.4f", dt_inflow, dt_runoff);
-    }
-    
     // Shift and clear previous discharge data
     for(i = 0; i < rout_steps_per_dt; i++){
         rout_var[cur_cell].dt_discharge[0] = 0.0;
