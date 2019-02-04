@@ -32,24 +32,29 @@
  *           stores its location in the description of the current forcing file.
  *****************************************************************************/
 void
-set_force_type(char *cmdstr)
+set_force_type(char *cmdstr,
+               int   file_num,
+               int  *field)
 {
     extern param_set_struct param_set;
-    extern filenames_struct filenames;
 
     char                    optstr[MAXSTRING];
     char                    flgstr[MAXSTRING];
     char                    ncvarname[MAXSTRING];
-    char                    ncvarfile[MAXSTRING];
     int                     type = SKIP;
 
     strcpy(ncvarname, "MISSING");
-    strcpy(ncvarfile, "MISSING");
 
     /** Initialize flgstr **/
     strcpy(flgstr, "NULL");
 
-    sscanf(cmdstr, "%*s %s %s %s", optstr, ncvarname, ncvarfile);
+    if ((*field) >= (int) param_set.N_TYPES[file_num]) {
+        log_err("Too many variables defined for forcing file %i., was "
+                "expecting at most %zu and got %d", file_num + 1,
+                param_set.N_TYPES[file_num], *field);
+    }
+
+    sscanf(cmdstr, "%*s %s %s", optstr, ncvarname);
 
     /***************************************
        Get meteorological data forcing info
@@ -117,33 +122,23 @@ set_force_type(char *cmdstr)
     }
     /** Undefined variable type **/
     else {
-        log_err("Undefined forcing variable type %s.",
-                optstr);
+        log_err("Undefined forcing variable type %s in file %i.",
+                optstr, file_num + 1);
     }
 
-    if(param_set.TYPE[type].SUPPLIED){
-        log_err("Forcing variable has already been supplied");
-    }
-    
-    param_set.TYPE[type].SUPPLIED = true;
-    param_set.FORCE_INDEX[type] = type;
-    
-    if (strcasecmp("MISSING", ncvarfile) != 0) {
-        strcpy(filenames.f_path_pfx[type], ncvarfile);
-    }
-    else {
-        log_err(
-            "Must supply netCDF file name for %s", optstr);
-    }
+    param_set.TYPE[type].SUPPLIED = file_num + 1;
+    param_set.FORCE_INDEX[file_num][(*field)] = type;
 
     if (strcasecmp("MISSING", ncvarname) != 0) {
         strcpy(param_set.TYPE[type].varname, ncvarname);
     }
     else {
         log_err(
-            "Must supply netCDF variable name for %s", optstr);
+            "Must supply netCDF variable name for %s forcing file number %d",
+            optstr, file_num + 1);
     }
 
     param_set.TYPE[type].N_ELEM = 1;
-    param_set.N_TYPES ++;
+
+    (*field)++;
 }

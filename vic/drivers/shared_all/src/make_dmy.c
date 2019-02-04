@@ -85,17 +85,17 @@ make_dmy(global_param_struct *global)
     }
 
     /** Determine number of forcing records to skip before model start time **/
-    for (i = 0; i < N_FORCING_TYPES; i++) {
+    for (i = 0; i < 2; i++) {
         if (param_set.force_steps_per_day[i] != 0) {
-            force_dmy.dayseconds = global->forcesec;
-            force_dmy.year = global->forceyear;
-            force_dmy.day = global->forceday;
-            force_dmy.month = global->forcemonth;
+            force_dmy.dayseconds = global->forcesec[i];
+            force_dmy.year = global->forceyear[i];
+            force_dmy.day = global->forceday[i];
+            force_dmy.month = global->forcemonth[i];
 
             force_num = date2num(global->time_origin_num, &force_dmy, 0.,
                                  global->calendar, global->time_units);
 
-            global->forceskip =
+            global->forceskip[i] =
                 (unsigned int) round((start_num - force_num) *
                                      (double) param_set.force_steps_per_day[i]);
         }

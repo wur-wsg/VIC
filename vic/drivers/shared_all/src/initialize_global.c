@@ -36,6 +36,8 @@ initialize_global()
 {
     extern global_param_struct global_param;
 
+    size_t                     i;
+
     global_param.dt = MISSING;
     global_param.snow_dt = MISSING;
     global_param.runoff_dt = MISSING;
@@ -54,12 +56,14 @@ initialize_global()
     global_param.endday = 0;
     global_param.resolution = MISSING;
     global_param.wind_h = 10.0;
-    global_param.forceyear = 0;
-    global_param.forcemonth = 1;
-    global_param.forceday = 1;
-    global_param.forcesec = 0;
-    global_param.forceskip = 0;
-    global_param.forceoffset = 0;
+    for (i = 0; i < 2; i++) {
+        global_param.forceyear[i] = 0;
+        global_param.forcemonth[i] = 1;
+        global_param.forceday[i] = 1;
+        global_param.forcesec[i] = 0;
+        global_param.forceskip[i] = 0;
+        global_param.forceoffset[i] = 0;
+    }
     global_param.stateyear = 0;
     global_param.statemonth = 0;
     global_param.stateday = 0;

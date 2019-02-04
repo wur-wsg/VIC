@@ -883,7 +883,7 @@ vic_restore(void)
         }
     }
 
-    //plugin_restore();
+    plugin_restore();
 
     free(ivar);
     free(dvar);
@@ -1118,5 +1118,5 @@ check_init_state_file(void)
     }
     free(dvar);
     
-    //plugin_check_init_state_file();
+    plugin_check_init_state_file();
 }

@@ -67,8 +67,8 @@ rout_forcing(void)
 
     // Get forcing data
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip +
-                     global_param.forceoffset + j - NF;
+        d3start[0] = global_param.forceskip[0] +
+                     global_param.forceoffset[0] + j - NF;
 
         get_scatter_nc_field_double(&(plugin_filenames.routing_forcing), 
             "discharge", d3start, d3count, dvar);

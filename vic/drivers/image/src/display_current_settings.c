@@ -249,21 +249,22 @@ display_current_settings(int mode)
 
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "Input Forcing Data:\n");
-    if (global_param.forceyear > 0) {
-        for(file_num = 0; file_num < N_FORCING_TYPES; file_num ++){
-            fprintf(LOG_DEST, "Forcing File\t\t%s*\n", filenames.f_path_pfx[file_num]);
+    for (file_num = 0; file_num < 2; file_num++) {
+        if (global_param.forceyear[file_num] > 0) {
+            fprintf(LOG_DEST, "Forcing File %d:\t\t%s*\n", file_num + 1,
+                    filenames.f_path_pfx[file_num]);
+            fprintf(LOG_DEST, "FORCEYEAR\t\t%d\n",
+                    global_param.forceyear[file_num]);
+            fprintf(LOG_DEST, "FORCEMONTH\t\t%d\n",
+                    global_param.forcemonth[file_num]);
+            fprintf(LOG_DEST, "FORCEDAY\t\t%d\n",
+                    global_param.forceday[file_num]);
+            fprintf(LOG_DEST, "FORCESEC\t\t%d\n",
+                    global_param.forcesec[file_num]);
+            fprintf(LOG_DEST, "N_TYPES\t\t\t%zu\n",
+                    param_set.N_TYPES[file_num]);
             fprintf(LOG_DEST, "FORCE_DT\t\t%f\n", param_set.FORCE_DT[file_num]);
         }
-        fprintf(LOG_DEST, "FORCEYEAR\t\t%d\n",
-                global_param.forceyear);
-        fprintf(LOG_DEST, "FORCEMONTH\t\t%d\n",
-                global_param.forcemonth);
-        fprintf(LOG_DEST, "FORCEDAY\t\t%d\n",
-                global_param.forceday);
-        fprintf(LOG_DEST, "FORCESEC\t\t%d\n",
-                global_param.forcesec);
-        fprintf(LOG_DEST, "N_TYPES\t\t\t%zu\n",
-                param_set.N_TYPES);
     }
 
     fprintf(LOG_DEST, "\n");

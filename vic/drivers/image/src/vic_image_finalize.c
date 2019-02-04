@@ -38,6 +38,6 @@ vic_image_finalize(void)
     // free data structures specific to to image driver
     free(dmy);
 
-    //plugin_finalize();
+    plugin_finalize();
     vic_finalize();
 }

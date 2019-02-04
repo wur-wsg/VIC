@@ -125,7 +125,7 @@ rout_random_set_downstream(void)
     int                    *downstream;
     int                    *down_global;
     int                    *down_local;
-    size_t                  rout_count;
+    size_t                  error_count;
     
     bool                    found;
 
@@ -160,7 +160,7 @@ rout_random_set_downstream(void)
         get_active_nc_field_int(&(plugin_filenames.routing), "downstream", 
                                  d2start, d2count, downstream);
 
-        rout_count = 0;
+        error_count = 0;
         for (i = 0; i < global_domain.ncells_active; i++) {
             found = false;
 
@@ -172,17 +172,17 @@ rout_random_set_downstream(void)
             }
 
             if(!found){
-                rout_count++;
+                error_count++;
                 down_global[i] = i;
             }
         }
     
-        if(rout_count > 0){
+        if(error_count > 0){
             log_warn("No downstream cell was found for %zu cells; "
                     "Probably the ID was outside of the mask or "
                     "the ID was not set; "
                     "Setting cell as outflow point",
-                    rout_count);
+                    error_count);
         }
     }
     

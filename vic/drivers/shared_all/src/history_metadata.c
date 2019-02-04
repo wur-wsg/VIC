@@ -1532,5 +1532,5 @@ set_output_met_data_info()
     out_metadata[OUT_SNOW_SURFT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SWE_BAND].nelem = options.SNOW_BAND;
     
-    //plugin_set_output_met_data_info();
+    plugin_set_output_met_data_info();
 }

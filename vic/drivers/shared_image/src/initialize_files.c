@@ -46,7 +46,7 @@ initialize_filenames()
     strcpy(filenames.domain.nc_filename, "MISSING");
     strcpy(filenames.result_dir, "MISSING");
     strcpy(filenames.log_path, "MISSING");
-    for (i = 0; i < N_FORCING_TYPES; i++) {
+    for (i = 0; i < 2; i++) {
         strcpy(filenames.f_path_pfx[i], "MISSING");
     }
 }

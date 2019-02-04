@@ -537,9 +537,9 @@ get_parameters(FILE *paramfile)
             /*************************************
                Get Plugin Parameters
             *************************************/
-            //else if (plugin_get_parameters(optstr)){
-            //    ; // do nothing
-            //}
+            else if (plugin_get_parameters(optstr)){
+                ; // do nothing
+            }
             
             else {
                 log_warn("Unrecognized option in the parameter file:  %s "

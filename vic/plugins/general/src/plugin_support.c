@@ -44,19 +44,19 @@ plugin_get_forcing_file_info(nameid_struct *ncforcing)
     forceday = nc_start_dmy.day;
     forcesecond = nc_start_dmy.dayseconds;
 
-    if(forceyear != global_param.forceyear ||
-            forcemonth != global_param.forcemonth ||
-            forceday != global_param.forceday ||
-            forcesecond != global_param.forcesec){
+    if(forceyear != global_param.forceyear[0] ||
+            forcemonth != global_param.forcemonth[0] ||
+            forceday != global_param.forceday[0] ||
+            forcesecond != global_param.forcesec[0]){
         log_err("Plugin forcing file time must match the forcing file time.  "
                 "Forcing file time is set to %04hu-%02hu-%02hu : %hu "
                 "[year-month-day : seconds] and the plugin forcing "
                 "file time is set to  %04hu-%02hu-%02hu : %hu "
                 "[year-month-day : seconds]",
-                global_param.forceyear,
-                global_param.forcemonth,
-                global_param.forceday,
-                global_param.forcesec,
+                global_param.forceyear[0],
+                global_param.forcemonth[0],
+                global_param.forceday[0],
+                global_param.forcesec[0],
                 forceyear,
                 forcemonth,
                 forceday,

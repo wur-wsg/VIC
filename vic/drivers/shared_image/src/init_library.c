@@ -186,5 +186,5 @@ initialize_global_structures(void)
         initialize_domain(&global_domain);
     }
     
-    //plugin_initialize_global_structures();
+    plugin_initialize_global_structures();
 }

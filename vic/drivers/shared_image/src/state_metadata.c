@@ -709,5 +709,5 @@ set_state_meta_data_info()
                "depth of snow on lake ice");
     }
 
-    //plugin_set_state_meta_data_info();
+    plugin_set_state_meta_data_info();
 }

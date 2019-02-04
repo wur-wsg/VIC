@@ -75,8 +75,8 @@ vic_image_run(dmy_struct *dmy_current)
                  &timer);
     }
     
-    //plugin_run();
-    //plugin_put_data();
+    plugin_run();
+    plugin_put_data();
 
     for (i = 0; i < options.Noutstreams; i++) {
         agg_stream_data(&(output_streams[i]), dmy_current, out_data);
