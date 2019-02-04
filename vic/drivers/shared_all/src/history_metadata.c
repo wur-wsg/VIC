@@ -25,7 +25,6 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
-#include <plugin.h>
 
 /******************************************************************************
  * @brief    Set output met data information
@@ -1531,6 +1530,4 @@ set_output_met_data_info()
     out_metadata[OUT_SNOW_PACKT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SNOW_SURFT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SWE_BAND].nelem = options.SNOW_BAND;
-    
-    plugin_set_output_met_data_info();
 }

@@ -1557,7 +1557,7 @@ initialize_state_file(char           *filename,
     extern domain_struct       global_domain;
     extern domain_struct       local_domain;
     extern global_param_struct global_param;
-    extern metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+    extern metadata_struct     state_metadata[];
     extern soil_con_struct    *soil_con;
     extern int                 mpi_rank;
 

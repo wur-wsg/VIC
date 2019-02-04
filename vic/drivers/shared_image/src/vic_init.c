@@ -25,7 +25,6 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
-#include <plugin.h>
 
 /******************************************************************************
  * @brief    Initialize model parameters
@@ -1585,8 +1584,6 @@ vic_init(void)
         // do not iterate to close energy balance
         param.MAX_ITER_GRND_CANOPY = 0;
     }
-
-    plugin_init();
     
     // set state metadata structure
     set_state_meta_data_info();

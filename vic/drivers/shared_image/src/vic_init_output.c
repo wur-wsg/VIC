@@ -60,6 +60,7 @@ vic_init_output(dmy_struct *dmy_current)
 
     // initialize the output data structures
     set_output_met_data_info();
+    plugin_set_output_met_data_info();
 
     // allocate out_data
     alloc_out_data(local_domain.ncells_active, out_data);

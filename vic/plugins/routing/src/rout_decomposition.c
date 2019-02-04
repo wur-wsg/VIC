@@ -365,11 +365,11 @@ rout_mpi_map_decomp_domain(size_t   ncells,
                          &(plugin_filenames.routing.nc_id));
         check_nc_status(status, "Error opening %s",
                         plugin_filenames.routing.nc_filename);
-
+        
         compare_ncdomain_with_global_domain(&plugin_filenames.routing);
         
         get_basins_routing(&basins);
-
+        
         status = nc_close(plugin_filenames.routing.nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.routing.nc_filename);

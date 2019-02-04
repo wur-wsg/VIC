@@ -86,6 +86,8 @@ plugin_init(void)
     
     if(plugin_options.ROUTING)
         rout_init();
+    
+    plugin_set_state_meta_data_info();
 }
 
 /******************************************

@@ -100,6 +100,7 @@ main(int    argc,
 
     // initialize mpi
     initialize_mpi();
+    plugin_initialize_mpi();
 
     // process command line arguments
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -111,9 +112,11 @@ main(int    argc,
 
     // allocate memory
     vic_alloc();
-
+    plugin_alloc();
+    
     // initialize model parameters from parameter files
     vic_image_init();
+    plugin_init();
 
     // populate model state, either using a cold start or from a restart file
     vic_populate_model_state(&(dmy[0]));

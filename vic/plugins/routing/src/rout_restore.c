@@ -32,7 +32,7 @@ rout_restore(void)
     extern plugin_option_struct    plugin_options;
     extern rout_var_struct      *rout_var;
     extern filenames_struct    filenames;
-    extern metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+    extern metadata_struct     state_metadata[];
 
     size_t                     i;
     size_t                     j;

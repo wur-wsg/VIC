@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Wrapper function for VIC startup tasks.
@@ -38,6 +39,7 @@ vic_image_start(void)
 
     // Initialize structures
     initialize_global_structures();
+    plugin_initialize_global_structures();
 
     if (mpi_rank == VIC_MPI_ROOT) {
         // Read the global parameter file
