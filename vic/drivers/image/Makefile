@@ -70,13 +70,20 @@ HOSTNAME := $(shell uname -n)
 # | DEBUG     | < 10             |
 LOG_LVL = 5
 
-# set includes
+# set include file locations
 INCLUDES = -I ${DRIVERPATH}/include \
 		   -I ${VICPATH}/include \
 		   -I ${SHAREDPATH}/include \
 		   -I ${SHAREDIMAGEPATH}/include \
-		   -I ${PLUGINPATH}/general/include \
-		   -I ${PLUGINPATH}/routing/include
+		   `find ${PLUGINPATH} -type d -name include | sed s/^/-I/`
+
+# set source file locations
+OFILES = $(patsubst %.c,%.o, \
+	$(wildcard ${VICPATH}/src/*.c) \
+	$(wildcard ${DRIVERPATH}/src/*.c) \
+	$(wildcard ${SHAREDPATH}/src/*.c) \
+	$(wildcard ${SHAREDIMAGEPATH}/src/*.c) \
+	$(wildcard ${PLUGINPATH}/**/src/*.c))
 
 # Uncomment to include debugging information
 CFLAGS  =  ${INCLUDES} ${NC_CFLAGS} -ggdb -O0 -Wall -Wextra -std=c99 \
@@ -99,63 +106,29 @@ EXT = .exe
 # -----------------------------------------------------------------------
 # MOST USERS DO NOT NEED TO MODIFY BELOW THIS LINE
 # -----------------------------------------------------------------------
-
-HDRS = \
-	$(wildcard ${VICPATH}/include/*.h) \
-	$(wildcard ${DRIVERPATH}/include/*.h) \
-	$(wildcard ${SHAREDPATH}/include/*.h) \
-	$(wildcard ${SHAREDIMAGEPATH}/include/*.h) \
-	$(wildcard ${PLUGINPATH}/general/include/*.h) \
-	$(wildcard ${PLUGINPATH}/routing/include/*.h)
-
-SRCS = \
-	$(wildcard ${VICPATH}/src/*.c) \
-	$(wildcard ${DRIVERPATH}/src/*.c) \
-	$(wildcard ${SHAREDPATH}/src/*.c) \
-	$(wildcard ${SHAREDIMAGEPATH}/src/*.c) \
-	$(wildcard ${PLUGINPATH}/general/src/*.c) \
-	$(wildcard ${PLUGINPATH}/routing/src/*.c)
-
-OBJS = $(SRCS:%.o=%.c)
+vpath %.c sources
 
 all:
-	make depend
 	make model
+#	@./$(COMPEXE)${EXT}
 
 default:
-	make depend
 	make model
 
 full:
 	make clean
-	make depend
 	make tags
 	make model
 
-clean::
+model:
+	@make -s $(COMPEXE)${EXT}
+
+$(COMPEXE)${EXT}: $(OFILES)
+	$(MPICC) -o $(COMPEXE)${EXT} $(OFILES) $(CFLAGS) $(LIBRARY)
+
+%.o: %.c
+	$(MPICC) -c -o $@ $< $(CFLAGS) 
+ 
+clean:
 	\rm -f core log
-	\rm -rf ${COMPEXE}${EXT} ${COMPEXE}${EXT}.dSYM
-
-model: $(OBJS)
-	$(MPICC) -o ${COMPEXE}${EXT} $(OBJS) $(CFLAGS) $(LIBRARY)
-
-# -------------------------------------------------------------
-# tags
-# so we can find our way around
-# -------------------------------------------------------------
-tags:	TAGS
-TAGS:	$(SRCS) $(HDRS)
-	etags $(SRCS) $(HDRS)
-clean::
-	\rm -f TAGS
-
-
-# -------------------------------------------------------------
-# depend
-# -------------------------------------------------------------
-depend: .depend
-.depend: $(SRCS) $(HDRS)
-	$(MPICC) $(CFLAGS) -M $(SRCS) > $@
-
-clean::
-	\rm -f .depend
+	\rm -rf ${COMPEXE}${EXT} ${COMPEXE}${EXT}.dSYM $(OFILES)
