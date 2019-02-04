@@ -248,9 +248,9 @@ rout_random_run()
     }
     
     // Scatter discharge
-    //scatter_double_2d(dt_dis_global, dt_dis_local, plugin_options.UH_LENGTH + rout_steps_per_dt);
+    scatter_double_2d(dt_dis_global, dt_dis_local, plugin_options.UH_LENGTH + rout_steps_per_dt);
     scatter_double(stream_global, stream_local);
-    //scatter_double(dis_global, dis_local);
+    scatter_double(dis_global, dis_local);
     
     if(mpi_rank == 1){
         fprintf(LOG_DEST, "\nstream_local %d:\n", mpi_rank);
