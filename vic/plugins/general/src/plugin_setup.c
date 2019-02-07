@@ -25,7 +25,7 @@ plugin_validate_global_param(void)
 }
 
 bool
-plugin_get_parameters(char optstr[MAXSTRING])
+plugin_get_parameters(char cmdstr[MAXSTRING])
 {
     return false;
 }
@@ -143,6 +143,6 @@ plugin_finalize(void)
     MPI_Type_free(&plugin_mpi_option_struct_type);
     MPI_Type_free(&plugin_mpi_param_struct_type);
     
-    if(plugin_options.ROUTING) 
+    if(plugin_options.ROUTING)
         rout_finalize();
 }

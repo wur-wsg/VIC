@@ -22,6 +22,7 @@ enum {
 };
    
 enum {
+    //routing
     OUT_DISCHARGE,                      /**< river discharge [m3 s-1]) */
     OUT_STREAM_MOIST,
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
@@ -89,7 +90,7 @@ void plugin_print_parameters(plugin_parameters_struct *);
 // Output
 void plugin_set_output_met_data_info(void);
 void plugin_initialize_nc_file(nc_file_struct  *nc_file);
-void plugin_add_history_dimensions(nc_file_struct *nc,
+void plugin_add_hist_dim(nc_file_struct *nc,
                               stream_struct  *stream);
 void plugin_set_nc_var_info(unsigned int       varid,
                        unsigned short int dtype,

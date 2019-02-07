@@ -57,7 +57,7 @@ void rout_check_init_state_file(void);
 void rout_restore(void);
 void rout_compute_derived_state_vars(void);
 
-bool rout_history(int, unsigned int *);
+void rout_history(int, unsigned int *);
 void rout_forcing(void);
 void rout_basin_run(size_t);
 void rout_random_run(void);

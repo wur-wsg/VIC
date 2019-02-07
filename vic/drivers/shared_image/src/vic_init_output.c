@@ -326,7 +326,7 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining time bounds dimension in %s",
                     stream->filename);
 
-    plugin_add_history_dimensions(nc, stream);
+    plugin_add_hist_dim(nc, stream);
     
     // define the netcdf variable time
     status = nc_def_var(nc->nc_id, "time", NC_DOUBLE, 1,

@@ -38,8 +38,8 @@ plugin_initialize_nc_file(nc_file_struct  *nc_file)
 
 // Add dimensions to outfile
 void
-plugin_add_history_dimensions(nc_file_struct *nc,
-                              stream_struct  *stream)
+plugin_add_hist_dim(nc_file_struct *nc,
+                    stream_struct  *stream)
 {
     
 }
