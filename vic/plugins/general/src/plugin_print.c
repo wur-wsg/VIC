@@ -10,7 +10,7 @@ plugin_print_decomposition(size_t   mpi_size,
     
     fprintf(LOG_DEST, "mpi decomposition size:\n");
     for(i = 0; i < mpi_size; i++){
-        fprintf(LOG_DEST, "\tnode %zu            : %d\n", i,
+        fprintf(LOG_DEST, "\tnode %zu             : %d\n", i,
                 (*mpi_map_local_array_sizes)[i]);
     }
 }
