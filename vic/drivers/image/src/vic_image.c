@@ -113,7 +113,7 @@ main(int    argc,
     // allocate memory
     vic_alloc();
     plugin_alloc();
-    
+
     // initialize model parameters from parameter files
     vic_image_init();
     plugin_init();

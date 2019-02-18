@@ -140,10 +140,10 @@ vic_start(void)
             options.NLAKENODES = get_nc_dimension(&(filenames.params),
                                                   "lake_node");
         }
-        
+
         // plugin start
         plugin_start();
-        
+
         // Check that model parameters are valid
         validate_parameters();
     }

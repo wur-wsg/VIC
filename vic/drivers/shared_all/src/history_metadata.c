@@ -123,7 +123,7 @@ set_output_met_data_info()
     strcpy(out_metadata[OUT_LAKE_SWE].units, "m");
     strcpy(out_metadata[OUT_LAKE_SWE].description,
            "liquid water equivalent of snow on top of lake ice");
-    
+
     /* volumetric liquid water equivalent of snow on top of lake ice [m3] */
     strcpy(out_metadata[OUT_LAKE_SWE_V].varname, "OUT_LAKE_SWE_V");
     strcpy(out_metadata[OUT_LAKE_SWE_V].long_name, "lake_swe_v");

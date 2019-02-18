@@ -343,7 +343,7 @@ vic_force(void)
             }
         }
     }
-    
+
     for (f = 0; f < param_set.N_FORCE_FILES; f++) {
         if (mpi_rank == VIC_MPI_ROOT) {
             // Close forcing file if it is the last time step
@@ -357,6 +357,7 @@ vic_force(void)
         // Update the offset counter
         global_param.forceoffset[f] += NF;
     }
+
 
     // allocate memory for t_offset
     t_offset = malloc(local_domain.ncells_active * sizeof(*t_offset));

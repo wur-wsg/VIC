@@ -179,12 +179,12 @@ get_nc_latlon(nameid_struct *nc_nameid,
                                        nc_domain->info.x_dim);
     n_ny = get_nc_dimension(nc_nameid,
                                        nc_domain->info.y_dim);
-    
+
     if(nc_domain->n_nx != n_nx || nc_domain->n_ny != n_ny){
         log_err("dimensions do not match for file \"%s\"",
                 nc_nameid->nc_filename);
     }
-    
+
     // Get number of lat/lon dimensions.
     nc_domain->info.n_coord_dims = get_nc_varndimensions(nc_nameid,
                                                          nc_domain->info.lon_var);
