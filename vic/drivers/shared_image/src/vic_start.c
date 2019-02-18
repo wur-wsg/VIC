@@ -57,6 +57,7 @@ vic_start(void)
     extern int                 mpi_size;
     extern option_struct       options;
     extern parameters_struct   param;
+    extern param_set_struct    param_set;
     size_t                     j;
 
     status = MPI_Bcast(&filenames, 1, mpi_filenames_struct_type,
@@ -95,10 +96,8 @@ vic_start(void)
                         filenames.domain.nc_filename);
 
         // Validate forcing files and variables
-        for(i = 0; i < 2; i++){
-            if (global_param.forceyear[i] > 0) {
-                compare_ncdomain_with_global_domain(&filenames.forcing[i]);
-            }
+        for(i = 0; i < param_set.N_FORCE_FILES; i++){
+            compare_ncdomain_with_global_domain(&filenames.forcing[i]);
         }
         
         // add the number of vegetation type to the location info in the
