@@ -251,8 +251,6 @@ void
 print_global_param(global_param_struct *gp)
 {
     size_t i;
-    extern param_set_struct    param_set;
-    
 
     fprintf(LOG_DEST, "global_param:\n");
     fprintf(LOG_DEST, "\twind_h              : %.4f\n", gp->wind_h);
