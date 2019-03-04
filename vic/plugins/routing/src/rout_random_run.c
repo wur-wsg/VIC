@@ -225,8 +225,7 @@ rout_random_run()
     scatter_double_2d(dt_dis_global, dt_dis_local, plugin_options.UH_LENGTH + rout_steps_per_dt);
     scatter_double(stream_global, stream_local);
     scatter_double(dis_global, dis_local);
-    
-    
+  
     // Set discharge
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
