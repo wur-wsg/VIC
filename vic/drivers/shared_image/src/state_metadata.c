@@ -708,6 +708,4 @@ set_state_meta_data_info()
         strcpy(state_metadata[STATE_LAKE_ICE_SNOW_DEPTH].description,
                "depth of snow on lake ice");
     }
-
-    plugin_set_state_meta_data_info();
 }

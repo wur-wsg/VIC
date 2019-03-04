@@ -537,7 +537,7 @@ get_parameters(FILE *paramfile)
             /*************************************
                Get Plugin Parameters
             *************************************/
-            else if (plugin_get_parameters(optstr)){
+            else if (plugin_get_parameters(cmdstr)){
                 ; // do nothing
             }
             

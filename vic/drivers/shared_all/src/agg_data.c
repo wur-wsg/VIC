@@ -25,7 +25,6 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
-#include <plugin.h>
 
 /******************************************************************************
  * @brief    Perform temporal aggregation on stream data

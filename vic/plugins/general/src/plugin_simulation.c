@@ -9,9 +9,8 @@ plugin_force(void)
 {
     extern plugin_option_struct       plugin_options;
     
-    if(plugin_options.ROUTING && plugin_options.FORCE_ROUTING){
+    if(plugin_options.ROUTING && plugin_options.FORCE_ROUTING)
         rout_forcing();
-    }
 }
 
 /******************************************
@@ -25,15 +24,15 @@ plugin_run(void)
     extern size_t             *routing_order;
     
     size_t                     i;
-    size_t                     cur_cell;
+    size_t                     iCell;
     
     if(plugin_options.ROUTING){
         if(plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
                 plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
             for (i = 0; i < local_domain.ncells_active; i++) {
-                cur_cell = routing_order[i];
+                iCell = routing_order[i];
                 
-                rout_basin_run(cur_cell);
+                rout_basin_run(iCell);
             }
         } 
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION){
@@ -53,8 +52,7 @@ plugin_put_data()
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-        if(plugin_options.ROUTING){
+        if(plugin_options.ROUTING)
             rout_put_data(i);
-        }
     }
 }

@@ -25,7 +25,6 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
-#include <plugin.h>
 
 /******************************************************************************
  * @brief    Set output met data information
@@ -124,7 +123,7 @@ set_output_met_data_info()
     strcpy(out_metadata[OUT_LAKE_SWE].units, "m");
     strcpy(out_metadata[OUT_LAKE_SWE].description,
            "liquid water equivalent of snow on top of lake ice");
-    
+
     /* volumetric liquid water equivalent of snow on top of lake ice [m3] */
     strcpy(out_metadata[OUT_LAKE_SWE_V].varname, "OUT_LAKE_SWE_V");
     strcpy(out_metadata[OUT_LAKE_SWE_V].long_name, "lake_swe_v");
@@ -1531,6 +1530,4 @@ set_output_met_data_info()
     out_metadata[OUT_SNOW_PACKT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SNOW_SURFT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SWE_BAND].nelem = options.SNOW_BAND;
-    
-    plugin_set_output_met_data_info();
 }

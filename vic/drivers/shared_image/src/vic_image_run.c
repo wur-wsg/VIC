@@ -74,7 +74,7 @@ vic_image_run(dmy_struct *dmy_current)
                  veg_lib[i], &lake_con, out_data[i], &(save_data[i]),
                  &timer);
     }
-    
+
     plugin_run();
     plugin_put_data();
 

@@ -25,7 +25,6 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
-#include <plugin.h>
 
 /******************************************************************************
  * @brief    Allocate memory for VIC structures.
@@ -167,6 +166,4 @@ vic_alloc(void)
             alloc_veg_hist(&(veg_hist[i][j]));
         }
     }
-    
-    plugin_alloc();
 }

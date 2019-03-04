@@ -2,7 +2,7 @@
 #include <plugin.h>
 
 void
-rout_basin_run(size_t cur_cell)
+rout_basin_run(size_t iCell)
 {
     extern domain_struct       local_domain;
     extern global_param_struct global_param;
@@ -28,20 +28,20 @@ rout_basin_run(size_t cur_cell)
        
     // Gather inflow from upstream cells
     inflow = 0;
-    for (i = 0; i < rout_con[cur_cell].Nupstream; i++) {
-        inflow += rout_var[rout_con[cur_cell].upstream[i]].discharge;
+    for (i = 0; i < rout_con[iCell].Nupstream; i++) {
+        inflow += rout_var[rout_con[iCell].upstream[i]].discharge;
     }
     
     // Gather inflow from forcing
     if(plugin_options.FORCE_ROUTING){
-        inflow += rout_force[cur_cell].discharge[NR];
+        inflow += rout_force[iCell].discharge[NR];
     }
     
     // Gather runoff from VIC
     runoff =
-        (out_data[cur_cell][OUT_RUNOFF][0] +
-         out_data[cur_cell][OUT_BASEFLOW][0]) *
-        local_domain.locations[cur_cell].area /
+        (out_data[iCell][OUT_RUNOFF][0] +
+         out_data[iCell][OUT_BASEFLOW][0]) *
+        local_domain.locations[iCell].area /
         (global_param.dt * MM_PER_M);
     
     // Calculate delta-time inflow & runoff (equal contribution)
@@ -50,34 +50,41 @@ rout_basin_run(size_t cur_cell)
     
     // Shift and clear previous discharge data
     for(i = 0; i < rout_steps_per_dt; i++){
-        rout_var[cur_cell].dt_discharge[0] = 0.0;
-        cshift(rout_var[cur_cell].dt_discharge, plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
+        rout_var[iCell].dt_discharge[0] = 0.0;
+        cshift(rout_var[iCell].dt_discharge, plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
     }
     
     // Convolute current inflow & runoff
     for(i = 0; i < rout_steps_per_dt; i++){
-        convolute(dt_inflow, rout_con[cur_cell].inflow_uh, rout_var[cur_cell].dt_discharge,
+        convolute(dt_inflow, rout_con[iCell].inflow_uh, rout_var[iCell].dt_discharge,
              plugin_options.UH_LENGTH, i);
-        convolute(dt_runoff, rout_con[cur_cell].runoff_uh, rout_var[cur_cell].dt_discharge,
+        convolute(dt_runoff, rout_con[iCell].runoff_uh, rout_var[iCell].dt_discharge,
              plugin_options.UH_LENGTH, i);
     }
     
     // Aggregate current timestep discharge & stream moisture
-    rout_var[cur_cell].discharge = 0.0;
-    prev_stream = rout_var[cur_cell].stream;
-    rout_var[cur_cell].stream = 0.0;
+    rout_var[iCell].discharge = 0.0;
+    prev_stream = rout_var[iCell].stream;
+    rout_var[iCell].stream = 0.0;
     for(i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt; i++){
         if (i < rout_steps_per_dt) {
-            rout_var[cur_cell].discharge += rout_var[cur_cell].dt_discharge[i];
+            rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
         } else {
-            rout_var[cur_cell].stream += rout_var[cur_cell].dt_discharge[i];
+            rout_var[iCell].stream += rout_var[iCell].dt_discharge[i];
         }
     }
     
     // Check water balance
     if(abs(prev_stream + (inflow + runoff) - 
-            (rout_var[cur_cell].discharge + rout_var[cur_cell].stream)) >
+            (rout_var[iCell].discharge + rout_var[iCell].stream)) >
             DBL_EPSILON){
-        log_err("Discharge water balance error");
+        log_err("Discharge water balance error [%.4f]. "
+                "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
+                prev_stream + (inflow + runoff) - 
+                (rout_var[iCell].discharge + rout_var[iCell].stream),
+                (inflow + runoff),
+                rout_var[iCell].discharge,
+                prev_stream,
+                rout_var[iCell].stream);
     }
 }

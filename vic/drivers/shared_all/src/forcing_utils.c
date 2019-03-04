@@ -152,11 +152,6 @@ count_force_vars(FILE *gp)
             if (strcasecmp("FORCE_TYPE", optstr) == 0) {
                 nvars++;
             }
-            // else if we arive at another forcing file break out of loop
-            else if (strcasecmp("FORCING1", optstr) == 0 ||
-                     strcasecmp("FORCING2", optstr) == 0) {
-                break;
-            }
         }
         fgets(cmdstr, MAXSTRING, gp);
     }

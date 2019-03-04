@@ -56,7 +56,7 @@ initialize_global()
     global_param.endday = 0;
     global_param.resolution = MISSING;
     global_param.wind_h = 10.0;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < MAX_FORCE_FILES; i++) {
         global_param.forceyear[i] = 0;
         global_param.forcemonth[i] = 1;
         global_param.forceday[i] = 1;

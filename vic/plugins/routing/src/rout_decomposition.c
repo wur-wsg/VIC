@@ -66,7 +66,7 @@ get_basins_routing(basin_struct *basins)
     size_t                 *river;
     size_t                  Nriver;
 
-    size_t                  cur_cell;
+    size_t                  iCell;
     size_t                  next_cell;
 
     size_t                  i;
@@ -91,23 +91,23 @@ get_basins_routing(basin_struct *basins)
     Nriver = 0;
     for (i = 0; i < global_domain.ncells_active; i++) {
         Nriver = 0;
-        cur_cell = next_cell = i;
+        iCell = next_cell = i;
 
         while (true) {
             
-            river[Nriver] = cur_cell;
+            river[Nriver] = iCell;
             Nriver++;
 
-            if (basins->basin_map[cur_cell] != MISSING_USI) {
+            if (basins->basin_map[iCell] != MISSING_USI) {
                 for (j = 0; j < Nriver; j++) {
-                    basins->basin_map[river[j]] = basins->basin_map[cur_cell];
+                    basins->basin_map[river[j]] = basins->basin_map[iCell];
                 }
                 break;
             }
 
-            next_cell = downstream[cur_cell];
+            next_cell = downstream[iCell];
 
-            if (next_cell == cur_cell) {
+            if (next_cell == iCell) {
                 for (j = 0; j < Nriver; j++) {
                     basins->basin_map[river[j]] = basins->Nbasin;
                 }
@@ -115,7 +115,7 @@ get_basins_routing(basin_struct *basins)
                 break;
             }
 
-            cur_cell = next_cell;
+            iCell = next_cell;
         }
     }
 
@@ -365,11 +365,11 @@ rout_mpi_map_decomp_domain(size_t   ncells,
                          &(plugin_filenames.routing.nc_id));
         check_nc_status(status, "Error opening %s",
                         plugin_filenames.routing.nc_filename);
-
+        
         compare_ncdomain_with_global_domain(&plugin_filenames.routing);
         
         get_basins_routing(&basins);
-
+        
         status = nc_close(plugin_filenames.routing.nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.routing.nc_filename);

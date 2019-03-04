@@ -1269,9 +1269,9 @@ vic_store(dmy_struct *dmy_state,
             dvar[i] = nc_state_file.d_fillvalue;
         }
     }
-    
+
     plugin_store(&nc_state_file);
-    
+
     // close the netcdf file if it is still open
     if (mpi_rank == VIC_MPI_ROOT) {
         if (nc_state_file.open == true) {
@@ -1535,7 +1535,7 @@ set_nc_state_var_info(nc_file_struct *nc)
         default:
             log_err("state variable %zu not found when setting dimensions", i);
         }
-        
+
         if (nc->nc_vars[i].nc_dims > MAXDIMS) {
             log_err("Too many dimensions specified in variable %zu", i);
         }
@@ -1557,7 +1557,7 @@ initialize_state_file(char           *filename,
     extern domain_struct       global_domain;
     extern domain_struct       local_domain;
     extern global_param_struct global_param;
-    extern metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+    extern metadata_struct     state_metadata[];
     extern soil_con_struct    *soil_con;
     extern int                 mpi_rank;
 
@@ -1901,7 +1901,7 @@ initialize_state_file(char           *filename,
                 // skip variables not set in set_state_meta_data_info
                 continue;
             }
-            
+
             // create the variable
             status = nc_def_var(nc_state_file->nc_id, state_metadata[i].varname,
                                 nc_state_file->nc_vars[i].nc_type,

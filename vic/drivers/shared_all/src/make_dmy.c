@@ -85,7 +85,7 @@ make_dmy(global_param_struct *global)
     }
 
     /** Determine number of forcing records to skip before model start time **/
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < MAX_FORCE_FILES; i++) {
         if (param_set.force_steps_per_day[i] != 0) {
             force_dmy.dayseconds = global->forcesec[i];
             force_dmy.year = global->forceyear[i];

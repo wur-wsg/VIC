@@ -96,27 +96,13 @@ vic_start(void)
                         filenames.domain.nc_filename);
 
         // Validate forcing files and variables
-        for(i = 0; i < 2; i++){
-            if (global_param.forceyear[i] > 0) {
-                compare_ncdomain_with_global_domain(&filenames.forcing[i]);
-            }
+        for(i = 0; i < param_set.N_FORCE_FILES; i++){
+            compare_ncdomain_with_global_domain(&filenames.forcing[i]);
         }
         
         // add the number of vegetation type to the location info in the
         // global domain struct. This just makes life easier
         add_nveg_to_global_domain(&(filenames.params), &global_domain);
-
-        // decompose the mask
-        mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
-                              &mpi_map_local_array_sizes,
-                              &mpi_map_global_array_offsets,
-                              &mpi_map_mapping_array);
-        
-        plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
-                                     &mpi_map_local_array_sizes,
-                                     &mpi_map_global_array_offsets,
-                                     &mpi_map_mapping_array);
-        
 
         // get the indices for the active cells (used in reading and writing)
         filter_active_cells = malloc(global_domain.ncells_active *
@@ -130,6 +116,18 @@ vic_start(void)
             }
         }
 
+        // decompose the mask
+        mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                              &mpi_map_local_array_sizes,
+                              &mpi_map_global_array_offsets,
+                              &mpi_map_mapping_array);
+        
+        // redecompose the mask
+        plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                                     &mpi_map_local_array_sizes,
+                                     &mpi_map_global_array_offsets,
+                                     &mpi_map_mapping_array);
+
         // get dimensions (number of vegetation types, soil zones, etc)
         options.ROOT_ZONES = get_nc_dimension(&(filenames.params), "root_zone");
         options.Nlayer = get_nc_dimension(&(filenames.params), "nlayer");
@@ -142,10 +140,10 @@ vic_start(void)
             options.NLAKENODES = get_nc_dimension(&(filenames.params),
                                                   "lake_node");
         }
-        
+
         // plugin start
         plugin_start();
-        
+
         // Check that model parameters are valid
         validate_parameters();
     }
