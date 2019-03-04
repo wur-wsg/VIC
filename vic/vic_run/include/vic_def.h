@@ -31,6 +31,8 @@
 #define __USE_XOPEN
 #define _GNU_SOURCE
 
+#define UNUSED(x) (void)(x)
+
 #include <float.h>
 #include <math.h>
 #include <stdarg.h>

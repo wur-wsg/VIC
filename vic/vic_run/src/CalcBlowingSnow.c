@@ -520,6 +520,11 @@ sub_with_height(double z,
 {
     extern parameters_struct param;
 
+    /* Unused variables */
+    UNUSED(AirDens);
+    UNUSED(ZO);
+    UNUSED(Zrh);
+
     /* Local variables */
     double                   Rrz, ALPHAz, Mz;
     double                   Rmean, terminal_v, fluctuat_v;
@@ -718,6 +723,12 @@ CalcSubFlux(double  EactAir,
     extern parameters_struct param;
     extern option_struct     options;
 
+    /* Unused variables */
+    UNUSED(AirDens);
+    UNUSED(Tsnow);
+    UNUSED(Tair);
+
+    /* Local variables */
     double                   b, undersat_2;
     double                   SubFlux;
     double                   Qsalt, hsalt;
@@ -820,6 +831,13 @@ transport_with_height(double z,
                       double Zrh)
 {
     extern parameters_struct param;
+
+    /* Unused variables */
+    UNUSED(es);
+    UNUSED(AirDens);
+    UNUSED(EactAir);
+    UNUSED(F);
+    UNUSED(Zrh);
 
     /* Local variables */
     double                   u_z;
