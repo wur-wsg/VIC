@@ -27,6 +27,9 @@ plugin_validate_global_param(void)
 bool
 plugin_get_parameters(char cmdstr[MAXSTRING])
 {
+    /* Unused variables */
+    UNUSED(cmdstr);    
+
     return false;
 }
 

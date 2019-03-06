@@ -41,5 +41,8 @@ plugin_print_options(plugin_option_struct *op)
 void
 plugin_print_parameters(plugin_parameters_struct *pa)
 {
+    /* Unused variables */
+    UNUSED(pa);    
+
     fprintf(LOG_DEST, "plugin parameters:\n");
 }

@@ -33,6 +33,8 @@ plugin_set_output_met_data_info(void)
 void
 plugin_initialize_nc_file(nc_file_struct  *nc_file)
 {
+    /* Unused variables */
+    UNUSED(nc_file);    
     
 }
 
@@ -41,17 +43,23 @@ void
 plugin_add_hist_dim(nc_file_struct *nc,
                     stream_struct  *stream)
 {
-    
+    /* Unused variables */
+    UNUSED(nc);    
+    UNUSED(stream);    
 }
 
 // Set output variable dimension count
 void
-plugin_set_nc_var_info(unsigned int       varid,
+ plugin_set_nc_var_info(unsigned int       varid,
                        unsigned short int dtype,
                        nc_file_struct    *nc_hist_file,
                        nc_var_struct     *nc_var)
 {
     
+    /* Unused variables */
+    UNUSED(varid);
+
+    /* Local variables */    
     size_t i;
 
     // set datatype
@@ -75,6 +83,11 @@ plugin_set_nc_var_dimids(unsigned int    varid,
                          nc_file_struct *nc_hist_file,
                          nc_var_struct  *nc_var)
 {
+    
+    /* Unused variables */
+    UNUSED(varid);
+
+    /* Local variables */
     size_t i;
 
     for (i = 0; i < MAXDIMS; i++) {

@@ -24,6 +24,9 @@ void
 plugin_initialize_parameters(void)
 {
     extern plugin_parameters_struct plugin_param;
+
+    /* Unused variables */
+    UNUSED(plugin_param);    
 }
 
 void
