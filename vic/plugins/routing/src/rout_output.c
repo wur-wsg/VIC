@@ -29,8 +29,10 @@ rout_history(int           varid,
     switch (varid) {
     case  N_OUTVAR_TYPES + OUT_STREAM_MOIST:
         (*agg_type) = AGG_TYPE_END;
+        break;
     case  N_OUTVAR_TYPES + OUT_DISCHARGE:
         (*agg_type) = AGG_TYPE_AVG;
+        break;
     }
 }
 

@@ -1620,7 +1620,7 @@ initialize_state_file(char           *filename,
         // adding units attribute to time variable
         str_from_time_units(global_param.time_units, unit_str);
 
-        sprintf(str, "%s since %s", unit_str, global_param.time_origin_str);
+        snprintf(str, sizeof(str), "%s since %s", unit_str, global_param.time_origin_str);
 
         status = nc_put_att_text(nc_state_file->nc_id,
                                  nc_state_file->time_varid,

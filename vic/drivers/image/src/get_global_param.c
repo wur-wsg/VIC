@@ -882,7 +882,7 @@ get_global_param(FILE *gp)
     }
     // Set the statename here temporarily to compare with INIT_STATE name
     if (options.SAVE_STATE) {
-        sprintf(flgstr2, "%s.%04i%02i%02i_%05u.nc",
+         snprintf(flgstr2, sizeof(flgstr2), "%s.%04i%02i%02i_%05u.nc",
                 filenames.statefile, global_param.stateyear,
                 global_param.statemonth, global_param.stateday,
                 global_param.statesec);
