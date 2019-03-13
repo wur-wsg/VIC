@@ -63,7 +63,7 @@ open_file(char string[],
         fclose(stream);
 
         /** uncompress and open zipped file **/
-        sprintf(command, "gzip -d %s", zipname);
+        snprintf(command, MAXSTRING, "gzip -d %s", zipname);
         system(command);
         stream = fopen(string, type);
         if (stream == NULL) {

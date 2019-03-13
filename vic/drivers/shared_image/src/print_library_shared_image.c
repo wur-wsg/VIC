@@ -104,7 +104,7 @@ void
 sprint_location(char            *str,
                 location_struct *loc)
 {
-    sprintf(str,
+    snprintf(str, MAXSTRING,
             "location:\n"
             "\tlatitude       : %.4f\n"
             "\tlongitude      : %.4f\n"

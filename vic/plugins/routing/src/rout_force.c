@@ -33,7 +33,7 @@ rout_forcing(void)
     if (current == 0 ) {
         if (mpi_rank == VIC_MPI_ROOT) {  
             // open new forcing file
-            sprintf(plugin_filenames.routing_forcing.nc_filename, "%s%4d.nc",
+            snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING, "%s%4d.nc",
                     plugin_filenames.rf_path_pfx, dmy[current].year);        
             status = nc_open(plugin_filenames.routing_forcing.nc_filename, NC_NOWRITE,
                              &(plugin_filenames.routing_forcing.nc_id));
@@ -50,7 +50,7 @@ rout_forcing(void)
                             plugin_filenames.routing_forcing.nc_filename);
 
             // open new forcing file
-            sprintf(plugin_filenames.routing_forcing.nc_filename, "%s%4d.nc",
+            snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING, "%s%4d.nc",
                     plugin_filenames.rf_path_pfx, dmy[current].year);        
             status = nc_open(plugin_filenames.routing_forcing.nc_filename, NC_NOWRITE,
                              &(plugin_filenames.routing_forcing.nc_id));

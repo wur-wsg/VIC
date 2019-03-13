@@ -2373,7 +2373,7 @@ main(int    argc,
         // last element of location
         location.local_idx = 12345678;
 
-        sprintf(ncfile.fname, "Space Needle, Seattle, WA");
+        snprintf(ncfile.fname, MAXSTRING, "Space Needle, Seattle, WA");
         // last element of ncfile
         ncfile.open = true;
 

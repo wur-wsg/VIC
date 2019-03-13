@@ -87,7 +87,7 @@ vic_force(void)
                 check_nc_status(status, "Error closing %s",
                                 filenames.forcing[f].nc_filename);
                 // open new forcing file
-                sprintf(filenames.forcing[f].nc_filename, "%s%4d.nc",
+                snprintf(filenames.forcing[f].nc_filename, MAXSTRING, "%s%4d.nc",
                         filenames.f_path_pfx[f], dmy[current].year);
                 status = nc_open(filenames.forcing[f].nc_filename, NC_NOWRITE,
                                  &(filenames.forcing[f].nc_id));

@@ -60,7 +60,7 @@ rout_start(void)
 
     if(plugin_options.FORCE_ROUTING){
         // Check the forcing
-        sprintf(plugin_filenames.routing_forcing.nc_filename, "%s%4d.nc", 
+        snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING, "%s%4d.nc", 
                 plugin_filenames.rf_path_pfx, global_param.startyear);
         status = nc_open(plugin_filenames.routing_forcing.nc_filename, NC_NOWRITE, 
                 &(plugin_filenames.routing_forcing.nc_id));

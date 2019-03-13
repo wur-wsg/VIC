@@ -319,16 +319,16 @@ str_from_time_units(unsigned short int time_units,
                     char              *unit_str)
 {
     if (time_units == TIME_UNITS_SECONDS) {
-        sprintf(unit_str, "seconds");
+        snprintf(unit_str, MAXSTRING, "seconds");
     }
     else if (time_units == TIME_UNITS_MINUTES) {
-        sprintf(unit_str, "minutes");
+        snprintf(unit_str, MAXSTRING, "minutes");
     }
     else if (time_units == TIME_UNITS_HOURS) {
-        sprintf(unit_str, "hours");
+        snprintf(unit_str, MAXSTRING, "hours");
     }
     else if (time_units == TIME_UNITS_DAYS) {
-        sprintf(unit_str, "days");
+        snprintf(unit_str, MAXSTRING, "days");
     }
     else {
         log_err("Invalid value, or no value for OUT_TIME_UNITS (%d).",
@@ -344,31 +344,31 @@ str_from_calendar(unsigned short int calendar,
                   char              *calendar_str)
 {
     if (calendar == CALENDAR_STANDARD) {
-        sprintf(calendar_str, "standard");
+        snprintf(calendar_str, MAXSTRING, "standard");
     }
     else if (calendar == CALENDAR_GREGORIAN) {
-        sprintf(calendar_str, "gregorian");
+        snprintf(calendar_str, MAXSTRING, "gregorian");
     }
     else if (calendar == CALENDAR_PROLEPTIC_GREGORIAN) {
-        sprintf(calendar_str, "proleptic_gregorian");
+        snprintf(calendar_str, MAXSTRING, "proleptic_gregorian");
     }
     else if (calendar == CALENDAR_NOLEAP) {
-        sprintf(calendar_str, "noleap");
+        snprintf(calendar_str, MAXSTRING, "noleap");
     }
     else if (calendar == CALENDAR_365_DAY) {
-        sprintf(calendar_str, "365_day");
+        snprintf(calendar_str, MAXSTRING, "365_day");
     }
     else if (calendar == CALENDAR_360_DAY) {
-        sprintf(calendar_str, "360_day");
+        snprintf(calendar_str, MAXSTRING, "360_day");
     }
     else if (calendar == CALENDAR_JULIAN) {
-        sprintf(calendar_str, "julian");
+        snprintf(calendar_str, MAXSTRING, "julian");
     }
     else if (calendar == CALENDAR_ALL_LEAP) {
-        sprintf(calendar_str, "all_leap");
+        snprintf(calendar_str, MAXSTRING, "all_leap");
     }
     else if (calendar == CALENDAR_366_DAY) {
-        sprintf(calendar_str, "366_day");
+        snprintf(calendar_str, MAXSTRING, "366_day");
     }
     else {
         log_err("Invalid, or no calendar specified");

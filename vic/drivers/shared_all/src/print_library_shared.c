@@ -95,7 +95,7 @@ void
 sprint_dmy(char       *str,
            dmy_struct *dmy)
 {
-    sprintf(str,
+    snprintf(str, MAXSTRING,
             "dmy:\n"
             "\tday         : %hu\n"
             "\tday_in_year : %hu\n"

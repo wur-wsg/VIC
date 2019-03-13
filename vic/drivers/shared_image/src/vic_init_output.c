@@ -230,7 +230,7 @@ initialize_history_file(nc_file_struct *nc,
     switch (stream->agg_alarm.freq) {
     // If FREQ_NDAYS -- filename = result_dir/prefix.YYYY-MM-DD.nc
     case FREQ_NDAYS:
-        sprintf(stream->filename, "%s/%s.%04d-%02d-%02d.nc",
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d-%02d.nc",
                 filenames.result_dir,
                 stream->prefix, stream->time_bounds[0].year,
                 stream->time_bounds[0].month,
@@ -238,18 +238,18 @@ initialize_history_file(nc_file_struct *nc,
         break;
     case FREQ_NMONTHS:
         // If FREQ_NMONTHS -- filename = result_dir/prefix.YYYY-MM.nc
-        sprintf(stream->filename, "%s/%s.%04d-%02d.nc", filenames.result_dir,
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d.nc", filenames.result_dir,
                 stream->prefix, stream->time_bounds[0].year,
                 stream->time_bounds[0].month);
         break;
     case FREQ_NYEARS:
         // If FREQ_NYEARS -- filename = result_dir/prefix.YYYY.nc
-        sprintf(stream->filename, "%s/%s.%04d.nc", filenames.result_dir,
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d.nc", filenames.result_dir,
                 stream->prefix, stream->time_bounds[0].year);
         break;
     default:
         // For all other cases -- filename = result_dir/prefix.YYYY-MM-DD-SSSSS.nc
-        sprintf(stream->filename, "%s/%s.%04d-%02d-%02d-%05u.nc",
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d-%02d-%05u.nc",
                 filenames.result_dir,
                 stream->prefix, stream->time_bounds[0].year,
                 stream->time_bounds[0].month,
@@ -636,7 +636,7 @@ set_global_nc_attributes(int ncid,
 
     // TODO: pass in driver as an argmument to this function
     put_nc_attr(ncid, NC_GLOBAL, "source", "VIC Image Driver");
-    sprintf(tmpstr, "Created by %s on %s on %s",
+    snprintf(tmpstr, MAXSTRING, "Created by %s on %s on %s",
             userstr, hoststr, asctime(timeinfo));
     put_nc_attr(ncid, NC_GLOBAL, "history", tmpstr);
     put_nc_attr(ncid, NC_GLOBAL, "references",

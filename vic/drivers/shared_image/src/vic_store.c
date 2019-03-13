@@ -61,7 +61,7 @@ vic_store(dmy_struct *dmy_state,
     set_nc_state_file_info(&nc_state_file);
 
     // create netcdf file for storing model state
-    sprintf(filename, "%s.%04i%02i%02i_%05u.nc",
+    snprintf(filename, MAXSTRING, "%s.%04i%02i%02i_%05u.nc",
             filenames.statefile, dmy_state->year,
             dmy_state->month, dmy_state->day,
             dmy_state->dayseconds);

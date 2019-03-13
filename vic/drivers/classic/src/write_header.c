@@ -127,7 +127,7 @@ write_header(stream_struct **streams,
                      elem_idx < out_metadata[varid].nelem;
                      elem_idx++) {
                     if (out_metadata[varid].nelem > 1) {
-                        sprintf(tmp_str, "%s_%d", out_metadata[varid].varname,
+                        snprintf(tmp_str, MAXSTRING, "%s_%d", out_metadata[varid].varname,
                                 elem_idx);
                     }
                     else {
@@ -249,7 +249,7 @@ write_header(stream_struct **streams,
                      elem_idx < out_metadata[varid].nelem;
                      elem_idx++) {
                     if (out_metadata[varid].nelem > 1) {
-                        sprintf(tmp_str, "%s_%d", out_metadata[varid].varname,
+                        snprintf(tmp_str, MAXSTRING, "%s_%d", out_metadata[varid].varname,
                                 elem_idx);
                     }
                     else {

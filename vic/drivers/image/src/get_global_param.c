@@ -778,7 +778,7 @@ get_global_param(FILE *gp)
 
         // Get information from the forcing file(s)
         // Open first-year forcing files and get info
-        sprintf(filenames.forcing[file_num].nc_filename, "%s%4d.nc",
+        snprintf(filenames.forcing[file_num].nc_filename, MAXSTRING, "%s%4d.nc",
                 filenames.f_path_pfx[file_num], global_param.startyear);
         status = nc_open(filenames.forcing[file_num].nc_filename, NC_NOWRITE,
                 &(filenames.forcing[file_num].nc_id));

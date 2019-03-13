@@ -44,9 +44,9 @@ make_in_and_outfiles(filep_struct     *filep,
     char                    latchar[20], lngchar[20], junk[6];
     size_t                  filenum;
 
-    sprintf(junk, "%%.%if", options.GRID_DECIMAL);
-    sprintf(latchar, junk, soil->lat);
-    sprintf(lngchar, junk, soil->lng);
+    snprintf(junk, MAXSTRING, "%%.%if", options.GRID_DECIMAL);
+    snprintf(latchar, MAXSTRING, junk, soil->lat);
+    snprintf(lngchar, MAXSTRING, junk, soil->lng);
 
     /********************************
        Input Forcing Files
