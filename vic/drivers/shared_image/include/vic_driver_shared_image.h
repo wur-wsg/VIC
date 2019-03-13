@@ -34,7 +34,7 @@
 #include <netcdf.h>
 
 #define MAXDIMS 10
-#define AREA_SUM_ERROR_THRESH 1e-20
+#define AREA_SUM_ERROR_THRESH 1e-2
 
 /******************************************************************************
  * @brief   NetCDF file types

@@ -136,7 +136,7 @@ setup_logging(int    id,
         log_info("Initialized Log File: %s", logfilename);
     }
     else {
-        log_info("Logging to stderr");
+        log_info("Logging to stderr (node: %d)", id);
     }
 }
 
