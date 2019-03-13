@@ -105,17 +105,17 @@ sprint_location(char            *str,
                 location_struct *loc)
 {
     snprintf(str, MAXSTRING,
-            "location:\n"
-            "\tlatitude       : %.4f\n"
-            "\tlongitude      : %.4f\n"
-            "\tarea           : %.4f\n"
-            "\tfrac           : %.4f\n"
-            "\tnveg           : %zd\n"
-            "\tglobal_idx     : %zd\n"
-            "\tio_idx         : %zd\n"
-            "\tlocal_idx      : %zd\n",
-            loc->latitude, loc->longitude, loc->area, loc->frac,
-            loc->nveg, loc->global_idx, loc->io_idx, loc->local_idx);
+             "location:\n"
+             "\tlatitude       : %.4f\n"
+             "\tlongitude      : %.4f\n"
+             "\tarea           : %.4f\n"
+             "\tfrac           : %.4f\n"
+             "\tnveg           : %zd\n"
+             "\tglobal_idx     : %zd\n"
+             "\tio_idx         : %zd\n"
+             "\tlocal_idx      : %zd\n",
+             loc->latitude, loc->longitude, loc->area, loc->frac,
+             loc->nveg, loc->global_idx, loc->io_idx, loc->local_idx);
 }
 
 /******************************************************************************

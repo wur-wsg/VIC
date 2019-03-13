@@ -4,18 +4,19 @@
 bool
 rout_get_global_param(char *cmdstr)
 {
-    extern plugin_option_struct    plugin_options;
-    extern plugin_filenames_struct plugin_filenames;
+    extern plugin_option_struct       plugin_options;
+    extern plugin_filenames_struct    plugin_filenames;
     extern plugin_global_param_struct plugin_global_param;
 
-    char                    optstr[MAXSTRING];
-    char                    flgstr[MAXSTRING];
+    char                              optstr[MAXSTRING];
+    char                              flgstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
     if (strcasecmp("ROUT_STEPS_PER_DAY", optstr) == 0) {
         sscanf(cmdstr, "%*s %zu", &plugin_global_param.rout_steps_per_day);
-    } else if (strcasecmp("DECOMPOSITION", optstr) == 0) {
+    }
+    else if (strcasecmp("DECOMPOSITION", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         if (strcasecmp("RANDOM", flgstr) == 0) {
             plugin_options.DECOMPOSITION = RANDOM_DECOMPOSITION;
@@ -26,10 +27,12 @@ rout_get_global_param(char *cmdstr)
         else if (strcasecmp("FILE", flgstr) == 0) {
             plugin_options.DECOMPOSITION = FILE_DECOMPOSITION;
         }
-    } else if (strcasecmp("ROUTING", optstr) == 0) {
+    }
+    else if (strcasecmp("ROUTING", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.ROUTING = str_to_bool(flgstr);
-    } else if (strcasecmp("ROUTING_FORCE", optstr) == 0) {
+    }
+    else if (strcasecmp("ROUTING_FORCE", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.FORCE_ROUTING = str_to_bool(flgstr);
     }
@@ -52,11 +55,11 @@ rout_get_global_param(char *cmdstr)
 void
 rout_validate_global_param(void)
 {
-    extern plugin_option_struct    plugin_options;
-    extern plugin_filenames_struct plugin_filenames;
+    extern plugin_option_struct       plugin_options;
+    extern plugin_filenames_struct    plugin_filenames;
     extern plugin_global_param_struct plugin_global_param;
-    extern global_param_struct global_param;
-    
+    extern global_param_struct        global_param;
+
     // Validate routing time step
     if (plugin_global_param.rout_steps_per_day == 0) {
         log_err("Routing time steps per day has not been defined.  Make sure "
@@ -95,24 +98,26 @@ rout_validate_global_param(void)
     }
     else {
         plugin_global_param.rout_dt = SEC_PER_DAY /
-                                 (double) plugin_global_param.rout_steps_per_day;
+                                      (double) plugin_global_param.
+                                      rout_steps_per_day;
     }
-    
+
     // Parameters
     if (strcasecmp(plugin_filenames.routing.nc_filename, MISSING_S) == 0) {
         log_err("ROUTING = TRUE but file is missing");
     }
 
     // Forcing
-    if(plugin_options.FORCE_ROUTING){
+    if (plugin_options.FORCE_ROUTING) {
         if (strcasecmp(plugin_filenames.rf_path_pfx, MISSING_S) == 0) {
             log_err("FORCE_ROUTING = TRUE but file is missing");
         }
     }
-    
+
     // Decomposition
-    if(plugin_options.DECOMPOSITION == FILE_DECOMPOSITION){
-        if (strcasecmp(plugin_filenames.decomposition.nc_filename, MISSING_S) == 0) {
+    if (plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
+        if (strcasecmp(plugin_filenames.decomposition.nc_filename,
+                       MISSING_S) == 0) {
             log_err("DECOMPOSITION = FILE but file is missing");
         }
     }

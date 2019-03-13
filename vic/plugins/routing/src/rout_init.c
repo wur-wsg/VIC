@@ -6,17 +6,17 @@ rout_set_uh(void)
 {
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
-    extern domain_struct    global_domain;
-    extern domain_struct    local_domain;
-    extern rout_con_struct *rout_con;
+    extern domain_struct           global_domain;
+    extern domain_struct           local_domain;
+    extern rout_con_struct        *rout_con;
 
-    double                 *dvar = NULL;
+    double                        *dvar = NULL;
 
-    size_t                  i;
-    size_t                  j;
+    size_t                         i;
+    size_t                         j;
 
-    size_t                  d3count[3];
-    size_t                  d3start[3];
+    size_t                         d3count[3];
+    size_t                         d3start[3];
 
     d3start[0] = 0;
     d3start[1] = 0;
@@ -50,22 +50,22 @@ rout_set_uh(void)
 void
 rout_basin_set_downstream(void)
 {
-    extern domain_struct    global_domain;
-    extern domain_struct    local_domain;
+    extern domain_struct           global_domain;
+    extern domain_struct           local_domain;
     extern plugin_filenames_struct plugin_filenames;
-    extern rout_con_struct *rout_con;
+    extern rout_con_struct        *rout_con;
 
-    int                    *id;
-    int                    *downstream;
-    size_t                  error_count;
-    
-    bool                    found;
+    int                           *id;
+    int                           *downstream;
+    size_t                         error_count;
 
-    size_t                  i;
-    size_t                  j;
+    bool                           found;
 
-    size_t                  d2count[2];
-    size_t                  d2start[2];
+    size_t                         i;
+    size_t                         j;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
 
     downstream = malloc(local_domain.ncells_active * sizeof(*downstream));
     check_alloc_status(downstream, "Memory allocation error.");
@@ -77,35 +77,35 @@ rout_basin_set_downstream(void)
     d2count[0] = global_domain.n_ny;
     d2count[1] = global_domain.n_nx;
 
-    get_scatter_nc_field_int(&(plugin_filenames.routing), "downstream_id", 
+    get_scatter_nc_field_int(&(plugin_filenames.routing), "downstream_id",
                              d2start, d2count, id);
-    
-    get_scatter_nc_field_int(&(plugin_filenames.routing), "downstream", 
+
+    get_scatter_nc_field_int(&(plugin_filenames.routing), "downstream",
                              d2start, d2count, downstream);
-    
+
     error_count = 0;
     for (i = 0; i < local_domain.ncells_active; i++) {
         found = false;
-        
+
         for (j = 0; j < local_domain.ncells_active; j++) {
             if (downstream[i] == id[j]) {
                 rout_con[i].downstream = j;
                 found = true;
             }
         }
-        
-        if(!found){
+
+        if (!found) {
             error_count++;
             rout_con[i].downstream = i;
         }
     }
-    
-    if(error_count > 0){
+
+    if (error_count > 0) {
         log_warn("No downstream cell was found for %zu cells; "
-                "Probably the ID was outside of the mask or "
-                "the ID was not set; "
-                "Setting cell as outflow point",
-                error_count);
+                 "Probably the ID was outside of the mask or "
+                 "the ID was not set; "
+                 "Setting cell as outflow point",
+                 error_count);
     }
 
     free(downstream);
@@ -115,50 +115,49 @@ rout_basin_set_downstream(void)
 void
 rout_random_set_downstream(void)
 {
-    extern domain_struct    global_domain;
-    extern domain_struct    local_domain;
+    extern domain_struct           global_domain;
+    extern domain_struct           local_domain;
     extern plugin_filenames_struct plugin_filenames;
-    extern rout_con_struct *rout_con;
-    extern int mpi_rank;
+    extern rout_con_struct        *rout_con;
+    extern int                     mpi_rank;
 
-    int                    *id;
-    int                    *downstream;
-    int                    *down_global;
-    int                    *down_local;
-    size_t                  error_count;
-    
-    bool                    found;
+    int                           *id;
+    int                           *downstream;
+    int                           *down_global;
+    int                           *down_local;
+    size_t                         error_count;
 
-    size_t                  i;
-    size_t                  j;
+    bool                           found;
 
-    size_t                  d2count[2];
-    size_t                  d2start[2];
-    
+    size_t                         i;
+    size_t                         j;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
+
     down_local = malloc(local_domain.ncells_active * sizeof(*down_local));
     check_alloc_status(down_local, "Memory allocation error.");
-    
+
     downstream = malloc(global_domain.ncells_active * sizeof(*downstream));
     check_alloc_status(downstream, "Memory allocation error.");
-    
+
     id = malloc(global_domain.ncells_active * sizeof(*id));
     check_alloc_status(id, "Memory allocation error.");
-    
+
     down_global = malloc(global_domain.ncells_active * sizeof(*down_global));
     check_alloc_status(down_global, "Memory allocation error.");
 
-    if(mpi_rank == VIC_MPI_ROOT){
-    
+    if (mpi_rank == VIC_MPI_ROOT) {
         d2start[0] = 0;
         d2start[1] = 0;
         d2count[0] = global_domain.n_ny;
         d2count[1] = global_domain.n_nx;
 
-        get_active_nc_field_int(&(plugin_filenames.routing), "downstream_id", 
-                                 d2start, d2count, id);
+        get_active_nc_field_int(&(plugin_filenames.routing), "downstream_id",
+                                d2start, d2count, id);
 
-        get_active_nc_field_int(&(plugin_filenames.routing), "downstream", 
-                                 d2start, d2count, downstream);
+        get_active_nc_field_int(&(plugin_filenames.routing), "downstream",
+                                d2start, d2count, downstream);
 
         error_count = 0;
         for (i = 0; i < global_domain.ncells_active; i++) {
@@ -171,27 +170,27 @@ rout_random_set_downstream(void)
                 }
             }
 
-            if(!found){
+            if (!found) {
                 error_count++;
                 down_global[i] = i;
             }
         }
-    
-        if(error_count > 0){
+
+        if (error_count > 0) {
             log_warn("No downstream cell was found for %zu cells; "
-                    "Probably the ID was outside of the mask or "
-                    "the ID was not set; "
-                    "Setting cell as outflow point",
-                    error_count);
+                     "Probably the ID was outside of the mask or "
+                     "the ID was not set; "
+                     "Setting cell as outflow point",
+                     error_count);
         }
     }
-    
+
     scatter_int(down_global, down_local);
-    
+
     for (i = 0; i < local_domain.ncells_active; i++) {
         rout_con[i].downstream = down_local[i];
     }
-    
+
     free(down_local);
     free(down_global);
     free(downstream);
@@ -296,7 +295,7 @@ rout_random_set_upstream(void)
     // Set upstream
     for (i = 0; i < local_domain.ncells_active; i++) {
         rout_con[i].Nupstream = nup_local[i];
-        
+
         rout_con[i].upstream =
             malloc(rout_con[i].Nupstream * sizeof(*rout_con[i].upstream));
         check_alloc_status(rout_con[i].upstream, "Memory allocation error.");
@@ -499,9 +498,9 @@ rout_init(void)
 {
     extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
-    extern int              mpi_rank;
+    extern int                     mpi_rank;
 
-    int                     status;
+    int                            status;
 
     // open parameter file
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -514,7 +513,7 @@ rout_init(void)
     rout_set_uh();
 
     if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
-            plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
+        plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
         rout_basin_set_downstream();
         rout_basin_set_upstream();
         rout_basin_set_order();

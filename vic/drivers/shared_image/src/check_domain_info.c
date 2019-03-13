@@ -53,11 +53,11 @@ compare_ncdomain_with_global_domain(nameid_struct *nc_nameid)
 
     // dimension shapes match (lat/lon)
     if (global_domain.n_nx != ncfile_domain.n_nx) {
-        log_err("x dimension in does not match domain for file \"%s\"", 
+        log_err("x dimension in does not match domain for file \"%s\"",
                 nc_nameid->nc_filename);
     }
     if (global_domain.n_ny != ncfile_domain.n_ny) {
-        log_err("y dimension in does not match domain for file \"%s\"", 
+        log_err("y dimension in does not match domain for file \"%s\"",
                 nc_nameid->nc_filename);
     }
 
@@ -71,7 +71,7 @@ compare_ncdomain_with_global_domain(nameid_struct *nc_nameid)
                     "latitude in the domain file (%lf) for gridcell %zu"
                     "in file \"%s\"",
                     ncfile_domain.locations[i].latitude,
-                    global_domain.locations[i].latitude, i, 
+                    global_domain.locations[i].latitude, i,
                     nc_nameid->nc_filename);
         }
         // longitude matches
@@ -82,7 +82,7 @@ compare_ncdomain_with_global_domain(nameid_struct *nc_nameid)
                     "longitude in the domain file (%lf) for gridcell %zu"
                     "in file \"%s\"",
                     ncfile_domain.locations[i].longitude,
-                    global_domain.locations[i].longitude, i, 
+                    global_domain.locations[i].longitude, i,
                     nc_nameid->nc_filename);
         }
     }

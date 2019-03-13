@@ -313,12 +313,12 @@ typedef struct {
     unsigned short int endyear;    /**< Last year of model simulation */
     unsigned short int forceday[MAX_FORCE_FILES];  /**< day forcing files starts */
     unsigned int forcesec[MAX_FORCE_FILES];          /**< seconds since midnight when forcing
-                                          files starts */
+                                                        files starts */
     unsigned short int forcemonth[MAX_FORCE_FILES];  /**< month forcing files starts */
     unsigned short int forceoffset[MAX_FORCE_FILES];  /**< counter to keep track of offset in reading
-                                           forcing files; updated after every read */
+                                                         forcing files; updated after every read */
     unsigned int forceskip[MAX_FORCE_FILES];   /**< number of model time steps to skip at
-                                      the start of the forcing file */
+                                                  the start of the forcing file */
     unsigned short int forceyear[MAX_FORCE_FILES];  /**< year forcing files start */
     size_t nrecs;                /**< Number of time steps simulated */
     unsigned short int startday;  /**< Starting day of the simulation */

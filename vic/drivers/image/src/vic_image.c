@@ -125,7 +125,7 @@ main(int    argc,
     vic_init_output(&(dmy[0]));
 
     // Initialization is complete, print settings
-    if(mpi_rank == VIC_MPI_ROOT){
+    if (mpi_rank == VIC_MPI_ROOT) {
         log_info(
             "Initialization is complete, print decomposition, global param, parameters and options structures");
         plugin_print_decomposition(mpi_size, &mpi_map_local_array_sizes);

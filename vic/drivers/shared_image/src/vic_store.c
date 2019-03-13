@@ -62,9 +62,9 @@ vic_store(dmy_struct *dmy_state,
 
     // create netcdf file for storing model state
     snprintf(filename, MAXSTRING, "%s.%04i%02i%02i_%05u.nc",
-            filenames.statefile, dmy_state->year,
-            dmy_state->month, dmy_state->day,
-            dmy_state->dayseconds);
+             filenames.statefile, dmy_state->year,
+             dmy_state->month, dmy_state->day,
+             dmy_state->dayseconds);
 
     initialize_state_file(filename, &nc_state_file, dmy_state);
 
@@ -1540,7 +1540,7 @@ set_nc_state_var_info(nc_file_struct *nc)
             log_err("Too many dimensions specified in variable %zu", i);
         }
     }
-    
+
     plugin_set_nc_state_var_info(nc);
 }
 
@@ -1620,7 +1620,8 @@ initialize_state_file(char           *filename,
         // adding units attribute to time variable
         str_from_time_units(global_param.time_units, unit_str);
 
-        snprintf(str, sizeof(str), "%s since %s", unit_str, global_param.time_origin_str);
+        snprintf(str, sizeof(str), "%s since %s", unit_str,
+                 global_param.time_origin_str);
 
         status = nc_put_att_text(nc_state_file->nc_id,
                                  nc_state_file->time_varid,

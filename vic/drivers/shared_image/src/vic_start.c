@@ -65,7 +65,7 @@ vic_start(void)
     check_mpi_status(status, "MPI error.");
 
     plugin_broadcast_filenames();
-    
+
     // Set Log Destination
     setup_logging(mpi_rank, filenames.log_path, &(filep.logfile));
 
@@ -96,10 +96,10 @@ vic_start(void)
                         filenames.domain.nc_filename);
 
         // Validate forcing files and variables
-        for(i = 0; i < param_set.N_FORCE_FILES; i++){
+        for (i = 0; i < param_set.N_FORCE_FILES; i++) {
             compare_ncdomain_with_global_domain(&filenames.forcing[i]);
         }
-        
+
         // add the number of vegetation type to the location info in the
         // global domain struct. This just makes life easier
         add_nveg_to_global_domain(&(filenames.params), &global_domain);
@@ -121,7 +121,7 @@ vic_start(void)
                               &mpi_map_local_array_sizes,
                               &mpi_map_global_array_offsets,
                               &mpi_map_mapping_array);
-        
+
         // redecompose the mask
         plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
                                      &mpi_map_local_array_sizes,
@@ -171,7 +171,7 @@ vic_start(void)
     plugin_broadcast_global_params();
     plugin_broadcast_options();
     plugin_broadcast_params();
-    
+
     // setup the local domain_structs
 
     // First scatter the array sizes

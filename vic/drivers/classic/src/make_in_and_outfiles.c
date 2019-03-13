@@ -65,7 +65,8 @@ make_in_and_outfiles(filep_struct     *filep,
 
     filep->forcing[1] = NULL;
     if (strcasecmp(filenames->f_path_pfx[1], "MISSING") != 0) {
-        snprintf(filenames->forcing[1], MAXSTRING, "%s", filenames->f_path_pfx[1]);
+        snprintf(filenames->forcing[1], MAXSTRING, "%s",
+                 filenames->f_path_pfx[1]);
         strcat(filenames->forcing[1], latchar);
         strcat(filenames->forcing[1], "_");
         strcat(filenames->forcing[1], lngchar);
@@ -82,7 +83,8 @@ make_in_and_outfiles(filep_struct     *filep,
     ********************************/
 
     for (filenum = 0; filenum < options.Noutstreams; filenum++) {
-        snprintf((*streams)[filenum].filename, MAXSTRING, "%s", filenames->result_dir);
+        snprintf((*streams)[filenum].filename, MAXSTRING, "%s",
+                 filenames->result_dir);
         strcat((*streams)[filenum].filename, "/");
         strcat((*streams)[filenum].filename,
                (*streams)[filenum].prefix);

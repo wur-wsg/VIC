@@ -1117,6 +1117,6 @@ check_init_state_file(void)
         }
     }
     free(dvar);
-    
+
     plugin_check_init_state_file();
 }

@@ -36,13 +36,18 @@ state_metadata_rout_extension()
     extern metadata_struct state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
 
     // STATE_ROUT_RING
-    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].varname, MAXSTRING, "%s",
-           "STATE_ROUT_RING");
-    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].long_name, MAXSTRING, "%s",
-           "routing_ring");
-    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].standard_name, MAXSTRING, "%s",
-           "routing_ring");
-    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].units, MAXSTRING, "%s", "-");
-    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].description, MAXSTRING, "%s",
-           "unit hydrographs in the routing ring");
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].varname, MAXSTRING,
+             "%s",
+             "STATE_ROUT_RING");
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].long_name,
+             MAXSTRING, "%s",
+             "routing_ring");
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].standard_name,
+             MAXSTRING, "%s",
+             "routing_ring");
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].units, MAXSTRING,
+             "%s", "-");
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].description,
+             MAXSTRING, "%s",
+             "unit hydrographs in the routing ring");
 }

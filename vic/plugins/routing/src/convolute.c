@@ -3,10 +3,10 @@
 
 void
 convolute(double  quantity,
-     double *uh,
-     double *discharge,
-     size_t  length,
-     size_t  offset)
+          double *uh,
+          double *discharge,
+          size_t  length,
+          size_t  offset)
 {
     size_t i;
 

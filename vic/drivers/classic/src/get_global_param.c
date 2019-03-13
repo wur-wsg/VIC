@@ -291,14 +291,12 @@ get_global_param(FILE *gp)
                     log_err("Unknown RC_MODE option: %s", flgstr);
                 }
             }
-
             /*************************************
                Define log directory
             *************************************/
             else if (strcasecmp("LOG_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.log_path);
             }
-
             /*************************************
                Define state files
             *************************************/
@@ -340,7 +338,6 @@ get_global_param(FILE *gp)
                     log_err("STATE_FORMAT must be either ASCII or BINARY.");
                 }
             }
-
             /*************************************
                Define forcing files
             *************************************/
@@ -360,7 +357,8 @@ get_global_param(FILE *gp)
             else if (strcasecmp("FORCING2", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.f_path_pfx[1]);
                 if (strcasecmp("FALSE", filenames.f_path_pfx[1]) == 0) {
-                    snprintf(filenames.f_path_pfx[1], MAXSTRING, "%s", "MISSING");
+                    snprintf(filenames.f_path_pfx[1], MAXSTRING, "%s",
+                             "MISSING");
                 }
                 file_num = 1;
                 field = 0;
@@ -418,7 +416,6 @@ get_global_param(FILE *gp)
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
-
             /*************************************
                Define parameter files
             *************************************/
@@ -544,14 +541,12 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
             }
-
             /*************************************
                Define output files
             *************************************/
             else if (strcasecmp("RESULT_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.result_dir);
             }
-
             /*************************************
                Define output file contents
             *************************************/
@@ -570,7 +565,6 @@ get_global_param(FILE *gp)
             else if (strcasecmp("OUT_FORMAT", optstr) == 0) {
                 ; // do nothing
             }
-
             /*************************************
                Fail when deprecated options are used.
             *************************************/
@@ -681,7 +675,6 @@ get_global_param(FILE *gp)
                         "specify a minimum rain temperature, use the option"
                         "SNOW_MIN_RAIN_TEMP in the vic constants file.")
             }
-
             /***********************************
                Unrecognized Global Parameter Flag
             ***********************************/
@@ -1227,9 +1220,9 @@ get_global_param(FILE *gp)
     // Set the statename here to be able to compare with INIT_STATE name
     if (options.SAVE_STATE) {
         snprintf(filenames.statefile, MAXSTRING, "%s_%04i%02i%02i_%05u",
-                filenames.statefile, global_param.stateyear,
-                global_param.statemonth, global_param.stateday,
-                global_param.statesec);
+                 filenames.statefile, global_param.stateyear,
+                 global_param.statemonth, global_param.stateday,
+                 global_param.statesec);
     }
     if (options.INIT_STATE && options.SAVE_STATE &&
         (strcmp(filenames.init_state, filenames.statefile) == 0)) {

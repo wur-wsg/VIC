@@ -36,7 +36,7 @@ get_global_domain(nameid_struct *domain_nc_nameid,
 {
     int    *run = NULL;
     int    *mask = NULL;
-    int typeid;
+    int     typeid;
     double *var = NULL;
     size_t  i;
     size_t  j;
@@ -176,11 +176,11 @@ get_nc_latlon(nameid_struct *nc_nameid,
 
 
     n_nx = get_nc_dimension(nc_nameid,
-                                       nc_domain->info.x_dim);
+                            nc_domain->info.x_dim);
     n_ny = get_nc_dimension(nc_nameid,
-                                       nc_domain->info.y_dim);
+                            nc_domain->info.y_dim);
 
-    if(nc_domain->n_nx != n_nx || nc_domain->n_ny != n_ny){
+    if (nc_domain->n_nx != n_nx || nc_domain->n_ny != n_ny) {
         log_err("dimensions do not match for file \"%s\"",
                 nc_nameid->nc_filename);
     }
@@ -287,8 +287,10 @@ copy_domain_info(domain_struct *domain_from,
     snprintf(domain_to->info.x_dim, MAXSTRING, "%s", domain_from->info.x_dim);
     snprintf(domain_to->info.y_dim, MAXSTRING, "%s", domain_from->info.y_dim);
 
-    snprintf(domain_to->info.lon_var, MAXSTRING, "%s", domain_from->info.lon_var);
-    snprintf(domain_to->info.lat_var, MAXSTRING, "%s", domain_from->info.lat_var);
+    snprintf(domain_to->info.lon_var, MAXSTRING, "%s",
+             domain_from->info.lon_var);
+    snprintf(domain_to->info.lat_var, MAXSTRING, "%s",
+             domain_from->info.lat_var);
 
     domain_to->n_nx = domain_from->n_nx;
     domain_to->n_ny = domain_from->n_ny;

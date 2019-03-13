@@ -24,7 +24,7 @@ typedef struct {
     double *runoff_uh;
 } rout_con_struct;
 
-typedef struct{
+typedef struct {
     double *discharge;
 } rout_force_struct;
 
@@ -69,9 +69,9 @@ size_t get_downstream_global(size_t, int);
 size_t get_downstream_local(size_t, int, size_t);
 void convolute(double, double *, double *, size_t, size_t);
 
-size_t          *routing_order;
-rout_var_struct *rout_var;
-rout_con_struct *rout_con;
+size_t            *routing_order;
+rout_var_struct   *rout_var;
+rout_con_struct   *rout_con;
 rout_force_struct *rout_force;
 
 #endif

@@ -241,7 +241,6 @@ get_global_param(FILE *gp)
                     log_err("Unknown RC_MODE option: %s", flgstr);
                 }
             }
-
             /*************************************
                Define log directory
             *************************************/
@@ -255,7 +254,8 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.INIT_STATE = true;
-                    snprintf(filenames.init_state.nc_filename, MAXSTRING, "%s", flgstr);
+                    snprintf(filenames.init_state.nc_filename, MAXSTRING, "%s",
+                             flgstr);
                 }
             }
             // Define state file format
@@ -278,7 +278,6 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
-
             /*************************************
                Define parameter files
             *************************************/
@@ -412,14 +411,12 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
             }
-
             /*************************************
                Define output files
             *************************************/
             else if (strcasecmp("RESULT_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.result_dir);
             }
-
             /*************************************
                Define output file contents
             *************************************/
@@ -453,7 +450,6 @@ get_global_param(FILE *gp)
                 log_err("Time-varying vegetation parameters not implemented "
                         "in CESM driver");
             }
-
             /***********************************
                Unrecognized Global Parameter Flag
             ***********************************/

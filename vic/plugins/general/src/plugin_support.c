@@ -1,6 +1,6 @@
 #include <vic_driver_image.h>
 
-void 
+void
 plugin_get_forcing_file_info(nameid_struct *ncforcing)
 {
     extern global_param_struct global_param;
@@ -20,7 +20,7 @@ plugin_get_forcing_file_info(nameid_struct *ncforcing)
     unsigned short int         forcemonth;
     unsigned short int         forceday;
     unsigned short int         forcesecond;
-    
+
     // read time info from netcdf file
     get_nc_field_double(ncforcing, "time", &start, &count, nc_times);
     get_nc_var_attr(ncforcing, "time", "units", &nc_unit_chars);
@@ -38,16 +38,16 @@ plugin_get_forcing_file_info(nameid_struct *ncforcing)
     num2date(nc_time_origin, nc_times[0], 0., calendar, time_units,
              &nc_start_dmy);
 
-    // Assign file start date/time            
+    // Assign file start date/time
     forceyear = nc_start_dmy.year;
     forcemonth = nc_start_dmy.month;
     forceday = nc_start_dmy.day;
     forcesecond = nc_start_dmy.dayseconds;
 
-    if(forceyear != global_param.forceyear[0] ||
-            forcemonth != global_param.forcemonth[0] ||
-            forceday != global_param.forceday[0] ||
-            forcesecond != global_param.forcesec[0]){
+    if (forceyear != global_param.forceyear[0] ||
+        forcemonth != global_param.forcemonth[0] ||
+        forceday != global_param.forceday[0] ||
+        forcesecond != global_param.forcesec[0]) {
         log_err("Plugin forcing file time must match the forcing file time.  "
                 "Forcing file time is set to %04hu-%02hu-%02hu : %hu "
                 "[year-month-day : seconds] and the plugin forcing "
@@ -69,7 +69,7 @@ plugin_get_forcing_file_info(nameid_struct *ncforcing)
             (size_t) nearbyint(1. / (nc_times[1] - nc_times[0]));
     }
     else if (time_units == TIME_UNITS_HOURS) {
-       force_step_per_day =
+        force_step_per_day =
             (size_t) nearbyint(HOURS_PER_DAY / (nc_times[1] - nc_times[0]));
     }
     else if (time_units == TIME_UNITS_MINUTES) {
@@ -94,7 +94,7 @@ plugin_get_forcing_file_info(nameid_struct *ncforcing)
         log_err("Calendar in water use forcing file (%s) "
                 "does not match the calendar of "
                 "VIC's clock", calendar_char);
-    } 
+    }
 
     // Free attribute character arrays
     free(nc_unit_chars);

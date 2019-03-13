@@ -240,8 +240,8 @@ main(int   argc,
                 // Set global reference string (for debugging inside vic_run)
                 sprint_dmy(dmy_str, &(dmy[rec]));
                 snprintf(vic_run_ref_str, MAXSTRING,
-                        "Gridcell cellnum: %i, timestep info: %s",
-                        cellnum, dmy_str);
+                         "Gridcell cellnum: %i, timestep info: %s",
+                         cellnum, dmy_str);
 
                 /**************************************************
                    Update data structures for current time step

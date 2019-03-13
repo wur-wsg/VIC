@@ -3,13 +3,13 @@
 
 
 void
-plugin_print_decomposition(size_t   mpi_size,
-                           int    **mpi_map_local_array_sizes)
+plugin_print_decomposition(size_t mpi_size,
+                           int  **mpi_map_local_array_sizes)
 {
     size_t i;
-    
+
     fprintf(LOG_DEST, "mpi decomposition size:\n");
-    for(i = 0; i < mpi_size; i++){
+    for (i = 0; i < mpi_size; i++) {
         fprintf(LOG_DEST, "\tnode %zu             : %d\n", i,
                 (*mpi_map_local_array_sizes)[i]);
     }
@@ -33,7 +33,7 @@ plugin_print_options(plugin_option_struct *op)
             op->ROUTING ? "true" : "false");
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",
             op->FORCE_ROUTING ? "true" : "false");
-    
+
     fprintf(LOG_DEST, "\tUH_LENGTH            : %d\n",
             op->UH_LENGTH);
 }
@@ -42,7 +42,7 @@ void
 plugin_print_parameters(plugin_parameters_struct *pa)
 {
     /* Unused variables */
-    UNUSED(pa);    
+    UNUSED(pa);
 
     fprintf(LOG_DEST, "plugin parameters:\n");
 }

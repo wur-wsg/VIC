@@ -284,14 +284,12 @@ get_global_param(FILE *gp)
                     log_err("Unknown RC_MODE option: %s", flgstr);
                 }
             }
-
             /*************************************
                Define log directory
             *************************************/
             else if (strcasecmp("LOG_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.log_path);
             }
-
             /*************************************
                Define state files
             *************************************/
@@ -302,7 +300,8 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.INIT_STATE = true;
-                    snprintf(filenames.init_state.nc_filename, MAXSTRING, "%s", flgstr);
+                    snprintf(filenames.init_state.nc_filename, MAXSTRING, "%s",
+                             flgstr);
                 }
             }
             else if (strcasecmp("STATENAME", optstr) == 0) {
@@ -340,7 +339,6 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
-
             /*************************************
                Define forcing files
             *************************************/
@@ -352,7 +350,6 @@ get_global_param(FILE *gp)
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
-
             /*************************************
                Define parameter files
             *************************************/
@@ -483,14 +480,12 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
             }
-
             /*************************************
                Define output files
             *************************************/
             else if (strcasecmp("RESULT_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.result_dir);
             }
-
             /*************************************
                Define output file contents
             *************************************/
@@ -512,7 +507,6 @@ get_global_param(FILE *gp)
             else if (strcasecmp("OUT_FORMAT", optstr) == 0) {
                 ; // do nothing
             }
-
             /*************************************
                Fail when classic driver specific options are used
             *************************************/
@@ -524,14 +518,12 @@ get_global_param(FILE *gp)
                 log_err("OUTPUT_FORCE is not a valid option for this driver.  "
                         "Update your global parameter file accordingly.");
             }
-
             /***********************************
                Get Plugin Global Parameters
             ***********************************/
-            else if (plugin_get_global_param(cmdstr)){
+            else if (plugin_get_global_param(cmdstr)) {
                 ; // do nothing
             }
-            
             /***********************************
                Unrecognized Global Parameter Flag
             ***********************************/
@@ -544,7 +536,7 @@ get_global_param(FILE *gp)
     }
 
     param_set.N_FORCE_FILES = file_num;
-    
+
     /******************************************
        Check for undefined required parameters
     ******************************************/
@@ -769,7 +761,6 @@ get_global_param(FILE *gp)
                 "for NRECS.", global_param.nrecs);
     }
     for (file_num = 0; file_num < param_set.N_FORCE_FILES; file_num++) {
-
         // Validate forcing files and variables
         if (strcmp(filenames.f_path_pfx[0], "MISSING") == 0) {
             log_err("No forcing file has been defined.  Make sure that the global "
@@ -779,15 +770,16 @@ get_global_param(FILE *gp)
         // Get information from the forcing file(s)
         // Open first-year forcing files and get info
         snprintf(filenames.forcing[file_num].nc_filename, MAXSTRING, "%s%4d.nc",
-                filenames.f_path_pfx[file_num], global_param.startyear);
+                 filenames.f_path_pfx[file_num], global_param.startyear);
         status = nc_open(filenames.forcing[file_num].nc_filename, NC_NOWRITE,
-                &(filenames.forcing[file_num].nc_id));
+                         &(filenames.forcing[file_num].nc_id));
         check_nc_status(status, "Error opening %s",
-                filenames.forcing[file_num].nc_filename);
+                        filenames.forcing[file_num].nc_filename);
         get_forcing_file_info(&param_set, file_num);
 
         param_set.FORCE_DT[file_num] = SEC_PER_DAY /
-                                (double) param_set.force_steps_per_day[file_num];
+                                       (double) param_set.force_steps_per_day[
+            file_num];
     }
 
     // Validate result directory
@@ -882,10 +874,10 @@ get_global_param(FILE *gp)
     }
     // Set the statename here temporarily to compare with INIT_STATE name
     if (options.SAVE_STATE) {
-         snprintf(flgstr2, sizeof(flgstr2), "%s.%04i%02i%02i_%05u.nc",
-                filenames.statefile, global_param.stateyear,
-                global_param.statemonth, global_param.stateday,
-                global_param.statesec);
+        snprintf(flgstr2, sizeof(flgstr2), "%s.%04i%02i%02i_%05u.nc",
+                 filenames.statefile, global_param.stateyear,
+                 global_param.statemonth, global_param.stateday,
+                 global_param.statesec);
     }
     if (options.INIT_STATE && options.SAVE_STATE &&
         (strcmp(filenames.init_state.nc_filename, flgstr2) == 0)) {
@@ -969,7 +961,7 @@ get_global_param(FILE *gp)
        Check for plugin undefined required parameters
     ******************************************/
     plugin_validate_global_param();
-    
+
     /*********************************
        Output major options
     *********************************/

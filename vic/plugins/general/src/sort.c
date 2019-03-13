@@ -3,8 +3,8 @@
 
 void
 size_t_swap(size_t  i,
-           size_t  j,
-           size_t *array)
+            size_t  j,
+            size_t *array)
 {
     size_t hold;
 
@@ -39,9 +39,9 @@ double_swap(size_t  i,
 
 void
 size_t_sort(size_t *array,
-           size_t *cost,
-           size_t  Nelements,
-           bool    acending)
+            size_t *cost,
+            size_t  Nelements,
+            bool    acending)
 {
     size_t i, j;
     size_t tmp_cost[Nelements];
@@ -74,9 +74,9 @@ size_t_sort(size_t *array,
 
 void
 size_t_sort2(size_t *array,
-            int    *cost,
-            size_t  Nelements,
-            bool    acending)
+             int    *cost,
+             size_t  Nelements,
+             bool    acending)
 {
     size_t i, j;
     int    tmp_cost[Nelements];

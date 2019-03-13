@@ -127,12 +127,13 @@ write_header(stream_struct **streams,
                      elem_idx < out_metadata[varid].nelem;
                      elem_idx++) {
                     if (out_metadata[varid].nelem > 1) {
-                        snprintf(tmp_str, MAXSTRING, "%s_%d", out_metadata[varid].varname,
-                                elem_idx);
+                        snprintf(tmp_str, MAXSTRING, "%s_%d",
+                                 out_metadata[varid].varname,
+                                 elem_idx);
                     }
                     else {
                         snprintf(tmp_str, MAXSTRING, "%s",
-                               out_metadata[varid].varname);
+                                 out_metadata[varid].varname);
                     }
                     Nbytes2 += sizeof(char) + strlen(tmp_str) * sizeof(char) +
                                sizeof(char) + sizeof(float);
@@ -249,11 +250,13 @@ write_header(stream_struct **streams,
                      elem_idx < out_metadata[varid].nelem;
                      elem_idx++) {
                     if (out_metadata[varid].nelem > 1) {
-                        snprintf(tmp_str, MAXSTRING, "%s_%d", out_metadata[varid].varname,
-                                elem_idx);
+                        snprintf(tmp_str, MAXSTRING, "%s_%d",
+                                 out_metadata[varid].varname,
+                                 elem_idx);
                     }
                     else {
-                        snprintf(tmp_str, MAXSTRING, "%s", out_metadata[varid].varname);
+                        snprintf(tmp_str, MAXSTRING, "%s",
+                                 out_metadata[varid].varname);
                     }
                     tmp_len = strlen(tmp_str);
                     fwrite(&tmp_len, sizeof(char), 1,

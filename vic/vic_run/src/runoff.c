@@ -86,7 +86,7 @@ runoff(cell_data_struct  *cell,
 
     double                     matric[MAX_LAYERS];
     double                     matric_expt[MAX_LAYERS];
-    double avg_matric;
+    double                     avg_matric;
 
     /** Set Residual Moisture **/
     for (lindex = 0; lindex < options.Nlayer; lindex++) {
@@ -169,7 +169,7 @@ runoff(cell_data_struct  *cell,
 
             /** Set Layer Maximum Moisture Content **/
             max_moist[lindex] = soil_con->max_moist[lindex];
-            
+
             if (options.MATRIC) {
                 /** Set Matric Potential Exponent (Burdine model 1953) **/
                 matric_expt[lindex] = (soil_con->expt[lindex] - 3.0) / 2.0;
@@ -221,7 +221,8 @@ runoff(cell_data_struct  *cell,
                         matric[lindex] = param.HUGE_RESIST;
                     }
                 }
-}
+            }
+
             /*************************************
                Compute Drainage between Sublayers
             *************************************/
@@ -251,12 +252,12 @@ runoff(cell_data_struct  *cell,
                                        resid_moist[lindex]) *
                                       pow(
                                 (avg_matric /
-                            soil_con->bubble[lindex]), -1 /
+                                 soil_con->bubble[lindex]), -1 /
                                 matric_expt[lindex]);
                         }
                     }
                 }
-                
+
                 if (tmp_liq > resid_moist[lindex]) {
                     Q12[lindex] = calc_Q12(Ksat[lindex], tmp_liq,
                                            resid_moist[lindex],
@@ -379,7 +380,7 @@ runoff(cell_data_struct  *cell,
 
             /** Register recharge **/
             dt_recharge = Q12[lindex - 1];
-            
+
             /** Extract baseflow from the bottom soil layer **/
 
             liq[lindex] +=

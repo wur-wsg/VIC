@@ -4,19 +4,19 @@
 void
 set_basins_downstream(size_t *downstream_basin)
 {
-    extern domain_struct    global_domain;
+    extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
 
-    int                    *id;
-    int                    *downstream;
-    
-    bool                    found;
+    int                           *id;
+    int                           *downstream;
 
-    size_t                  i;
-    size_t                  j;
+    bool                           found;
 
-    size_t                  d2count[2];
-    size_t                  d2start[2];
+    size_t                         i;
+    size_t                         j;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
 
     downstream = malloc(global_domain.ncells_active * sizeof(*downstream));
     check_alloc_status(downstream, "Memory allocation error.");
@@ -28,27 +28,27 @@ set_basins_downstream(size_t *downstream_basin)
     d2count[0] = global_domain.n_ny;
     d2count[1] = global_domain.n_nx;
 
-    get_active_nc_field_int(&(plugin_filenames.routing), "downstream_id", 
-                             d2start, d2count, id);
-    
-    get_active_nc_field_int(&(plugin_filenames.routing), "downstream", 
-                             d2start, d2count, downstream);
-    
+    get_active_nc_field_int(&(plugin_filenames.routing), "downstream_id",
+                            d2start, d2count, id);
+
+    get_active_nc_field_int(&(plugin_filenames.routing), "downstream",
+                            d2start, d2count, downstream);
+
     for (i = 0; i < global_domain.ncells_active; i++) {
         found = false;
-        
+
         for (j = 0; j < global_domain.ncells_active; j++) {
             if (downstream[i] == id[j]) {
                 downstream_basin[i] = j;
                 found = true;
             }
         }
-        
-        if(!found){
+
+        if (!found) {
             log_warn("No downstream cell was found; "
-                    "Probably the ID was outside of the mask or "
-                    "the ID was not set;"
-                    "Setting cell as outflow point");
+                     "Probably the ID was outside of the mask or "
+                     "the ID was not set;"
+                     "Setting cell as outflow point");
             downstream_basin[i] = i;
         }
     }
@@ -60,17 +60,17 @@ set_basins_downstream(size_t *downstream_basin)
 void
 get_basins_routing(basin_struct *basins)
 {
-    extern domain_struct    global_domain;
+    extern domain_struct global_domain;
 
-    size_t                 *downstream;
-    size_t                 *river;
-    size_t                  Nriver;
+    size_t              *downstream;
+    size_t              *river;
+    size_t               Nriver;
 
-    size_t                  iCell;
-    size_t                  next_cell;
+    size_t               iCell;
+    size_t               next_cell;
 
-    size_t                  i;
-    size_t                  j;
+    size_t               i;
+    size_t               j;
 
     downstream = malloc(global_domain.ncells_active * sizeof(*downstream));
     check_alloc_status(downstream, "Memory allocation error.");
@@ -80,11 +80,11 @@ get_basins_routing(basin_struct *basins)
     basins->basin_map =
         malloc(global_domain.ncells_active * sizeof(*basins->basin_map));
     check_alloc_status(basins->basin_map, "Memory allocation error.");
-    
+
     for (i = 0; i < global_domain.ncells_active; i++) {
         basins->basin_map[i] = MISSING_USI;
     }
-    
+
     set_basins_downstream(downstream);
 
     basins->Nbasin = 0;
@@ -94,7 +94,6 @@ get_basins_routing(basin_struct *basins)
         iCell = next_cell = i;
 
         while (true) {
-            
             river[Nriver] = iCell;
             Nriver++;
 
@@ -160,7 +159,7 @@ get_basins_routing(basin_struct *basins)
             i;
         basins->Ncells[basins->basin_map[i]]++;
     }
-    
+
     free(downstream);
     free(river);
 }
@@ -168,17 +167,17 @@ get_basins_routing(basin_struct *basins)
 void
 get_basins_decomposition(basin_struct *basins)
 {
-    extern domain_struct    global_domain;
+    extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
 
-    int                    *basin_list;
-    bool                    duplicate;
+    int                           *basin_list;
+    bool                           duplicate;
 
-    size_t                  d2count[2];
-    size_t                  d2start[2];
+    size_t                         d2count[2];
+    size_t                         d2start[2];
 
-    size_t                  i;
-    size_t                  j;
+    size_t                         i;
+    size_t                         j;
 
     d2start[0] = 0;
     d2start[1] = 0;
@@ -191,7 +190,8 @@ get_basins_decomposition(basin_struct *basins)
     basin_list = malloc(global_domain.ncells_active * sizeof(*basin_list));
     check_alloc_status(basin_list, "Memory allocation error.");
 
-    get_active_nc_field_int(&plugin_filenames.decomposition, "basin", d2start, d2count,
+    get_active_nc_field_int(&plugin_filenames.decomposition, "basin", d2start,
+                            d2count,
                             basins->basin_map);
 
     basins->Nbasin = 0;
@@ -260,20 +260,20 @@ get_basins_decomposition(basin_struct *basins)
 }
 
 void
-rout_decomp_domain_from_basins(size_t   ncells,
-                                size_t   mpi_size,
-                                int    **mpi_map_local_array_sizes,
-                                int    **mpi_map_global_array_offsets,
-                                size_t **mpi_map_mapping_array,
-                                basin_struct *basins)
+rout_decomp_domain_from_basins(size_t        ncells,
+                               size_t        mpi_size,
+                               int         **mpi_map_local_array_sizes,
+                               int         **mpi_map_global_array_offsets,
+                               size_t      **mpi_map_mapping_array,
+                               basin_struct *basins)
 {
-    size_t                  i;
-    size_t                  j;
-    size_t                  k;
-    size_t                  l;
+    size_t  i;
+    size_t  j;
+    size_t  k;
+    size_t  l;
 
-    size_t                 *node_ids;
-    size_t                 *basin_to_node;
+    size_t *node_ids;
+    size_t *basin_to_node;
 
     node_ids = malloc(mpi_size * sizeof(*node_ids));
     check_alloc_status(node_ids, "Memory allocation error.");
@@ -320,11 +320,11 @@ rout_decomp_domain_from_basins(size_t   ncells,
             }
         }
     }
-    
+
     free(node_ids);
     free(basin_to_node);
-    
-    for(i = 0; i < basins->Nbasin; i++){
+
+    for (i = 0; i < basins->Nbasin; i++) {
         free(basins->catchment[i]);
     }
     free(basins->Ncells);
@@ -335,17 +335,17 @@ rout_decomp_domain_from_basins(size_t   ncells,
 
 void
 rout_mpi_map_decomp_domain(size_t   ncells,
-                             size_t   mpi_size,
-                             int    **mpi_map_local_array_sizes,
-                             int    **mpi_map_global_array_offsets,
-                             size_t **mpi_map_mapping_array)
+                           size_t   mpi_size,
+                           int    **mpi_map_local_array_sizes,
+                           int    **mpi_map_global_array_offsets,
+                           size_t **mpi_map_mapping_array)
 {
-    extern plugin_option_struct    plugin_options;
-    
-    basin_struct            basins;
-    int status;
-    
-    if(plugin_options.DECOMPOSITION == FILE_DECOMPOSITION){
+    extern plugin_option_struct plugin_options;
+
+    basin_struct                basins;
+    int                         status;
+
+    if (plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
         // Check domain
         status = nc_open(plugin_filenames.decomposition.nc_filename, NC_NOWRITE,
                          &(plugin_filenames.decomposition.nc_id));
@@ -353,28 +353,30 @@ rout_mpi_map_decomp_domain(size_t   ncells,
                         plugin_filenames.decomposition.nc_filename);
 
         compare_ncdomain_with_global_domain(&plugin_filenames.decomposition);
-        
+
         get_basins_decomposition(&basins);
 
         status = nc_close(plugin_filenames.decomposition.nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.decomposition.nc_filename);
-    } else if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION) {
+    }
+    else if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION) {
         // Check domain
         status = nc_open(plugin_filenames.routing.nc_filename, NC_NOWRITE,
                          &(plugin_filenames.routing.nc_id));
         check_nc_status(status, "Error opening %s",
                         plugin_filenames.routing.nc_filename);
-        
+
         compare_ncdomain_with_global_domain(&plugin_filenames.routing);
-        
+
         get_basins_routing(&basins);
-        
+
         status = nc_close(plugin_filenames.routing.nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.routing.nc_filename);
     }
-        
+
     rout_decomp_domain_from_basins(ncells, mpi_size, mpi_map_local_array_sizes,
-            mpi_map_global_array_offsets, mpi_map_mapping_array, &basins);
+                                   mpi_map_global_array_offsets,
+                                   mpi_map_mapping_array, &basins);
 }

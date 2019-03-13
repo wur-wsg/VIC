@@ -533,14 +533,13 @@ get_parameters(FILE *paramfile)
             else if (strcasecmp("ROOT_BRENT_T", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &param.ROOT_BRENT_T);
             }
-            
+
             /*************************************
                Get Plugin Parameters
             *************************************/
-            else if (plugin_get_parameters(cmdstr)){
+            else if (plugin_get_parameters(cmdstr)) {
                 ; // do nothing
             }
-            
             else {
                 log_warn("Unrecognized option in the parameter file:  %s "
                          "- check your spelling", optstr);
@@ -951,7 +950,7 @@ validate_parameters()
     if (!(param.ROOT_BRENT_T >= 0.)) {
         log_err("ROOT_BRENT_T must be defined on the interval [0, inf)");
     }
-    
+
     // Validate plugin parameters
     plugin_validate_parameters();
 }

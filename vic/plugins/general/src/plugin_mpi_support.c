@@ -137,7 +137,7 @@ gather_int(int *ivar,
  *****************************************************************************/
 void
 gather_size_t(size_t *svar,
-             size_t *svar_local)
+              size_t *svar_local)
 {
     extern MPI_Comm      MPI_COMM_VIC;
     extern domain_struct global_domain;
@@ -179,8 +179,8 @@ gather_size_t(size_t *svar,
  *****************************************************************************/
 void
 gather_size_t_2d(size_t **svar,
-                size_t **var_local,
-                int      depth)
+                 size_t **var_local,
+                 int      depth)
 {
     extern domain_struct global_domain;
     extern domain_struct local_domain;
@@ -354,7 +354,7 @@ scatter_int(int *ivar,
  *****************************************************************************/
 void
 scatter_size_t(size_t *svar,
-              size_t *var_local)
+               size_t *var_local)
 {
     extern MPI_Comm      MPI_COMM_VIC;
     extern domain_struct global_domain;
@@ -395,8 +395,8 @@ scatter_size_t(size_t *svar,
  *****************************************************************************/
 void
 scatter_size_t_2d(size_t **svar,
-                 size_t **var_local,
-                 int      depth)
+                  size_t **var_local,
+                  int      depth)
 {
     extern domain_struct global_domain;
     extern domain_struct local_domain;
@@ -498,6 +498,6 @@ get_active_nc_field_int(nameid_struct *nc_nameid,
         ivar, var);
 
     free(ivar);
-    
+
     return status;
 }

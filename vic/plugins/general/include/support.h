@@ -26,8 +26,8 @@ void scatter_int(int *, int *);
 void scatter_int_2d(int **, int **, int);
 
 // decomposition
-int get_active_nc_field_double(nameid_struct *, char *, size_t *, size_t *, double *);
+int get_active_nc_field_double(nameid_struct *, char *, size_t *, size_t *,
+                               double *);
 int get_active_nc_field_int(nameid_struct *, char *, size_t *, size_t *, int *);
 
 #endif /* SUPPORT_H */
-

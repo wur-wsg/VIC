@@ -40,7 +40,9 @@ alloc_out_data(size_t    ngridcells,
     size_t                 j;
 
     for (i = 0; i < ngridcells; i++) {
-        out_data[i] = calloc(N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES, sizeof(*(out_data[i])));
+        out_data[i] =
+            calloc(N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES,
+                   sizeof(*(out_data[i])));
         check_alloc_status(out_data[i], "Memory allocation error.");
         // Allocate space for data
         for (j = 0; j < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; j++) {
@@ -323,9 +325,9 @@ get_default_outvar_aggtype(unsigned int varid)
     default:
         agg_type = AGG_TYPE_AVG;
     }
-    
+
     plugin_get_default_outvar_aggtype(varid, &agg_type);
-    
+
     return agg_type;
 }
 
@@ -346,7 +348,7 @@ set_output_var(stream_struct     *stream,
 
     int                    varid;
     int                    found = false;
-    
+
     // Find the output varid by looping through out_metadata, comparing to varname
     for (varid = 0; varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; varid++) {
         if (strcmp(out_metadata[varid].varname, varname) == 0) {
@@ -356,8 +358,8 @@ set_output_var(stream_struct     *stream,
     }
     if (!found) {
         log_warn("set_output_var: \"%s\" was not found in the list of "
-                "supported output variable names. Ignoring output variable...", 
-                varname);
+                 "supported output variable names. Ignoring output variable...",
+                 varname);
         return false;
     }
 
@@ -395,7 +397,7 @@ set_output_var(stream_struct     *stream,
     else {
         stream->aggtype[varnum] = get_default_outvar_aggtype(varid);
     }
-    
+
     return true;
 }
 

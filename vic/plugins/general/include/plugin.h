@@ -20,9 +20,9 @@ enum {
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_STATE_VARS                   /**< used as a loop counter*/
 };
-   
+
 enum {
-    //routing
+    // routing
     OUT_DISCHARGE,                      /**< river discharge [m3 s-1]) */
     OUT_STREAM_MOIST,
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
@@ -34,7 +34,7 @@ typedef struct {
     // simulation options
     short unsigned int DECOMPOSITION;
     bool ROUTING;
-    
+
     // module options
     short unsigned int UH_LENGTH;
     bool FORCE_ROUTING;
@@ -52,7 +52,7 @@ typedef struct {
     // parameters
     nameid_struct routing;  /**< routing parameter file */
     nameid_struct decomposition;   /**< basin parameter file */
-    
+
     // forcing
     nameid_struct routing_forcing;  /**< routing forcing files */
     char rf_path_pfx[MAXSTRING]; /**< path and prefix for routing forcing files */
@@ -89,22 +89,20 @@ void plugin_print_parameters(plugin_parameters_struct *);
 
 // Output
 void plugin_set_output_met_data_info(void);
-void plugin_initialize_nc_file(nc_file_struct  *nc_file);
-void plugin_add_hist_dim(nc_file_struct *nc,
-                              stream_struct  *stream);
-void plugin_set_nc_var_info(unsigned int       varid,
-                       unsigned short int dtype,
-                       nc_file_struct    *nc_hist_file,
-                       nc_var_struct     *nc_var);
-void plugin_set_nc_var_dimids(unsigned int    varid,
-                         nc_file_struct *nc_hist_file,
-                         nc_var_struct  *nc_var);
+void plugin_initialize_nc_file(nc_file_struct *nc_file);
+void plugin_add_hist_dim(nc_file_struct *nc, stream_struct  *stream);
+void plugin_set_nc_var_info(unsigned int varid, unsigned short int dtype,
+                            nc_file_struct    *nc_hist_file,
+                            nc_var_struct     *nc_var);
+void plugin_set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,
+                              nc_var_struct  *nc_var);
 void plugin_get_default_outvar_aggtype(unsigned int varid, unsigned int *);
 void plugin_set_state_meta_data_info(void);
-void plugin_set_nc_state_file_info(nc_file_struct  *nc_state_file);
+void plugin_set_nc_state_file_info(nc_file_struct *nc_state_file);
 void plugin_add_state_dim(char *filename, nc_file_struct *nc_state_file);
 void plugin_add_state_dim_var(char *filename, nc_file_struct *nc_state_file);
-void plugin_add_state_dim_var_data(char *filename, nc_file_struct *nc_state_file);
+void plugin_add_state_dim_var_data(char           *filename,
+                                   nc_file_struct *nc_state_file);
 void plugin_set_nc_state_var_info(nc_file_struct *nc);
 void plugin_store(nc_file_struct *);
 
@@ -113,15 +111,14 @@ void plugin_force(void);
 void plugin_run(void);
 void plugin_put_data(void);
 
-MPI_Datatype plugin_mpi_global_struct_type;
-MPI_Datatype plugin_mpi_filenames_struct_type;
-MPI_Datatype plugin_mpi_option_struct_type;
-MPI_Datatype plugin_mpi_param_struct_type;
+MPI_Datatype               plugin_mpi_global_struct_type;
+MPI_Datatype               plugin_mpi_filenames_struct_type;
+MPI_Datatype               plugin_mpi_option_struct_type;
+MPI_Datatype               plugin_mpi_param_struct_type;
 
-plugin_option_struct plugin_options;
+plugin_option_struct       plugin_options;
 plugin_global_param_struct plugin_global_param;
-plugin_filenames_struct plugin_filenames;
-plugin_parameters_struct plugin_param;
+plugin_filenames_struct    plugin_filenames;
+plugin_parameters_struct   plugin_param;
 
 #endif /* PLUGIN_GENERAL_H */
-

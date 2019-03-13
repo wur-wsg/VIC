@@ -483,7 +483,7 @@ typedef struct {
     double FORCE_DT[MAX_FORCE_FILES];    /**< forcing file time step */
     size_t force_steps_per_day[MAX_FORCE_FILES];    /**< forcing file timesteps per day */
     unsigned short int FORCE_ENDIAN[MAX_FORCE_FILES];  /**< endian-ness of input file, used for
-                                            DAILY_BINARY format */
+                                                          DAILY_BINARY format */
     int FORCE_FORMAT[MAX_FORCE_FILES];            /**< ASCII or BINARY */
     int FORCE_INDEX[MAX_FORCE_FILES];
     int VAR_INDEX[N_FORCING_TYPES];
