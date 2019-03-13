@@ -291,12 +291,14 @@ get_global_param(FILE *gp)
                     log_err("Unknown RC_MODE option: %s", flgstr);
                 }
             }
+
             /*************************************
                Define log directory
             *************************************/
             else if (strcasecmp("LOG_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.log_path);
             }
+
             /*************************************
                Define state files
             *************************************/
@@ -338,6 +340,7 @@ get_global_param(FILE *gp)
                     log_err("STATE_FORMAT must be either ASCII or BINARY.");
                 }
             }
+
             /*************************************
                Define forcing files
             *************************************/
@@ -416,6 +419,7 @@ get_global_param(FILE *gp)
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
+
             /*************************************
                Define parameter files
             *************************************/
@@ -541,12 +545,14 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
             }
+
             /*************************************
                Define output files
             *************************************/
             else if (strcasecmp("RESULT_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.result_dir);
             }
+
             /*************************************
                Define output file contents
             *************************************/
@@ -565,6 +571,7 @@ get_global_param(FILE *gp)
             else if (strcasecmp("OUT_FORMAT", optstr) == 0) {
                 ; // do nothing
             }
+
             /*************************************
                Fail when deprecated options are used.
             *************************************/
@@ -675,6 +682,7 @@ get_global_param(FILE *gp)
                         "specify a minimum rain temperature, use the option"
                         "SNOW_MIN_RAIN_TEMP in the vic constants file.")
             }
+
             /***********************************
                Unrecognized Global Parameter Flag
             ***********************************/

@@ -96,14 +96,9 @@ sprint_dmy(char       *str,
            dmy_struct *dmy)
 {
     snprintf(str, MAXSTRING,
-             "dmy:\n"
-             "\tday         : %hu\n"
-             "\tday_in_year : %hu\n"
-             "\tseconds     : %u\n"
-             "\tmonth       : %hu\n"
-             "\tyear        : %u\n",
-             dmy->day, dmy->day_in_year, dmy->dayseconds, dmy->month,
-             dmy->year);
+             "(%02i-%02i-%2i, %02i:00, %5i)\n",
+             dmy->day, dmy->month, dmy->year, dmy->dayseconds / SEC_PER_HOUR,
+             dmy->dayseconds);
 }
 
 /******************************************************************************

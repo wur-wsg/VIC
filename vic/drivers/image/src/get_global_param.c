@@ -284,12 +284,14 @@ get_global_param(FILE *gp)
                     log_err("Unknown RC_MODE option: %s", flgstr);
                 }
             }
+
             /*************************************
                Define log directory
             *************************************/
             else if (strcasecmp("LOG_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.log_path);
             }
+
             /*************************************
                Define state files
             *************************************/
@@ -339,6 +341,7 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
+
             /*************************************
                Define forcing files
             *************************************/
@@ -350,6 +353,7 @@ get_global_param(FILE *gp)
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
+
             /*************************************
                Define parameter files
             *************************************/
@@ -480,12 +484,14 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
             }
+
             /*************************************
                Define output files
             *************************************/
             else if (strcasecmp("RESULT_DIR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.result_dir);
             }
+
             /*************************************
                Define output file contents
             *************************************/
@@ -507,6 +513,7 @@ get_global_param(FILE *gp)
             else if (strcasecmp("OUT_FORMAT", optstr) == 0) {
                 ; // do nothing
             }
+
             /*************************************
                Fail when classic driver specific options are used
             *************************************/
@@ -518,12 +525,14 @@ get_global_param(FILE *gp)
                 log_err("OUTPUT_FORCE is not a valid option for this driver.  "
                         "Update your global parameter file accordingly.");
             }
+
             /***********************************
                Get Plugin Global Parameters
             ***********************************/
             else if (plugin_get_global_param(cmdstr)) {
                 ; // do nothing
             }
+
             /***********************************
                Unrecognized Global Parameter Flag
             ***********************************/

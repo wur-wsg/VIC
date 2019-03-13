@@ -51,10 +51,14 @@ vic_image_run(dmy_struct *dmy_current)
     char                       dmy_str[MAXSTRING];
     size_t                     i;
     timer_struct               timer;
+    extern int                 mpi_rank;
 
     // Print the current timestep info before running vic_run
-    sprint_dmy(dmy_str, dmy_current);
-    debug("Running timestep %zu: %s", current, dmy_str);
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        sprint_dmy(dmy_str, dmy_current);
+        fprintf(LOG_DEST, "Running timestep %zu: %s", current, dmy_str);
+    }
 
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i, timer, vic_run_ref_str)

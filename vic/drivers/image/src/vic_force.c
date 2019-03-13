@@ -309,7 +309,8 @@ vic_force(void)
             for (j = 0; j < NF; j++) {
                 d4start[0] = global_param.forceskip[param_set.VAR_INDEX[LAI]] +
                              global_param.forceoffset[param_set.VAR_INDEX[LAI]]
-                             + j;
+                             +
+                             j;
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
                     get_scatter_nc_field_double(&(filenames.forcing[param_set.
