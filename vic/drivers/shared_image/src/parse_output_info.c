@@ -214,11 +214,11 @@ parse_output_info(FILE           *gp,
                             "specified before you can specify \"OUTVAR\".");
                 }
                 // parse outvar options
-                strcpy(varname, "");
-                strcpy(format, "");
-                strcpy(typestr, "");
-                strcpy(multstr, "");
-                strcpy(aggstr, "");
+                snprintf(varname, MAXSTRING, "%s", "");
+                snprintf(format, MAXSTRING, "%s", "");
+                snprintf(typestr, MAXSTRING, "%s", "");
+                snprintf(multstr, MAXSTRING, "%s", "");
+                snprintf(aggstr, MAXSTRING, "%s", "");
                 found = sscanf(cmdstr, "%*s %s %s %s %s %s", varname,
                                format, typestr, multstr, aggstr);
                 if (!found) {
@@ -231,8 +231,14 @@ parse_output_info(FILE           *gp,
                 mult = str_to_out_mult(multstr);
 
                 // Add OUTVAR to stream
-                set_output_var(&((*streams)[streamnum]), varname, outvarnum,
-                               format, type, mult, agg_type);
+                found = set_output_var(&((*streams)[streamnum]), varname,
+                                       outvarnum,
+                                       format, type, mult, agg_type);
+
+                if (!found) {
+                    outvarnum--;
+                }
+
                 outvarnum++;
             }
         }

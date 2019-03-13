@@ -309,7 +309,7 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.INIT_STATE = true;
-                    strcpy(filenames.init_state, flgstr);
+                    snprintf(filenames.init_state, MAXSTRING, "%s", flgstr);
                 }
             }
             else if (strcasecmp("STATENAME", optstr) == 0) {
@@ -360,7 +360,8 @@ get_global_param(FILE *gp)
             else if (strcasecmp("FORCING2", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.f_path_pfx[1]);
                 if (strcasecmp("FALSE", filenames.f_path_pfx[1]) == 0) {
-                    strcpy(filenames.f_path_pfx[1], "MISSING");
+                    snprintf(filenames.f_path_pfx[1], MAXSTRING, "%s",
+                             "MISSING");
                 }
                 file_num = 1;
                 field = 0;
@@ -537,7 +538,7 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.LAKES = true;
-                    strcpy(filenames.lakeparam, flgstr);
+                    snprintf(filenames.lakeparam, MAXSTRING, "%s", flgstr);
                 }
             }
             else if (strcasecmp("LAKE_PROFILE", optstr) == 0) {
@@ -1226,10 +1227,10 @@ get_global_param(FILE *gp)
     }
     // Set the statename here to be able to compare with INIT_STATE name
     if (options.SAVE_STATE) {
-        sprintf(filenames.statefile, "%s_%04i%02i%02i_%05u",
-                filenames.statefile, global_param.stateyear,
-                global_param.statemonth, global_param.stateday,
-                global_param.statesec);
+        snprintf(filenames.statefile, MAXSTRING, "%s_%04i%02i%02i_%05u",
+                 filenames.statefile, global_param.stateyear,
+                 global_param.statemonth, global_param.stateday,
+                 global_param.statesec);
     }
     if (options.INIT_STATE && options.SAVE_STATE &&
         (strcmp(filenames.init_state, filenames.statefile) == 0)) {

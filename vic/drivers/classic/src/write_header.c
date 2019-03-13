@@ -127,12 +127,13 @@ write_header(stream_struct **streams,
                      elem_idx < out_metadata[varid].nelem;
                      elem_idx++) {
                     if (out_metadata[varid].nelem > 1) {
-                        sprintf(tmp_str, "%s_%d", out_metadata[varid].varname,
-                                elem_idx);
+                        snprintf(tmp_str, MAXSTRING, "%s_%d",
+                                 out_metadata[varid].varname,
+                                 elem_idx);
                     }
                     else {
-                        strcpy(tmp_str,
-                               out_metadata[varid].varname);
+                        snprintf(tmp_str, MAXSTRING, "%s",
+                                 out_metadata[varid].varname);
                     }
                     Nbytes2 += sizeof(char) + strlen(tmp_str) * sizeof(char) +
                                sizeof(char) + sizeof(float);
@@ -194,7 +195,7 @@ write_header(stream_struct **streams,
             tmp_mult = 1.;
 
             // year
-            strcpy(tmp_str, "YEAR");
+            snprintf(tmp_str, MAXSTRING, "%s", "YEAR");
             tmp_len = strlen(tmp_str);
             fwrite(&tmp_len, sizeof(char), 1, (*streams)[stream_idx].fh);
             fwrite(tmp_str, sizeof(char), tmp_len,
@@ -205,7 +206,7 @@ write_header(stream_struct **streams,
                    (*streams)[stream_idx].fh);
 
             // month
-            strcpy(tmp_str, "MONTH");
+            snprintf(tmp_str, MAXSTRING, "%s", "MONTH");
             tmp_len = strlen(tmp_str);
             fwrite(&tmp_len, sizeof(char), 1, (*streams)[stream_idx].fh);
             fwrite(tmp_str, sizeof(char), tmp_len,
@@ -216,7 +217,7 @@ write_header(stream_struct **streams,
                    (*streams)[stream_idx].fh);
 
             // day
-            strcpy(tmp_str, "DAY");
+            snprintf(tmp_str, MAXSTRING, "%s", "DAY");
             tmp_len = strlen(tmp_str);
             fwrite(&tmp_len, sizeof(char), 1, (*streams)[stream_idx].fh);
             fwrite(tmp_str, sizeof(char), tmp_len,
@@ -228,7 +229,7 @@ write_header(stream_struct **streams,
 
             if ((*streams)[stream_idx].agg_alarm.is_subdaily) {
                 // sec
-                strcpy(tmp_str, "SEC");
+                snprintf(tmp_str, MAXSTRING, "%s", "SEC");
                 tmp_len = strlen(tmp_str);
                 fwrite(&tmp_len, sizeof(char), 1,
                        (*streams)[stream_idx].fh);
@@ -249,11 +250,13 @@ write_header(stream_struct **streams,
                      elem_idx < out_metadata[varid].nelem;
                      elem_idx++) {
                     if (out_metadata[varid].nelem > 1) {
-                        sprintf(tmp_str, "%s_%d", out_metadata[varid].varname,
-                                elem_idx);
+                        snprintf(tmp_str, MAXSTRING, "%s_%d",
+                                 out_metadata[varid].varname,
+                                 elem_idx);
                     }
                     else {
-                        strcpy(tmp_str, out_metadata[varid].varname);
+                        snprintf(tmp_str, MAXSTRING, "%s",
+                                 out_metadata[varid].varname);
                     }
                     tmp_len = strlen(tmp_str);
                     fwrite(&tmp_len, sizeof(char), 1,

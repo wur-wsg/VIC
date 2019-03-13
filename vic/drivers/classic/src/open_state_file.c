@@ -41,7 +41,7 @@ open_state_file(global_param_struct *global,
     char                 filename[MAXSTRING];
 
     /* open state file */
-    sprintf(filename, "%s", filenames.statefile);
+    snprintf(filename, MAXSTRING, "%s", filenames.statefile);
     if (options.STATE_FORMAT == BINARY) {
         statefile = open_file(filename, "wb");
     }

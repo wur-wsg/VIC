@@ -59,6 +59,7 @@ print_cell_data(cell_data_struct *cell,
     // Print fluxes
     fprintf(LOG_DEST, "cell_data - fluxes:\n");
     fprintf(LOG_DEST, "\tpot_evap    : %f\n", cell->pot_evap);
+    fprintf(LOG_DEST, "\trecharge    : %f\n", cell->recharge);
     fprintf(LOG_DEST, "\tbaseflow    : %f\n", cell->baseflow);
     fprintf(LOG_DEST, "\tinflow      : %f\n", cell->inflow);
     fprintf(LOG_DEST, "\trunoff      : %f\n", cell->runoff);
@@ -94,14 +95,10 @@ void
 sprint_dmy(char       *str,
            dmy_struct *dmy)
 {
-    sprintf(str,
-            "dmy:\n"
-            "\tday         : %hu\n"
-            "\tday_in_year : %hu\n"
-            "\tseconds     : %u\n"
-            "\tmonth       : %hu\n"
-            "\tyear        : %u\n",
-            dmy->day, dmy->day_in_year, dmy->dayseconds, dmy->month, dmy->year);
+    snprintf(str, MAXSTRING,
+             "(%02i-%02i-%2i, %02i:00, %5i)\n",
+             dmy->day, dmy->month, dmy->year, dmy->dayseconds / SEC_PER_HOUR,
+             dmy->dayseconds);
 }
 
 /******************************************************************************
@@ -264,15 +261,17 @@ print_global_param(global_param_struct *gp)
     fprintf(LOG_DEST, "\tendday              : %hu\n", gp->endday);
     fprintf(LOG_DEST, "\tendmonth            : %hu\n", gp->endmonth);
     fprintf(LOG_DEST, "\tendyear             : %hu\n", gp->endyear);
-    for (i = 0; i < 2; i++) {
-        fprintf(LOG_DEST, "\tforceday[%zd]        : %hu\n", i, gp->forceday[i]);
-        fprintf(LOG_DEST, "\tforcesec[%zd]        : %u\n", i, gp->forcesec[i]);
-        fprintf(LOG_DEST, "\tforcemonth[%zd]      : %hu\n", i,
+    for (i = 0; i < 1; i++) {
+        fprintf(LOG_DEST, "\tforceday[%zd]         : %hu\n", i,
+                gp->forceday[i]);
+        fprintf(LOG_DEST, "\tforcesec[%zd]         : %u\n", i, gp->forcesec[i]);
+        fprintf(LOG_DEST, "\tforcemonth[%zd]       : %hu\n", i,
                 gp->forcemonth[i]);
-        fprintf(LOG_DEST, "\tforceoffset[%zd]     : %hu\n", i,
+        fprintf(LOG_DEST, "\tforceoffset[%zd]      : %hu\n", i,
                 gp->forceoffset[i]);
-        fprintf(LOG_DEST, "\tforceskip[%zd]       : %u\n", i, gp->forceskip[i]);
-        fprintf(LOG_DEST, "\tforceyear[%zd]       : %hu\n", i,
+        fprintf(LOG_DEST, "\tforceskip[%zd]        : %u\n", i,
+                gp->forceskip[i]);
+        fprintf(LOG_DEST, "\tforceyear[%zd]        : %hu\n", i,
                 gp->forceyear[i]);
     }
     fprintf(LOG_DEST, "\tnrecs               : %zu\n", gp->nrecs);
@@ -412,6 +411,7 @@ print_layer_data_states(layer_data_struct *ldata,
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tkappa: %f\n", ldata->kappa);
     fprintf(LOG_DEST, "\tmoist: %f\n", ldata->moist);
+    fprintf(LOG_DEST, "\teff_sat: %f\n", ldata->eff_sat);
     fprintf(LOG_DEST, "\tphi  : %f\n", ldata->phi);
     fprintf(LOG_DEST, "\tzwt  : %f\n", ldata->zwt);
 }
@@ -497,6 +497,8 @@ print_option(option_struct *option)
             option->SPATIAL_SNOW ? "true" : "false");
     fprintf(LOG_DEST, "\tTFALLBACK            : %s\n",
             option->TFALLBACK ? "true" : "false");
+    fprintf(LOG_DEST, "\tMATRIC               : %s\n",
+            option->MATRIC ? "true" : "false");
     fprintf(LOG_DEST, "\tBASEFLOW             : %d\n", option->BASEFLOW);
     fprintf(LOG_DEST, "\tGRID_DECIMAL         : %d\n", option->GRID_DECIMAL);
     fprintf(LOG_DEST, "\tVEGLIB_PHOTO         : %s\n",
@@ -636,19 +638,17 @@ print_param_set(param_set_struct *param_set)
     for (i = 0; i < N_FORCING_TYPES; i++) {
         print_force_type(&(param_set->TYPE[i]));
     }
-    fprintf(LOG_DEST, "\tFORCE_DT    : %.4f %.4f\n", param_set->FORCE_DT[0],
-            param_set->FORCE_DT[1]);
-    fprintf(LOG_DEST, "\tFORCE_ENDIAN: %d %d\n", param_set->FORCE_ENDIAN[0],
-            param_set->FORCE_ENDIAN[1]);
-    fprintf(LOG_DEST, "\tFORCE_FORMAT: %d %d\n", param_set->FORCE_FORMAT[0],
-            param_set->FORCE_FORMAT[1]);
-    fprintf(LOG_DEST, "\tFORCE_INDEX :\n");
-    for (i = 0; i < N_FORCING_TYPES; i++) {
-        fprintf(LOG_DEST, "\t\t%zd: %d %d\n", i, param_set->FORCE_INDEX[0][i],
-                param_set->FORCE_INDEX[1][i]);
+    for (i = 0; i < MAX_FORCE_FILES; i++) {
+        fprintf(LOG_DEST, "\tFORCE_DT    : %.4f\n", param_set->FORCE_DT[i]);
+        fprintf(LOG_DEST, "\tFORCE_ENDIAN: %d\n", param_set->FORCE_ENDIAN[i]);
+        fprintf(LOG_DEST, "\tFORCE_FORMAT: %d\n", param_set->FORCE_FORMAT[i]);
+        fprintf(LOG_DEST, "\tFORCE_INDEX :\n");
+        fprintf(LOG_DEST, "\t\t%zd: %d\n", i, param_set->FORCE_INDEX[i]);
     }
-    fprintf(LOG_DEST, "\tN_TYPES     : %zu %zu\n", param_set->N_TYPES[0],
-            param_set->N_TYPES[1]);
+    fprintf(LOG_DEST, "\tVAR_INDEX :\n");
+    for (i = 0; i < N_FORCING_TYPES; i++) {
+        fprintf(LOG_DEST, "\t\t%zd: %d\n", i, param_set->VAR_INDEX[i]);
+    }
 }
 
 /******************************************************************************

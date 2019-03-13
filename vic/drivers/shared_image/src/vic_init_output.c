@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Initialzie output structures and determine which variables to
@@ -59,6 +60,7 @@ vic_init_output(dmy_struct *dmy_current)
 
     // initialize the output data structures
     set_output_met_data_info();
+    plugin_set_output_met_data_info();
 
     // allocate out_data
     alloc_out_data(local_domain.ncells_active, out_data);
@@ -201,7 +203,7 @@ initialize_history_file(nc_file_struct *nc,
     extern domain_struct       global_domain;
     extern option_struct       options;
     extern global_param_struct global_param;
-    extern metadata_struct     out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct     out_metadata[];
 
     int                        status;
     int                        old_fill_mode;
@@ -228,31 +230,33 @@ initialize_history_file(nc_file_struct *nc,
     switch (stream->agg_alarm.freq) {
     // If FREQ_NDAYS -- filename = result_dir/prefix.YYYY-MM-DD.nc
     case FREQ_NDAYS:
-        sprintf(stream->filename, "%s/%s.%04d-%02d-%02d.nc",
-                filenames.result_dir,
-                stream->prefix, stream->time_bounds[0].year,
-                stream->time_bounds[0].month,
-                stream->time_bounds[0].day);
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d-%02d.nc",
+                 filenames.result_dir,
+                 stream->prefix, stream->time_bounds[0].year,
+                 stream->time_bounds[0].month,
+                 stream->time_bounds[0].day);
         break;
     case FREQ_NMONTHS:
         // If FREQ_NMONTHS -- filename = result_dir/prefix.YYYY-MM.nc
-        sprintf(stream->filename, "%s/%s.%04d-%02d.nc", filenames.result_dir,
-                stream->prefix, stream->time_bounds[0].year,
-                stream->time_bounds[0].month);
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d.nc",
+                 filenames.result_dir,
+                 stream->prefix, stream->time_bounds[0].year,
+                 stream->time_bounds[0].month);
         break;
     case FREQ_NYEARS:
         // If FREQ_NYEARS -- filename = result_dir/prefix.YYYY.nc
-        sprintf(stream->filename, "%s/%s.%04d.nc", filenames.result_dir,
-                stream->prefix, stream->time_bounds[0].year);
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d.nc",
+                 filenames.result_dir,
+                 stream->prefix, stream->time_bounds[0].year);
         break;
     default:
         // For all other cases -- filename = result_dir/prefix.YYYY-MM-DD-SSSSS.nc
-        sprintf(stream->filename, "%s/%s.%04d-%02d-%02d-%05u.nc",
-                filenames.result_dir,
-                stream->prefix, stream->time_bounds[0].year,
-                stream->time_bounds[0].month,
-                stream->time_bounds[0].day,
-                stream->time_bounds[0].dayseconds);
+        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d-%02d-%05u.nc",
+                 filenames.result_dir,
+                 stream->prefix, stream->time_bounds[0].year,
+                 stream->time_bounds[0].month,
+                 stream->time_bounds[0].day,
+                 stream->time_bounds[0].dayseconds);
     }
 
     // open the netcdf file
@@ -324,6 +328,8 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining time bounds dimension in %s",
                     stream->filename);
 
+    plugin_add_hist_dim(nc, stream);
+
     // define the netcdf variable time
     status = nc_def_var(nc->nc_id, "time", NC_DOUBLE, 1,
                         &(nc->time_dimid), &(nc->time_varid));
@@ -336,7 +342,8 @@ initialize_history_file(nc_file_struct *nc,
     // adding units attribute to time variable
     str_from_time_units(global_param.time_units, unit_str);
 
-    sprintf(str, "%s since %s", unit_str, global_param.time_origin_str);
+    snprintf(str, sizeof(str), "%s since %s", unit_str,
+             global_param.time_origin_str);
 
     status = nc_put_att_text(nc->nc_id, nc->time_varid, "units",
                              strlen(str), str);
@@ -439,7 +446,12 @@ initialize_history_file(nc_file_struct *nc,
     for (j = 0; j < stream->nvars; j++) {
         varid = stream->varid[j];
 
-        set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        if (varid < N_OUTVAR_TYPES) {
+            set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        }
+        else if (varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES) {
+            plugin_set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        }
 
         // define the variable
         status = nc_def_var(nc->nc_id,
@@ -604,10 +616,10 @@ set_global_nc_attributes(int ncid,
     pw = getpwuid(uid);
 
     if (pw) {
-        strcpy(userstr, pw->pw_name);
+        snprintf(userstr, MAXSTRING, "%s", pw->pw_name);
     }
     else {
-        strcpy(userstr, "unknown");
+        snprintf(userstr, MAXSTRING, "%s", "unknown");
     }
 
     // hostname
@@ -628,8 +640,8 @@ set_global_nc_attributes(int ncid,
 
     // TODO: pass in driver as an argmument to this function
     put_nc_attr(ncid, NC_GLOBAL, "source", "VIC Image Driver");
-    sprintf(tmpstr, "Created by %s on %s on %s",
-            userstr, hoststr, asctime(timeinfo));
+    snprintf(tmpstr, MAXSTRING, "Created by %s on %s on %s",
+             userstr, hoststr, asctime(timeinfo));
     put_nc_attr(ncid, NC_GLOBAL, "history", tmpstr);
     put_nc_attr(ncid, NC_GLOBAL, "references",
                 "Primary Historical Reference for VIC: Liang, X., D. P. "
@@ -702,11 +714,20 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->time_size = NC_UNLIMITED;
     nc_file->veg_size = options.NVEGTYPES;
 
+    plugin_initialize_nc_file(nc_file);
+
     // allocate memory for nc_vars
     nc_file->nc_vars = calloc(nvars, sizeof(*(nc_file->nc_vars)));
     check_alloc_status(nc_file->nc_vars, "Memory allocation error.");
 
     for (i = 0; i < nvars; i++) {
-        set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+        if (varids[i] < N_OUTVAR_TYPES) {
+            set_nc_var_info(varids[i], dtypes[i], nc_file,
+                            &(nc_file->nc_vars[i]));
+        }
+        else if (varids[i] < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES) {
+            plugin_set_nc_var_info(varids[i], dtypes[i], nc_file,
+                                   &(nc_file->nc_vars[i]));
+        }
     }
 }

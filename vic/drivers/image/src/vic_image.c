@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
-#include <rout.h>   // Routing routine (extension)
+#include <plugin.h>
 
 size_t              NF, NR;
 size_t              current;
@@ -60,15 +60,12 @@ veg_con_map_struct *veg_con_map = NULL;
 veg_con_struct    **veg_con = NULL;
 veg_hist_struct   **veg_hist = NULL;
 veg_lib_struct    **veg_lib = NULL;
-metadata_struct     state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
-metadata_struct     out_metadata[N_OUTVAR_TYPES];
+metadata_struct     state_metadata[N_STATE_VARS + PLUGIN_N_STATE_VARS];
+metadata_struct     out_metadata[N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES];
 save_data_struct   *save_data;  // [ncells]
 double           ***out_data = NULL;  // [ncells, nvars, nelem]
 stream_struct      *output_streams = NULL;  // [nstreams]
 nc_file_struct     *nc_hist_files = NULL;  // [nstreams]
-
-// Extensions
-rout_struct         rout; // Routing routine (extension)
 
 /******************************************************************************
  * @brief   Stand-alone image mode driver of the VIC model
@@ -103,6 +100,7 @@ main(int    argc,
 
     // initialize mpi
     initialize_mpi();
+    plugin_initialize_mpi();
 
     // process command line arguments
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -114,15 +112,11 @@ main(int    argc,
 
     // allocate memory
     vic_alloc();
-
-    // allocate memory for routing
-    rout_alloc();   // Routing routine (extension)
+    plugin_alloc();
 
     // initialize model parameters from parameter files
     vic_image_init();
-
-    // initialize routing parameters from parameter files
-    rout_init();    // Routing routine (extension)
+    plugin_init();
 
     // populate model state, either using a cold start or from a restart file
     vic_populate_model_state(&(dmy[0]));
@@ -131,16 +125,26 @@ main(int    argc,
     vic_init_output(&(dmy[0]));
 
     // Initialization is complete, print settings
-    log_info(
-        "Initialization is complete, print global param, parameters and options structures");
-    print_global_param(&global_param);
-    print_option(&options);
-    print_parameters(&param);
+    if (mpi_rank == VIC_MPI_ROOT) {
+        log_info(
+            "Initialization is complete, print decomposition, global param, parameters and options structures");
+        plugin_print_decomposition(mpi_size, &mpi_map_local_array_sizes);
+        print_global_param(&global_param);
+        plugin_print_global_param(&plugin_global_param);
+        print_option(&options);
+        plugin_print_options(&plugin_options);
+        print_parameters(&param);
+        plugin_print_parameters(&plugin_param);
+    }
 
     // stop init timer
     timer_stop(&(global_timers[TIMER_VIC_INIT]));
     // start vic run timer
     timer_start(&(global_timers[TIMER_VIC_RUN]));
+    // start vic force timer
+    timer_start(&(global_timers[TIMER_VIC_FORCE]));
+    // start vic write timer
+    timer_start(&(global_timers[TIMER_VIC_WRITE]));
 
     // loop over all timesteps
     for (current = 0; current < global_param.nrecs; current++) {
@@ -170,9 +174,6 @@ main(int    argc,
     timer_start(&(global_timers[TIMER_VIC_FINAL]));
     // clean up
     vic_image_finalize();
-
-    // clean up routing
-    rout_finalize();    // Routing routine (extension)
 
     // finalize MPI
     status = MPI_Finalize();

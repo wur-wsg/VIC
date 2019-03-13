@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
-#include <rout.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Save model state.
@@ -61,10 +61,10 @@ vic_store(dmy_struct *dmy_state,
     set_nc_state_file_info(&nc_state_file);
 
     // create netcdf file for storing model state
-    sprintf(filename, "%s.%04i%02i%02i_%05u.nc",
-            filenames.statefile, dmy_state->year,
-            dmy_state->month, dmy_state->day,
-            dmy_state->dayseconds);
+    snprintf(filename, MAXSTRING, "%s.%04i%02i%02i_%05u.nc",
+             filenames.statefile, dmy_state->year,
+             dmy_state->month, dmy_state->day,
+             dmy_state->dayseconds);
 
     initialize_state_file(filename, &nc_state_file, dmy_state);
 
@@ -1270,9 +1270,7 @@ vic_store(dmy_struct *dmy_state,
         }
     }
 
-    // store extension variables
-    vic_store_rout_extension(&nc_state_file);
-
+    plugin_store(&nc_state_file);
 
     // close the netcdf file if it is still open
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -1329,12 +1327,11 @@ set_nc_state_file_info(nc_file_struct *nc_state_file)
     nc_state_file->time_size = NC_UNLIMITED;
     nc_state_file->veg_size = options.NVEGTYPES;
 
-    // set ids and dimension sizes of the extension variables
-    set_nc_state_file_info_rout_extension(nc_state_file);
+    plugin_set_nc_state_file_info(nc_state_file);
 
     // allocate memory for nc_vars
     nc_state_file->nc_vars =
-        calloc(N_STATE_VARS + N_STATE_VARS_EXT,
+        calloc(N_STATE_VARS + PLUGIN_N_STATE_VARS,
                sizeof(*(nc_state_file->nc_vars)));
     check_alloc_status(nc_state_file->nc_vars, "Memory allocation error");
 }
@@ -1543,7 +1540,8 @@ set_nc_state_var_info(nc_file_struct *nc)
             log_err("Too many dimensions specified in variable %zu", i);
         }
     }
-    set_nc_state_var_info_rout_extension(nc);
+
+    plugin_set_nc_state_var_info(nc);
 }
 
 /******************************************************************************
@@ -1559,7 +1557,7 @@ initialize_state_file(char           *filename,
     extern domain_struct       global_domain;
     extern domain_struct       local_domain;
     extern global_param_struct global_param;
-    extern metadata_struct     state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
+    extern metadata_struct     state_metadata[];
     extern soil_con_struct    *soil_con;
     extern int                 mpi_rank;
 
@@ -1622,7 +1620,8 @@ initialize_state_file(char           *filename,
         // adding units attribute to time variable
         str_from_time_units(global_param.time_units, unit_str);
 
-        sprintf(str, "%s since %s", unit_str, global_param.time_origin_str);
+        snprintf(str, sizeof(str), "%s since %s", unit_str,
+                 global_param.time_origin_str);
 
         status = nc_put_att_text(nc_state_file->nc_id,
                                  nc_state_file->time_varid,
@@ -1684,8 +1683,7 @@ initialize_state_file(char           *filename,
             check_nc_status(status, "Error defining lake_node in %s", filename);
         }
 
-        // add extension dimensions
-        initialize_state_file_rout_extension(filename, nc_state_file);
+        plugin_add_state_dim(filename, nc_state_file);
 
         set_nc_state_var_info(nc_state_file);
     }
@@ -1893,11 +1891,13 @@ initialize_state_file(char           *filename,
             check_nc_status(status, "Error adding attribute in %s", filename);
             dimids[0] = -1;
         }
+
+        plugin_add_state_dim_var(filename, nc_state_file);
     }
 
     // Define state variables
     if (mpi_rank == VIC_MPI_ROOT) {
-        for (i = 0; i < (N_STATE_VARS + N_STATE_VARS_EXT); i++) {
+        for (i = 0; i < (N_STATE_VARS + PLUGIN_N_STATE_VARS); i++) {
             if (strcasecmp(state_metadata[i].varname, MISSING_S) == 0) {
                 // skip variables not set in set_state_meta_data_info
                 continue;
@@ -2108,6 +2108,8 @@ initialize_state_file(char           *filename,
             dcount[i] = 0;
         }
         free(ivar);
+
+        plugin_add_state_dim_var_data(filename, nc_state_file);
     }
 
     // initialize dvar for soil thermal node deltas and depths

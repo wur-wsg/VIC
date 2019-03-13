@@ -68,7 +68,7 @@ get_current_datetime(char *cdt)
         log_err("Something went wrong converting the current time info to ymd");
     }
 
-    sprintf(cdt, "%s-%05d", ymd, seconds_since_midnight);
+    snprintf(cdt, MAXSTRING, "%s-%05d", ymd, seconds_since_midnight);
 }
 
 /******************************************************************************
@@ -136,7 +136,7 @@ setup_logging(int    id,
         log_info("Initialized Log File: %s", logfilename);
     }
     else {
-        log_info("Logging to stderr");
+        log_info("Logging to stderr (node: %d)", id);
     }
 }
 

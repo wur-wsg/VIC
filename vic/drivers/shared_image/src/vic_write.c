@@ -61,7 +61,7 @@ vic_write(stream_struct  *stream,
     extern global_param_struct global_param;
     extern domain_struct       local_domain;
     extern int                 mpi_rank;
-    extern metadata_struct     out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct     out_metadata[];
 
     size_t                     i;
     size_t                     j;

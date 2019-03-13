@@ -54,7 +54,7 @@ open_file(char string[],
 
     if (stream == NULL) {
         /** Check if file is compressed **/
-        strcpy(zipname, string);
+        snprintf(zipname, MAXSTRING, "%s", string);
         strcat(zipname, ".gz");
         stream = fopen(zipname, type);
         if (stream == NULL) {
@@ -63,7 +63,7 @@ open_file(char string[],
         fclose(stream);
 
         /** uncompress and open zipped file **/
-        sprintf(command, "gzip -d %s", zipname);
+        snprintf(command, MAXSTRING, "gzip -d %s", zipname);
         system(command);
         stream = fopen(string, type);
         if (stream == NULL) {

@@ -37,10 +37,10 @@ compress_files(char      string[],
 
     // Compress the file
     if (level == COMPRESSION_LVL_DEFAULT) {
-        sprintf(command, "nice gzip -f %s &", string);
+        snprintf(command, MAXSTRING, "nice gzip -f %s &", string);
     }
     else if (level != COMPRESSION_LVL_UNSET) {
-        sprintf(command, "nice gzip -%d -f %s &", level, string);
+        snprintf(command, MAXSTRING, "nice gzip -%d -f %s &", level, string);
     }
     else if (level <= 0) {
         log_err("Invalid compression level for gzip, must be an integer 1-9");

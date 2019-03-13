@@ -44,3 +44,6 @@ TAGS
 __pycache__
 .ipynb_checkpoints
 .eggs
+
+# Netbeans
+nbproject/

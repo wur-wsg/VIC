@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    This routine creates the list of output data.
@@ -33,16 +34,18 @@ void
 alloc_out_data(size_t    ngridcells,
                double ***out_data)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 i;
     size_t                 j;
 
     for (i = 0; i < ngridcells; i++) {
-        out_data[i] = calloc(N_OUTVAR_TYPES, sizeof(*(out_data[i])));
+        out_data[i] =
+            calloc(N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES,
+                   sizeof(*(out_data[i])));
         check_alloc_status(out_data[i], "Memory allocation error.");
         // Allocate space for data
-        for (j = 0; j < N_OUTVAR_TYPES; j++) {
+        for (j = 0; j < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; j++) {
             out_data[i][j] =
                 calloc(out_metadata[j].nelem, sizeof(*(out_data[i][j])));
             check_alloc_status(out_data[i][j], "Memory allocation error.");
@@ -162,7 +165,7 @@ validate_streams(stream_struct **streams)
 void
 alloc_aggdata(stream_struct *stream)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 i;
     size_t                 j;
@@ -201,7 +204,7 @@ void
 reset_stream(stream_struct *stream,
              dmy_struct    *dmy_current)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 i;
     size_t                 j;
@@ -253,6 +256,7 @@ get_default_outvar_aggtype(unsigned int varid)
     case OUT_SOIL_ICE:
     case OUT_SOIL_LIQ:
     case OUT_SOIL_MOIST:
+    case OUT_SOIL_EFF_SAT:
     case OUT_SOIL_WET:
     case OUT_SURFSTOR:
     case OUT_SURF_FROST_FRAC:
@@ -267,6 +271,7 @@ get_default_outvar_aggtype(unsigned int varid)
         agg_type = AGG_TYPE_END;
         break;
     // AGG_TYPE_SUM
+    case OUT_RECHARGE:
     case OUT_BASEFLOW:
     case OUT_DELINTERCEPT:
     case OUT_DELSOILMOIST:
@@ -320,6 +325,9 @@ get_default_outvar_aggtype(unsigned int varid)
     default:
         agg_type = AGG_TYPE_AVG;
     }
+
+    plugin_get_default_outvar_aggtype(varid, &agg_type);
+
     return agg_type;
 }
 
@@ -327,7 +335,7 @@ get_default_outvar_aggtype(unsigned int varid)
  * @brief    This routine updates the output information for a given output
  *           variable.
  *****************************************************************************/
-void
+bool
 set_output_var(stream_struct     *stream,
                char              *varname,
                size_t             varnum,
@@ -336,35 +344,37 @@ set_output_var(stream_struct     *stream,
                double             mult,
                unsigned short int aggtype)
 {
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     int                    varid;
     int                    found = false;
 
-    if (varnum >= stream->nvars) {
-        log_err("Invalid varnum %zu, must be less than the number of variables "
-                "in the stream %zu", varnum, stream->nvars);
-    }
     // Find the output varid by looping through out_metadata, comparing to varname
-    for (varid = 0; varid < N_OUTVAR_TYPES; varid++) {
+    for (varid = 0; varid < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; varid++) {
         if (strcmp(out_metadata[varid].varname, varname) == 0) {
             found = true;
             break;
         }
     }
     if (!found) {
-        log_err("set_output_var: \"%s\" was not found in the list of "
-                "supported output variable names.  Please use the exact name "
-                "listed in vic_driver_shared.h.", varname);
+        log_warn("set_output_var: \"%s\" was not found in the list of "
+                 "supported output variable names. Ignoring output variable...",
+                 varname);
+        return false;
+    }
+
+    if (varnum >= stream->nvars) {
+        log_err("Invalid varnum %zu, must be less than the number of variables "
+                "in the stream %zu", varnum, stream->nvars);
     }
     // Set stream members
     stream->varid[varnum] = varid;
     // Format (ASCII only)
     if ((strcmp(format, "*") != 0) || (strcmp(format, "") != 0)) {
-        strcpy(stream->format[varnum], format);
+        snprintf(stream->format[varnum], MAXSTRING, "%s", format);
     }
     else {
-        strcpy(stream->format[varnum], "%.4f");
+        snprintf(stream->format[varnum], MAXSTRING, "%s", "%.4f");
     }
     // Output type (BINARY and netCDF)
     if (type != OUT_TYPE_DEFAULT) {
@@ -387,6 +397,8 @@ set_output_var(stream_struct     *stream,
     else {
         stream->aggtype[varnum] = get_default_outvar_aggtype(varid);
     }
+
+    return true;
 }
 
 /******************************************************************************
@@ -396,7 +408,7 @@ void
 free_streams(stream_struct **streams)
 {
     extern option_struct   options;
-    extern metadata_struct out_metadata[N_OUTVAR_TYPES];
+    extern metadata_struct out_metadata[];
 
     size_t                 streamnum;
     size_t                 i;
@@ -447,7 +459,7 @@ free_out_data(size_t    ngridcells,
     }
 
     for (i = 0; i < ngridcells; i++) {
-        for (j = 0; j < N_OUTVAR_TYPES; j++) {
+        for (j = 0; j < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; j++) {
             free(out_data[i][j]);
         }
         free(out_data[i]);

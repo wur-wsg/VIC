@@ -1249,17 +1249,17 @@ vic_init(void)
 
         // If the sum of the tile fractions is not within a tolerance,
         // readjust Cvs to sum to 1.0
+        for (j = 0; j < options.NVEGTYPES; j++) {
+            vidx = veg_con_map[i].vidx[j];
+            if (vidx != NODATA_VEG) {
+                veg_con[i][vidx].Cv /= Cv_sum[i];
+            }
+        }
         if (!assert_close_double(Cv_sum[i], 1., 0., AREA_SUM_ERROR_THRESH)) {
             sprint_location(locstr, &(local_domain.locations[i]));
             log_warn("Sum of veg tile area fractions !=  1.0 (%.16f) at grid "
                      "cell %zd. Adjusting fractions ...\n%s", Cv_sum[i], i,
                      locstr);
-            for (j = 0; j < options.NVEGTYPES; j++) {
-                vidx = veg_con_map[i].vidx[j];
-                if (vidx != NODATA_VEG) {
-                    veg_con[i][vidx].Cv /= Cv_sum[i];
-                }
-            }
         }
     }
 
