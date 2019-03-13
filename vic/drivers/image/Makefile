@@ -68,7 +68,7 @@ HOSTNAME := $(shell uname -n)
 # | WARNING   | < 30             |
 # | INFO      | < 20             |
 # | DEBUG     | < 10             |
-LOG_LVL = 5
+LOG_LVL = 15
 
 # set include file locations
 INCLUDES = -I ${DRIVERPATH}/include \

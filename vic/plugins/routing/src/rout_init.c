@@ -213,6 +213,13 @@ rout_basin_set_upstream(void)
             if (rout_con[j].downstream == i && i != j) {
                 upstream[rout_con[i].Nupstream] = j;
                 rout_con[i].Nupstream++;
+                
+                if(rout_con[i].Nupstream > MAX_UPSTREAM){
+                    log_err("Number of upstream cells [%zu] is bigger "
+                            "than the maximum number of upstream cells possible [%d]", 
+                            rout_con[i].Nupstream,
+                            MAX_UPSTREAM);
+                }
             }
         }
 
@@ -283,6 +290,13 @@ rout_random_set_upstream(void)
                 if (down_global[j] == i && i != j) {
                     up_global[i][nup_global[i]] = j;
                     nup_global[i]++;
+                    
+                    if(nup_global[i] > MAX_UPSTREAM){
+                        log_err("Number of upstream cells [%zu] is bigger "
+                                "than the maximum number of upstream cells possible [%d]", 
+                                nup_global[i],
+                                MAX_UPSTREAM);
+                    }
                 }
             }
         }
