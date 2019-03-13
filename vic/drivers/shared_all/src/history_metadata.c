@@ -42,1454 +42,1454 @@ set_output_met_data_info()
     // Set missing and/or default values
     for (v = 0; v < N_OUTVAR_TYPES; v++) {
         // Set default string values
-        strcpy(out_metadata[v].varname, MISSING_S);
-        strcpy(out_metadata[v].long_name, MISSING_S);
-        strcpy(out_metadata[v].standard_name, MISSING_S);
-        strcpy(out_metadata[v].units, MISSING_S);
-        strcpy(out_metadata[v].description, MISSING_S);
+        snprintf(out_metadata[v].varname, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].long_name, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].standard_name, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].units, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].description, MAXSTRING, "%s", MISSING_S);
         // Set default number of elements
         out_metadata[v].nelem = 1;
     }
 
     // Water Balance Terms - state variables
     /* saturated area fraction */
-    strcpy(out_metadata[OUT_ASAT].varname, "OUT_ASAT");
-    strcpy(out_metadata[OUT_ASAT].long_name, "asat");
-    strcpy(out_metadata[OUT_ASAT].standard_name, "saturated_area_fraction");
-    strcpy(out_metadata[OUT_ASAT].units, "1");
-    strcpy(out_metadata[OUT_ASAT].description, "saturated area fraction");
+    snprintf(out_metadata[OUT_ASAT].varname, MAXSTRING, "%s", "OUT_ASAT");
+    snprintf(out_metadata[OUT_ASAT].long_name, MAXSTRING, "%s", "asat");
+    snprintf(out_metadata[OUT_ASAT].standard_name, MAXSTRING, "%s", "saturated_area_fraction");
+    snprintf(out_metadata[OUT_ASAT].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_ASAT].description, MAXSTRING, "%s", "saturated area fraction");
 
     /* lake surface area as fraction of grid cell area [fraction] */
-    strcpy(out_metadata[OUT_LAKE_AREA_FRAC].varname, "OUT_LAKE_AREA_FRAC");
-    strcpy(out_metadata[OUT_LAKE_AREA_FRAC].long_name, "lake_area_frac");
-    strcpy(out_metadata[OUT_LAKE_AREA_FRAC].standard_name,
+    snprintf(out_metadata[OUT_LAKE_AREA_FRAC].varname, MAXSTRING, "%s", "OUT_LAKE_AREA_FRAC");
+    snprintf(out_metadata[OUT_LAKE_AREA_FRAC].long_name, MAXSTRING, "%s", "lake_area_frac");
+    snprintf(out_metadata[OUT_LAKE_AREA_FRAC].standard_name, MAXSTRING, "%s",
            "lake_area_fraction");
-    strcpy(out_metadata[OUT_LAKE_AREA_FRAC].units, "1");
-    strcpy(out_metadata[OUT_LAKE_AREA_FRAC].description,
+    snprintf(out_metadata[OUT_LAKE_AREA_FRAC].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_LAKE_AREA_FRAC].description, MAXSTRING, "%s",
            "lake surface area as fraction of grid cell area");
 
     /* lake depth [m] */
-    strcpy(out_metadata[OUT_LAKE_DEPTH].varname, "OUT_LAKE_DEPTH");
-    strcpy(out_metadata[OUT_LAKE_DEPTH].long_name, "lake_depth");
-    strcpy(out_metadata[OUT_LAKE_DEPTH].standard_name, "lake_depth");
-    strcpy(out_metadata[OUT_LAKE_DEPTH].units, "m");
-    strcpy(out_metadata[OUT_LAKE_DEPTH].description, "lake depth");
+    snprintf(out_metadata[OUT_LAKE_DEPTH].varname, MAXSTRING, "%s", "OUT_LAKE_DEPTH");
+    snprintf(out_metadata[OUT_LAKE_DEPTH].long_name, MAXSTRING, "%s", "lake_depth");
+    snprintf(out_metadata[OUT_LAKE_DEPTH].standard_name, MAXSTRING, "%s", "lake_depth");
+    snprintf(out_metadata[OUT_LAKE_DEPTH].units, MAXSTRING, "%s", "m");
+    snprintf(out_metadata[OUT_LAKE_DEPTH].description, MAXSTRING, "%s", "lake depth");
 
     /* moisture stored as lake ice [mm] */
-    strcpy(out_metadata[OUT_LAKE_ICE].varname, "OUT_LAKE_ICE");
-    strcpy(out_metadata[OUT_LAKE_ICE].long_name, "lake_ice");
-    strcpy(out_metadata[OUT_LAKE_ICE].standard_name, "lake_ice");
-    strcpy(out_metadata[OUT_LAKE_ICE].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_ICE].description,
+    snprintf(out_metadata[OUT_LAKE_ICE].varname, MAXSTRING, "%s", "OUT_LAKE_ICE");
+    snprintf(out_metadata[OUT_LAKE_ICE].long_name, MAXSTRING, "%s", "lake_ice");
+    snprintf(out_metadata[OUT_LAKE_ICE].standard_name, MAXSTRING, "%s", "lake_ice");
+    snprintf(out_metadata[OUT_LAKE_ICE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_ICE].description, MAXSTRING, "%s",
            "moisture stored as lake ice");
 
     /* fractional coverage of lake ice [fraction] */
-    strcpy(out_metadata[OUT_LAKE_ICE_FRACT].varname, "OUT_LAKE_ICE_FRACT");
-    strcpy(out_metadata[OUT_LAKE_ICE_FRACT].long_name, "lake_ice_fract");
-    strcpy(out_metadata[OUT_LAKE_ICE_FRACT].standard_name,
+    snprintf(out_metadata[OUT_LAKE_ICE_FRACT].varname, MAXSTRING, "%s", "OUT_LAKE_ICE_FRACT");
+    snprintf(out_metadata[OUT_LAKE_ICE_FRACT].long_name, MAXSTRING, "%s", "lake_ice_fract");
+    snprintf(out_metadata[OUT_LAKE_ICE_FRACT].standard_name, MAXSTRING, "%s",
            "lake_ice_area_fraction");
-    strcpy(out_metadata[OUT_LAKE_ICE_FRACT].units, "1");
-    strcpy(out_metadata[OUT_LAKE_ICE_FRACT].description,
+    snprintf(out_metadata[OUT_LAKE_ICE_FRACT].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_LAKE_ICE_FRACT].description, MAXSTRING, "%s",
            "fractional coverage of lake ice");
 
     /* thickness of lake ice [cm] */
-    strcpy(out_metadata[OUT_LAKE_ICE_HEIGHT].varname, "OUT_LAKE_ICE_HEIGHT");
-    strcpy(out_metadata[OUT_LAKE_ICE_HEIGHT].long_name, "lake_ice_height");
-    strcpy(out_metadata[OUT_LAKE_ICE_HEIGHT].standard_name, "lake_ice_height");
-    strcpy(out_metadata[OUT_LAKE_ICE_HEIGHT].units, "cm");
-    strcpy(out_metadata[OUT_LAKE_ICE_HEIGHT].description,
+    snprintf(out_metadata[OUT_LAKE_ICE_HEIGHT].varname, MAXSTRING, "%s", "OUT_LAKE_ICE_HEIGHT");
+    snprintf(out_metadata[OUT_LAKE_ICE_HEIGHT].long_name, MAXSTRING, "%s", "lake_ice_height");
+    snprintf(out_metadata[OUT_LAKE_ICE_HEIGHT].standard_name, MAXSTRING, "%s", "lake_ice_height");
+    snprintf(out_metadata[OUT_LAKE_ICE_HEIGHT].units, MAXSTRING, "%s", "cm");
+    snprintf(out_metadata[OUT_LAKE_ICE_HEIGHT].description, MAXSTRING, "%s",
            "thickness of lake ice");
 
     /* liquid water stored in lake [mm over lake area?] */
-    strcpy(out_metadata[OUT_LAKE_MOIST].varname, "OUT_LAKE_MOIST");
-    strcpy(out_metadata[OUT_LAKE_MOIST].long_name, "lake_moist");
-    strcpy(out_metadata[OUT_LAKE_MOIST].standard_name, "lake_moisture");
-    strcpy(out_metadata[OUT_LAKE_MOIST].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_MOIST].description,
+    snprintf(out_metadata[OUT_LAKE_MOIST].varname, MAXSTRING, "%s", "OUT_LAKE_MOIST");
+    snprintf(out_metadata[OUT_LAKE_MOIST].long_name, MAXSTRING, "%s", "lake_moist");
+    snprintf(out_metadata[OUT_LAKE_MOIST].standard_name, MAXSTRING, "%s", "lake_moisture");
+    snprintf(out_metadata[OUT_LAKE_MOIST].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_MOIST].description, MAXSTRING, "%s",
            "liquid water stored in lake");
 
     /* lake surface area [m2] */
-    strcpy(out_metadata[OUT_LAKE_SURF_AREA].varname, "OUT_LAKE_SURF_AREA");
-    strcpy(out_metadata[OUT_LAKE_SURF_AREA].long_name, "lake_surf_area");
-    strcpy(out_metadata[OUT_LAKE_SURF_AREA].standard_name, "lake_area");
-    strcpy(out_metadata[OUT_LAKE_SURF_AREA].units, "m2");
-    strcpy(out_metadata[OUT_LAKE_SURF_AREA].description, "lake surface area");
+    snprintf(out_metadata[OUT_LAKE_SURF_AREA].varname, MAXSTRING, "%s", "OUT_LAKE_SURF_AREA");
+    snprintf(out_metadata[OUT_LAKE_SURF_AREA].long_name, MAXSTRING, "%s", "lake_surf_area");
+    snprintf(out_metadata[OUT_LAKE_SURF_AREA].standard_name, MAXSTRING, "%s", "lake_area");
+    snprintf(out_metadata[OUT_LAKE_SURF_AREA].units, MAXSTRING, "%s", "m2");
+    snprintf(out_metadata[OUT_LAKE_SURF_AREA].description, MAXSTRING, "%s", "lake surface area");
 
     /* liquid water equivalent of snow on top of lake ice [m over lake ice] */
-    strcpy(out_metadata[OUT_LAKE_SWE].varname, "OUT_LAKE_SWE");
-    strcpy(out_metadata[OUT_LAKE_SWE].long_name, "lake_swe");
-    strcpy(out_metadata[OUT_LAKE_SWE].standard_name,
+    snprintf(out_metadata[OUT_LAKE_SWE].varname, MAXSTRING, "%s", "OUT_LAKE_SWE");
+    snprintf(out_metadata[OUT_LAKE_SWE].long_name, MAXSTRING, "%s", "lake_swe");
+    snprintf(out_metadata[OUT_LAKE_SWE].standard_name, MAXSTRING, "%s",
            "lwe_thickness_of_snow_on_lake");
-    strcpy(out_metadata[OUT_LAKE_SWE].units, "m");
-    strcpy(out_metadata[OUT_LAKE_SWE].description,
+    snprintf(out_metadata[OUT_LAKE_SWE].units, MAXSTRING, "%s", "m");
+    snprintf(out_metadata[OUT_LAKE_SWE].description, MAXSTRING, "%s",
            "liquid water equivalent of snow on top of lake ice");
 
     /* volumetric liquid water equivalent of snow on top of lake ice [m3] */
-    strcpy(out_metadata[OUT_LAKE_SWE_V].varname, "OUT_LAKE_SWE_V");
-    strcpy(out_metadata[OUT_LAKE_SWE_V].long_name, "lake_swe_v");
-    strcpy(out_metadata[OUT_LAKE_SWE_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_SWE_V].varname, MAXSTRING, "%s", "OUT_LAKE_SWE_V");
+    snprintf(out_metadata[OUT_LAKE_SWE_V].long_name, MAXSTRING, "%s", "lake_swe_v");
+    snprintf(out_metadata[OUT_LAKE_SWE_V].standard_name, MAXSTRING, "%s",
            "lwe_volume_of_snow_on_lake");
-    strcpy(out_metadata[OUT_LAKE_SWE_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_SWE_V].description,
+    snprintf(out_metadata[OUT_LAKE_SWE_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_SWE_V].description, MAXSTRING, "%s",
            "liquid water equivalent of snow on top of lake ice");
 
     /* lake volume [m3] */
-    strcpy(out_metadata[OUT_LAKE_VOLUME].varname, "OUT_LAKE_VOLUME");
-    strcpy(out_metadata[OUT_LAKE_VOLUME].long_name, "lake_volume");
-    strcpy(out_metadata[OUT_LAKE_VOLUME].standard_name, "lake_volume");
-    strcpy(out_metadata[OUT_LAKE_VOLUME].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_VOLUME].description, "lake volume");
+    snprintf(out_metadata[OUT_LAKE_VOLUME].varname, MAXSTRING, "%s", "OUT_LAKE_VOLUME");
+    snprintf(out_metadata[OUT_LAKE_VOLUME].long_name, MAXSTRING, "%s", "lake_volume");
+    snprintf(out_metadata[OUT_LAKE_VOLUME].standard_name, MAXSTRING, "%s", "lake_volume");
+    snprintf(out_metadata[OUT_LAKE_VOLUME].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_VOLUME].description, MAXSTRING, "%s", "lake volume");
 
     /* root zone soil moisture [mm] */
-    strcpy(out_metadata[OUT_ROOTMOIST].varname, "OUT_ROOTMOIST");
-    strcpy(out_metadata[OUT_ROOTMOIST].long_name, "rootmoist");
-    strcpy(out_metadata[OUT_ROOTMOIST].standard_name,
+    snprintf(out_metadata[OUT_ROOTMOIST].varname, MAXSTRING, "%s", "OUT_ROOTMOIST");
+    snprintf(out_metadata[OUT_ROOTMOIST].long_name, MAXSTRING, "%s", "rootmoist");
+    snprintf(out_metadata[OUT_ROOTMOIST].standard_name, MAXSTRING, "%s",
            "soil_moisture_in_root_zone");
-    strcpy(out_metadata[OUT_ROOTMOIST].units, "mm");
-    strcpy(out_metadata[OUT_ROOTMOIST].description, "root zone soil moisture");
+    snprintf(out_metadata[OUT_ROOTMOIST].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_ROOTMOIST].description, MAXSTRING, "%s", "root zone soil moisture");
 
     /* fraction of soil moisture (by mass) that is ice, for each soil layer */
-    strcpy(out_metadata[OUT_SMFROZFRAC].varname, "OUT_SMFROZFRAC");
-    strcpy(out_metadata[OUT_SMFROZFRAC].long_name, "smfrozfrac");
-    strcpy(out_metadata[OUT_SMFROZFRAC].standard_name,
+    snprintf(out_metadata[OUT_SMFROZFRAC].varname, MAXSTRING, "%s", "OUT_SMFROZFRAC");
+    snprintf(out_metadata[OUT_SMFROZFRAC].long_name, MAXSTRING, "%s", "smfrozfrac");
+    snprintf(out_metadata[OUT_SMFROZFRAC].standard_name, MAXSTRING, "%s",
            "soil_moisture_ice_fraction");
-    strcpy(out_metadata[OUT_SMFROZFRAC].units, "1");
-    strcpy(out_metadata[OUT_SMFROZFRAC].description,
+    snprintf(out_metadata[OUT_SMFROZFRAC].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SMFROZFRAC].description, MAXSTRING, "%s",
            "fraction of soil moisture (by mass) that is ice, for each soil layer");
 
     /* fraction of soil moisture (by mass) that is liquid, for each soil layer */
-    strcpy(out_metadata[OUT_SMLIQFRAC].varname, "OUT_SMLIQFRAC");
-    strcpy(out_metadata[OUT_SMLIQFRAC].long_name, "smliqfrac");
-    strcpy(out_metadata[OUT_SMLIQFRAC].standard_name,
+    snprintf(out_metadata[OUT_SMLIQFRAC].varname, MAXSTRING, "%s", "OUT_SMLIQFRAC");
+    snprintf(out_metadata[OUT_SMLIQFRAC].long_name, MAXSTRING, "%s", "smliqfrac");
+    snprintf(out_metadata[OUT_SMLIQFRAC].standard_name, MAXSTRING, "%s",
            "soil_moisture_liquid_fraction");
-    strcpy(out_metadata[OUT_SMLIQFRAC].units, "1");
-    strcpy(out_metadata[OUT_SMLIQFRAC].description,
+    snprintf(out_metadata[OUT_SMLIQFRAC].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SMLIQFRAC].description, MAXSTRING, "%s",
            "fraction of soil moisture (by mass) that is liquid, for each soil layer");
 
     /* snow interception storage in canopy [mm] */
-    strcpy(out_metadata[OUT_SNOW_CANOPY].varname, "OUT_SNOW_CANOPY");
-    strcpy(out_metadata[OUT_SNOW_CANOPY].long_name, "snow_canopy");
-    strcpy(out_metadata[OUT_SNOW_CANOPY].standard_name,
+    snprintf(out_metadata[OUT_SNOW_CANOPY].varname, MAXSTRING, "%s", "OUT_SNOW_CANOPY");
+    snprintf(out_metadata[OUT_SNOW_CANOPY].long_name, MAXSTRING, "%s", "snow_canopy");
+    snprintf(out_metadata[OUT_SNOW_CANOPY].standard_name, MAXSTRING, "%s",
            "lwe_thickness_of_canopy_intercepted_snow");
-    strcpy(out_metadata[OUT_SNOW_CANOPY].units, "mm");
-    strcpy(out_metadata[OUT_SNOW_CANOPY].description,
+    snprintf(out_metadata[OUT_SNOW_CANOPY].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SNOW_CANOPY].description, MAXSTRING, "%s",
            "snow interception storage in canopy");
 
     /* fractional area of snow cover [fraction] */
-    strcpy(out_metadata[OUT_SNOW_COVER].varname, "OUT_SNOW_COVER");
-    strcpy(out_metadata[OUT_SNOW_COVER].long_name, "snow_cover");
-    strcpy(out_metadata[OUT_SNOW_COVER].standard_name,
+    snprintf(out_metadata[OUT_SNOW_COVER].varname, MAXSTRING, "%s", "OUT_SNOW_COVER");
+    snprintf(out_metadata[OUT_SNOW_COVER].long_name, MAXSTRING, "%s", "snow_cover");
+    snprintf(out_metadata[OUT_SNOW_COVER].standard_name, MAXSTRING, "%s",
            "snow_cover_area_fraction");
-    strcpy(out_metadata[OUT_SNOW_COVER].units, "1");
-    strcpy(out_metadata[OUT_SNOW_COVER].description,
+    snprintf(out_metadata[OUT_SNOW_COVER].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SNOW_COVER].description, MAXSTRING, "%s",
            "fractional area of snow cover");
 
     /* depth of snow pack [cm] */
-    strcpy(out_metadata[OUT_SNOW_DEPTH].varname, "OUT_SNOW_DEPTH");
-    strcpy(out_metadata[OUT_SNOW_DEPTH].long_name, "snow_depth");
-    strcpy(out_metadata[OUT_SNOW_DEPTH].standard_name, "thickness_of_snow");
-    strcpy(out_metadata[OUT_SNOW_DEPTH].units, "cm");
-    strcpy(out_metadata[OUT_SNOW_DEPTH].description, "depth of snow pack");
+    snprintf(out_metadata[OUT_SNOW_DEPTH].varname, MAXSTRING, "%s", "OUT_SNOW_DEPTH");
+    snprintf(out_metadata[OUT_SNOW_DEPTH].long_name, MAXSTRING, "%s", "snow_depth");
+    snprintf(out_metadata[OUT_SNOW_DEPTH].standard_name, MAXSTRING, "%s", "thickness_of_snow");
+    snprintf(out_metadata[OUT_SNOW_DEPTH].units, MAXSTRING, "%s", "cm");
+    snprintf(out_metadata[OUT_SNOW_DEPTH].description, MAXSTRING, "%s", "depth of snow pack");
 
     /* soil ice content [mm] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_ICE].varname, "OUT_SOIL_ICE");
-    strcpy(out_metadata[OUT_SOIL_ICE].long_name, "soil_ice");
-    strcpy(out_metadata[OUT_SOIL_ICE].standard_name, "soil_moisture_ice_depth");
-    strcpy(out_metadata[OUT_SOIL_ICE].units, "mm");
-    strcpy(out_metadata[OUT_SOIL_ICE].description,
+    snprintf(out_metadata[OUT_SOIL_ICE].varname, MAXSTRING, "%s", "OUT_SOIL_ICE");
+    snprintf(out_metadata[OUT_SOIL_ICE].long_name, MAXSTRING, "%s", "soil_ice");
+    snprintf(out_metadata[OUT_SOIL_ICE].standard_name, MAXSTRING, "%s", "soil_moisture_ice_depth");
+    snprintf(out_metadata[OUT_SOIL_ICE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SOIL_ICE].description, MAXSTRING, "%s",
            "soil ice content for each soil layer");
 
     /* soil liquid moisture content [mm] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_LIQ].varname, "OUT_SOIL_LIQ");
-    strcpy(out_metadata[OUT_SOIL_LIQ].long_name, "soil_liq");
-    strcpy(out_metadata[OUT_SOIL_LIQ].standard_name,
+    snprintf(out_metadata[OUT_SOIL_LIQ].varname, MAXSTRING, "%s", "OUT_SOIL_LIQ");
+    snprintf(out_metadata[OUT_SOIL_LIQ].long_name, MAXSTRING, "%s", "soil_liq");
+    snprintf(out_metadata[OUT_SOIL_LIQ].standard_name, MAXSTRING, "%s",
            "soil_moisture_liquid_depth");
-    strcpy(out_metadata[OUT_SOIL_LIQ].units, "mm");
-    strcpy(out_metadata[OUT_SOIL_LIQ].description,
+    snprintf(out_metadata[OUT_SOIL_LIQ].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SOIL_LIQ].description, MAXSTRING, "%s",
            "soil liquid moisture content for each soil layer");
 
     /* soil ice content [1] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_ICE_FRAC].varname, "OUT_SOIL_ICE_FRAC");
-    strcpy(out_metadata[OUT_SOIL_ICE_FRAC].long_name, "soil_ice_frac");
-    strcpy(out_metadata[OUT_SOIL_ICE_FRAC].standard_name,
+    snprintf(out_metadata[OUT_SOIL_ICE_FRAC].varname, MAXSTRING, "%s", "OUT_SOIL_ICE_FRAC");
+    snprintf(out_metadata[OUT_SOIL_ICE_FRAC].long_name, MAXSTRING, "%s", "soil_ice_frac");
+    snprintf(out_metadata[OUT_SOIL_ICE_FRAC].standard_name, MAXSTRING, "%s",
            "soil_moisture_ice_depth_fraction");
-    strcpy(out_metadata[OUT_SOIL_ICE_FRAC].units, "1");
-    strcpy(out_metadata[OUT_SOIL_ICE_FRAC].description,
+    snprintf(out_metadata[OUT_SOIL_ICE_FRAC].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SOIL_ICE_FRAC].description, MAXSTRING, "%s",
            "soil ice content fraction for each soil layer");
 
     /* soil liquid moisture content [1] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_LIQ_FRAC].varname, "OUT_SOIL_LIQ_FRAC");
-    strcpy(out_metadata[OUT_SOIL_LIQ_FRAC].long_name, "soil_liq_frac");
-    strcpy(out_metadata[OUT_SOIL_LIQ_FRAC].standard_name,
+    snprintf(out_metadata[OUT_SOIL_LIQ_FRAC].varname, MAXSTRING, "%s", "OUT_SOIL_LIQ_FRAC");
+    snprintf(out_metadata[OUT_SOIL_LIQ_FRAC].long_name, MAXSTRING, "%s", "soil_liq_frac");
+    snprintf(out_metadata[OUT_SOIL_LIQ_FRAC].standard_name, MAXSTRING, "%s",
            "soil_moisture_liquid_depth_fraction");
-    strcpy(out_metadata[OUT_SOIL_LIQ_FRAC].units, "1");
-    strcpy(out_metadata[OUT_SOIL_LIQ_FRAC].description,
+    snprintf(out_metadata[OUT_SOIL_LIQ_FRAC].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SOIL_LIQ_FRAC].description, MAXSTRING, "%s",
            "soil liquid moisture content fraction for each soil layer");
 
     /* soil total moisture content [mm] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_MOIST].varname, "OUT_SOIL_MOIST");
-    strcpy(out_metadata[OUT_SOIL_MOIST].long_name, "soil_moist");
-    strcpy(out_metadata[OUT_SOIL_MOIST].standard_name, "soil_moisture");
-    strcpy(out_metadata[OUT_SOIL_MOIST].units, "mm");
-    strcpy(out_metadata[OUT_SOIL_MOIST].description,
+    snprintf(out_metadata[OUT_SOIL_MOIST].varname, MAXSTRING, "%s", "OUT_SOIL_MOIST");
+    snprintf(out_metadata[OUT_SOIL_MOIST].long_name, MAXSTRING, "%s", "soil_moist");
+    snprintf(out_metadata[OUT_SOIL_MOIST].standard_name, MAXSTRING, "%s", "soil_moisture");
+    snprintf(out_metadata[OUT_SOIL_MOIST].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SOIL_MOIST].description, MAXSTRING, "%s",
            "soil total moisture content");
 
     /* soil effective saturation [-] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_EFF_SAT].varname, "OUT_SOIL_EFF_SAT");
-    strcpy(out_metadata[OUT_SOIL_EFF_SAT].long_name, "soil_effective_saturation");
-    strcpy(out_metadata[OUT_SOIL_EFF_SAT].standard_name, "soil_effective_saturation");
-    strcpy(out_metadata[OUT_SOIL_EFF_SAT].units, "-");
-    strcpy(out_metadata[OUT_SOIL_EFF_SAT].description,
+    snprintf(out_metadata[OUT_SOIL_EFF_SAT].varname, MAXSTRING, "%s", "OUT_SOIL_EFF_SAT");
+    snprintf(out_metadata[OUT_SOIL_EFF_SAT].long_name, MAXSTRING, "%s", "soil_effective_saturation");
+    snprintf(out_metadata[OUT_SOIL_EFF_SAT].standard_name, MAXSTRING, "%s", "soil_effective_saturation");
+    snprintf(out_metadata[OUT_SOIL_EFF_SAT].units, MAXSTRING, "%s", "-");
+    snprintf(out_metadata[OUT_SOIL_EFF_SAT].description, MAXSTRING, "%s",
            "soil effective saturation (between residual- and maximum moisture content)");
 
     /* vertical average of (soil moisture - wilting point)/(maximum soil moisture - wilting point) [mm/mm] */
-    strcpy(out_metadata[OUT_SOIL_WET].varname, "OUT_SOIL_WET");
-    strcpy(out_metadata[OUT_SOIL_WET].long_name, "soil_wet");
-    strcpy(out_metadata[OUT_SOIL_WET].standard_name,
+    snprintf(out_metadata[OUT_SOIL_WET].varname, MAXSTRING, "%s", "OUT_SOIL_WET");
+    snprintf(out_metadata[OUT_SOIL_WET].long_name, MAXSTRING, "%s", "soil_wet");
+    snprintf(out_metadata[OUT_SOIL_WET].standard_name, MAXSTRING, "%s",
            "soil_moisture_wetness_fraction");
-    strcpy(out_metadata[OUT_SOIL_WET].units, "1");
-    strcpy(out_metadata[OUT_SOIL_WET].description,
+    snprintf(out_metadata[OUT_SOIL_WET].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SOIL_WET].description, MAXSTRING, "%s",
            "vertical average of (soil moisture - wilting point)/(maximum "
            "soil moisture - wilting point)");
 
     /* storage of liquid water on surface (ponding) [mm] */
-    strcpy(out_metadata[OUT_SURFSTOR].varname, "OUT_SURFSTOR");
-    strcpy(out_metadata[OUT_SURFSTOR].long_name, "surfstor");
-    strcpy(out_metadata[OUT_SURFSTOR].standard_name,
+    snprintf(out_metadata[OUT_SURFSTOR].varname, MAXSTRING, "%s", "OUT_SURFSTOR");
+    snprintf(out_metadata[OUT_SURFSTOR].long_name, MAXSTRING, "%s", "surfstor");
+    snprintf(out_metadata[OUT_SURFSTOR].standard_name, MAXSTRING, "%s",
            "surface_liquid_water_storage");
-    strcpy(out_metadata[OUT_SURFSTOR].units, "mm");
-    strcpy(out_metadata[OUT_SURFSTOR].description,
+    snprintf(out_metadata[OUT_SURFSTOR].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SURFSTOR].description, MAXSTRING, "%s",
            "storage of liquid water on surface (ponding)");
 
     /* fraction of soil surface that is frozen [fraction] */
-    strcpy(out_metadata[OUT_SURF_FROST_FRAC].varname, "OUT_SURF_FROST_FRAC");
-    strcpy(out_metadata[OUT_SURF_FROST_FRAC].long_name, "surf_frost_frac");
-    strcpy(out_metadata[OUT_SURF_FROST_FRAC].standard_name,
+    snprintf(out_metadata[OUT_SURF_FROST_FRAC].varname, MAXSTRING, "%s", "OUT_SURF_FROST_FRAC");
+    snprintf(out_metadata[OUT_SURF_FROST_FRAC].long_name, MAXSTRING, "%s", "surf_frost_frac");
+    snprintf(out_metadata[OUT_SURF_FROST_FRAC].standard_name, MAXSTRING, "%s",
            "frozen_soil_surface_fraction");
-    strcpy(out_metadata[OUT_SURF_FROST_FRAC].units, "1");
-    strcpy(out_metadata[OUT_SURF_FROST_FRAC].description,
+    snprintf(out_metadata[OUT_SURF_FROST_FRAC].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SURF_FROST_FRAC].description, MAXSTRING, "%s",
            "fraction of soil surface that is frozen");
 
     /* snow water equivalent in snow pack [mm] */
-    strcpy(out_metadata[OUT_SWE].varname, "OUT_SWE");
-    strcpy(out_metadata[OUT_SWE].long_name, "swe");
-    strcpy(out_metadata[OUT_SWE].standard_name, "lwe_thickness_of_snow");
-    strcpy(out_metadata[OUT_SWE].units, "mm");
-    strcpy(out_metadata[OUT_SWE].description,
+    snprintf(out_metadata[OUT_SWE].varname, MAXSTRING, "%s", "OUT_SWE");
+    snprintf(out_metadata[OUT_SWE].long_name, MAXSTRING, "%s", "swe");
+    snprintf(out_metadata[OUT_SWE].standard_name, MAXSTRING, "%s", "lwe_thickness_of_snow");
+    snprintf(out_metadata[OUT_SWE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SWE].description, MAXSTRING, "%s",
            "snow water equivalent in snow pack");
 
     /* total moisture interception storage in canopy [mm] */
-    strcpy(out_metadata[OUT_WDEW].varname, "OUT_WDEW");
-    strcpy(out_metadata[OUT_WDEW].long_name, "wdew");
-    strcpy(out_metadata[OUT_WDEW].standard_name,
+    snprintf(out_metadata[OUT_WDEW].varname, MAXSTRING, "%s", "OUT_WDEW");
+    snprintf(out_metadata[OUT_WDEW].long_name, MAXSTRING, "%s", "wdew");
+    snprintf(out_metadata[OUT_WDEW].standard_name, MAXSTRING, "%s",
            "soil_moisture_storage_depth_in_canopy");
-    strcpy(out_metadata[OUT_WDEW].units, "mm");
-    strcpy(out_metadata[OUT_WDEW].description,
+    snprintf(out_metadata[OUT_WDEW].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_WDEW].description, MAXSTRING, "%s",
            "total moisture interception storage in canopy");
 
     /* water table position [cm] (zwt within lowest unsaturated layer) */
-    strcpy(out_metadata[OUT_ZWT].varname, "OUT_ZWT");
-    strcpy(out_metadata[OUT_ZWT].long_name, "zwt");
-    strcpy(out_metadata[OUT_ZWT].standard_name,
+    snprintf(out_metadata[OUT_ZWT].varname, MAXSTRING, "%s", "OUT_ZWT");
+    snprintf(out_metadata[OUT_ZWT].long_name, MAXSTRING, "%s", "zwt");
+    snprintf(out_metadata[OUT_ZWT].standard_name, MAXSTRING, "%s",
            "water_table_position_lowest_layer");
-    strcpy(out_metadata[OUT_ZWT].units, "cm");
-    strcpy(out_metadata[OUT_ZWT].description,
+    snprintf(out_metadata[OUT_ZWT].units, MAXSTRING, "%s", "cm");
+    snprintf(out_metadata[OUT_ZWT].description, MAXSTRING, "%s",
            "water table position (zwt within lowest unsaturated layer)");
 
     /* lumped water table position [cm] (zwt of total moisture across all layers, lumped together) */
-    strcpy(out_metadata[OUT_ZWT_LUMPED].varname, "OUT_ZWT_LUMPED");
-    strcpy(out_metadata[OUT_ZWT_LUMPED].long_name, "zwt_lumped");
-    strcpy(out_metadata[OUT_ZWT_LUMPED].standard_name,
+    snprintf(out_metadata[OUT_ZWT_LUMPED].varname, MAXSTRING, "%s", "OUT_ZWT_LUMPED");
+    snprintf(out_metadata[OUT_ZWT_LUMPED].long_name, MAXSTRING, "%s", "zwt_lumped");
+    snprintf(out_metadata[OUT_ZWT_LUMPED].standard_name, MAXSTRING, "%s",
            "lumped_water_table_position");
-    strcpy(out_metadata[OUT_ZWT_LUMPED].units, "cm");
-    strcpy(out_metadata[OUT_ZWT_LUMPED].description,
+    snprintf(out_metadata[OUT_ZWT_LUMPED].units, MAXSTRING, "%s", "cm");
+    snprintf(out_metadata[OUT_ZWT_LUMPED].description, MAXSTRING, "%s",
            "lumped water table position (zwt of total moisture across all layers, lumped together)");
 
     // Water Balance Terms - fluxes
     /* recharge to the bottom layer [mm] */
-    strcpy(out_metadata[OUT_RECHARGE].varname, "OUT_RECHARGE");
-    strcpy(out_metadata[OUT_RECHARGE].long_name, "recharge");
-    strcpy(out_metadata[OUT_RECHARGE].standard_name, "recharge_amount");
-    strcpy(out_metadata[OUT_RECHARGE].units, "mm");
-    strcpy(out_metadata[OUT_RECHARGE].description,
+    snprintf(out_metadata[OUT_RECHARGE].varname, MAXSTRING, "%s", "OUT_RECHARGE");
+    snprintf(out_metadata[OUT_RECHARGE].long_name, MAXSTRING, "%s", "recharge");
+    snprintf(out_metadata[OUT_RECHARGE].standard_name, MAXSTRING, "%s", "recharge_amount");
+    snprintf(out_metadata[OUT_RECHARGE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_RECHARGE].description, MAXSTRING, "%s",
            "recharge to the bottom layer");
     
     /* baseflow out of the bottom layer [mm] */
-    strcpy(out_metadata[OUT_BASEFLOW].varname, "OUT_BASEFLOW");
-    strcpy(out_metadata[OUT_BASEFLOW].long_name, "baseflow");
-    strcpy(out_metadata[OUT_BASEFLOW].standard_name, "baseflow_amount");
-    strcpy(out_metadata[OUT_BASEFLOW].units, "mm");
-    strcpy(out_metadata[OUT_BASEFLOW].description,
+    snprintf(out_metadata[OUT_BASEFLOW].varname, MAXSTRING, "%s", "OUT_BASEFLOW");
+    snprintf(out_metadata[OUT_BASEFLOW].long_name, MAXSTRING, "%s", "baseflow");
+    snprintf(out_metadata[OUT_BASEFLOW].standard_name, MAXSTRING, "%s", "baseflow_amount");
+    snprintf(out_metadata[OUT_BASEFLOW].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_BASEFLOW].description, MAXSTRING, "%s",
            "baseflow out of the bottom layer");
 
     /* change in canopy interception storage [mm] */
-    strcpy(out_metadata[OUT_DELINTERCEPT].varname, "OUT_DELINTERCEPT");
-    strcpy(out_metadata[OUT_DELINTERCEPT].long_name, "delintercept");
-    strcpy(out_metadata[OUT_DELINTERCEPT].standard_name,
+    snprintf(out_metadata[OUT_DELINTERCEPT].varname, MAXSTRING, "%s", "OUT_DELINTERCEPT");
+    snprintf(out_metadata[OUT_DELINTERCEPT].long_name, MAXSTRING, "%s", "delintercept");
+    snprintf(out_metadata[OUT_DELINTERCEPT].standard_name, MAXSTRING, "%s",
            "change_in_canopy_interception_amount");
-    strcpy(out_metadata[OUT_DELINTERCEPT].units, "mm");
-    strcpy(out_metadata[OUT_DELINTERCEPT].description,
+    snprintf(out_metadata[OUT_DELINTERCEPT].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_DELINTERCEPT].description, MAXSTRING, "%s",
            "change in canopy interception storage");
 
     /* change in soil water content [mm] */
-    strcpy(out_metadata[OUT_DELSOILMOIST].varname, "OUT_DELSOILMOIST");
-    strcpy(out_metadata[OUT_DELSOILMOIST].long_name, "delsoilmoist");
-    strcpy(out_metadata[OUT_DELSOILMOIST].standard_name,
+    snprintf(out_metadata[OUT_DELSOILMOIST].varname, MAXSTRING, "%s", "OUT_DELSOILMOIST");
+    snprintf(out_metadata[OUT_DELSOILMOIST].long_name, MAXSTRING, "%s", "delsoilmoist");
+    snprintf(out_metadata[OUT_DELSOILMOIST].standard_name, MAXSTRING, "%s",
            "change_in_soil_water_amount");
-    strcpy(out_metadata[OUT_DELSOILMOIST].units, "mm");
-    strcpy(out_metadata[OUT_DELSOILMOIST].description,
+    snprintf(out_metadata[OUT_DELSOILMOIST].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_DELSOILMOIST].description, MAXSTRING, "%s",
            "change in soil water content");
 
     /* change in snow water equivalent [mm] */
-    strcpy(out_metadata[OUT_DELSWE].varname, "OUT_DELSWE");
-    strcpy(out_metadata[OUT_DELSWE].long_name, "delswe");
-    strcpy(out_metadata[OUT_DELSWE].standard_name,
+    snprintf(out_metadata[OUT_DELSWE].varname, MAXSTRING, "%s", "OUT_DELSWE");
+    snprintf(out_metadata[OUT_DELSWE].long_name, MAXSTRING, "%s", "delswe");
+    snprintf(out_metadata[OUT_DELSWE].standard_name, MAXSTRING, "%s",
            "change_in_snow_lwe_thickness");
-    strcpy(out_metadata[OUT_DELSWE].units, "mm");
-    strcpy(out_metadata[OUT_DELSWE].description,
+    snprintf(out_metadata[OUT_DELSWE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_DELSWE].description, MAXSTRING, "%s",
            "change in snow water equivalent");
 
     /* change in surface liquid water storage  [mm] */
-    strcpy(out_metadata[OUT_DELSURFSTOR].varname, "OUT_DELSURFSTOR");
-    strcpy(out_metadata[OUT_DELSURFSTOR].long_name, "delsurfstor");
-    strcpy(out_metadata[OUT_DELSURFSTOR].standard_name,
+    snprintf(out_metadata[OUT_DELSURFSTOR].varname, MAXSTRING, "%s", "OUT_DELSURFSTOR");
+    snprintf(out_metadata[OUT_DELSURFSTOR].long_name, MAXSTRING, "%s", "delsurfstor");
+    snprintf(out_metadata[OUT_DELSURFSTOR].standard_name, MAXSTRING, "%s",
            "change_in_surface_liquid_water_storage");
-    strcpy(out_metadata[OUT_DELSURFSTOR].units, "mm");
-    strcpy(out_metadata[OUT_DELSURFSTOR].description,
+    snprintf(out_metadata[OUT_DELSURFSTOR].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_DELSURFSTOR].description, MAXSTRING, "%s",
            "change in surface liquid water storage");
 
     /* total net evaporation [mm] */
-    strcpy(out_metadata[OUT_EVAP].varname, "OUT_EVAP");
-    strcpy(out_metadata[OUT_EVAP].long_name, "evap");
-    strcpy(out_metadata[OUT_EVAP].standard_name, "water_evaporation_flux_net");
-    strcpy(out_metadata[OUT_EVAP].units, "mm");
-    strcpy(out_metadata[OUT_EVAP].description, "total net evaporation");
+    snprintf(out_metadata[OUT_EVAP].varname, MAXSTRING, "%s", "OUT_EVAP");
+    snprintf(out_metadata[OUT_EVAP].long_name, MAXSTRING, "%s", "evap");
+    snprintf(out_metadata[OUT_EVAP].standard_name, MAXSTRING, "%s", "water_evaporation_flux_net");
+    snprintf(out_metadata[OUT_EVAP].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_EVAP].description, MAXSTRING, "%s", "total net evaporation");
 
     /* net evaporation from bare soil [mm] */
-    strcpy(out_metadata[OUT_EVAP_BARE].varname, "OUT_EVAP_BARE");
-    strcpy(out_metadata[OUT_EVAP_BARE].long_name, "evap_bare");
-    strcpy(out_metadata[OUT_EVAP_BARE].standard_name,
+    snprintf(out_metadata[OUT_EVAP_BARE].varname, MAXSTRING, "%s", "OUT_EVAP_BARE");
+    snprintf(out_metadata[OUT_EVAP_BARE].long_name, MAXSTRING, "%s", "evap_bare");
+    snprintf(out_metadata[OUT_EVAP_BARE].standard_name, MAXSTRING, "%s",
            "water_evaporation_from_soil");
-    strcpy(out_metadata[OUT_EVAP_BARE].units, "mm");
-    strcpy(out_metadata[OUT_EVAP_BARE].description,
+    snprintf(out_metadata[OUT_EVAP_BARE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_EVAP_BARE].description, MAXSTRING, "%s",
            "net evaporation from bare soil");
 
     /* net evaporation from canopy interception [mm] */
-    strcpy(out_metadata[OUT_EVAP_CANOP].varname, "OUT_EVAP_CANOP");
-    strcpy(out_metadata[OUT_EVAP_CANOP].long_name, "evap_canop");
-    strcpy(out_metadata[OUT_EVAP_CANOP].standard_name,
+    snprintf(out_metadata[OUT_EVAP_CANOP].varname, MAXSTRING, "%s", "OUT_EVAP_CANOP");
+    snprintf(out_metadata[OUT_EVAP_CANOP].long_name, MAXSTRING, "%s", "evap_canop");
+    snprintf(out_metadata[OUT_EVAP_CANOP].standard_name, MAXSTRING, "%s",
            "water_evaporation_from_canopy");
-    strcpy(out_metadata[OUT_EVAP_CANOP].units, "mm");
-    strcpy(out_metadata[OUT_EVAP_CANOP].description,
+    snprintf(out_metadata[OUT_EVAP_CANOP].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_EVAP_CANOP].description, MAXSTRING, "%s",
            "net evaporation from canopy interception");
 
     /* moisture that reaches top of soil column [mm] */
-    strcpy(out_metadata[OUT_INFLOW].varname, "OUT_INFLOW");
-    strcpy(out_metadata[OUT_INFLOW].long_name, "inflow");
-    strcpy(out_metadata[OUT_INFLOW].standard_name, "soil_column_inflow");
-    strcpy(out_metadata[OUT_INFLOW].units, "mm");
-    strcpy(out_metadata[OUT_INFLOW].description,
+    snprintf(out_metadata[OUT_INFLOW].varname, MAXSTRING, "%s", "OUT_INFLOW");
+    snprintf(out_metadata[OUT_INFLOW].long_name, MAXSTRING, "%s", "inflow");
+    snprintf(out_metadata[OUT_INFLOW].standard_name, MAXSTRING, "%s", "soil_column_inflow");
+    snprintf(out_metadata[OUT_INFLOW].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_INFLOW].description, MAXSTRING, "%s",
            "moisture that reaches top of soil column");
 
     /* incoming baseflow from lake catchment [mm] */
-    strcpy(out_metadata[OUT_LAKE_BF_IN].varname, "OUT_LAKE_BF_IN");
-    strcpy(out_metadata[OUT_LAKE_BF_IN].long_name, "lake_bf_in");
-    strcpy(out_metadata[OUT_LAKE_BF_IN].standard_name, "infiltration_amount");
-    strcpy(out_metadata[OUT_LAKE_BF_IN].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_BF_IN].description,
+    snprintf(out_metadata[OUT_LAKE_BF_IN].varname, MAXSTRING, "%s", "OUT_LAKE_BF_IN");
+    snprintf(out_metadata[OUT_LAKE_BF_IN].long_name, MAXSTRING, "%s", "lake_bf_in");
+    snprintf(out_metadata[OUT_LAKE_BF_IN].standard_name, MAXSTRING, "%s", "infiltration_amount");
+    snprintf(out_metadata[OUT_LAKE_BF_IN].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_BF_IN].description, MAXSTRING, "%s",
            "incoming baseflow from lake catchment");
 
     /* incoming volumetric baseflow from lake catchment [m3] */
-    strcpy(out_metadata[OUT_LAKE_BF_IN_V].varname, "OUT_LAKE_BF_IN_V");
-    strcpy(out_metadata[OUT_LAKE_BF_IN_V].long_name, "lake_bf_in_v");
-    strcpy(out_metadata[OUT_LAKE_BF_IN_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_BF_IN_V].varname, MAXSTRING, "%s", "OUT_LAKE_BF_IN_V");
+    snprintf(out_metadata[OUT_LAKE_BF_IN_V].long_name, MAXSTRING, "%s", "lake_bf_in_v");
+    snprintf(out_metadata[OUT_LAKE_BF_IN_V].standard_name, MAXSTRING, "%s",
            "baseflow_volume_from_lake_catchment");
-    strcpy(out_metadata[OUT_LAKE_BF_IN_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_BF_IN_V].description,
+    snprintf(out_metadata[OUT_LAKE_BF_IN_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_BF_IN_V].description, MAXSTRING, "%s",
            "incoming volumetric baseflow from lake catchment");
 
     /* outgoing baseflow lake [mm] */
-    strcpy(out_metadata[OUT_LAKE_BF_OUT].varname, "OUT_LAKE_BF_OUT");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT].long_name, "lake_bf_out");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT].standard_name,
+    snprintf(out_metadata[OUT_LAKE_BF_OUT].varname, MAXSTRING, "%s", "OUT_LAKE_BF_OUT");
+    snprintf(out_metadata[OUT_LAKE_BF_OUT].long_name, MAXSTRING, "%s", "lake_bf_out");
+    snprintf(out_metadata[OUT_LAKE_BF_OUT].standard_name, MAXSTRING, "%s",
            "baseflow_outgoing_lake");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT].description,
+    snprintf(out_metadata[OUT_LAKE_BF_OUT].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_BF_OUT].description, MAXSTRING, "%s",
            "outgoing baseflow lake");
 
     /* outgoing volumetric baseflow from lake [m3] */
-    strcpy(out_metadata[OUT_LAKE_BF_OUT_V].varname, "OUT_LAKE_BF_OUT_V");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT_V].long_name, "lake_bf_out_v");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_BF_OUT_V].varname, MAXSTRING, "%s", "OUT_LAKE_BF_OUT_V");
+    snprintf(out_metadata[OUT_LAKE_BF_OUT_V].long_name, MAXSTRING, "%s", "lake_bf_out_v");
+    snprintf(out_metadata[OUT_LAKE_BF_OUT_V].standard_name, MAXSTRING, "%s",
            "baseflow_outgoing_volume_lake");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_BF_OUT_V].description,
+    snprintf(out_metadata[OUT_LAKE_BF_OUT_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_BF_OUT_V].description, MAXSTRING, "%s",
            "outgoing volumetric baseflow from lake");
 
     /* channel inflow into lake [mm] */
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN].varname, "OUT_LAKE_CHAN_IN");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN].long_name, "lake_chan_in");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN].standard_name,
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN].varname, MAXSTRING, "%s", "OUT_LAKE_CHAN_IN");
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN].long_name, MAXSTRING, "%s", "lake_chan_in");
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN].standard_name, MAXSTRING, "%s",
            "channel_inflow_into_lake");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN].description,
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN].description, MAXSTRING, "%s",
            "channel inflow into lake");
 
     /* volumetric channel inflow into lake [m3] */
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN_V].varname, "OUT_LAKE_CHAN_IN_V");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN_V].long_name, "lake_chan_in_v");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN_V].varname, MAXSTRING, "%s", "OUT_LAKE_CHAN_IN_V");
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN_V].long_name, MAXSTRING, "%s", "lake_chan_in_v");
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN_V].standard_name, MAXSTRING, "%s",
            "channel_inflow_volume_into_lake");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_CHAN_IN_V].description,
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_CHAN_IN_V].description, MAXSTRING, "%s",
            "volumetric channel inflow into lake");
 
     /* channel outflow from lake [mm] */
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT].varname, "OUT_LAKE_CHAN_OUT");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT].long_name, "lake_chan_out");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT].standard_name,
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT].varname, MAXSTRING, "%s", "OUT_LAKE_CHAN_OUT");
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT].long_name, MAXSTRING, "%s", "lake_chan_out");
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT].standard_name, MAXSTRING, "%s",
            "channel_outflow_from_lake");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT].description,
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT].description, MAXSTRING, "%s",
            "channel outflow from lake");
 
     /* volumetric channel outflow from lake [m3] */
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT_V].varname, "OUT_LAKE_CHAN_OUT_V");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT_V].long_name, "lake_chan_out_v");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT_V].varname, MAXSTRING, "%s", "OUT_LAKE_CHAN_OUT_V");
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT_V].long_name, MAXSTRING, "%s", "lake_chan_out_v");
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT_V].standard_name, MAXSTRING, "%s",
            "channel_outflow_volume_from_lake");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_CHAN_OUT_V].description,
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_CHAN_OUT_V].description, MAXSTRING, "%s",
            "volumetric channel outflow from lake");
 
     /* change in lake moisture storage (liquid plus ice cover) [mm] */
-    strcpy(out_metadata[OUT_LAKE_DSTOR].varname, "OUT_LAKE_DSTOR");
-    strcpy(out_metadata[OUT_LAKE_DSTOR].long_name, "lake_dstor");
-    strcpy(out_metadata[OUT_LAKE_DSTOR].standard_name,
+    snprintf(out_metadata[OUT_LAKE_DSTOR].varname, MAXSTRING, "%s", "OUT_LAKE_DSTOR");
+    snprintf(out_metadata[OUT_LAKE_DSTOR].long_name, MAXSTRING, "%s", "lake_dstor");
+    snprintf(out_metadata[OUT_LAKE_DSTOR].standard_name, MAXSTRING, "%s",
            "change_in_lake_moisture_amount");
-    strcpy(out_metadata[OUT_LAKE_DSTOR].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_DSTOR].description,
+    snprintf(out_metadata[OUT_LAKE_DSTOR].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_DSTOR].description, MAXSTRING, "%s",
            "change in lake moisture storage (liquid plus ice cover)");
 
     /* volumetric change in lake moisture storage (liquid plus ice cover) [m3] */
-    strcpy(out_metadata[OUT_LAKE_DSTOR_V].varname, "OUT_LAKE_DSTOR_V");
-    strcpy(out_metadata[OUT_LAKE_DSTOR_V].long_name, "lake_dstor_v");
-    strcpy(out_metadata[OUT_LAKE_DSTOR_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_DSTOR_V].varname, MAXSTRING, "%s", "OUT_LAKE_DSTOR_V");
+    snprintf(out_metadata[OUT_LAKE_DSTOR_V].long_name, MAXSTRING, "%s", "lake_dstor_v");
+    snprintf(out_metadata[OUT_LAKE_DSTOR_V].standard_name, MAXSTRING, "%s",
            "change_in_lake_moisture_volume");
-    strcpy(out_metadata[OUT_LAKE_DSTOR_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_DSTOR_V].description,
+    snprintf(out_metadata[OUT_LAKE_DSTOR_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_DSTOR_V].description, MAXSTRING, "%s",
            "volumetric change in lake moisture storage (liquid plus ice cover)");
 
     /* change in snowpack on top of lake ice [mm] */
-    strcpy(out_metadata[OUT_LAKE_DSWE].varname, "OUT_LAKE_DSWE");
-    strcpy(out_metadata[OUT_LAKE_DSWE].long_name, "lake_dswe");
-    strcpy(out_metadata[OUT_LAKE_DSWE].standard_name,
+    snprintf(out_metadata[OUT_LAKE_DSWE].varname, MAXSTRING, "%s", "OUT_LAKE_DSWE");
+    snprintf(out_metadata[OUT_LAKE_DSWE].long_name, MAXSTRING, "%s", "lake_dswe");
+    snprintf(out_metadata[OUT_LAKE_DSWE].standard_name, MAXSTRING, "%s",
            "change_in_snow_lwe_thickness_on_lake_ice");
-    strcpy(out_metadata[OUT_LAKE_DSWE].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_DSWE].description,
+    snprintf(out_metadata[OUT_LAKE_DSWE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_DSWE].description, MAXSTRING, "%s",
            "change in snowpack on top of lake ice");
 
     /* volumetric change in snowpack on top of lake ice [m3] */
-    strcpy(out_metadata[OUT_LAKE_DSWE_V].varname, "OUT_LAKE_DSWE_V");
-    strcpy(out_metadata[OUT_LAKE_DSWE_V].long_name, "lake_dswe_v");
-    strcpy(out_metadata[OUT_LAKE_DSWE_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_DSWE_V].varname, MAXSTRING, "%s", "OUT_LAKE_DSWE_V");
+    snprintf(out_metadata[OUT_LAKE_DSWE_V].long_name, MAXSTRING, "%s", "lake_dswe_v");
+    snprintf(out_metadata[OUT_LAKE_DSWE_V].standard_name, MAXSTRING, "%s",
            "change_in_snow_lwe_volume_on_lake_ice");
-    strcpy(out_metadata[OUT_LAKE_DSWE_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_DSWE_V].description,
+    snprintf(out_metadata[OUT_LAKE_DSWE_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_DSWE_V].description, MAXSTRING, "%s",
            "volumetric change in snowpack on top of lake ice");
 
     /* net evaporation from lake surface [mm] */
-    strcpy(out_metadata[OUT_LAKE_EVAP].varname, "OUT_LAKE_EVAP");
-    strcpy(out_metadata[OUT_LAKE_EVAP].long_name, "lake_evap");
-    strcpy(out_metadata[OUT_LAKE_EVAP].standard_name,
+    snprintf(out_metadata[OUT_LAKE_EVAP].varname, MAXSTRING, "%s", "OUT_LAKE_EVAP");
+    snprintf(out_metadata[OUT_LAKE_EVAP].long_name, MAXSTRING, "%s", "lake_evap");
+    snprintf(out_metadata[OUT_LAKE_EVAP].standard_name, MAXSTRING, "%s",
            "water_evaporation_from_lake");
-    strcpy(out_metadata[OUT_LAKE_EVAP].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_EVAP].description,
+    snprintf(out_metadata[OUT_LAKE_EVAP].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_EVAP].description, MAXSTRING, "%s",
            "net evaporation from lake surface");
 
     /* net volumetric evaporation from lake surface [m3] */
-    strcpy(out_metadata[OUT_LAKE_EVAP_V].varname, "OUT_LAKE_EVAP_V");
-    strcpy(out_metadata[OUT_LAKE_EVAP_V].long_name, "lake_evap_v");
-    strcpy(out_metadata[OUT_LAKE_EVAP_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_EVAP_V].varname, MAXSTRING, "%s", "OUT_LAKE_EVAP_V");
+    snprintf(out_metadata[OUT_LAKE_EVAP_V].long_name, MAXSTRING, "%s", "lake_evap_v");
+    snprintf(out_metadata[OUT_LAKE_EVAP_V].standard_name, MAXSTRING, "%s",
            "water_evaporation_volume_from_lake");
-    strcpy(out_metadata[OUT_LAKE_EVAP_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_EVAP_V].description,
+    snprintf(out_metadata[OUT_LAKE_EVAP_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_EVAP_V].description, MAXSTRING, "%s",
            "net volumetric evaporation from lake surface");
 
     /* volumetric precipitation over lake surface [m3] */
-    strcpy(out_metadata[OUT_LAKE_PREC_V].varname, "OUT_LAKE_PREC_V");
-    strcpy(out_metadata[OUT_LAKE_PREC_V].long_name, "lake_prec_v");
-    strcpy(out_metadata[OUT_LAKE_PREC_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_PREC_V].varname, MAXSTRING, "%s", "OUT_LAKE_PREC_V");
+    snprintf(out_metadata[OUT_LAKE_PREC_V].long_name, MAXSTRING, "%s", "lake_prec_v");
+    snprintf(out_metadata[OUT_LAKE_PREC_V].standard_name, MAXSTRING, "%s",
            "precipitation_over_lake_volume");
-    strcpy(out_metadata[OUT_LAKE_PREC_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_PREC_V].description,
+    snprintf(out_metadata[OUT_LAKE_PREC_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_PREC_V].description, MAXSTRING, "%s",
            "volumetric precipitation over lake surface");
 
     /* recharge from lake to surrounding wetland [mm] */
-    strcpy(out_metadata[OUT_LAKE_RCHRG].varname, "OUT_LAKE_RCHRG");
-    strcpy(out_metadata[OUT_LAKE_RCHRG].long_name, "lake_rchrg");
-    strcpy(out_metadata[OUT_LAKE_RCHRG].standard_name,
+    snprintf(out_metadata[OUT_LAKE_RCHRG].varname, MAXSTRING, "%s", "OUT_LAKE_RCHRG");
+    snprintf(out_metadata[OUT_LAKE_RCHRG].long_name, MAXSTRING, "%s", "lake_rchrg");
+    snprintf(out_metadata[OUT_LAKE_RCHRG].standard_name, MAXSTRING, "%s",
            "recharge_from_lake_to_wetland");
-    strcpy(out_metadata[OUT_LAKE_RCHRG].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_RCHRG].description,
+    snprintf(out_metadata[OUT_LAKE_RCHRG].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_RCHRG].description, MAXSTRING, "%s",
            "recharge from lake to surrounding wetland");
 
     /* volumetric recharge from lake to surrounding wetland [m3] */
-    strcpy(out_metadata[OUT_LAKE_RCHRG_V].varname, "OUT_LAKE_RCHRG_V");
-    strcpy(out_metadata[OUT_LAKE_RCHRG_V].long_name, "lake_rchrg_v");
-    strcpy(out_metadata[OUT_LAKE_RCHRG_V].standard_name, "");
-    strcpy(out_metadata[OUT_LAKE_RCHRG_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_RCHRG_V].description,
+    snprintf(out_metadata[OUT_LAKE_RCHRG_V].varname, MAXSTRING, "%s", "OUT_LAKE_RCHRG_V");
+    snprintf(out_metadata[OUT_LAKE_RCHRG_V].long_name, MAXSTRING, "%s", "lake_rchrg_v");
+    snprintf(out_metadata[OUT_LAKE_RCHRG_V].standard_name, MAXSTRING, "%s", "");
+    snprintf(out_metadata[OUT_LAKE_RCHRG_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_RCHRG_V].description, MAXSTRING, "%s",
            "volumetric recharge from lake to surrounding wetland");
 
     /* incoming runoff from lake catchment [mm] */
-    strcpy(out_metadata[OUT_LAKE_RO_IN].varname, "OUT_LAKE_RO_IN");
-    strcpy(out_metadata[OUT_LAKE_RO_IN].long_name, "lake_ro_in");
-    strcpy(out_metadata[OUT_LAKE_RO_IN].standard_name,
+    snprintf(out_metadata[OUT_LAKE_RO_IN].varname, MAXSTRING, "%s", "OUT_LAKE_RO_IN");
+    snprintf(out_metadata[OUT_LAKE_RO_IN].long_name, MAXSTRING, "%s", "lake_ro_in");
+    snprintf(out_metadata[OUT_LAKE_RO_IN].standard_name, MAXSTRING, "%s",
            "recharge_volume_from_lake_to_wetland");
-    strcpy(out_metadata[OUT_LAKE_RO_IN].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_RO_IN].description,
+    snprintf(out_metadata[OUT_LAKE_RO_IN].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_RO_IN].description, MAXSTRING, "%s",
            "incoming runoff from lake catchment");
 
     /* incoming volumetric runoff from lake catchment [m3] */
-    strcpy(out_metadata[OUT_LAKE_RO_IN_V].varname, "OUT_LAKE_RO_IN_V");
-    strcpy(out_metadata[OUT_LAKE_RO_IN_V].long_name, "lake_ro_in_v");
-    strcpy(out_metadata[OUT_LAKE_RO_IN_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_RO_IN_V].varname, MAXSTRING, "%s", "OUT_LAKE_RO_IN_V");
+    snprintf(out_metadata[OUT_LAKE_RO_IN_V].long_name, MAXSTRING, "%s", "lake_ro_in_v");
+    snprintf(out_metadata[OUT_LAKE_RO_IN_V].standard_name, MAXSTRING, "%s",
            "runoff_volume_from_lake_catchment");
-    strcpy(out_metadata[OUT_LAKE_RO_IN_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_RO_IN_V].description,
+    snprintf(out_metadata[OUT_LAKE_RO_IN_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_RO_IN_V].description, MAXSTRING, "%s",
            "incoming volumetric runoff from lake catchment");
 
     /* sublimation from lake snow pack [mm] */
-    strcpy(out_metadata[OUT_LAKE_VAPFLX].varname, "OUT_LAKE_VAPFLX");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX].long_name, "lake_vapflx");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX].standard_name,
+    snprintf(out_metadata[OUT_LAKE_VAPFLX].varname, MAXSTRING, "%s", "OUT_LAKE_VAPFLX");
+    snprintf(out_metadata[OUT_LAKE_VAPFLX].long_name, MAXSTRING, "%s", "lake_vapflx");
+    snprintf(out_metadata[OUT_LAKE_VAPFLX].standard_name, MAXSTRING, "%s",
            "water_sublimation_flux_from_lake_snow");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX].units, "mm");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX].description,
+    snprintf(out_metadata[OUT_LAKE_VAPFLX].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_LAKE_VAPFLX].description, MAXSTRING, "%s",
            "sublimation from lake snow pack");
 
     /* volumetric sublimation from lake snow pack [m3] */
-    strcpy(out_metadata[OUT_LAKE_VAPFLX_V].varname, "OUT_LAKE_VAPFLX_V");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX_V].long_name, "lake_vapflx_v");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX_V].standard_name,
+    snprintf(out_metadata[OUT_LAKE_VAPFLX_V].varname, MAXSTRING, "%s", "OUT_LAKE_VAPFLX_V");
+    snprintf(out_metadata[OUT_LAKE_VAPFLX_V].long_name, MAXSTRING, "%s", "lake_vapflx_v");
+    snprintf(out_metadata[OUT_LAKE_VAPFLX_V].standard_name, MAXSTRING, "%s",
            "water_sublimation_flux_volume_from_lake_snow");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX_V].units, "m3");
-    strcpy(out_metadata[OUT_LAKE_VAPFLX_V].description,
+    snprintf(out_metadata[OUT_LAKE_VAPFLX_V].units, MAXSTRING, "%s", "m3");
+    snprintf(out_metadata[OUT_LAKE_VAPFLX_V].description, MAXSTRING, "%s",
            "volumetric sublimation from lake snow pack");
 
     /* Potential evapotranspiration (= area-weighted sum of potential
        transpiration and potential soil evaporation). [mm] */
-    strcpy(out_metadata[OUT_PET].varname, "OUT_PET");
-    strcpy(out_metadata[OUT_PET].long_name, "pet");
-    strcpy(out_metadata[OUT_PET].standard_name,
+    snprintf(out_metadata[OUT_PET].varname, MAXSTRING, "%s", "OUT_PET");
+    snprintf(out_metadata[OUT_PET].long_name, MAXSTRING, "%s", "pet");
+    snprintf(out_metadata[OUT_PET].standard_name, MAXSTRING, "%s",
            "water_potential_evaporation_amount");
-    strcpy(out_metadata[OUT_PET].units, "mm");
-    strcpy(out_metadata[OUT_PET].description,
+    snprintf(out_metadata[OUT_PET].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_PET].description, MAXSTRING, "%s",
            "Potential evapotranspiration (= area-weighted sum of potential "
            "transpiration and potential soil evaporation)");
 
     /* incoming precipitation [mm] */
-    strcpy(out_metadata[OUT_PREC].varname, "OUT_PREC");
-    strcpy(out_metadata[OUT_PREC].long_name, "prec");
-    strcpy(out_metadata[OUT_PREC].standard_name, "precipitation_amount");
-    strcpy(out_metadata[OUT_PREC].units, "mm");
-    strcpy(out_metadata[OUT_PREC].description, "incoming precipitation");
+    snprintf(out_metadata[OUT_PREC].varname, MAXSTRING, "%s", "OUT_PREC");
+    snprintf(out_metadata[OUT_PREC].long_name, MAXSTRING, "%s", "prec");
+    snprintf(out_metadata[OUT_PREC].standard_name, MAXSTRING, "%s", "precipitation_amount");
+    snprintf(out_metadata[OUT_PREC].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_PREC].description, MAXSTRING, "%s", "incoming precipitation");
 
     /* rainfall [mm] */
-    strcpy(out_metadata[OUT_RAINF].varname, "OUT_RAINF");
-    strcpy(out_metadata[OUT_RAINF].long_name, "rainf");
-    strcpy(out_metadata[OUT_RAINF].standard_name, "rainfall_amount");
-    strcpy(out_metadata[OUT_RAINF].units, "mm");
-    strcpy(out_metadata[OUT_RAINF].description, "liquid rainfall amount");
+    snprintf(out_metadata[OUT_RAINF].varname, MAXSTRING, "%s", "OUT_RAINF");
+    snprintf(out_metadata[OUT_RAINF].long_name, MAXSTRING, "%s", "rainf");
+    snprintf(out_metadata[OUT_RAINF].standard_name, MAXSTRING, "%s", "rainfall_amount");
+    snprintf(out_metadata[OUT_RAINF].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_RAINF].description, MAXSTRING, "%s", "liquid rainfall amount");
 
     /* refreezing of water in the snow [mm] */
-    strcpy(out_metadata[OUT_REFREEZE].varname, "OUT_REFREEZE");
-    strcpy(out_metadata[OUT_REFREEZE].long_name, "refreeze");
-    strcpy(out_metadata[OUT_REFREEZE].standard_name,
+    snprintf(out_metadata[OUT_REFREEZE].varname, MAXSTRING, "%s", "OUT_REFREEZE");
+    snprintf(out_metadata[OUT_REFREEZE].long_name, MAXSTRING, "%s", "refreeze");
+    snprintf(out_metadata[OUT_REFREEZE].standard_name, MAXSTRING, "%s",
            "lwe_thickness_of_refreezing_water_in_snow");
-    strcpy(out_metadata[OUT_REFREEZE].units, "mm");
-    strcpy(out_metadata[OUT_REFREEZE].description,
+    snprintf(out_metadata[OUT_REFREEZE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_REFREEZE].description, MAXSTRING, "%s",
            "refreezing of water in the snow");
 
     /* surface runoff [mm] */
-    strcpy(out_metadata[OUT_RUNOFF].varname, "OUT_RUNOFF");
-    strcpy(out_metadata[OUT_RUNOFF].long_name, "runoff");
-    strcpy(out_metadata[OUT_RUNOFF].standard_name, "runoff_amount");
-    strcpy(out_metadata[OUT_RUNOFF].units, "mm");
-    strcpy(out_metadata[OUT_RUNOFF].description, "surface runoff");
+    snprintf(out_metadata[OUT_RUNOFF].varname, MAXSTRING, "%s", "OUT_RUNOFF");
+    snprintf(out_metadata[OUT_RUNOFF].long_name, MAXSTRING, "%s", "runoff");
+    snprintf(out_metadata[OUT_RUNOFF].standard_name, MAXSTRING, "%s", "runoff_amount");
+    snprintf(out_metadata[OUT_RUNOFF].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_RUNOFF].description, MAXSTRING, "%s", "surface runoff");
 
     /* snow melt [mm] */
-    strcpy(out_metadata[OUT_SNOW_MELT].varname, "OUT_SNOW_MELT");
-    strcpy(out_metadata[OUT_SNOW_MELT].long_name, "snow_melt");
-    strcpy(out_metadata[OUT_SNOW_MELT].standard_name, "snow_melt_amount");
-    strcpy(out_metadata[OUT_SNOW_MELT].units, "mm");
-    strcpy(out_metadata[OUT_SNOW_MELT].description, "snow melt");
+    snprintf(out_metadata[OUT_SNOW_MELT].varname, MAXSTRING, "%s", "OUT_SNOW_MELT");
+    snprintf(out_metadata[OUT_SNOW_MELT].long_name, MAXSTRING, "%s", "snow_melt");
+    snprintf(out_metadata[OUT_SNOW_MELT].standard_name, MAXSTRING, "%s", "snow_melt_amount");
+    snprintf(out_metadata[OUT_SNOW_MELT].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SNOW_MELT].description, MAXSTRING, "%s", "snow melt");
 
     /* snowfall [mm] */
-    strcpy(out_metadata[OUT_SNOWF].varname, "OUT_SNOWF");
-    strcpy(out_metadata[OUT_SNOWF].long_name, "snowf");
-    strcpy(out_metadata[OUT_SNOWF].standard_name, "snowfall_lwe_amount");
-    strcpy(out_metadata[OUT_SNOWF].units, "mm");
-    strcpy(out_metadata[OUT_SNOWF].description, "snowfall");
+    snprintf(out_metadata[OUT_SNOWF].varname, MAXSTRING, "%s", "OUT_SNOWF");
+    snprintf(out_metadata[OUT_SNOWF].long_name, MAXSTRING, "%s", "snowf");
+    snprintf(out_metadata[OUT_SNOWF].standard_name, MAXSTRING, "%s", "snowfall_lwe_amount");
+    snprintf(out_metadata[OUT_SNOWF].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SNOWF].description, MAXSTRING, "%s", "snowfall");
 
     /* net sublimation of blowing snow [mm] */
-    strcpy(out_metadata[OUT_SUB_BLOWING].varname, "OUT_SUB_BLOWING");
-    strcpy(out_metadata[OUT_SUB_BLOWING].long_name, "sub_blowing");
-    strcpy(out_metadata[OUT_SUB_BLOWING].standard_name,
+    snprintf(out_metadata[OUT_SUB_BLOWING].varname, MAXSTRING, "%s", "OUT_SUB_BLOWING");
+    snprintf(out_metadata[OUT_SUB_BLOWING].long_name, MAXSTRING, "%s", "sub_blowing");
+    snprintf(out_metadata[OUT_SUB_BLOWING].standard_name, MAXSTRING, "%s",
            "submlimation_amount_from_blowing_snow");
-    strcpy(out_metadata[OUT_SUB_BLOWING].units, "mm");
-    strcpy(out_metadata[OUT_SUB_BLOWING].description,
+    snprintf(out_metadata[OUT_SUB_BLOWING].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SUB_BLOWING].description, MAXSTRING, "%s",
            "net sublimation of blowing snow");
 
     /* net sublimation from snow stored in canopy [mm] */
-    strcpy(out_metadata[OUT_SUB_CANOP].varname, "OUT_SUB_CANOP");
-    strcpy(out_metadata[OUT_SUB_CANOP].long_name, "sub_canop");
-    strcpy(out_metadata[OUT_SUB_CANOP].standard_name,
+    snprintf(out_metadata[OUT_SUB_CANOP].varname, MAXSTRING, "%s", "OUT_SUB_CANOP");
+    snprintf(out_metadata[OUT_SUB_CANOP].long_name, MAXSTRING, "%s", "sub_canop");
+    snprintf(out_metadata[OUT_SUB_CANOP].standard_name, MAXSTRING, "%s",
            "sublimation_amount_from_canopy_snow");
-    strcpy(out_metadata[OUT_SUB_CANOP].units, "mm");
-    strcpy(out_metadata[OUT_SUB_CANOP].description,
+    snprintf(out_metadata[OUT_SUB_CANOP].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SUB_CANOP].description, MAXSTRING, "%s",
            "net sublimation from snow stored in canopy");
 
     /* net sublimation from snow pack (surface and blowing) [mm] */
-    strcpy(out_metadata[OUT_SUB_SNOW].varname, "OUT_SUB_SNOW");
-    strcpy(out_metadata[OUT_SUB_SNOW].long_name, "sub_snow");
-    strcpy(out_metadata[OUT_SUB_SNOW].standard_name,
+    snprintf(out_metadata[OUT_SUB_SNOW].varname, MAXSTRING, "%s", "OUT_SUB_SNOW");
+    snprintf(out_metadata[OUT_SUB_SNOW].long_name, MAXSTRING, "%s", "sub_snow");
+    snprintf(out_metadata[OUT_SUB_SNOW].standard_name, MAXSTRING, "%s",
            "sublimation_amount_from_snow_pack");
-    strcpy(out_metadata[OUT_SUB_SNOW].units, "mm");
-    strcpy(out_metadata[OUT_SUB_SNOW].description,
+    snprintf(out_metadata[OUT_SUB_SNOW].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SUB_SNOW].description, MAXSTRING, "%s",
            "net sublimation from snow pack (surface and blowing)");
 
     /* net sublimation from snow pack surface [mm] */
-    strcpy(out_metadata[OUT_SUB_SURFACE].varname, "OUT_SUB_SURFACE");
-    strcpy(out_metadata[OUT_SUB_SURFACE].long_name, "sub_surface");
-    strcpy(out_metadata[OUT_SUB_SURFACE].standard_name,
+    snprintf(out_metadata[OUT_SUB_SURFACE].varname, MAXSTRING, "%s", "OUT_SUB_SURFACE");
+    snprintf(out_metadata[OUT_SUB_SURFACE].long_name, MAXSTRING, "%s", "sub_surface");
+    snprintf(out_metadata[OUT_SUB_SURFACE].standard_name, MAXSTRING, "%s",
            "sublimation_amount_from_snow_pack_surface");
-    strcpy(out_metadata[OUT_SUB_SURFACE].units, "mm");
-    strcpy(out_metadata[OUT_SUB_SURFACE].description,
+    snprintf(out_metadata[OUT_SUB_SURFACE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_SUB_SURFACE].description, MAXSTRING, "%s",
            "net sublimation from snow pack surface");
 
     /* net transpiration from vegetation [mm] */
-    strcpy(out_metadata[OUT_TRANSP_VEG].varname, "OUT_TRANSP_VEG");
-    strcpy(out_metadata[OUT_TRANSP_VEG].long_name, "transp_veg");
-    strcpy(out_metadata[OUT_TRANSP_VEG].standard_name, "transpiration_amount");
-    strcpy(out_metadata[OUT_TRANSP_VEG].units, "mm");
-    strcpy(out_metadata[OUT_TRANSP_VEG].description,
+    snprintf(out_metadata[OUT_TRANSP_VEG].varname, MAXSTRING, "%s", "OUT_TRANSP_VEG");
+    snprintf(out_metadata[OUT_TRANSP_VEG].long_name, MAXSTRING, "%s", "transp_veg");
+    snprintf(out_metadata[OUT_TRANSP_VEG].standard_name, MAXSTRING, "%s", "transpiration_amount");
+    snprintf(out_metadata[OUT_TRANSP_VEG].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_TRANSP_VEG].description, MAXSTRING, "%s",
            "net transpiration from vegetation");
 
     // Energy Balance Terms - state variables
     /* albedo [fraction] */
-    strcpy(out_metadata[OUT_ALBEDO].varname, "OUT_ALBEDO");
-    strcpy(out_metadata[OUT_ALBEDO].long_name, "albedo");
-    strcpy(out_metadata[OUT_ALBEDO].standard_name, "surface_albedo");
-    strcpy(out_metadata[OUT_ALBEDO].units, "1");
-    strcpy(out_metadata[OUT_ALBEDO].description, "albedo");
+    snprintf(out_metadata[OUT_ALBEDO].varname, MAXSTRING, "%s", "OUT_ALBEDO");
+    snprintf(out_metadata[OUT_ALBEDO].long_name, MAXSTRING, "%s", "albedo");
+    snprintf(out_metadata[OUT_ALBEDO].standard_name, MAXSTRING, "%s", "surface_albedo");
+    snprintf(out_metadata[OUT_ALBEDO].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_ALBEDO].description, MAXSTRING, "%s", "albedo");
 
     /* bare soil surface temperature [C] */
-    strcpy(out_metadata[OUT_BARESOILT].varname, "OUT_BARESOILT");
-    strcpy(out_metadata[OUT_BARESOILT].long_name, "baresoilt");
-    strcpy(out_metadata[OUT_BARESOILT].standard_name,
+    snprintf(out_metadata[OUT_BARESOILT].varname, MAXSTRING, "%s", "OUT_BARESOILT");
+    snprintf(out_metadata[OUT_BARESOILT].long_name, MAXSTRING, "%s", "baresoilt");
+    snprintf(out_metadata[OUT_BARESOILT].standard_name, MAXSTRING, "%s",
            "surface_temperature_bare_soil");
-    strcpy(out_metadata[OUT_BARESOILT].units, "C");
-    strcpy(out_metadata[OUT_BARESOILT].description,
+    snprintf(out_metadata[OUT_BARESOILT].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_BARESOILT].description, MAXSTRING, "%s",
            "bare soil surface temperature");
 
     /* depth of freezing fronts [cm] for each freezing front */
-    strcpy(out_metadata[OUT_FDEPTH].varname, "OUT_FDEPTH");
-    strcpy(out_metadata[OUT_FDEPTH].long_name, "fdepth");
-    strcpy(out_metadata[OUT_FDEPTH].standard_name, "freezing_fronts_depth");
-    strcpy(out_metadata[OUT_FDEPTH].units, "cm");
-    strcpy(out_metadata[OUT_FDEPTH].description,
+    snprintf(out_metadata[OUT_FDEPTH].varname, MAXSTRING, "%s", "OUT_FDEPTH");
+    snprintf(out_metadata[OUT_FDEPTH].long_name, MAXSTRING, "%s", "fdepth");
+    snprintf(out_metadata[OUT_FDEPTH].standard_name, MAXSTRING, "%s", "freezing_fronts_depth");
+    snprintf(out_metadata[OUT_FDEPTH].units, MAXSTRING, "%s", "cm");
+    snprintf(out_metadata[OUT_FDEPTH].description, MAXSTRING, "%s",
            "depth of freezing fronts for each freezing front");
 
     /* lake ice temperature [K] */
-    strcpy(out_metadata[OUT_LAKE_ICE_TEMP].varname, "OUT_LAKE_ICE_TEMP");
-    strcpy(out_metadata[OUT_LAKE_ICE_TEMP].long_name, "lake_ice_temp");
-    strcpy(out_metadata[OUT_LAKE_ICE_TEMP].standard_name,
+    snprintf(out_metadata[OUT_LAKE_ICE_TEMP].varname, MAXSTRING, "%s", "OUT_LAKE_ICE_TEMP");
+    snprintf(out_metadata[OUT_LAKE_ICE_TEMP].long_name, MAXSTRING, "%s", "lake_ice_temp");
+    snprintf(out_metadata[OUT_LAKE_ICE_TEMP].standard_name, MAXSTRING, "%s",
            "lake_ice_temperature");
-    strcpy(out_metadata[OUT_LAKE_ICE_TEMP].units, "K");
-    strcpy(out_metadata[OUT_LAKE_ICE_TEMP].description, "lake ice temperature");
+    snprintf(out_metadata[OUT_LAKE_ICE_TEMP].units, MAXSTRING, "%s", "K");
+    snprintf(out_metadata[OUT_LAKE_ICE_TEMP].description, MAXSTRING, "%s", "lake ice temperature");
 
     /* lake surface temperature [K] */
-    strcpy(out_metadata[OUT_LAKE_SURF_TEMP].varname, "OUT_LAKE_SURF_TEMP");
-    strcpy(out_metadata[OUT_LAKE_SURF_TEMP].long_name, "lake_surf_temp");
-    strcpy(out_metadata[OUT_LAKE_SURF_TEMP].standard_name,
+    snprintf(out_metadata[OUT_LAKE_SURF_TEMP].varname, MAXSTRING, "%s", "OUT_LAKE_SURF_TEMP");
+    snprintf(out_metadata[OUT_LAKE_SURF_TEMP].long_name, MAXSTRING, "%s", "lake_surf_temp");
+    snprintf(out_metadata[OUT_LAKE_SURF_TEMP].standard_name, MAXSTRING, "%s",
            "lake_surface_temperature");
-    strcpy(out_metadata[OUT_LAKE_SURF_TEMP].units, "K");
-    strcpy(out_metadata[OUT_LAKE_SURF_TEMP].description,
+    snprintf(out_metadata[OUT_LAKE_SURF_TEMP].units, MAXSTRING, "%s", "K");
+    snprintf(out_metadata[OUT_LAKE_SURF_TEMP].description, MAXSTRING, "%s",
            "lake surface temperature");
 
     /* average radiative surface temperature [K] */
-    strcpy(out_metadata[OUT_RAD_TEMP].varname, "OUT_RAD_TEMP");
-    strcpy(out_metadata[OUT_RAD_TEMP].long_name, "rad_temp");
-    strcpy(out_metadata[OUT_RAD_TEMP].standard_name,
+    snprintf(out_metadata[OUT_RAD_TEMP].varname, MAXSTRING, "%s", "OUT_RAD_TEMP");
+    snprintf(out_metadata[OUT_RAD_TEMP].long_name, MAXSTRING, "%s", "rad_temp");
+    snprintf(out_metadata[OUT_RAD_TEMP].standard_name, MAXSTRING, "%s",
            "surface_radiative_temperature");
-    strcpy(out_metadata[OUT_RAD_TEMP].units, "K");
-    strcpy(out_metadata[OUT_RAD_TEMP].description,
+    snprintf(out_metadata[OUT_RAD_TEMP].units, MAXSTRING, "%s", "K");
+    snprintf(out_metadata[OUT_RAD_TEMP].description, MAXSTRING, "%s",
            "average radiative surface temperature");
 
     /* snow albedo [fraction] */
-    strcpy(out_metadata[OUT_SALBEDO].varname, "OUT_SALBEDO");
-    strcpy(out_metadata[OUT_SALBEDO].long_name, "salbedo");
-    strcpy(out_metadata[OUT_SALBEDO].standard_name, "snow_albedo");
-    strcpy(out_metadata[OUT_SALBEDO].units, "1");
-    strcpy(out_metadata[OUT_SALBEDO].description, "snow albedo");
+    snprintf(out_metadata[OUT_SALBEDO].varname, MAXSTRING, "%s", "OUT_SALBEDO");
+    snprintf(out_metadata[OUT_SALBEDO].long_name, MAXSTRING, "%s", "salbedo");
+    snprintf(out_metadata[OUT_SALBEDO].standard_name, MAXSTRING, "%s", "snow_albedo");
+    snprintf(out_metadata[OUT_SALBEDO].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SALBEDO].description, MAXSTRING, "%s", "snow albedo");
 
     /* snow pack temperature [C] */
-    strcpy(out_metadata[OUT_SNOW_PACK_TEMP].varname, "OUT_SNOW_PACK_TEMP");
-    strcpy(out_metadata[OUT_SNOW_PACK_TEMP].long_name, "snow_pack_temp");
-    strcpy(out_metadata[OUT_SNOW_PACK_TEMP].standard_name,
+    snprintf(out_metadata[OUT_SNOW_PACK_TEMP].varname, MAXSTRING, "%s", "OUT_SNOW_PACK_TEMP");
+    snprintf(out_metadata[OUT_SNOW_PACK_TEMP].long_name, MAXSTRING, "%s", "snow_pack_temp");
+    snprintf(out_metadata[OUT_SNOW_PACK_TEMP].standard_name, MAXSTRING, "%s",
            "snow_pack_temperature");
-    strcpy(out_metadata[OUT_SNOW_PACK_TEMP].units, "C");
-    strcpy(out_metadata[OUT_SNOW_PACK_TEMP].description,
+    snprintf(out_metadata[OUT_SNOW_PACK_TEMP].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_SNOW_PACK_TEMP].description, MAXSTRING, "%s",
            "snow pack temperature");
 
     /* snow surface temperature [C] */
-    strcpy(out_metadata[OUT_SNOW_SURF_TEMP].varname, "OUT_SNOW_SURF_TEMP");
-    strcpy(out_metadata[OUT_SNOW_SURF_TEMP].long_name, "snow_surf_temp");
-    strcpy(out_metadata[OUT_SNOW_SURF_TEMP].standard_name,
+    snprintf(out_metadata[OUT_SNOW_SURF_TEMP].varname, MAXSTRING, "%s", "OUT_SNOW_SURF_TEMP");
+    snprintf(out_metadata[OUT_SNOW_SURF_TEMP].long_name, MAXSTRING, "%s", "snow_surf_temp");
+    snprintf(out_metadata[OUT_SNOW_SURF_TEMP].standard_name, MAXSTRING, "%s",
            "snow_surface_temperature");
-    strcpy(out_metadata[OUT_SNOW_SURF_TEMP].units, "C");
-    strcpy(out_metadata[OUT_SNOW_SURF_TEMP].description,
+    snprintf(out_metadata[OUT_SNOW_SURF_TEMP].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_SNOW_SURF_TEMP].description, MAXSTRING, "%s",
            "snow surface temperature");
 
     /* snow surface temperature flag */
-    strcpy(out_metadata[OUT_SNOWT_FBFLAG].varname, "OUT_SNOWT_FBFLAG");
-    strcpy(out_metadata[OUT_SNOWT_FBFLAG].long_name, "snowt_fbflag");
-    strcpy(out_metadata[OUT_SNOWT_FBFLAG].standard_name,
+    snprintf(out_metadata[OUT_SNOWT_FBFLAG].varname, MAXSTRING, "%s", "OUT_SNOWT_FBFLAG");
+    snprintf(out_metadata[OUT_SNOWT_FBFLAG].long_name, MAXSTRING, "%s", "snowt_fbflag");
+    snprintf(out_metadata[OUT_SNOWT_FBFLAG].standard_name, MAXSTRING, "%s",
            "snow_surface_temperature_flag");
-    strcpy(out_metadata[OUT_SNOWT_FBFLAG].units, "1");
-    strcpy(out_metadata[OUT_SNOWT_FBFLAG].description,
+    snprintf(out_metadata[OUT_SNOWT_FBFLAG].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SNOWT_FBFLAG].description, MAXSTRING, "%s",
            "snow surface temperature flag");
 
     /* soil temperature [C] for each soil layer */
-    strcpy(out_metadata[OUT_SOIL_TEMP].varname, "OUT_SOIL_TEMP");
-    strcpy(out_metadata[OUT_SOIL_TEMP].long_name, "soil_temp");
-    strcpy(out_metadata[OUT_SOIL_TEMP].standard_name, "soil_temperature");
-    strcpy(out_metadata[OUT_SOIL_TEMP].units, "C");
-    strcpy(out_metadata[OUT_SOIL_TEMP].description,
+    snprintf(out_metadata[OUT_SOIL_TEMP].varname, MAXSTRING, "%s", "OUT_SOIL_TEMP");
+    snprintf(out_metadata[OUT_SOIL_TEMP].long_name, MAXSTRING, "%s", "soil_temp");
+    snprintf(out_metadata[OUT_SOIL_TEMP].standard_name, MAXSTRING, "%s", "soil_temperature");
+    snprintf(out_metadata[OUT_SOIL_TEMP].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_SOIL_TEMP].description, MAXSTRING, "%s",
            "soil temperature for each soil layer");
 
     /* soil temperature [C] for each soil thermal node */
-    strcpy(out_metadata[OUT_SOIL_TNODE].varname, "OUT_SOIL_TNODE");
-    strcpy(out_metadata[OUT_SOIL_TNODE].long_name, "soil_tnode");
-    strcpy(out_metadata[OUT_SOIL_TNODE].standard_name, "soil_temperature");
-    strcpy(out_metadata[OUT_SOIL_TNODE].units, "C");
-    strcpy(out_metadata[OUT_SOIL_TNODE].description,
+    snprintf(out_metadata[OUT_SOIL_TNODE].varname, MAXSTRING, "%s", "OUT_SOIL_TNODE");
+    snprintf(out_metadata[OUT_SOIL_TNODE].long_name, MAXSTRING, "%s", "soil_tnode");
+    snprintf(out_metadata[OUT_SOIL_TNODE].standard_name, MAXSTRING, "%s", "soil_temperature");
+    snprintf(out_metadata[OUT_SOIL_TNODE].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_SOIL_TNODE].description, MAXSTRING, "%s",
            "soil temperature for each soil thermal node");
 
     /* soil temperature [C] for each soil thermal node in the wetland */
-    strcpy(out_metadata[OUT_SOIL_TNODE_WL].varname, "OUT_SOIL_TNODE_WL");
-    strcpy(out_metadata[OUT_SOIL_TNODE_WL].long_name, "soil_tnode_wl");
-    strcpy(out_metadata[OUT_SOIL_TNODE_WL].standard_name, "soil_temperature");
-    strcpy(out_metadata[OUT_SOIL_TNODE_WL].units, "C");
-    strcpy(out_metadata[OUT_SOIL_TNODE_WL].description,
+    snprintf(out_metadata[OUT_SOIL_TNODE_WL].varname, MAXSTRING, "%s", "OUT_SOIL_TNODE_WL");
+    snprintf(out_metadata[OUT_SOIL_TNODE_WL].long_name, MAXSTRING, "%s", "soil_tnode_wl");
+    snprintf(out_metadata[OUT_SOIL_TNODE_WL].standard_name, MAXSTRING, "%s", "soil_temperature");
+    snprintf(out_metadata[OUT_SOIL_TNODE_WL].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_SOIL_TNODE_WL].description, MAXSTRING, "%s",
            "soil temperature for each soil thermal node in the wetland");
 
     /* soil temperature flag for each soil thermal node */
-    strcpy(out_metadata[OUT_SOILT_FBFLAG].varname, "OUT_SOILT_FBFLAG");
-    strcpy(out_metadata[OUT_SOILT_FBFLAG].long_name, "soilt_fbflag");
-    strcpy(out_metadata[OUT_SOILT_FBFLAG].standard_name,
+    snprintf(out_metadata[OUT_SOILT_FBFLAG].varname, MAXSTRING, "%s", "OUT_SOILT_FBFLAG");
+    snprintf(out_metadata[OUT_SOILT_FBFLAG].long_name, MAXSTRING, "%s", "soilt_fbflag");
+    snprintf(out_metadata[OUT_SOILT_FBFLAG].standard_name, MAXSTRING, "%s",
            "soil_temperature_flag");
-    strcpy(out_metadata[OUT_SOILT_FBFLAG].units, "1");
-    strcpy(out_metadata[OUT_SOILT_FBFLAG].description,
+    snprintf(out_metadata[OUT_SOILT_FBFLAG].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SOILT_FBFLAG].description, MAXSTRING, "%s",
            "soil temperature flag for each soil thermal node");
 
     /* average surface temperature [C] */
-    strcpy(out_metadata[OUT_SURF_TEMP].varname, "OUT_SURF_TEMP");
-    strcpy(out_metadata[OUT_SURF_TEMP].long_name, "surf_temp");
-    strcpy(out_metadata[OUT_SURF_TEMP].standard_name, "surface_temperature");
-    strcpy(out_metadata[OUT_SURF_TEMP].units, "C");
-    strcpy(out_metadata[OUT_SURF_TEMP].description,
+    snprintf(out_metadata[OUT_SURF_TEMP].varname, MAXSTRING, "%s", "OUT_SURF_TEMP");
+    snprintf(out_metadata[OUT_SURF_TEMP].long_name, MAXSTRING, "%s", "surf_temp");
+    snprintf(out_metadata[OUT_SURF_TEMP].standard_name, MAXSTRING, "%s", "surface_temperature");
+    snprintf(out_metadata[OUT_SURF_TEMP].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_SURF_TEMP].description, MAXSTRING, "%s",
            "average surface temperature");
 
     /* surface temperature flag */
-    strcpy(out_metadata[OUT_SURFT_FBFLAG].varname, "OUT_SURFT_FBFLAG");
-    strcpy(out_metadata[OUT_SURFT_FBFLAG].long_name, "surft_fbflag");
-    strcpy(out_metadata[OUT_SURFT_FBFLAG].standard_name,
+    snprintf(out_metadata[OUT_SURFT_FBFLAG].varname, MAXSTRING, "%s", "OUT_SURFT_FBFLAG");
+    snprintf(out_metadata[OUT_SURFT_FBFLAG].long_name, MAXSTRING, "%s", "surft_fbflag");
+    snprintf(out_metadata[OUT_SURFT_FBFLAG].standard_name, MAXSTRING, "%s",
            "surface_temperature_flag");
-    strcpy(out_metadata[OUT_SURFT_FBFLAG].units, "1");
-    strcpy(out_metadata[OUT_SURFT_FBFLAG].description,
+    snprintf(out_metadata[OUT_SURFT_FBFLAG].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_SURFT_FBFLAG].description, MAXSTRING, "%s",
            "surface temperature flag");
 
     /* Tcanopy flag */
-    strcpy(out_metadata[OUT_TCAN_FBFLAG].varname, "OUT_TCAN_FBFLAG");
-    strcpy(out_metadata[OUT_TCAN_FBFLAG].long_name, "tcan_fbflag");
-    strcpy(out_metadata[OUT_TCAN_FBFLAG].standard_name,
+    snprintf(out_metadata[OUT_TCAN_FBFLAG].varname, MAXSTRING, "%s", "OUT_TCAN_FBFLAG");
+    snprintf(out_metadata[OUT_TCAN_FBFLAG].long_name, MAXSTRING, "%s", "tcan_fbflag");
+    snprintf(out_metadata[OUT_TCAN_FBFLAG].standard_name, MAXSTRING, "%s",
            "canopy_temperature_flag");
-    strcpy(out_metadata[OUT_TCAN_FBFLAG].units, "1");
-    strcpy(out_metadata[OUT_TCAN_FBFLAG].description,
+    snprintf(out_metadata[OUT_TCAN_FBFLAG].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_TCAN_FBFLAG].description, MAXSTRING, "%s",
            "Canopy temperature fallback flag");
 
     /* depth of thawing fronts [cm] for each thawing front */
-    strcpy(out_metadata[OUT_TDEPTH].varname, "OUT_TDEPTH");
-    strcpy(out_metadata[OUT_TDEPTH].long_name, "tdepth");
-    strcpy(out_metadata[OUT_TDEPTH].standard_name, "depth_of_thawing_fronts");
-    strcpy(out_metadata[OUT_TDEPTH].units, "cm");
-    strcpy(out_metadata[OUT_TDEPTH].description,
+    snprintf(out_metadata[OUT_TDEPTH].varname, MAXSTRING, "%s", "OUT_TDEPTH");
+    snprintf(out_metadata[OUT_TDEPTH].long_name, MAXSTRING, "%s", "tdepth");
+    snprintf(out_metadata[OUT_TDEPTH].standard_name, MAXSTRING, "%s", "depth_of_thawing_fronts");
+    snprintf(out_metadata[OUT_TDEPTH].units, MAXSTRING, "%s", "cm");
+    snprintf(out_metadata[OUT_TDEPTH].description, MAXSTRING, "%s",
            "depth of thawing fronts for each thawing front");
 
     /* Tfoliage flag */
-    strcpy(out_metadata[OUT_TFOL_FBFLAG].varname, "OUT_TFOL_FBFLAG");
-    strcpy(out_metadata[OUT_TFOL_FBFLAG].long_name, "tfol_fbflag");
-    strcpy(out_metadata[OUT_TFOL_FBFLAG].standard_name,
+    snprintf(out_metadata[OUT_TFOL_FBFLAG].varname, MAXSTRING, "%s", "OUT_TFOL_FBFLAG");
+    snprintf(out_metadata[OUT_TFOL_FBFLAG].long_name, MAXSTRING, "%s", "tfol_fbflag");
+    snprintf(out_metadata[OUT_TFOL_FBFLAG].standard_name, MAXSTRING, "%s",
            "foliage_temperature_flag");
-    strcpy(out_metadata[OUT_TFOL_FBFLAG].units, "1");
-    strcpy(out_metadata[OUT_TFOL_FBFLAG].description,
+    snprintf(out_metadata[OUT_TFOL_FBFLAG].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_TFOL_FBFLAG].description, MAXSTRING, "%s",
            "foilage temperature fallback flag");
 
     /* average vegetation canopy temperature [C] */
-    strcpy(out_metadata[OUT_VEGT].varname, "OUT_VEGT");
-    strcpy(out_metadata[OUT_VEGT].long_name, "vegt");
-    strcpy(out_metadata[OUT_VEGT].standard_name, "canopy_temperature");
-    strcpy(out_metadata[OUT_VEGT].units, "C");
-    strcpy(out_metadata[OUT_TFOL_FBFLAG].description,
+    snprintf(out_metadata[OUT_VEGT].varname, MAXSTRING, "%s", "OUT_VEGT");
+    snprintf(out_metadata[OUT_VEGT].long_name, MAXSTRING, "%s", "vegt");
+    snprintf(out_metadata[OUT_VEGT].standard_name, MAXSTRING, "%s", "canopy_temperature");
+    snprintf(out_metadata[OUT_VEGT].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_TFOL_FBFLAG].description, MAXSTRING, "%s",
            "average vegetation canopy temperature");
 
     // Energy Balance Terms - fluxes
     /* net sensible heat advected to snow pack [W m-2] */
-    strcpy(out_metadata[OUT_ADV_SENS].varname, "OUT_ADV_SENS");
-    strcpy(out_metadata[OUT_ADV_SENS].long_name, "adv_sens");
-    strcpy(out_metadata[OUT_ADV_SENS].standard_name,
+    snprintf(out_metadata[OUT_ADV_SENS].varname, MAXSTRING, "%s", "OUT_ADV_SENS");
+    snprintf(out_metadata[OUT_ADV_SENS].long_name, MAXSTRING, "%s", "adv_sens");
+    snprintf(out_metadata[OUT_ADV_SENS].standard_name, MAXSTRING, "%s",
            "net_sensible_heat_flux_to_snow_pack");
-    strcpy(out_metadata[OUT_ADV_SENS].units, "W m-2");
-    strcpy(out_metadata[OUT_ADV_SENS].description,
+    snprintf(out_metadata[OUT_ADV_SENS].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_ADV_SENS].description, MAXSTRING, "%s",
            "net sensible heat advected to snow pack");
 
     /* advected energy [W m-2] */
-    strcpy(out_metadata[OUT_ADVECTION].varname, "OUT_ADVECTION");
-    strcpy(out_metadata[OUT_ADVECTION].long_name, "advection");
-    strcpy(out_metadata[OUT_ADVECTION].standard_name, "advected_energy");
-    strcpy(out_metadata[OUT_ADVECTION].units, "W m-2");
-    strcpy(out_metadata[OUT_ADVECTION].description, "advected energy ");
+    snprintf(out_metadata[OUT_ADVECTION].varname, MAXSTRING, "%s", "OUT_ADVECTION");
+    snprintf(out_metadata[OUT_ADVECTION].long_name, MAXSTRING, "%s", "advection");
+    snprintf(out_metadata[OUT_ADVECTION].standard_name, MAXSTRING, "%s", "advected_energy");
+    snprintf(out_metadata[OUT_ADVECTION].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_ADVECTION].description, MAXSTRING, "%s", "advected energy ");
 
     /* rate of change in cold content in snow pack [W m-2] */
-    strcpy(out_metadata[OUT_DELTACC].varname, "OUT_DELTACC");
-    strcpy(out_metadata[OUT_DELTACC].long_name, "deltacc");
-    strcpy(out_metadata[OUT_DELTACC].standard_name,
+    snprintf(out_metadata[OUT_DELTACC].varname, MAXSTRING, "%s", "OUT_DELTACC");
+    snprintf(out_metadata[OUT_DELTACC].long_name, MAXSTRING, "%s", "deltacc");
+    snprintf(out_metadata[OUT_DELTACC].standard_name, MAXSTRING, "%s",
            "rate_change_in_snow_pack_cold_content");
-    strcpy(out_metadata[OUT_DELTACC].units, "W m-2");
-    strcpy(out_metadata[OUT_DELTACC].description,
+    snprintf(out_metadata[OUT_DELTACC].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_DELTACC].description, MAXSTRING, "%s",
            "rate of change in cold content in snow pack");
 
     /* rate of change in heat storage [W m-2] */
-    strcpy(out_metadata[OUT_DELTAH].varname, "OUT_DELTAH");
-    strcpy(out_metadata[OUT_DELTAH].long_name, "deltah");
-    strcpy(out_metadata[OUT_DELTAH].standard_name,
+    snprintf(out_metadata[OUT_DELTAH].varname, MAXSTRING, "%s", "OUT_DELTAH");
+    snprintf(out_metadata[OUT_DELTAH].long_name, MAXSTRING, "%s", "deltah");
+    snprintf(out_metadata[OUT_DELTAH].standard_name, MAXSTRING, "%s",
            "rate_change_in_heat_storage");
-    strcpy(out_metadata[OUT_DELTAH].units, "W m-2");
-    strcpy(out_metadata[OUT_DELTAH].description,
+    snprintf(out_metadata[OUT_DELTAH].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_DELTAH].description, MAXSTRING, "%s",
            "rate of change in heat storage");
 
     /* energy budget error [W m-2] */
-    strcpy(out_metadata[OUT_ENERGY_ERROR].varname, "OUT_ENERGY_ERROR");
-    strcpy(out_metadata[OUT_ENERGY_ERROR].long_name, "energy_error");
-    strcpy(out_metadata[OUT_ENERGY_ERROR].standard_name, "energy_budget_error");
-    strcpy(out_metadata[OUT_ENERGY_ERROR].units, "W m-2");
-    strcpy(out_metadata[OUT_ENERGY_ERROR].description, "energy budget error");
+    snprintf(out_metadata[OUT_ENERGY_ERROR].varname, MAXSTRING, "%s", "OUT_ENERGY_ERROR");
+    snprintf(out_metadata[OUT_ENERGY_ERROR].long_name, MAXSTRING, "%s", "energy_error");
+    snprintf(out_metadata[OUT_ENERGY_ERROR].standard_name, MAXSTRING, "%s", "energy_budget_error");
+    snprintf(out_metadata[OUT_ENERGY_ERROR].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_ENERGY_ERROR].description, MAXSTRING, "%s", "energy budget error");
 
     /* water budget error [mm] */
-    strcpy(out_metadata[OUT_WATER_ERROR].varname, "OUT_WATER_ERROR");
-    strcpy(out_metadata[OUT_WATER_ERROR].long_name, "water_error");
-    strcpy(out_metadata[OUT_WATER_ERROR].standard_name, "water_budget_error");
-    strcpy(out_metadata[OUT_WATER_ERROR].units, "mm");
-    strcpy(out_metadata[OUT_WATER_ERROR].description, "water budget error");
+    snprintf(out_metadata[OUT_WATER_ERROR].varname, MAXSTRING, "%s", "OUT_WATER_ERROR");
+    snprintf(out_metadata[OUT_WATER_ERROR].long_name, MAXSTRING, "%s", "water_error");
+    snprintf(out_metadata[OUT_WATER_ERROR].standard_name, MAXSTRING, "%s", "water_budget_error");
+    snprintf(out_metadata[OUT_WATER_ERROR].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_WATER_ERROR].description, MAXSTRING, "%s", "water budget error");
 
     /* net energy used to melt/freeze soil moisture [W m-2] */
-    strcpy(out_metadata[OUT_FUSION].varname, "OUT_FUSION");
-    strcpy(out_metadata[OUT_FUSION].long_name, "fusion");
-    strcpy(out_metadata[OUT_FUSION].standard_name,
+    snprintf(out_metadata[OUT_FUSION].varname, MAXSTRING, "%s", "OUT_FUSION");
+    snprintf(out_metadata[OUT_FUSION].long_name, MAXSTRING, "%s", "fusion");
+    snprintf(out_metadata[OUT_FUSION].standard_name, MAXSTRING, "%s",
            "energy_of_fusion_in_soil_moisture");
-    strcpy(out_metadata[OUT_FUSION].units, "W m-2");
-    strcpy(out_metadata[OUT_FUSION].description,
+    snprintf(out_metadata[OUT_FUSION].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_FUSION].description, MAXSTRING, "%s",
            "net energy used to melt/freeze soil moisture");
 
     /* net heat flux into ground [W m-2] */
-    strcpy(out_metadata[OUT_GRND_FLUX].varname, "OUT_GRND_FLUX");
-    strcpy(out_metadata[OUT_GRND_FLUX].long_name, "grnd_flux");
-    strcpy(out_metadata[OUT_GRND_FLUX].standard_name,
+    snprintf(out_metadata[OUT_GRND_FLUX].varname, MAXSTRING, "%s", "OUT_GRND_FLUX");
+    snprintf(out_metadata[OUT_GRND_FLUX].long_name, MAXSTRING, "%s", "grnd_flux");
+    snprintf(out_metadata[OUT_GRND_FLUX].standard_name, MAXSTRING, "%s",
            "downward_heat_flux_in_soil");
-    strcpy(out_metadata[OUT_GRND_FLUX].units, "W m-2");
-    strcpy(out_metadata[OUT_GRND_FLUX].description,
+    snprintf(out_metadata[OUT_GRND_FLUX].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_GRND_FLUX].description, MAXSTRING, "%s",
            "net heat flux into ground");
 
     /* incoming longwave flux at surface (under veg) [W m-2] */
-    strcpy(out_metadata[OUT_IN_LONG].varname, "OUT_IN_LONG");
-    strcpy(out_metadata[OUT_IN_LONG].long_name, "in_long");
-    strcpy(out_metadata[OUT_IN_LONG].standard_name,
+    snprintf(out_metadata[OUT_IN_LONG].varname, MAXSTRING, "%s", "OUT_IN_LONG");
+    snprintf(out_metadata[OUT_IN_LONG].long_name, MAXSTRING, "%s", "in_long");
+    snprintf(out_metadata[OUT_IN_LONG].standard_name, MAXSTRING, "%s",
            "downwelling_longwave_flux_at_ground_surface");
-    strcpy(out_metadata[OUT_IN_LONG].units, "W m-2");
-    strcpy(out_metadata[OUT_IN_LONG].description,
+    snprintf(out_metadata[OUT_IN_LONG].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_IN_LONG].description, MAXSTRING, "%s",
            "incoming longwave flux at surface (under veg)");
 
     /* net upward latent heat flux [W m-2] */
-    strcpy(out_metadata[OUT_LATENT].varname, "OUT_LATENT");
-    strcpy(out_metadata[OUT_LATENT].long_name, "latent");
-    strcpy(out_metadata[OUT_LATENT].standard_name,
+    snprintf(out_metadata[OUT_LATENT].varname, MAXSTRING, "%s", "OUT_LATENT");
+    snprintf(out_metadata[OUT_LATENT].long_name, MAXSTRING, "%s", "latent");
+    snprintf(out_metadata[OUT_LATENT].standard_name, MAXSTRING, "%s",
            "surface_upward_latent_heat_flux");
-    strcpy(out_metadata[OUT_LATENT].units, "W m-2");
-    strcpy(out_metadata[OUT_LATENT].description, "net upward latent heat flux");
+    snprintf(out_metadata[OUT_LATENT].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_LATENT].description, MAXSTRING, "%s", "net upward latent heat flux");
 
     /* net upward latent heat flux from sublimation [W m-2] */
-    strcpy(out_metadata[OUT_LATENT_SUB].varname, "OUT_LATENT_SUB");
-    strcpy(out_metadata[OUT_LATENT_SUB].long_name, "latent_sub");
-    strcpy(out_metadata[OUT_LATENT_SUB].standard_name,
+    snprintf(out_metadata[OUT_LATENT_SUB].varname, MAXSTRING, "%s", "OUT_LATENT_SUB");
+    snprintf(out_metadata[OUT_LATENT_SUB].long_name, MAXSTRING, "%s", "latent_sub");
+    snprintf(out_metadata[OUT_LATENT_SUB].standard_name, MAXSTRING, "%s",
            "surface_net_latent_heat_flux_from_sublimation");
-    strcpy(out_metadata[OUT_LATENT_SUB].units, "W m-2");
-    strcpy(out_metadata[OUT_LATENT_SUB].description,
+    snprintf(out_metadata[OUT_LATENT_SUB].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_LATENT_SUB].description, MAXSTRING, "%s",
            "net upward latent heat flux from sublimation");
 
     /* energy of fusion (melting) [W m-2] */
-    strcpy(out_metadata[OUT_MELT_ENERGY].varname, "OUT_MELT_ENERGY");
-    strcpy(out_metadata[OUT_MELT_ENERGY].long_name, "melt_energy");
-    strcpy(out_metadata[OUT_MELT_ENERGY].standard_name, "energy_of_fusion");
-    strcpy(out_metadata[OUT_MELT_ENERGY].units, "W m-2");
-    strcpy(out_metadata[OUT_MELT_ENERGY].description,
+    snprintf(out_metadata[OUT_MELT_ENERGY].varname, MAXSTRING, "%s", "OUT_MELT_ENERGY");
+    snprintf(out_metadata[OUT_MELT_ENERGY].long_name, MAXSTRING, "%s", "melt_energy");
+    snprintf(out_metadata[OUT_MELT_ENERGY].standard_name, MAXSTRING, "%s", "energy_of_fusion");
+    snprintf(out_metadata[OUT_MELT_ENERGY].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_MELT_ENERGY].description, MAXSTRING, "%s",
            "energy of fusion (melting)");
 
     /* net downward longwave flux [W m-2] */
-    strcpy(out_metadata[OUT_LWNET].varname, "OUT_LWNET");
-    strcpy(out_metadata[OUT_LWNET].long_name, "lwnet");
-    strcpy(out_metadata[OUT_LWNET].standard_name,
+    snprintf(out_metadata[OUT_LWNET].varname, MAXSTRING, "%s", "OUT_LWNET");
+    snprintf(out_metadata[OUT_LWNET].long_name, MAXSTRING, "%s", "lwnet");
+    snprintf(out_metadata[OUT_LWNET].standard_name, MAXSTRING, "%s",
            "net_downward_longwave_flux_at_surface");
-    strcpy(out_metadata[OUT_LWNET].units, "W m-2");
-    strcpy(out_metadata[OUT_LWNET].description, "net downward longwave flux");
+    snprintf(out_metadata[OUT_LWNET].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_LWNET].description, MAXSTRING, "%s", "net downward longwave flux");
 
     /* net downward shortwave flux [W m-2] */
-    strcpy(out_metadata[OUT_SWNET].varname, "OUT_SWNET");
-    strcpy(out_metadata[OUT_SWNET].long_name, "swnet");
-    strcpy(out_metadata[OUT_SWNET].standard_name,
+    snprintf(out_metadata[OUT_SWNET].varname, MAXSTRING, "%s", "OUT_SWNET");
+    snprintf(out_metadata[OUT_SWNET].long_name, MAXSTRING, "%s", "swnet");
+    snprintf(out_metadata[OUT_SWNET].standard_name, MAXSTRING, "%s",
            "net_downward_shortwave_flux_at_surface");
-    strcpy(out_metadata[OUT_SWNET].units, "W m-2");
-    strcpy(out_metadata[OUT_SWNET].description, "net downward shortwave flux");
+    snprintf(out_metadata[OUT_SWNET].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_SWNET].description, MAXSTRING, "%s", "net downward shortwave flux");
 
     /* net downward radiation flux [W m-2] */
-    strcpy(out_metadata[OUT_R_NET].varname, "OUT_R_NET");
-    strcpy(out_metadata[OUT_R_NET].long_name, "r_net");
-    strcpy(out_metadata[OUT_R_NET].standard_name,
+    snprintf(out_metadata[OUT_R_NET].varname, MAXSTRING, "%s", "OUT_R_NET");
+    snprintf(out_metadata[OUT_R_NET].long_name, MAXSTRING, "%s", "r_net");
+    snprintf(out_metadata[OUT_R_NET].standard_name, MAXSTRING, "%s",
            "net_downward_radiation_flux_at_surface");
-    strcpy(out_metadata[OUT_R_NET].units, "W m-2");
-    strcpy(out_metadata[OUT_R_NET].description, "net downward radiation flux");
+    snprintf(out_metadata[OUT_R_NET].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_R_NET].description, MAXSTRING, "%s", "net downward radiation flux");
 
     /* net energy used to refreeze liquid water in snowpack [W m-2] */
-    strcpy(out_metadata[OUT_RFRZ_ENERGY].varname, "OUT_RFRZ_ENERGY");
-    strcpy(out_metadata[OUT_RFRZ_ENERGY].long_name, "rfrz_energy");
-    strcpy(out_metadata[OUT_RFRZ_ENERGY].standard_name,
+    snprintf(out_metadata[OUT_RFRZ_ENERGY].varname, MAXSTRING, "%s", "OUT_RFRZ_ENERGY");
+    snprintf(out_metadata[OUT_RFRZ_ENERGY].long_name, MAXSTRING, "%s", "rfrz_energy");
+    snprintf(out_metadata[OUT_RFRZ_ENERGY].standard_name, MAXSTRING, "%s",
            "net_energy_used_to_refreeze_water_in_snowpack");
-    strcpy(out_metadata[OUT_RFRZ_ENERGY].units, "W m-2");
-    strcpy(out_metadata[OUT_RFRZ_ENERGY].description,
+    snprintf(out_metadata[OUT_RFRZ_ENERGY].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_RFRZ_ENERGY].description, MAXSTRING, "%s",
            "net energy used to refreeze liquid water in snowpack");
 
     /* net upward sensible heat flux [W m-2] */
-    strcpy(out_metadata[OUT_SENSIBLE].varname, "OUT_SENSIBLE");
-    strcpy(out_metadata[OUT_SENSIBLE].long_name, "sensible");
-    strcpy(out_metadata[OUT_SENSIBLE].standard_name,
+    snprintf(out_metadata[OUT_SENSIBLE].varname, MAXSTRING, "%s", "OUT_SENSIBLE");
+    snprintf(out_metadata[OUT_SENSIBLE].long_name, MAXSTRING, "%s", "sensible");
+    snprintf(out_metadata[OUT_SENSIBLE].standard_name, MAXSTRING, "%s",
            "surface_upward_net_sensible_heat_flux");
-    strcpy(out_metadata[OUT_SENSIBLE].units, "W m-2");
-    strcpy(out_metadata[OUT_SENSIBLE].description,
+    snprintf(out_metadata[OUT_SENSIBLE].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_SENSIBLE].description, MAXSTRING, "%s",
            "net upward sensible heat flux");
 
     /* energy flux through snow pack [W m-2] */
-    strcpy(out_metadata[OUT_SNOW_FLUX].varname, "OUT_SNOW_FLUX");
-    strcpy(out_metadata[OUT_SNOW_FLUX].long_name, "snow_flux");
-    strcpy(out_metadata[OUT_SNOW_FLUX].standard_name,
+    snprintf(out_metadata[OUT_SNOW_FLUX].varname, MAXSTRING, "%s", "OUT_SNOW_FLUX");
+    snprintf(out_metadata[OUT_SNOW_FLUX].long_name, MAXSTRING, "%s", "snow_flux");
+    snprintf(out_metadata[OUT_SNOW_FLUX].standard_name, MAXSTRING, "%s",
            "energy_flux_through_snow_pack");
-    strcpy(out_metadata[OUT_SNOW_FLUX].units, "W m-2");
-    strcpy(out_metadata[OUT_SNOW_FLUX].description,
+    snprintf(out_metadata[OUT_SNOW_FLUX].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_SNOW_FLUX].description, MAXSTRING, "%s",
            "energy flux through snow pack");
 
     // Miscellaneous Terms
 
     /* "scene" aerodynamic conductance [m/s] (tiles with overstory contribute
         overstory conductance; others contribue surface conductance) */
-    strcpy(out_metadata[OUT_AERO_COND].varname, "OUT_AERO_COND");
-    strcpy(out_metadata[OUT_AERO_COND].long_name, "aero_cond");
-    strcpy(out_metadata[OUT_AERO_COND].standard_name,
+    snprintf(out_metadata[OUT_AERO_COND].varname, MAXSTRING, "%s", "OUT_AERO_COND");
+    snprintf(out_metadata[OUT_AERO_COND].long_name, MAXSTRING, "%s", "aero_cond");
+    snprintf(out_metadata[OUT_AERO_COND].standard_name, MAXSTRING, "%s",
            "aerodynamic_conductance");
-    strcpy(out_metadata[OUT_AERO_COND].units, "m/s");
-    strcpy(out_metadata[OUT_AERO_COND].description,
+    snprintf(out_metadata[OUT_AERO_COND].units, MAXSTRING, "%s", "m/s");
+    snprintf(out_metadata[OUT_AERO_COND].description, MAXSTRING, "%s",
            "scene aerodynamic conductance (tiles with overstory contribute "
            "overstory conductance; others contribue surface conductance)");
 
     /* surface aerodynamic conductance [m/s] */
-    strcpy(out_metadata[OUT_AERO_COND1].varname, "OUT_AERO_COND1");
-    strcpy(out_metadata[OUT_AERO_COND1].long_name, "aero_cond1");
-    strcpy(out_metadata[OUT_AERO_COND1].standard_name,
+    snprintf(out_metadata[OUT_AERO_COND1].varname, MAXSTRING, "%s", "OUT_AERO_COND1");
+    snprintf(out_metadata[OUT_AERO_COND1].long_name, MAXSTRING, "%s", "aero_cond1");
+    snprintf(out_metadata[OUT_AERO_COND1].standard_name, MAXSTRING, "%s",
            "aerodynamic_conductance_surface");
-    strcpy(out_metadata[OUT_AERO_COND1].units, "m/s");
-    strcpy(out_metadata[OUT_AERO_COND1].description,
+    snprintf(out_metadata[OUT_AERO_COND1].units, MAXSTRING, "%s", "m/s");
+    snprintf(out_metadata[OUT_AERO_COND1].description, MAXSTRING, "%s",
            "surface aerodynamic conductance");
 
     /* overstory aerodynamic conductance [m/s] */
-    strcpy(out_metadata[OUT_AERO_COND2].varname, "OUT_AERO_COND2");
-    strcpy(out_metadata[OUT_AERO_COND2].long_name, "aero_cond2");
-    strcpy(out_metadata[OUT_AERO_COND2].standard_name,
+    snprintf(out_metadata[OUT_AERO_COND2].varname, MAXSTRING, "%s", "OUT_AERO_COND2");
+    snprintf(out_metadata[OUT_AERO_COND2].long_name, MAXSTRING, "%s", "aero_cond2");
+    snprintf(out_metadata[OUT_AERO_COND2].standard_name, MAXSTRING, "%s",
            "aerodynamic_conductance_overstory");
-    strcpy(out_metadata[OUT_AERO_COND2].units, "m/s");
-    strcpy(out_metadata[OUT_AERO_COND2].description,
+    snprintf(out_metadata[OUT_AERO_COND2].units, MAXSTRING, "%s", "m/s");
+    snprintf(out_metadata[OUT_AERO_COND2].description, MAXSTRING, "%s",
            "overstory aerodynamic conductance");
 
     /* "scene" aerodynamic resistance [s m-1] (tiles with overstory contribute overstory resistance; others contribue surface resistance)*/
-    strcpy(out_metadata[OUT_AERO_RESIST].varname, "OUT_AERO_RESIST");
-    strcpy(out_metadata[OUT_AERO_RESIST].long_name, "aero_resist");
-    strcpy(out_metadata[OUT_AERO_RESIST].standard_name,
+    snprintf(out_metadata[OUT_AERO_RESIST].varname, MAXSTRING, "%s", "OUT_AERO_RESIST");
+    snprintf(out_metadata[OUT_AERO_RESIST].long_name, MAXSTRING, "%s", "aero_resist");
+    snprintf(out_metadata[OUT_AERO_RESIST].standard_name, MAXSTRING, "%s",
            "aerodynamic_resistance");
-    strcpy(out_metadata[OUT_AERO_RESIST].units, "s m-1");
-    strcpy(out_metadata[OUT_AERO_RESIST].description,
+    snprintf(out_metadata[OUT_AERO_RESIST].units, MAXSTRING, "%s", "s m-1");
+    snprintf(out_metadata[OUT_AERO_RESIST].description, MAXSTRING, "%s",
            "scene aerodynamic resistance (tiles with overstory contribute overstory resistance; others contribue surface resistance)");
 
     /* surface aerodynamic resistance [m/s] */
-    strcpy(out_metadata[OUT_AERO_RESIST1].varname, "OUT_AERO_RESIST1");
-    strcpy(out_metadata[OUT_AERO_RESIST1].long_name, "aero_resist1");
-    strcpy(out_metadata[OUT_AERO_RESIST1].standard_name,
+    snprintf(out_metadata[OUT_AERO_RESIST1].varname, MAXSTRING, "%s", "OUT_AERO_RESIST1");
+    snprintf(out_metadata[OUT_AERO_RESIST1].long_name, MAXSTRING, "%s", "aero_resist1");
+    snprintf(out_metadata[OUT_AERO_RESIST1].standard_name, MAXSTRING, "%s",
            "aerodynamic_resistance_surface");
-    strcpy(out_metadata[OUT_AERO_RESIST1].units, "s m-1");
-    strcpy(out_metadata[OUT_AERO_RESIST1].description,
+    snprintf(out_metadata[OUT_AERO_RESIST1].units, MAXSTRING, "%s", "s m-1");
+    snprintf(out_metadata[OUT_AERO_RESIST1].description, MAXSTRING, "%s",
            "surface aerodynamic resistance");
 
     /* overstory aerodynamic resistance [m/s] */
-    strcpy(out_metadata[OUT_AERO_RESIST2].varname, "OUT_AERO_RESIST2");
-    strcpy(out_metadata[OUT_AERO_RESIST2].long_name, "aero_resist2");
-    strcpy(out_metadata[OUT_AERO_RESIST2].standard_name,
+    snprintf(out_metadata[OUT_AERO_RESIST2].varname, MAXSTRING, "%s", "OUT_AERO_RESIST2");
+    snprintf(out_metadata[OUT_AERO_RESIST2].long_name, MAXSTRING, "%s", "aero_resist2");
+    snprintf(out_metadata[OUT_AERO_RESIST2].standard_name, MAXSTRING, "%s",
            "aerodynamic_resistance_overstory");
-    strcpy(out_metadata[OUT_AERO_RESIST2].units, "s m-1");
-    strcpy(out_metadata[OUT_AERO_RESIST2].description,
+    snprintf(out_metadata[OUT_AERO_RESIST2].units, MAXSTRING, "%s", "s m-1");
+    snprintf(out_metadata[OUT_AERO_RESIST2].description, MAXSTRING, "%s",
            "overstory aerodynamic resistance");
 
     /* air temperature [C] */
-    strcpy(out_metadata[OUT_AIR_TEMP].varname, "OUT_AIR_TEMP");
-    strcpy(out_metadata[OUT_AIR_TEMP].long_name, "air_temp");
-    strcpy(out_metadata[OUT_AIR_TEMP].standard_name, "air_temperature");
-    strcpy(out_metadata[OUT_AIR_TEMP].units, "C");
-    strcpy(out_metadata[OUT_AIR_TEMP].description, "air temperature");
+    snprintf(out_metadata[OUT_AIR_TEMP].varname, MAXSTRING, "%s", "OUT_AIR_TEMP");
+    snprintf(out_metadata[OUT_AIR_TEMP].long_name, MAXSTRING, "%s", "air_temp");
+    snprintf(out_metadata[OUT_AIR_TEMP].standard_name, MAXSTRING, "%s", "air_temperature");
+    snprintf(out_metadata[OUT_AIR_TEMP].units, MAXSTRING, "%s", "C");
+    snprintf(out_metadata[OUT_AIR_TEMP].description, MAXSTRING, "%s", "air temperature");
 
     /* atmospheric CO2 concentration [ppm] */
-    strcpy(out_metadata[OUT_CATM].varname, "OUT_CATM");
-    strcpy(out_metadata[OUT_CATM].long_name, "catm");
-    strcpy(out_metadata[OUT_CATM].standard_name,
+    snprintf(out_metadata[OUT_CATM].varname, MAXSTRING, "%s", "OUT_CATM");
+    snprintf(out_metadata[OUT_CATM].long_name, MAXSTRING, "%s", "catm");
+    snprintf(out_metadata[OUT_CATM].standard_name, MAXSTRING, "%s",
            "concentration_of_carbon_dioxide_in_air");
-    strcpy(out_metadata[OUT_CATM].units, "ppm");
-    strcpy(out_metadata[OUT_CATM].description, "atmospheric CO2 concentration");
+    snprintf(out_metadata[OUT_CATM].units, MAXSTRING, "%s", "ppm");
+    snprintf(out_metadata[OUT_CATM].description, MAXSTRING, "%s", "atmospheric CO2 concentration");
 
     /* near-surface atmospheric density [kg m-3] */
-    strcpy(out_metadata[OUT_DENSITY].varname, "OUT_DENSITY");
-    strcpy(out_metadata[OUT_DENSITY].long_name, "density");
-    strcpy(out_metadata[OUT_DENSITY].standard_name, "air_density");
-    strcpy(out_metadata[OUT_DENSITY].units, "kg m-3");
-    strcpy(out_metadata[OUT_DENSITY].description,
+    snprintf(out_metadata[OUT_DENSITY].varname, MAXSTRING, "%s", "OUT_DENSITY");
+    snprintf(out_metadata[OUT_DENSITY].long_name, MAXSTRING, "%s", "density");
+    snprintf(out_metadata[OUT_DENSITY].standard_name, MAXSTRING, "%s", "air_density");
+    snprintf(out_metadata[OUT_DENSITY].units, MAXSTRING, "%s", "kg m-3");
+    snprintf(out_metadata[OUT_DENSITY].description, MAXSTRING, "%s",
            "near-surface atmospheric density");
 
     /* fractional area covered by plant canopy [fraction] */
-    strcpy(out_metadata[OUT_FCANOPY].varname, "OUT_FCANOPY");
-    strcpy(out_metadata[OUT_FCANOPY].long_name, "fcanopy");
-    strcpy(out_metadata[OUT_FCANOPY].standard_name,
+    snprintf(out_metadata[OUT_FCANOPY].varname, MAXSTRING, "%s", "OUT_FCANOPY");
+    snprintf(out_metadata[OUT_FCANOPY].long_name, MAXSTRING, "%s", "fcanopy");
+    snprintf(out_metadata[OUT_FCANOPY].standard_name, MAXSTRING, "%s",
            "canopy_cover_area_fraction");
-    strcpy(out_metadata[OUT_FCANOPY].units, "1");
-    strcpy(out_metadata[OUT_FCANOPY].description,
+    snprintf(out_metadata[OUT_FCANOPY].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_FCANOPY].description, MAXSTRING, "%s",
            "fractional area covered by plant canopy");
 
     /* fraction of incoming shortwave that is direct [fraction] */
-    strcpy(out_metadata[OUT_FDIR].varname, "OUT_FDIR");
-    strcpy(out_metadata[OUT_FDIR].long_name, "fdir");
-    strcpy(out_metadata[OUT_FDIR].standard_name,
+    snprintf(out_metadata[OUT_FDIR].varname, MAXSTRING, "%s", "OUT_FDIR");
+    snprintf(out_metadata[OUT_FDIR].long_name, MAXSTRING, "%s", "fdir");
+    snprintf(out_metadata[OUT_FDIR].standard_name, MAXSTRING, "%s",
            "fraction_of_incoming_shorwave_radiation_that_is_direct");
-    strcpy(out_metadata[OUT_FDIR].units, "1");
-    strcpy(out_metadata[OUT_FDIR].description,
+    snprintf(out_metadata[OUT_FDIR].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_FDIR].description, MAXSTRING, "%s",
            "fraction of incoming shortwave that is direct");
 
     /* leaf area index [1] */
-    strcpy(out_metadata[OUT_LAI].varname, "OUT_LAI");
-    strcpy(out_metadata[OUT_LAI].long_name, "lai");
-    strcpy(out_metadata[OUT_LAI].standard_name, "leaf_area_index");
-    strcpy(out_metadata[OUT_LAI].units, "1");
-    strcpy(out_metadata[OUT_LAI].description, "leaf area index");
+    snprintf(out_metadata[OUT_LAI].varname, MAXSTRING, "%s", "OUT_LAI");
+    snprintf(out_metadata[OUT_LAI].long_name, MAXSTRING, "%s", "lai");
+    snprintf(out_metadata[OUT_LAI].standard_name, MAXSTRING, "%s", "leaf_area_index");
+    snprintf(out_metadata[OUT_LAI].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_LAI].description, MAXSTRING, "%s", "leaf area index");
 
     /* incoming longwave [W m-2] */
-    strcpy(out_metadata[OUT_LWDOWN].varname, "OUT_LWDOWN");
-    strcpy(out_metadata[OUT_LWDOWN].long_name, "lwdown");
-    strcpy(out_metadata[OUT_LWDOWN].standard_name,
+    snprintf(out_metadata[OUT_LWDOWN].varname, MAXSTRING, "%s", "OUT_LWDOWN");
+    snprintf(out_metadata[OUT_LWDOWN].long_name, MAXSTRING, "%s", "lwdown");
+    snprintf(out_metadata[OUT_LWDOWN].standard_name, MAXSTRING, "%s",
            "downwelling_longwave_flux_in_air");
-    strcpy(out_metadata[OUT_LWDOWN].units, "W m-2");
-    strcpy(out_metadata[OUT_LWDOWN].description, "incoming longwave");
+    snprintf(out_metadata[OUT_LWDOWN].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_LWDOWN].description, MAXSTRING, "%s", "incoming longwave");
 
     /* incoming photosynthetically active radiation [W m-2] */
-    strcpy(out_metadata[OUT_PAR].varname, "OUT_PAR");
-    strcpy(out_metadata[OUT_PAR].long_name, "par");
-    strcpy(out_metadata[OUT_PAR].standard_name,
+    snprintf(out_metadata[OUT_PAR].varname, MAXSTRING, "%s", "OUT_PAR");
+    snprintf(out_metadata[OUT_PAR].long_name, MAXSTRING, "%s", "par");
+    snprintf(out_metadata[OUT_PAR].standard_name, MAXSTRING, "%s",
            "surface_downwelling_photosynthetic_radiative_flux_in_air");
-    strcpy(out_metadata[OUT_PAR].units, "W m-2");
-    strcpy(out_metadata[OUT_PAR].description,
+    snprintf(out_metadata[OUT_PAR].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_PAR].description, MAXSTRING, "%s",
            "incoming photosynthetically active radiation");
 
     /* near surface atmospheric pressure [kPa] */
-    strcpy(out_metadata[OUT_PRESSURE].varname, "OUT_PRESSURE");
-    strcpy(out_metadata[OUT_PRESSURE].long_name, "pressure");
-    strcpy(out_metadata[OUT_PRESSURE].standard_name, "surface_air_pressure");
-    strcpy(out_metadata[OUT_PRESSURE].units, "kPa");
-    strcpy(out_metadata[OUT_PRESSURE].description,
+    snprintf(out_metadata[OUT_PRESSURE].varname, MAXSTRING, "%s", "OUT_PRESSURE");
+    snprintf(out_metadata[OUT_PRESSURE].long_name, MAXSTRING, "%s", "pressure");
+    snprintf(out_metadata[OUT_PRESSURE].standard_name, MAXSTRING, "%s", "surface_air_pressure");
+    snprintf(out_metadata[OUT_PRESSURE].units, MAXSTRING, "%s", "kPa");
+    snprintf(out_metadata[OUT_PRESSURE].description, MAXSTRING, "%s",
            "near surface atmospheric pressure");
 
     /* specific humidity [kg/kg] */
-    strcpy(out_metadata[OUT_QAIR].varname, "OUT_QAIR");
-    strcpy(out_metadata[OUT_QAIR].long_name, "qair");
-    strcpy(out_metadata[OUT_QAIR].standard_name, "specific_humidity");
-    strcpy(out_metadata[OUT_QAIR].units, "1");
-    strcpy(out_metadata[OUT_QAIR].description, "specific humidity");
+    snprintf(out_metadata[OUT_QAIR].varname, MAXSTRING, "%s", "OUT_QAIR");
+    snprintf(out_metadata[OUT_QAIR].long_name, MAXSTRING, "%s", "qair");
+    snprintf(out_metadata[OUT_QAIR].standard_name, MAXSTRING, "%s", "specific_humidity");
+    snprintf(out_metadata[OUT_QAIR].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_QAIR].description, MAXSTRING, "%s", "specific humidity");
 
     /* relative humidity [fraction]*/
-    strcpy(out_metadata[OUT_REL_HUMID].varname, "OUT_REL_HUMID");
-    strcpy(out_metadata[OUT_REL_HUMID].long_name, "rel_humid");
-    strcpy(out_metadata[OUT_REL_HUMID].standard_name, "relative_humidity");
-    strcpy(out_metadata[OUT_REL_HUMID].units, "1");
-    strcpy(out_metadata[OUT_REL_HUMID].description, "relative humidity");
+    snprintf(out_metadata[OUT_REL_HUMID].varname, MAXSTRING, "%s", "OUT_REL_HUMID");
+    snprintf(out_metadata[OUT_REL_HUMID].long_name, MAXSTRING, "%s", "rel_humid");
+    snprintf(out_metadata[OUT_REL_HUMID].standard_name, MAXSTRING, "%s", "relative_humidity");
+    snprintf(out_metadata[OUT_REL_HUMID].units, MAXSTRING, "%s", "1");
+    snprintf(out_metadata[OUT_REL_HUMID].description, MAXSTRING, "%s", "relative humidity");
 
     /* incoming shortwave [W m-2] */
-    strcpy(out_metadata[OUT_SWDOWN].varname, "OUT_SWDOWN");
-    strcpy(out_metadata[OUT_SWDOWN].long_name, "swdown");
-    strcpy(out_metadata[OUT_SWDOWN].standard_name, "incoming shortwave");
-    strcpy(out_metadata[OUT_SWDOWN].units, "W m-2");
-    strcpy(out_metadata[OUT_SWDOWN].description, "incoming shortwave");
+    snprintf(out_metadata[OUT_SWDOWN].varname, MAXSTRING, "%s", "OUT_SWDOWN");
+    snprintf(out_metadata[OUT_SWDOWN].long_name, MAXSTRING, "%s", "swdown");
+    snprintf(out_metadata[OUT_SWDOWN].standard_name, MAXSTRING, "%s", "incoming shortwave");
+    snprintf(out_metadata[OUT_SWDOWN].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_SWDOWN].description, MAXSTRING, "%s", "incoming shortwave");
 
     /* surface conductance [m/s] */
-    strcpy(out_metadata[OUT_SURF_COND].varname, "OUT_SURF_COND");
-    strcpy(out_metadata[OUT_SURF_COND].long_name, "surf_cond");
-    strcpy(out_metadata[OUT_SURF_COND].standard_name,
+    snprintf(out_metadata[OUT_SURF_COND].varname, MAXSTRING, "%s", "OUT_SURF_COND");
+    snprintf(out_metadata[OUT_SURF_COND].long_name, MAXSTRING, "%s", "surf_cond");
+    snprintf(out_metadata[OUT_SURF_COND].standard_name, MAXSTRING, "%s",
            "surface_conductance");
-    strcpy(out_metadata[OUT_SURF_COND].units, "m s-1");
-    strcpy(out_metadata[OUT_SURF_COND].description, "surface conductance");
+    snprintf(out_metadata[OUT_SURF_COND].units, MAXSTRING, "%s", "m s-1");
+    snprintf(out_metadata[OUT_SURF_COND].description, MAXSTRING, "%s", "surface conductance");
 
     /* near surface vapor pressure [kPa] */
-    strcpy(out_metadata[OUT_VP].varname, "OUT_VP");
-    strcpy(out_metadata[OUT_VP].long_name, "vp");
-    strcpy(out_metadata[OUT_VP].standard_name, "water_vapor_pressure");
-    strcpy(out_metadata[OUT_VP].units, "kPa");
-    strcpy(out_metadata[OUT_VP].description, "near surface vapor pressure");
+    snprintf(out_metadata[OUT_VP].varname, MAXSTRING, "%s", "OUT_VP");
+    snprintf(out_metadata[OUT_VP].long_name, MAXSTRING, "%s", "vp");
+    snprintf(out_metadata[OUT_VP].standard_name, MAXSTRING, "%s", "water_vapor_pressure");
+    snprintf(out_metadata[OUT_VP].units, MAXSTRING, "%s", "kPa");
+    snprintf(out_metadata[OUT_VP].description, MAXSTRING, "%s", "near surface vapor pressure");
 
     /* near surface vapor pressure deficit [kPa] */
-    strcpy(out_metadata[OUT_VPD].varname, "OUT_VPD");
-    strcpy(out_metadata[OUT_VPD].long_name, "vpd");
-    strcpy(out_metadata[OUT_VPD].standard_name,
+    snprintf(out_metadata[OUT_VPD].varname, MAXSTRING, "%s", "OUT_VPD");
+    snprintf(out_metadata[OUT_VPD].long_name, MAXSTRING, "%s", "vpd");
+    snprintf(out_metadata[OUT_VPD].standard_name, MAXSTRING, "%s",
            "water_vapor_saturation_deficit");
-    strcpy(out_metadata[OUT_VPD].units, "kPa");
-    strcpy(out_metadata[OUT_VPD].description,
+    snprintf(out_metadata[OUT_VPD].units, MAXSTRING, "%s", "kPa");
+    snprintf(out_metadata[OUT_VPD].description, MAXSTRING, "%s",
            "near surface vapor pressure deficit");
 
     /* near surface wind speed [m/s] */
-    strcpy(out_metadata[OUT_WIND].varname, "OUT_WIND");
-    strcpy(out_metadata[OUT_WIND].long_name, "wind");
-    strcpy(out_metadata[OUT_WIND].standard_name, "wind_speed");
-    strcpy(out_metadata[OUT_WIND].units, "m s-1");
-    strcpy(out_metadata[OUT_WIND].description, "near surface wind speed");
+    snprintf(out_metadata[OUT_WIND].varname, MAXSTRING, "%s", "OUT_WIND");
+    snprintf(out_metadata[OUT_WIND].long_name, MAXSTRING, "%s", "wind");
+    snprintf(out_metadata[OUT_WIND].standard_name, MAXSTRING, "%s", "wind_speed");
+    snprintf(out_metadata[OUT_WIND].units, MAXSTRING, "%s", "m s-1");
+    snprintf(out_metadata[OUT_WIND].description, MAXSTRING, "%s", "near surface wind speed");
 
     // Carbon-cycling Terms
     /* absorbed PAR [W m-2] */
-    strcpy(out_metadata[OUT_APAR].varname, "OUT_APAR");
-    strcpy(out_metadata[OUT_APAR].long_name, "apar");
-    strcpy(out_metadata[OUT_APAR].standard_name,
+    snprintf(out_metadata[OUT_APAR].varname, MAXSTRING, "%s", "OUT_APAR");
+    snprintf(out_metadata[OUT_APAR].long_name, MAXSTRING, "%s", "apar");
+    snprintf(out_metadata[OUT_APAR].standard_name, MAXSTRING, "%s",
            "absorbed_surface_diffuse_downwelling_photosynthetic_radiative_flux");
-    strcpy(out_metadata[OUT_APAR].units, "W m-2");
-    strcpy(out_metadata[OUT_APAR].description, "absorbed PAR");
+    snprintf(out_metadata[OUT_APAR].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_APAR].description, MAXSTRING, "%s", "absorbed PAR");
 
     /* gross primary productivity [g C/m2s] */
-    strcpy(out_metadata[OUT_GPP].varname, "OUT_GPP");
-    strcpy(out_metadata[OUT_GPP].long_name, "gpp");
-    strcpy(out_metadata[OUT_GPP].standard_name,
+    snprintf(out_metadata[OUT_GPP].varname, MAXSTRING, "%s", "OUT_GPP");
+    snprintf(out_metadata[OUT_GPP].long_name, MAXSTRING, "%s", "gpp");
+    snprintf(out_metadata[OUT_GPP].standard_name, MAXSTRING, "%s",
            "gross_primary_productivity_of_biomass_expressed_as_carbon");
-    strcpy(out_metadata[OUT_GPP].units, "g m-2 s-1");
-    strcpy(out_metadata[OUT_GPP].description, "gross primary productivity");
+    snprintf(out_metadata[OUT_GPP].units, MAXSTRING, "%s", "g m-2 s-1");
+    snprintf(out_metadata[OUT_GPP].description, MAXSTRING, "%s", "gross primary productivity");
 
     /* autotrophic respiration [g C/m2s] */
-    strcpy(out_metadata[OUT_RAUT].varname, "OUT_RAUT");
-    strcpy(out_metadata[OUT_RAUT].long_name, "raut");
-    strcpy(out_metadata[OUT_RAUT].standard_name,
+    snprintf(out_metadata[OUT_RAUT].varname, MAXSTRING, "%s", "OUT_RAUT");
+    snprintf(out_metadata[OUT_RAUT].long_name, MAXSTRING, "%s", "raut");
+    snprintf(out_metadata[OUT_RAUT].standard_name, MAXSTRING, "%s",
            "autotrophic_respiration_carbon_flux");
-    strcpy(out_metadata[OUT_RAUT].units, "g m-2 s-1");
-    strcpy(out_metadata[OUT_RAUT].description, "autotrophic respiration");
+    snprintf(out_metadata[OUT_RAUT].units, MAXSTRING, "%s", "g m-2 s-1");
+    snprintf(out_metadata[OUT_RAUT].description, MAXSTRING, "%s", "autotrophic respiration");
 
     /* net primary productivity [g C/m2s] */
-    strcpy(out_metadata[OUT_NPP].varname, "OUT_NPP");
-    strcpy(out_metadata[OUT_NPP].long_name, "npp");
-    strcpy(out_metadata[OUT_NPP].standard_name,
+    snprintf(out_metadata[OUT_NPP].varname, MAXSTRING, "%s", "OUT_NPP");
+    snprintf(out_metadata[OUT_NPP].long_name, MAXSTRING, "%s", "npp");
+    snprintf(out_metadata[OUT_NPP].standard_name, MAXSTRING, "%s",
            "net_primary_productivity_of_biomass_expressed_as_carbon");
-    strcpy(out_metadata[OUT_NPP].units, "g m-2 s-1");
-    strcpy(out_metadata[OUT_NPP].description, "et primary productivity");
+    snprintf(out_metadata[OUT_NPP].units, MAXSTRING, "%s", "g m-2 s-1");
+    snprintf(out_metadata[OUT_NPP].description, MAXSTRING, "%s", "et primary productivity");
 
     /* flux of carbon from living biomass into soil [g C/m2d] */
-    strcpy(out_metadata[OUT_LITTERFALL].varname, "OUT_LITTERFALL");
-    strcpy(out_metadata[OUT_LITTERFALL].long_name, "litterfall");
-    strcpy(out_metadata[OUT_LITTERFALL].standard_name,
+    snprintf(out_metadata[OUT_LITTERFALL].varname, MAXSTRING, "%s", "OUT_LITTERFALL");
+    snprintf(out_metadata[OUT_LITTERFALL].long_name, MAXSTRING, "%s", "litterfall");
+    snprintf(out_metadata[OUT_LITTERFALL].standard_name, MAXSTRING, "%s",
            "carbon_mass_flux_into_soil_from_litter");
-    strcpy(out_metadata[OUT_LITTERFALL].units, "g m-2 d-1");
-    strcpy(out_metadata[OUT_LITTERFALL].description,
+    snprintf(out_metadata[OUT_LITTERFALL].units, MAXSTRING, "%s", "g m-2 d-1");
+    snprintf(out_metadata[OUT_LITTERFALL].description, MAXSTRING, "%s",
            "flux of carbon from living biomass into soil");
 
     /* heterotrophic respiration [g C/m2d] */
-    strcpy(out_metadata[OUT_RHET].varname, "OUT_RHET");
-    strcpy(out_metadata[OUT_RHET].long_name, "rhet");
-    strcpy(out_metadata[OUT_RHET].standard_name, "heterotrophic_respiration");
-    strcpy(out_metadata[OUT_RHET].units, "g m-2 d-1");
-    strcpy(out_metadata[OUT_RHET].description, "heterotrophic respiration");
+    snprintf(out_metadata[OUT_RHET].varname, MAXSTRING, "%s", "OUT_RHET");
+    snprintf(out_metadata[OUT_RHET].long_name, MAXSTRING, "%s", "rhet");
+    snprintf(out_metadata[OUT_RHET].standard_name, MAXSTRING, "%s", "heterotrophic_respiration");
+    snprintf(out_metadata[OUT_RHET].units, MAXSTRING, "%s", "g m-2 d-1");
+    snprintf(out_metadata[OUT_RHET].description, MAXSTRING, "%s", "heterotrophic respiration");
 
     /* net ecosystem exchange [g C/m2d] */
-    strcpy(out_metadata[OUT_NEE].varname, "OUT_NEE");
-    strcpy(out_metadata[OUT_NEE].long_name, "nee");
-    strcpy(out_metadata[OUT_NEE].standard_name,
+    snprintf(out_metadata[OUT_NEE].varname, MAXSTRING, "%s", "OUT_NEE");
+    snprintf(out_metadata[OUT_NEE].long_name, MAXSTRING, "%s", "nee");
+    snprintf(out_metadata[OUT_NEE].standard_name, MAXSTRING, "%s",
            "net_ecosystem_exhanged_expressed_as_carbon");
-    strcpy(out_metadata[OUT_NEE].units, "g m-2 d-1");
-    strcpy(out_metadata[OUT_NEE].description, "net ecosystem exchange");
+    snprintf(out_metadata[OUT_NEE].units, MAXSTRING, "%s", "g m-2 d-1");
+    snprintf(out_metadata[OUT_NEE].description, MAXSTRING, "%s", "net ecosystem exchange");
 
     /* litter pool carbon density [g C/m2] */
-    strcpy(out_metadata[OUT_CLITTER].varname, "OUT_CLITTER");
-    strcpy(out_metadata[OUT_CLITTER].long_name, "clitter");
-    strcpy(out_metadata[OUT_CLITTER].standard_name, "litter_carbon_content");
-    strcpy(out_metadata[OUT_CLITTER].units, "g m-2");
-    strcpy(out_metadata[OUT_CLITTER].description, "litter pool carbon density");
+    snprintf(out_metadata[OUT_CLITTER].varname, MAXSTRING, "%s", "OUT_CLITTER");
+    snprintf(out_metadata[OUT_CLITTER].long_name, MAXSTRING, "%s", "clitter");
+    snprintf(out_metadata[OUT_CLITTER].standard_name, MAXSTRING, "%s", "litter_carbon_content");
+    snprintf(out_metadata[OUT_CLITTER].units, MAXSTRING, "%s", "g m-2");
+    snprintf(out_metadata[OUT_CLITTER].description, MAXSTRING, "%s", "litter pool carbon density");
 
     /* intermediate pool carbon density [g C/m2] */
-    strcpy(out_metadata[OUT_CINTER].varname, "OUT_CINTER");
-    strcpy(out_metadata[OUT_CINTER].long_name, "cinter");
-    strcpy(out_metadata[OUT_CINTER].standard_name,
+    snprintf(out_metadata[OUT_CINTER].varname, MAXSTRING, "%s", "OUT_CINTER");
+    snprintf(out_metadata[OUT_CINTER].long_name, MAXSTRING, "%s", "cinter");
+    snprintf(out_metadata[OUT_CINTER].standard_name, MAXSTRING, "%s",
            "intermediate_pool_carbon_content");
-    strcpy(out_metadata[OUT_CINTER].units, "g m-2");
-    strcpy(out_metadata[OUT_CINTER].description,
+    snprintf(out_metadata[OUT_CINTER].units, MAXSTRING, "%s", "g m-2");
+    snprintf(out_metadata[OUT_CINTER].description, MAXSTRING, "%s",
            "intermediate pool carbon density");
 
     /* slow pool carbon density [g C/m2] */
-    strcpy(out_metadata[OUT_CSLOW].varname, "OUT_CSLOW");
-    strcpy(out_metadata[OUT_CSLOW].long_name, "cslow");
-    strcpy(out_metadata[OUT_CSLOW].standard_name, "slow_pool_carbon_content");
-    strcpy(out_metadata[OUT_CSLOW].units, "g m-2");
-    strcpy(out_metadata[OUT_CSLOW].description, "slow pool carbon density");
+    snprintf(out_metadata[OUT_CSLOW].varname, MAXSTRING, "%s", "OUT_CSLOW");
+    snprintf(out_metadata[OUT_CSLOW].long_name, MAXSTRING, "%s", "cslow");
+    snprintf(out_metadata[OUT_CSLOW].standard_name, MAXSTRING, "%s", "slow_pool_carbon_content");
+    snprintf(out_metadata[OUT_CSLOW].units, MAXSTRING, "%s", "g m-2");
+    snprintf(out_metadata[OUT_CSLOW].description, MAXSTRING, "%s", "slow pool carbon density");
 
     // Band-specific quantities
     /* net sensible heat flux advected to snow pack [W m-2] */
-    strcpy(out_metadata[OUT_ADV_SENS_BAND].varname, "OUT_ADV_SENS_BAND");
-    strcpy(out_metadata[OUT_ADV_SENS_BAND].long_name, "adv_sens_band");
-    strcpy(out_metadata[OUT_ADV_SENS_BAND].standard_name,
+    snprintf(out_metadata[OUT_ADV_SENS_BAND].varname, MAXSTRING, "%s", "OUT_ADV_SENS_BAND");
+    snprintf(out_metadata[OUT_ADV_SENS_BAND].long_name, MAXSTRING, "%s", "adv_sens_band");
+    snprintf(out_metadata[OUT_ADV_SENS_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_ADV_SENS].standard_name);
-    strcpy(out_metadata[OUT_ADV_SENS_BAND].units,
+    snprintf(out_metadata[OUT_ADV_SENS_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_ADV_SENS].units);
-    strcpy(out_metadata[OUT_ADV_SENS_BAND].description,
+    snprintf(out_metadata[OUT_ADV_SENS_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_ADV_SENS].description);
 
-    strcpy(out_metadata[OUT_ADV_SENS].varname, "OUT_ADV_SENS");
-    strcpy(out_metadata[OUT_ADV_SENS].long_name, "adv_sens");
-    strcpy(out_metadata[OUT_ADV_SENS].standard_name,
+    snprintf(out_metadata[OUT_ADV_SENS].varname, MAXSTRING, "%s", "OUT_ADV_SENS");
+    snprintf(out_metadata[OUT_ADV_SENS].long_name, MAXSTRING, "%s", "adv_sens");
+    snprintf(out_metadata[OUT_ADV_SENS].standard_name, MAXSTRING, "%s",
            "net_sensible_heat_flux_to_snow_pack");
-    strcpy(out_metadata[OUT_ADV_SENS].units, "W m-2");
-    strcpy(out_metadata[OUT_ADV_SENS].description,
+    snprintf(out_metadata[OUT_ADV_SENS].units, MAXSTRING, "%s", "W m-2");
+    snprintf(out_metadata[OUT_ADV_SENS].description, MAXSTRING, "%s",
            "net sensible heat advected to snow pack");
 
     /* advected energy [W m-2] */
-    strcpy(out_metadata[OUT_ADVECTION_BAND].varname, "OUT_ADVECTION_BAND");
-    strcpy(out_metadata[OUT_ADVECTION_BAND].long_name, "advection_band");
-    strcpy(out_metadata[OUT_ADVECTION_BAND].standard_name,
+    snprintf(out_metadata[OUT_ADVECTION_BAND].varname, MAXSTRING, "%s", "OUT_ADVECTION_BAND");
+    snprintf(out_metadata[OUT_ADVECTION_BAND].long_name, MAXSTRING, "%s", "advection_band");
+    snprintf(out_metadata[OUT_ADVECTION_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_ADVECTION].standard_name);
-    strcpy(out_metadata[OUT_ADVECTION_BAND].units,
+    snprintf(out_metadata[OUT_ADVECTION_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_ADVECTION].units);
-    strcpy(out_metadata[OUT_ADVECTION_BAND].description,
+    snprintf(out_metadata[OUT_ADVECTION_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_ADVECTION].description);
 
     /* albedo [fraction] */
-    strcpy(out_metadata[OUT_ALBEDO_BAND].varname, "OUT_ALBEDO_BAND");
-    strcpy(out_metadata[OUT_ALBEDO_BAND].long_name, "albedo_band");
-    strcpy(out_metadata[OUT_ALBEDO_BAND].standard_name,
+    snprintf(out_metadata[OUT_ALBEDO_BAND].varname, MAXSTRING, "%s", "OUT_ALBEDO_BAND");
+    snprintf(out_metadata[OUT_ALBEDO_BAND].long_name, MAXSTRING, "%s", "albedo_band");
+    snprintf(out_metadata[OUT_ALBEDO_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_ALBEDO].standard_name);
-    strcpy(out_metadata[OUT_ALBEDO_BAND].units, out_metadata[OUT_ALBEDO].units);
-    strcpy(out_metadata[OUT_ALBEDO_BAND].description,
+    snprintf(out_metadata[OUT_ALBEDO_BAND].units, MAXSTRING, "%s", out_metadata[OUT_ALBEDO].units);
+    snprintf(out_metadata[OUT_ALBEDO_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_ALBEDO].description);
 
     /* change in cold content in snow pack [W m-2] */
-    strcpy(out_metadata[OUT_DELTACC_BAND].varname, "OUT_DELTACC_BAND");
-    strcpy(out_metadata[OUT_DELTACC_BAND].long_name, "deltacc_band");
-    strcpy(out_metadata[OUT_DELTACC_BAND].standard_name,
+    snprintf(out_metadata[OUT_DELTACC_BAND].varname, MAXSTRING, "%s", "OUT_DELTACC_BAND");
+    snprintf(out_metadata[OUT_DELTACC_BAND].long_name, MAXSTRING, "%s", "deltacc_band");
+    snprintf(out_metadata[OUT_DELTACC_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_DELTACC].standard_name);
-    strcpy(out_metadata[OUT_DELTACC_BAND].units,
+    snprintf(out_metadata[OUT_DELTACC_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_DELTACC].units);
-    strcpy(out_metadata[OUT_DELTACC_BAND].description,
+    snprintf(out_metadata[OUT_DELTACC_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_DELTACC].description);
 
     /* net heat flux into ground [W m-2] */
-    strcpy(out_metadata[OUT_GRND_FLUX_BAND].varname, "OUT_GRND_FLUX_BAND");
-    strcpy(out_metadata[OUT_GRND_FLUX_BAND].long_name, "grnd_flux_band");
-    strcpy(out_metadata[OUT_GRND_FLUX_BAND].standard_name,
+    snprintf(out_metadata[OUT_GRND_FLUX_BAND].varname, MAXSTRING, "%s", "OUT_GRND_FLUX_BAND");
+    snprintf(out_metadata[OUT_GRND_FLUX_BAND].long_name, MAXSTRING, "%s", "grnd_flux_band");
+    snprintf(out_metadata[OUT_GRND_FLUX_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_GRND_FLUX].standard_name);
-    strcpy(out_metadata[OUT_GRND_FLUX_BAND].units,
+    snprintf(out_metadata[OUT_GRND_FLUX_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_GRND_FLUX].units);
-    strcpy(out_metadata[OUT_GRND_FLUX_BAND].description,
+    snprintf(out_metadata[OUT_GRND_FLUX_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_GRND_FLUX].description);
 
     /* incoming longwave flux at surface (under veg) [W m-2] */
-    strcpy(out_metadata[OUT_IN_LONG_BAND].varname, "OUT_IN_LONG_BAND");
-    strcpy(out_metadata[OUT_IN_LONG_BAND].long_name, "in_long_band");
-    strcpy(out_metadata[OUT_IN_LONG_BAND].standard_name,
+    snprintf(out_metadata[OUT_IN_LONG_BAND].varname, MAXSTRING, "%s", "OUT_IN_LONG_BAND");
+    snprintf(out_metadata[OUT_IN_LONG_BAND].long_name, MAXSTRING, "%s", "in_long_band");
+    snprintf(out_metadata[OUT_IN_LONG_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_IN_LONG].standard_name);
-    strcpy(out_metadata[OUT_IN_LONG_BAND].units,
+    snprintf(out_metadata[OUT_IN_LONG_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_IN_LONG].units);
-    strcpy(out_metadata[OUT_IN_LONG_BAND].description,
+    snprintf(out_metadata[OUT_IN_LONG_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_IN_LONG].description);
 
     /* net upward latent heat flux [W m-2] */
-    strcpy(out_metadata[OUT_LATENT_BAND].varname, "OUT_LATENT_BAND");
-    strcpy(out_metadata[OUT_LATENT_BAND].long_name, "latent_band");
-    strcpy(out_metadata[OUT_LATENT_BAND].standard_name,
+    snprintf(out_metadata[OUT_LATENT_BAND].varname, MAXSTRING, "%s", "OUT_LATENT_BAND");
+    snprintf(out_metadata[OUT_LATENT_BAND].long_name, MAXSTRING, "%s", "latent_band");
+    snprintf(out_metadata[OUT_LATENT_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_LATENT].standard_name);
-    strcpy(out_metadata[OUT_LATENT_BAND].units, out_metadata[OUT_LATENT].units);
-    strcpy(out_metadata[OUT_LATENT_BAND].description,
+    snprintf(out_metadata[OUT_LATENT_BAND].units, MAXSTRING, "%s", out_metadata[OUT_LATENT].units);
+    snprintf(out_metadata[OUT_LATENT_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_LATENT].description);
 
     /* net upward latent heat flux from sublimation [W m-2] */
-    strcpy(out_metadata[OUT_LATENT_SUB_BAND].varname, "OUT_LATENT_SUB_BAND");
-    strcpy(out_metadata[OUT_LATENT_SUB_BAND].long_name, "latent_sub_band");
-    strcpy(out_metadata[OUT_LATENT_SUB_BAND].standard_name,
+    snprintf(out_metadata[OUT_LATENT_SUB_BAND].varname, MAXSTRING, "%s", "OUT_LATENT_SUB_BAND");
+    snprintf(out_metadata[OUT_LATENT_SUB_BAND].long_name, MAXSTRING, "%s", "latent_sub_band");
+    snprintf(out_metadata[OUT_LATENT_SUB_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_LATENT_SUB].standard_name);
-    strcpy(out_metadata[OUT_LATENT_SUB_BAND].units,
+    snprintf(out_metadata[OUT_LATENT_SUB_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_LATENT_SUB].units);
-    strcpy(out_metadata[OUT_LATENT_SUB_BAND].description,
+    snprintf(out_metadata[OUT_LATENT_SUB_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_LATENT_SUB].description);
 
     /* energy of fusion (melting) [W m-2] */
-    strcpy(out_metadata[OUT_MELT_ENERGY_BAND].varname, "OUT_MELT_ENERGY_BAND");
-    strcpy(out_metadata[OUT_MELT_ENERGY_BAND].long_name, "melt_energy_band");
-    strcpy(out_metadata[OUT_MELT_ENERGY_BAND].standard_name,
+    snprintf(out_metadata[OUT_MELT_ENERGY_BAND].varname, MAXSTRING, "%s", "OUT_MELT_ENERGY_BAND");
+    snprintf(out_metadata[OUT_MELT_ENERGY_BAND].long_name, MAXSTRING, "%s", "melt_energy_band");
+    snprintf(out_metadata[OUT_MELT_ENERGY_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_MELT_ENERGY].standard_name);
-    strcpy(out_metadata[OUT_MELT_ENERGY_BAND].units,
+    snprintf(out_metadata[OUT_MELT_ENERGY_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_MELT_ENERGY].units);
-    strcpy(out_metadata[OUT_MELT_ENERGY_BAND].description,
+    snprintf(out_metadata[OUT_MELT_ENERGY_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_MELT_ENERGY].description);
 
     /* net downward longwave flux [W m-2] */
-    strcpy(out_metadata[OUT_LWNET_BAND].varname, "OUT_LWNET_BAND");
-    strcpy(out_metadata[OUT_LWNET_BAND].long_name, "lwnet_band");
-    strcpy(out_metadata[OUT_LWNET_BAND].standard_name,
+    snprintf(out_metadata[OUT_LWNET_BAND].varname, MAXSTRING, "%s", "OUT_LWNET_BAND");
+    snprintf(out_metadata[OUT_LWNET_BAND].long_name, MAXSTRING, "%s", "lwnet_band");
+    snprintf(out_metadata[OUT_LWNET_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_LWNET].standard_name);
-    strcpy(out_metadata[OUT_LWNET_BAND].units, out_metadata[OUT_LWNET].units);
-    strcpy(out_metadata[OUT_LWNET_BAND].description,
+    snprintf(out_metadata[OUT_LWNET_BAND].units, MAXSTRING, "%s", out_metadata[OUT_LWNET].units);
+    snprintf(out_metadata[OUT_LWNET_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_LWNET].description);
 
     /* net downward shortwave flux [W m-2] */
-    strcpy(out_metadata[OUT_SWNET_BAND].varname, "OUT_SWNET_BAND");
-    strcpy(out_metadata[OUT_SWNET_BAND].long_name, "swnet_band");
-    strcpy(out_metadata[OUT_SWNET_BAND].standard_name,
+    snprintf(out_metadata[OUT_SWNET_BAND].varname, MAXSTRING, "%s", "OUT_SWNET_BAND");
+    snprintf(out_metadata[OUT_SWNET_BAND].long_name, MAXSTRING, "%s", "swnet_band");
+    snprintf(out_metadata[OUT_SWNET_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SWNET].standard_name);
-    strcpy(out_metadata[OUT_SWNET_BAND].units, out_metadata[OUT_SWNET].units);
-    strcpy(out_metadata[OUT_SWNET_BAND].description,
+    snprintf(out_metadata[OUT_SWNET_BAND].units, MAXSTRING, "%s", out_metadata[OUT_SWNET].units);
+    snprintf(out_metadata[OUT_SWNET_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SWNET].description);
 
     /* net energy used to refreeze liquid water in snowpack [W m-2] */
-    strcpy(out_metadata[OUT_RFRZ_ENERGY_BAND].varname, "OUT_RFRZ_ENERGY_BAND");
-    strcpy(out_metadata[OUT_RFRZ_ENERGY_BAND].long_name, "rfrz_energy_band");
-    strcpy(out_metadata[OUT_RFRZ_ENERGY_BAND].standard_name,
+    snprintf(out_metadata[OUT_RFRZ_ENERGY_BAND].varname, MAXSTRING, "%s", "OUT_RFRZ_ENERGY_BAND");
+    snprintf(out_metadata[OUT_RFRZ_ENERGY_BAND].long_name, MAXSTRING, "%s", "rfrz_energy_band");
+    snprintf(out_metadata[OUT_RFRZ_ENERGY_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_RFRZ_ENERGY].standard_name);
-    strcpy(out_metadata[OUT_RFRZ_ENERGY_BAND].units,
+    snprintf(out_metadata[OUT_RFRZ_ENERGY_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_RFRZ_ENERGY].units);
-    strcpy(out_metadata[OUT_RFRZ_ENERGY_BAND].description,
+    snprintf(out_metadata[OUT_RFRZ_ENERGY_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_RFRZ_ENERGY].description);
 
     /* net upward sensible heat flux [W m-2] */
-    strcpy(out_metadata[OUT_SENSIBLE_BAND].varname, "OUT_SENSIBLE_BAND");
-    strcpy(out_metadata[OUT_SENSIBLE_BAND].long_name, "sensible_band");
-    strcpy(out_metadata[OUT_SENSIBLE_BAND].standard_name,
+    snprintf(out_metadata[OUT_SENSIBLE_BAND].varname, MAXSTRING, "%s", "OUT_SENSIBLE_BAND");
+    snprintf(out_metadata[OUT_SENSIBLE_BAND].long_name, MAXSTRING, "%s", "sensible_band");
+    snprintf(out_metadata[OUT_SENSIBLE_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SENSIBLE].standard_name);
-    strcpy(out_metadata[OUT_SENSIBLE_BAND].units,
+    snprintf(out_metadata[OUT_SENSIBLE_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SENSIBLE].units);
-    strcpy(out_metadata[OUT_SENSIBLE_BAND].description,
+    snprintf(out_metadata[OUT_SENSIBLE_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SENSIBLE].description);
 
     /* snow interception storage in canopy [mm] */
-    strcpy(out_metadata[OUT_SNOW_CANOPY_BAND].varname, "OUT_SNOW_CANOPY_BAND");
-    strcpy(out_metadata[OUT_SNOW_CANOPY_BAND].long_name, "snow_canopy_band");
-    strcpy(out_metadata[OUT_SNOW_CANOPY_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_CANOPY_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_CANOPY_BAND");
+    snprintf(out_metadata[OUT_SNOW_CANOPY_BAND].long_name, MAXSTRING, "%s", "snow_canopy_band");
+    snprintf(out_metadata[OUT_SNOW_CANOPY_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_CANOPY].standard_name);
-    strcpy(out_metadata[OUT_SNOW_CANOPY_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_CANOPY_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_CANOPY].units);
-    strcpy(out_metadata[OUT_SNOW_CANOPY_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_CANOPY_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_CANOPY].description);
 
     /* fractional area of snow cover [fraction] */
-    strcpy(out_metadata[OUT_SNOW_COVER_BAND].varname, "OUT_SNOW_COVER_BAND");
-    strcpy(out_metadata[OUT_SNOW_COVER_BAND].long_name, "snow_cover_band");
-    strcpy(out_metadata[OUT_SNOW_COVER_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_COVER_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_COVER_BAND");
+    snprintf(out_metadata[OUT_SNOW_COVER_BAND].long_name, MAXSTRING, "%s", "snow_cover_band");
+    snprintf(out_metadata[OUT_SNOW_COVER_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_COVER].standard_name);
-    strcpy(out_metadata[OUT_SNOW_COVER_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_COVER_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_COVER].units);
-    strcpy(out_metadata[OUT_SNOW_COVER_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_COVER_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_COVER].description);
 
     /* depth of snow pack [cm] */
-    strcpy(out_metadata[OUT_SNOW_DEPTH_BAND].varname, "OUT_SNOW_DEPTH_BAND");
-    strcpy(out_metadata[OUT_SNOW_DEPTH_BAND].long_name, "snow_depth_band");
-    strcpy(out_metadata[OUT_SNOW_DEPTH_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_DEPTH_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_DEPTH_BAND");
+    snprintf(out_metadata[OUT_SNOW_DEPTH_BAND].long_name, MAXSTRING, "%s", "snow_depth_band");
+    snprintf(out_metadata[OUT_SNOW_DEPTH_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_DEPTH].standard_name);
-    strcpy(out_metadata[OUT_SNOW_DEPTH_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_DEPTH_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_DEPTH].units);
-    strcpy(out_metadata[OUT_SNOW_DEPTH_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_DEPTH_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_DEPTH].description);
 
     /* energy flux through snow pack [W m-2] */
-    strcpy(out_metadata[OUT_SNOW_FLUX_BAND].varname, "OUT_SNOW_FLUX_BAND");
-    strcpy(out_metadata[OUT_SNOW_FLUX_BAND].long_name, "snow_flux_band");
-    strcpy(out_metadata[OUT_SNOW_FLUX_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_FLUX_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_FLUX_BAND");
+    snprintf(out_metadata[OUT_SNOW_FLUX_BAND].long_name, MAXSTRING, "%s", "snow_flux_band");
+    snprintf(out_metadata[OUT_SNOW_FLUX_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_FLUX].standard_name);
-    strcpy(out_metadata[OUT_SNOW_FLUX_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_FLUX_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_FLUX].units);
-    strcpy(out_metadata[OUT_SNOW_FLUX_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_FLUX_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_FLUX].description);
 
     /* snow melt [mm] */
-    strcpy(out_metadata[OUT_SNOW_MELT_BAND].varname, "OUT_SNOW_MELT_BAND");
-    strcpy(out_metadata[OUT_SNOW_MELT_BAND].long_name, "snow_melt_band");
-    strcpy(out_metadata[OUT_SNOW_MELT_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_MELT_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_MELT_BAND");
+    snprintf(out_metadata[OUT_SNOW_MELT_BAND].long_name, MAXSTRING, "%s", "snow_melt_band");
+    snprintf(out_metadata[OUT_SNOW_MELT_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_MELT].standard_name);
-    strcpy(out_metadata[OUT_SNOW_MELT_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_MELT_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_MELT].units);
-    strcpy(out_metadata[OUT_SNOW_MELT_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_MELT_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_MELT].description);
 
     /* snow pack temperature [C] */
-    strcpy(out_metadata[OUT_SNOW_PACKT_BAND].varname, "OUT_SNOW_PACKT_BAND");
-    strcpy(out_metadata[OUT_SNOW_PACKT_BAND].long_name, "snow_packt_band");
-    strcpy(out_metadata[OUT_SNOW_PACKT_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_PACKT_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_PACKT_BAND");
+    snprintf(out_metadata[OUT_SNOW_PACKT_BAND].long_name, MAXSTRING, "%s", "snow_packt_band");
+    snprintf(out_metadata[OUT_SNOW_PACKT_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_PACK_TEMP].standard_name);
-    strcpy(out_metadata[OUT_SNOW_PACKT_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_PACKT_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_PACK_TEMP].units);
-    strcpy(out_metadata[OUT_SNOW_PACKT_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_PACKT_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_PACK_TEMP].description);
 
     /* snow surface temperature [C] */
-    strcpy(out_metadata[OUT_SNOW_SURFT_BAND].varname, "OUT_SNOW_SURFT_BAND");
-    strcpy(out_metadata[OUT_SNOW_SURFT_BAND].long_name, "snow_surft_band");
-    strcpy(out_metadata[OUT_SNOW_SURFT_BAND].standard_name,
+    snprintf(out_metadata[OUT_SNOW_SURFT_BAND].varname, MAXSTRING, "%s", "OUT_SNOW_SURFT_BAND");
+    snprintf(out_metadata[OUT_SNOW_SURFT_BAND].long_name, MAXSTRING, "%s", "snow_surft_band");
+    snprintf(out_metadata[OUT_SNOW_SURFT_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_SURF_TEMP].standard_name);
-    strcpy(out_metadata[OUT_SNOW_SURFT_BAND].units,
+    snprintf(out_metadata[OUT_SNOW_SURFT_BAND].units, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_SURF_TEMP].units);
-    strcpy(out_metadata[OUT_SNOW_SURFT_BAND].description,
+    snprintf(out_metadata[OUT_SNOW_SURFT_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SNOW_SURF_TEMP].description);
 
     /* snow water equivalent in snow pack [mm] */
-    strcpy(out_metadata[OUT_SWE_BAND].varname, "OUT_SWE_BAND");
-    strcpy(out_metadata[OUT_SWE_BAND].long_name, "swe_band");
-    strcpy(out_metadata[OUT_SWE_BAND].standard_name,
+    snprintf(out_metadata[OUT_SWE_BAND].varname, MAXSTRING, "%s", "OUT_SWE_BAND");
+    snprintf(out_metadata[OUT_SWE_BAND].long_name, MAXSTRING, "%s", "swe_band");
+    snprintf(out_metadata[OUT_SWE_BAND].standard_name, MAXSTRING, "%s",
            out_metadata[OUT_SWE].standard_name);
-    strcpy(out_metadata[OUT_SWE_BAND].units, out_metadata[OUT_SWE].units);
-    strcpy(out_metadata[OUT_SWE_BAND].description,
+    snprintf(out_metadata[OUT_SWE_BAND].units, MAXSTRING, "%s", out_metadata[OUT_SWE].units);
+    snprintf(out_metadata[OUT_SWE_BAND].description, MAXSTRING, "%s",
            out_metadata[OUT_SWE].description);
 
     /* Wall time spent inside vic_run [seconds] */
-    strcpy(out_metadata[OUT_TIME_VICRUN_WALL].varname, "OUT_TIME_VICRUN_WALL");
-    strcpy(out_metadata[OUT_TIME_VICRUN_WALL].long_name, "time_vicrun_wall");
-    strcpy(out_metadata[OUT_TIME_VICRUN_WALL].standard_name,
+    snprintf(out_metadata[OUT_TIME_VICRUN_WALL].varname, MAXSTRING, "%s", "OUT_TIME_VICRUN_WALL");
+    snprintf(out_metadata[OUT_TIME_VICRUN_WALL].long_name, MAXSTRING, "%s", "time_vicrun_wall");
+    snprintf(out_metadata[OUT_TIME_VICRUN_WALL].standard_name, MAXSTRING, "%s",
            "vic_run_wall_time");
-    strcpy(out_metadata[OUT_TIME_VICRUN_WALL].units, "seconds");
-    strcpy(out_metadata[OUT_TIME_VICRUN_WALL].description,
+    snprintf(out_metadata[OUT_TIME_VICRUN_WALL].units, MAXSTRING, "%s", "seconds");
+    snprintf(out_metadata[OUT_TIME_VICRUN_WALL].description, MAXSTRING, "%s",
            "Wall time spent inside vic_run");
 
     /* CPU time spent inside vic_run [seconds] */
-    strcpy(out_metadata[OUT_TIME_VICRUN_CPU].varname, "OUT_TIME_VICRUN_CPU");
-    strcpy(out_metadata[OUT_TIME_VICRUN_CPU].long_name, "time_vicrun_cpu");
-    strcpy(out_metadata[OUT_TIME_VICRUN_CPU].standard_name, "vic_run_cpu_time");
-    strcpy(out_metadata[OUT_TIME_VICRUN_CPU].units, "seconds");
-    strcpy(out_metadata[OUT_TIME_VICRUN_CPU].description,
+    snprintf(out_metadata[OUT_TIME_VICRUN_CPU].varname, MAXSTRING, "%s", "OUT_TIME_VICRUN_CPU");
+    snprintf(out_metadata[OUT_TIME_VICRUN_CPU].long_name, MAXSTRING, "%s", "time_vicrun_cpu");
+    snprintf(out_metadata[OUT_TIME_VICRUN_CPU].standard_name, MAXSTRING, "%s", "vic_run_cpu_time");
+    snprintf(out_metadata[OUT_TIME_VICRUN_CPU].units, MAXSTRING, "%s", "seconds");
+    snprintf(out_metadata[OUT_TIME_VICRUN_CPU].description, MAXSTRING, "%s",
            "CPU time spent inside vic_run");
 
     if (options.FROZEN_SOIL) {

@@ -242,7 +242,7 @@ void
 str_to_ascii_format(char *format)
 {
     if ((strcasecmp("", format) == 0) || (strcasecmp("*", format) == 0)) {
-        strcpy(format, OUT_ASCII_FORMAT_DEFAULT);
+        snprintf(format, MAXSTRING, "%s", OUT_ASCII_FORMAT_DEFAULT);
     }
     // else do nothing
 }
@@ -385,27 +385,27 @@ cell_method_from_agg_type(unsigned short int aggtype,
                           char               cell_method[])
 {
     if (aggtype == AGG_TYPE_AVG) {
-        strcpy(cell_method, "time: mean");
+        snprintf(cell_method, MAXSTRING, "%s", "time: mean");
         return true;
     }
     else if (aggtype == AGG_TYPE_MAX) {
-        strcpy(cell_method, "time: maximum");
+        snprintf(cell_method, MAXSTRING, "%s", "time: maximum");
         return true;
     }
     else if (aggtype == AGG_TYPE_MIN) {
-        strcpy(cell_method, "time: minimum");
+        snprintf(cell_method, MAXSTRING, "%s", "time: minimum");
         return true;
     }
     else if (aggtype == AGG_TYPE_SUM) {
-        strcpy(cell_method, "time: sum");
+        snprintf(cell_method, MAXSTRING, "%s", "time: sum");
         return true;
     }
     else if (aggtype == AGG_TYPE_END) {
-        strcpy(cell_method, "time: end");
+        snprintf(cell_method, MAXSTRING, "%s", "time: end");
         return true;
     }
     else if (aggtype == AGG_TYPE_BEG) {
-        strcpy(cell_method, "time: beg");
+        snprintf(cell_method, MAXSTRING, "%s", "time: beg");
         return true;
     }
     else {

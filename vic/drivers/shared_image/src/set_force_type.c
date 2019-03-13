@@ -44,11 +44,11 @@ set_force_type(char *cmdstr,
     char                    ncfilename[MAXSTRING];
     int                     type = SKIP;
 
-    strcpy(ncvarname, "MISSING");
-    strcpy(ncfilename, "MISSING");
+    snprintf(ncvarname, MAXSTRING, "%s", "MISSING");
+    snprintf(ncfilename, MAXSTRING, "%s", "MISSING");
 
     /** Initialize flgstr **/
-    strcpy(flgstr, "NULL");
+    snprintf(flgstr, MAXSTRING, "%s", "NULL");
 
     sscanf(cmdstr, "%*s %s %s %s", optstr, ncvarname, ncfilename);
 
@@ -127,7 +127,7 @@ set_force_type(char *cmdstr,
     param_set.VAR_INDEX[type] = file_num;
 
     if (strcasecmp("MISSING", ncvarname) != 0) {
-        strcpy(param_set.TYPE[type].varname, ncvarname);
+        snprintf(param_set.TYPE[type].varname, MAXSTRING, "%s", ncvarname);
     }
     else {
         log_err(
@@ -136,7 +136,7 @@ set_force_type(char *cmdstr,
     }
 
     if (strcasecmp("MISSING", ncfilename) != 0) {
-        strcpy(filenames.f_path_pfx[file_num], ncfilename);
+        snprintf(filenames.f_path_pfx[file_num], MAXSTRING, "%s", ncfilename);
     }
     else {
         log_err(

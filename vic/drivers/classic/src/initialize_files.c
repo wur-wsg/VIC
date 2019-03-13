@@ -38,18 +38,18 @@ initialize_filenames()
 
     size_t                  i;
 
-    strcpy(filenames.init_state, "MISSING");
-    strcpy(filenames.statefile, "MISSING");
-    strcpy(filenames.constants, "MISSING");
-    strcpy(filenames.soil, "MISSING");
-    strcpy(filenames.veg, "MISSING");
-    strcpy(filenames.veglib, "MISSING");
-    strcpy(filenames.snowband, "MISSING");
-    strcpy(filenames.lakeparam, "MISSING");
-    strcpy(filenames.result_dir, "MISSING");
-    strcpy(filenames.log_path, "MISSING");
+    snprintf(filenames.init_state, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.statefile, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.constants, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.soil, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.veg, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.veglib, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.snowband, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.lakeparam, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.result_dir, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.log_path, MAXSTRING, "%s", "MISSING");
     for (i = 0; i < 2; i++) {
-        strcpy(filenames.f_path_pfx[i], "MISSING");
+        snprintf(filenames.f_path_pfx[i], MAXSTRING, "%s", "MISSING");
     }
 }
 

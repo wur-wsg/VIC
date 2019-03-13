@@ -54,7 +54,7 @@ open_file(char string[],
 
     if (stream == NULL) {
         /** Check if file is compressed **/
-        strcpy(zipname, string);
+        snprintf(zipname, MAXSTRING, "%s", string);
         strcat(zipname, ".gz");
         stream = fopen(zipname, type);
         if (stream == NULL) {

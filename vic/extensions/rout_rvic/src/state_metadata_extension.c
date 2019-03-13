@@ -36,13 +36,13 @@ state_metadata_rout_extension()
     extern metadata_struct state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
 
     // STATE_ROUT_RING
-    strcpy(state_metadata[N_STATE_VARS + STATE_ROUT_RING].varname,
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].varname, MAXSTRING, "%s",
            "STATE_ROUT_RING");
-    strcpy(state_metadata[N_STATE_VARS + STATE_ROUT_RING].long_name,
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].long_name, MAXSTRING, "%s",
            "routing_ring");
-    strcpy(state_metadata[N_STATE_VARS + STATE_ROUT_RING].standard_name,
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].standard_name, MAXSTRING, "%s",
            "routing_ring");
-    strcpy(state_metadata[N_STATE_VARS + STATE_ROUT_RING].units, "-");
-    strcpy(state_metadata[N_STATE_VARS + STATE_ROUT_RING].description,
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].units, MAXSTRING, "%s", "-");
+    snprintf(state_metadata[N_STATE_VARS + STATE_ROUT_RING].description, MAXSTRING, "%s",
            "unit hydrographs in the routing ring");
 }

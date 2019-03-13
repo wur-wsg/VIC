@@ -2344,7 +2344,7 @@ main(int    argc,
     parameters_struct   param;
 
     // Initialize Log Destination
-    strcpy(filenames.log_path, "MISSING");
+    snprintf(filenames.log_path, MAXSTRING, "%s", "MISSING");
     initialize_log();
 
     status = MPI_Init(&argc, &argv);

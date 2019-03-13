@@ -612,10 +612,10 @@ set_global_nc_attributes(int ncid,
     pw = getpwuid(uid);
 
     if (pw) {
-        strcpy(userstr, pw->pw_name);
+        snprintf(userstr, MAXSTRING, "%s", pw->pw_name);
     }
     else {
-        strcpy(userstr, "unknown");
+        snprintf(userstr, MAXSTRING, "%s", "unknown");
     }
 
     // hostname

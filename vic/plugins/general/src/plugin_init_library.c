@@ -34,10 +34,10 @@ plugin_initialize_filenames(void)
 {
     extern plugin_filenames_struct plugin_filenames;
     
-    strcpy(plugin_filenames.routing.nc_filename, MISSING_S);
-    strcpy(plugin_filenames.decomposition.nc_filename, MISSING_S);
-    strcpy(plugin_filenames.routing_forcing.nc_filename, MISSING_S);
-    strcpy(plugin_filenames.rf_path_pfx, MISSING_S);
+    snprintf(plugin_filenames.routing.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames.decomposition.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames.rf_path_pfx, MAXSTRING, "%s", MISSING_S);
 }
 
 void

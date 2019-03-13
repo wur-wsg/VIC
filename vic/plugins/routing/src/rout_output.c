@@ -6,17 +6,17 @@ rout_set_output_met_data_info(void)
 {
     extern metadata_struct out_metadata[];
     
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].varname, "OUT_DISCHARGE");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].long_name, "discharge");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].standard_name, "discharge");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].units, "m3/s");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].description, "discharge at the cell outflow point");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].varname, MAXSTRING, "%s", "OUT_DISCHARGE");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].long_name, MAXSTRING, "%s", "discharge");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].standard_name, MAXSTRING, "%s", "discharge");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].units, MAXSTRING, "%s", "m3/s");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].description, MAXSTRING, "%s", "discharge at the cell outflow point");
 
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].varname, "OUT_STREAM_MOIST");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].long_name, "stream_storage");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].standard_name, "stream storage");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].description, "moisture storage in stream flow");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].varname, MAXSTRING, "%s", "OUT_STREAM_MOIST");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].long_name, MAXSTRING, "%s", "stream_storage");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].standard_name, MAXSTRING, "%s", "stream storage");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].description, MAXSTRING, "%s", "moisture storage in stream flow");
 
     out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].nelem = 1;

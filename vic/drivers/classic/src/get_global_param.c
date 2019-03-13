@@ -309,7 +309,7 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.INIT_STATE = true;
-                    strcpy(filenames.init_state, flgstr);
+                    snprintf(filenames.init_state, MAXSTRING, "%s", flgstr);
                 }
             }
             else if (strcasecmp("STATENAME", optstr) == 0) {
@@ -360,7 +360,7 @@ get_global_param(FILE *gp)
             else if (strcasecmp("FORCING2", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.f_path_pfx[1]);
                 if (strcasecmp("FALSE", filenames.f_path_pfx[1]) == 0) {
-                    strcpy(filenames.f_path_pfx[1], "MISSING");
+                    snprintf(filenames.f_path_pfx[1], MAXSTRING, "%s", "MISSING");
                 }
                 file_num = 1;
                 field = 0;
@@ -537,7 +537,7 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.LAKES = true;
-                    strcpy(filenames.lakeparam, flgstr);
+                    snprintf(filenames.lakeparam, MAXSTRING, "%s", flgstr);
                 }
             }
             else if (strcasecmp("LAKE_PROFILE", optstr) == 0) {

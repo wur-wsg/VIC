@@ -191,10 +191,10 @@ parse_output_info(FILE           *gp,
                                 "specified before you can specify \"OUTVAR\".");
                     }
                     // parse outvar options
-                    strcpy(format, "");
-                    strcpy(typestr, "");
-                    strcpy(multstr, "");
-                    strcpy(aggstr, "");
+                    snprintf(format, MAXSTRING, "%s", "");
+                    snprintf(typestr, MAXSTRING, "%s", "");
+                    snprintf(multstr, MAXSTRING, "%s", "");
+                    snprintf(aggstr, MAXSTRING, "%s", "");
                     found = sscanf(cmdstr, "%*s %s %s %s %s %s", varname,
                                    format, typestr, multstr, aggstr);
                     if (!found) {

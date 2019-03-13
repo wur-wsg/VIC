@@ -369,10 +369,10 @@ set_output_var(stream_struct     *stream,
     stream->varid[varnum] = varid;
     // Format (ASCII only)
     if ((strcmp(format, "*") != 0) || (strcmp(format, "") != 0)) {
-        strcpy(stream->format[varnum], format);
+        snprintf(stream->format[varnum], MAXSTRING, "%s", format);
     }
     else {
-        strcpy(stream->format[varnum], "%.4f");
+        snprintf(stream->format[varnum], MAXSTRING, "%s", "%.4f");
     }
     // Output type (BINARY and netCDF)
     if (type != OUT_TYPE_DEFAULT) {

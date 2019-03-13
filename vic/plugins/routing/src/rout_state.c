@@ -6,11 +6,11 @@ rout_set_state_meta_data_info(void)
 {
     extern metadata_struct state_metadata[];
     
-    strcpy(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].varname, "STATE_DISCHARGE_DT");
-    strcpy(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].long_name, "discharge_dt");
-    strcpy(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].standard_name, "discharge_dt");
-    strcpy(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].units, "m3/s");
-    strcpy(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].description, "sub-step discharge at the cell outflow point");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].varname, MAXSTRING, "%s", "STATE_DISCHARGE_DT");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].long_name, MAXSTRING, "%s", "discharge_dt");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].standard_name, MAXSTRING, "%s", "discharge_dt");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].units, MAXSTRING, "%s", "m3/s");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].description, MAXSTRING, "%s", "sub-step discharge at the cell outflow point");
 }
 
 void

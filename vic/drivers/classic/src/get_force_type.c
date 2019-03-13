@@ -45,7 +45,7 @@ get_force_type(char *cmdstr,
     type = SKIP;
 
     /** Initialize flgstr **/
-    strcpy(flgstr, "NULL");
+    snprintf(flgstr, MAXSTRING, "%s", "NULL");
 
     if ((*field) >= (int) param_set.N_TYPES[file_num]) {
         log_err("Too many variables defined for forcing file %i.", file_num);

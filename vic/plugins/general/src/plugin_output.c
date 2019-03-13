@@ -16,11 +16,11 @@ plugin_set_output_met_data_info(void)
     // Set missing and/or default values
     for (v = N_OUTVAR_TYPES; v < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; v++) {
         // Set default string values
-        strcpy(out_metadata[v].varname, MISSING_S);
-        strcpy(out_metadata[v].long_name, MISSING_S);
-        strcpy(out_metadata[v].standard_name, MISSING_S);
-        strcpy(out_metadata[v].units, MISSING_S);
-        strcpy(out_metadata[v].description, MISSING_S);
+        snprintf(out_metadata[v].varname, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].long_name, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].standard_name, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].units, MAXSTRING, "%s", MISSING_S);
+        snprintf(out_metadata[v].description, MAXSTRING, "%s", MISSING_S);
         // Set default number of elements
         out_metadata[v].nelem = 1;
     }

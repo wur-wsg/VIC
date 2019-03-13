@@ -302,7 +302,7 @@ get_global_param(FILE *gp)
                 }
                 else {
                     options.INIT_STATE = true;
-                    strcpy(filenames.init_state.nc_filename, flgstr);
+                    snprintf(filenames.init_state.nc_filename, MAXSTRING, "%s", flgstr);
                 }
             }
             else if (strcasecmp("STATENAME", optstr) == 0) {
