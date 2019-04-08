@@ -771,7 +771,7 @@ get_global_param(FILE *gp)
     }
     for (file_num = 0; file_num < param_set.N_FORCE_FILES; file_num++) {
         // Validate forcing files and variables
-        if (strcmp(filenames.f_path_pfx[0], "MISSING") == 0) {
+        if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
             log_err("No forcing file has been defined.  Make sure that the global "
                     "file defines forcing files for each variable.");
         }
