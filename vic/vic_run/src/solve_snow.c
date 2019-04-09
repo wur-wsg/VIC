@@ -78,7 +78,6 @@ solve_snow(char               overstory,
            unsigned short     band,
            double             dt,
            size_t             hidx,
-           int                veg_class,
            int               *UnderStory,
            double            *CanopLayerBnd,
            double            *dryFrac,
@@ -88,7 +87,8 @@ solve_snow(char               overstory,
            layer_data_struct *layer,
            snow_data_struct  *snow,
            soil_con_struct   *soil_con,
-           veg_var_struct    *veg_var)
+           veg_var_struct    *veg_var,
+           veg_lib_struct    *veg_lib)
 {
     extern option_struct     options;
     extern parameters_struct param;
@@ -216,9 +216,8 @@ solve_snow(char               overstory,
                                            ref_height, roughness, root,
                                            *UnderStory, band,
                                            iveg, month, hidx,
-                                           veg_class,
                                            CanopLayerBnd, dryFrac, force,
-                                           layer, soil_con, veg_var);
+                                           layer, soil_con, veg_var, veg_lib);
                 if (ErrorFlag == ERROR) {
                     return (ERROR);
                 }

@@ -27,8 +27,6 @@
 
 #include <vic_run.h>
 
-veg_lib_struct *vic_run_veg_lib;
-
 /******************************************************************************
 * @brief        This subroutine controls the model core, it solves both the
 *               energy and water balance models, as well as frozen soils.
@@ -103,11 +101,6 @@ vic_run(force_data_struct   *force,
     check_alloc_status(Melt, "Memory allocation error.");
     snow_inflow = calloc(options.SNOW_BAND, sizeof(*snow_inflow));
     check_alloc_status(snow_inflow, "Memory allocation error.");
-
-    // assign vic_run_veg_lib to veg_lib, so that the veg_lib for the correct
-    // grid cell is used within vic_run. For simplicity sake, use vic_run_veg_lib
-    // everywhere within vic_run
-    vic_run_veg_lib = veg_lib;
 
     /* set local pointers */
     lake_var = &all_vars->lake_var;
@@ -185,7 +178,7 @@ vic_run(force_data_struct   *force,
 
             /** Assign wind_h **/
             /** Note: this is ignored below **/
-            wind_h = vic_run_veg_lib[veg_class].wind_h;
+            wind_h = veg_lib[veg_class].wind_h;
 
             /* Initialize wind speeds */
             tmp_wind[0] = force->wind[NR];
@@ -198,7 +191,7 @@ vic_run(force_data_struct   *force,
             if (roughness[0] == 0) {
                 roughness[0] = soil_con->rough;
             }
-            overstory = vic_run_veg_lib[veg_class].overstory;
+            overstory = veg_lib[veg_class].overstory;
 
             /* Estimate vegetation height */
             height = calc_veg_height(displacement[0]);
@@ -213,9 +206,9 @@ vic_run(force_data_struct   *force,
 
             /* Compute aerodynamic resistance */
             ErrorFlag = CalcAerodynamic(overstory, height,
-                                        vic_run_veg_lib[veg_class].trunk_ratio,
+                                        veg_lib[veg_class].trunk_ratio,
                                         soil_con->snow_rough, soil_con->rough,
-                                        vic_run_veg_lib[veg_class].wind_atten,
+                                        veg_lib[veg_class].wind_atten,
                                         aero_resist, tmp_wind,
                                         displacement, ref_height,
                                         roughness);
@@ -247,7 +240,7 @@ vic_run(force_data_struct   *force,
 
                     /** Surface Attenuation due to Vegetation Coverage **/
                     surf_atten = (1 - veg_var->fcanopy) * 1.0 +
-                                 veg_var->fcanopy *exp(-vic_run_veg_lib[veg_class].rad_atten *
+                                 veg_var->fcanopy *exp(-veg_lib[veg_class].rad_atten *
                                                        veg_var->LAI);
 
                     /** Bare (free of snow) Albedo **/
@@ -280,7 +273,7 @@ vic_run(force_data_struct   *force,
                             veg_var->aPAR = 0;
 
                             calc_Nscale_factors(
-                                vic_run_veg_lib[veg_class].NscaleFlag,
+                                veg_lib[veg_class].NscaleFlag,
                                 veg_con[iveg].CanopLayerBnd,
                                 veg_var->LAI,
                                 force->coszen[NR],
@@ -328,10 +321,10 @@ vic_run(force_data_struct   *force,
                                                &snow_inflow[band],
                                                tmp_wind, veg_con[iveg].root,
                                                options.Nlayer, Nveg, band, dp,
-                                               iveg, veg_class, force, dmy,
+                                               iveg, force, dmy,
                                                energy, gp, cell, snow,
-                                               soil_con, veg_var, lag_one,
-                                               sigma_slope, fetch,
+                                               soil_con, veg_var, &(veg_lib[veg_class]), 
+                                               lag_one, sigma_slope, fetch,
                                                veg_con[iveg].CanopLayerBnd);
 
                     if (ErrorFlag == ERROR) {
