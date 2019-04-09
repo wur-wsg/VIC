@@ -55,7 +55,6 @@ surface_fluxes(bool                 overstory,
                unsigned short       band,
                double               dp,
                unsigned short       iveg,
-               unsigned short       veg_class,
                force_data_struct   *force,
                dmy_struct          *dmy,
                energy_bal_struct   *energy,
@@ -64,12 +63,12 @@ surface_fluxes(bool                 overstory,
                snow_data_struct    *snow,
                soil_con_struct     *soil_con,
                veg_var_struct      *veg_var,
+               veg_lib_struct      *veg_lib,
                double               lag_one,
                double               sigma_slope,
                double               fetch,
                double              *CanopLayerBnd)
 {
-    extern veg_lib_struct   *vic_run_veg_lib;
     extern option_struct     options;
     extern parameters_struct param;
 
@@ -560,12 +559,11 @@ surface_fluxes(bool                 overstory,
                                        &surf_atten,
                                        wind, root, UNSTABLE_SNOW,
                                        Nveg, iveg, band, step_dt, hidx,
-                                       veg_class,
                                        &UnderStory, CanopLayerBnd, &dryFrac,
                                        dmy, force, &(iter_snow_energy),
                                        iter_layer, &(iter_snow),
                                        soil_con,
-                                       &(iter_snow_veg_var));
+                                       &(iter_snow_veg_var), veg_lib);
 
                 if (step_melt == ERROR) {
                     return (ERROR);
@@ -614,12 +612,12 @@ surface_fluxes(bool                 overstory,
                                              snowfall, wind, root, INCLUDE_SNOW,
                                              UnderStory, options.Nnode, Nveg,
                                              step_dt, hidx, iveg,
-                                             (int) overstory, veg_class,
+                                             (int) overstory,
                                              CanopLayerBnd, &dryFrac, force,
                                              dmy, &iter_soil_energy,
                                              iter_layer,
                                              &(iter_snow), soil_con,
-                                             &iter_soil_veg_var);
+                                             &iter_soil_veg_var, veg_lib);
 
                 if ((int) Tsurf == ERROR) {
                     // Return error flag to skip rest of grid cell
@@ -726,10 +724,10 @@ surface_fluxes(bool                 overstory,
         **************************************/
         if (options.CARBON) {
             if (iveg < Nveg && !step_snow.snow && dryFrac > 0) {
-                canopy_assimilation(vic_run_veg_lib[veg_class].Ctype,
-                                    vic_run_veg_lib[veg_class].MaxCarboxRate,
-                                    vic_run_veg_lib[veg_class].MaxETransport,
-                                    vic_run_veg_lib[veg_class].CO2Specificity,
+                canopy_assimilation(veg_lib->Ctype,
+                                    veg_lib->MaxCarboxRate,
+                                    veg_lib->MaxETransport,
+                                    veg_lib->CO2Specificity,
                                     iter_soil_veg_var.NscaleFactor,
                                     Tair,
                                     force->shortwave[hidx],
@@ -788,14 +786,14 @@ surface_fluxes(bool                 overstory,
         **************************************/
 
         compute_pot_evap(gp->model_steps_per_day,
-                         vic_run_veg_lib[veg_class].rmin,
+                         veg_lib->rmin,
                          iter_soil_veg_var.albedo, force->shortwave[hidx],
                          iter_soil_energy.NetLongAtmos,
-                         vic_run_veg_lib[veg_class].RGL, Tair, VPDcanopy,
+                         veg_lib->RGL, Tair, VPDcanopy,
                          iter_soil_veg_var.LAI, soil_con->elevation,
                          iter_aero_resist_veg,
-                         vic_run_veg_lib[veg_class].overstory,
-                         vic_run_veg_lib[veg_class].rarc,
+                         veg_lib->overstory,
+                         veg_lib->rarc,
                          iter_soil_veg_var.fcanopy, iter_aero_resist_used[0],
                          &iter_pot_evap);
 

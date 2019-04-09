@@ -37,8 +37,8 @@
 double
 canopy_evap(layer_data_struct *layer,
             veg_var_struct    *veg_var,
+            veg_lib_struct    *veg_lib,
             bool               CALC_EVAP,
-            unsigned short     veg_class,
             double            *Wdew,
             double             delta_t,
             double             rad,
@@ -59,7 +59,6 @@ canopy_evap(layer_data_struct *layer,
             double            *CanopLayerBnd)
 {
     /** declare global variables **/
-    extern veg_lib_struct *vic_run_veg_lib;
     extern option_struct   options;
 
     /** declare local variables **/
@@ -93,12 +92,12 @@ canopy_evap(layer_data_struct *layer,
         tmp_Wdew = veg_var->Wdmax;
     }
 
-    rc = calc_rc((double) 0.0, net_short, vic_run_veg_lib[veg_class].RGL,
+    rc = calc_rc((double) 0.0, net_short, veg_lib->RGL,
                  air_temp, vpd, veg_var->LAI, (double) 1.0, false);
     if (veg_var->LAI > 0) {
         canopyevap = pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0)) *
                      penman(air_temp, elevation, rad, vpd, ra, rc,
-                            vic_run_veg_lib[veg_class].rarc) *
+                            veg_lib->rarc) *
                      delta_t / CONST_CDAY;
     }
     else {
@@ -142,7 +141,7 @@ canopy_evap(layer_data_struct *layer,
        Compute Evapotranspiration from Vegetation
     *******************************************/
     if (CALC_EVAP) {
-        transpiration(layer, veg_var, veg_class, rad, vpd, net_short,
+        transpiration(layer, veg_var, veg_lib, rad, vpd, net_short,
                       air_temp, ra, *dryFrac, delta_t, elevation, Wmax, Wcr,
                       Wpwp, layertransp, frost_fract, root, shortwave, Catm,
                       CanopLayerBnd);
@@ -168,7 +167,7 @@ canopy_evap(layer_data_struct *layer,
 void
 transpiration(layer_data_struct *layer,
               veg_var_struct    *veg_var,
-              unsigned short     veg_class,
+              veg_lib_struct    *veg_lib,
               double             rad,
               double             vpd,
               double             net_short,
@@ -187,7 +186,6 @@ transpiration(layer_data_struct *layer,
               double             Catm,
               double            *CanopLayerBnd)
 {
-    extern veg_lib_struct   *vic_run_veg_lib;
     extern option_struct     options;
     extern parameters_struct param;
 
@@ -261,12 +259,11 @@ transpiration(layer_data_struct *layer,
     avail_moist[i] = moist2;
 
     /** Set photosynthesis inhibition factor **/
-    if (layer[0].moist > vic_run_veg_lib[veg_class].Wnpp_inhib * Wmax[0]) {
-        veg_var->NPPfactor = vic_run_veg_lib[veg_class].NPPfactor_sat +
-                             (1 - vic_run_veg_lib[veg_class].NPPfactor_sat) *
+    if (layer[0].moist > veg_lib->Wnpp_inhib * Wmax[0]) {
+        veg_var->NPPfactor = veg_lib->NPPfactor_sat +
+                             (1 - veg_lib->NPPfactor_sat) *
                              (Wmax[0] - layer[0].moist) / (Wmax[0] -
-                                                           vic_run_veg_lib[
-                                                               veg_class].
+                                                           veg_lib->
                                                            Wnpp_inhib *
                                                            Wmax[0]);
     }
@@ -294,8 +291,8 @@ transpiration(layer_data_struct *layer,
         /* compute whole-canopy stomatal resistance */
         if (!options.CARBON || options.RC_MODE == RC_JARVIS) {
             /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
-            veg_var->rc = calc_rc(vic_run_veg_lib[veg_class].rmin, net_short,
-                                  vic_run_veg_lib[veg_class].RGL, air_temp, vpd,
+            veg_var->rc = calc_rc(veg_lib->rmin, net_short,
+                                  veg_lib->RGL, air_temp, vpd,
                                   veg_var->LAI, gsm_inv, false);
             if (options.CARBON) {
                 for (cidx = 0; cidx < options.Ncanopy; cidx++) {
@@ -313,10 +310,10 @@ transpiration(layer_data_struct *layer,
         }
         else {
             /* Compute rc based on photosynthetic demand from Knorr 1997 */
-            calc_rc_ps(vic_run_veg_lib[veg_class].Ctype,
-                       vic_run_veg_lib[veg_class].MaxCarboxRate,
-                       vic_run_veg_lib[veg_class].MaxETransport,
-                       vic_run_veg_lib[veg_class].CO2Specificity,
+            calc_rc_ps(veg_lib->Ctype,
+                       veg_lib->MaxCarboxRate,
+                       veg_lib->MaxETransport,
+                       veg_lib->CO2Specificity,
                        veg_var->NscaleFactor, air_temp, shortwave,
                        veg_var->aPARLayer, elevation, Catm,
                        CanopLayerBnd, veg_var->LAI, gsm_inv, vpd,
@@ -325,7 +322,7 @@ transpiration(layer_data_struct *layer,
 
         /* compute transpiration */
         transp = penman(air_temp, elevation, rad, vpd, ra, veg_var->rc,
-                        vic_run_veg_lib[veg_class].rarc) *
+                        veg_lib->rarc) *
                  delta_t / CONST_CDAY * dryFrac;
 
         /** divide up transp based on root distribution **/
@@ -395,9 +392,9 @@ transpiration(layer_data_struct *layer,
                 /* compute whole-canopy stomatal resistance */
                 if (!options.CARBON || options.RC_MODE == RC_JARVIS) {
                     /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
-                    veg_var->rc = calc_rc(vic_run_veg_lib[veg_class].rmin,
+                    veg_var->rc = calc_rc(veg_lib->rmin,
                                           net_short,
-                                          vic_run_veg_lib[veg_class].RGL,
+                                          veg_lib->RGL,
                                           air_temp, vpd,
                                           veg_var->LAI, gsm_inv, false);
                     if (options.CARBON) {
@@ -417,10 +414,10 @@ transpiration(layer_data_struct *layer,
                 }
                 else {
                     /* Compute rc based on photosynthetic demand from Knorr 1997 */
-                    calc_rc_ps(vic_run_veg_lib[veg_class].Ctype,
-                               vic_run_veg_lib[veg_class].MaxCarboxRate,
-                               vic_run_veg_lib[veg_class].MaxETransport,
-                               vic_run_veg_lib[veg_class].CO2Specificity,
+                    calc_rc_ps(veg_lib->Ctype,
+                               veg_lib->MaxCarboxRate,
+                               veg_lib->MaxETransport,
+                               veg_lib->CO2Specificity,
                                veg_var->NscaleFactor, air_temp, shortwave,
                                veg_var->aPARLayer, elevation, Catm,
                                CanopLayerBnd, veg_var->LAI, gsm_inv, vpd,
@@ -430,7 +427,7 @@ transpiration(layer_data_struct *layer,
                 /* compute transpiration */
                 layertransp[i] = penman(air_temp, elevation, rad, vpd, ra,
                                         veg_var->rc,
-                                        vic_run_veg_lib[veg_class].rarc) *
+                                        veg_lib->rarc) *
                                  delta_t / CONST_CDAY * dryFrac *
                                  (double) root[i];
 
