@@ -14,6 +14,7 @@ rout_forcing(void)
     extern plugin_filenames_struct plugin_filenames;
     extern rout_force_struct      *rout_force;
     extern size_t                  NF;
+    extern size_t                  NR;
     extern int                     mpi_rank;
 
     int                            status;
