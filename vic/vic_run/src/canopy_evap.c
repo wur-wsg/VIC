@@ -59,18 +59,18 @@ canopy_evap(layer_data_struct *layer,
             double            *CanopLayerBnd)
 {
     /** declare global variables **/
-    extern option_struct   options;
+    extern option_struct options;
 
     /** declare local variables **/
-    size_t                 i;
-    double                 f;   /* fraction of time step used to fill canopy */
-    double                 throughfall;
-    double                 Evap;
-    double                 tmp_Evap;
-    double                 canopyevap;
-    double                 tmp_Wdew;
-    double                 layertransp[MAX_LAYERS];
-    double                 rc;
+    size_t               i;
+    double               f;     /* fraction of time step used to fill canopy */
+    double               throughfall;
+    double               Evap;
+    double               tmp_Evap;
+    double               canopyevap;
+    double               tmp_Wdew;
+    double               layertransp[MAX_LAYERS];
+    double               rc;
 
     Evap = 0;
 

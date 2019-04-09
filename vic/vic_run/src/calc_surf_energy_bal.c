@@ -318,7 +318,8 @@ calc_surf_energy_bal(double             Le,
                            Tnew_node, Tnew_fbflag, Tnew_fbcount, alpha, beta,
                            bubble_node, Zsum_node, expt_node, gamma, ice_node,
                            kappa_node, max_moist_node, moist_node, soil_con,
-                           layer, veg_var, veg_lib, INCLUDE_SNOW, options.NOFLUX,
+                           layer, veg_var, veg_lib, INCLUDE_SNOW,
+                           options.NOFLUX,
                            options.EXP_TRANS,
                            snow->snow, FIRST_SOLN, &NetLongBare,
                            &TmpNetLongSnow, &T1, &energy->deltaH,
@@ -572,7 +573,8 @@ calc_surf_energy_bal(double             Le,
                                   alpha, beta, bubble_node, Zsum_node,
                                   expt_node, gamma, ice_node, kappa_node,
                                   max_moist_node, moist_node, soil_con, layer,
-                                  veg_var, veg_lib, INCLUDE_SNOW, options.NOFLUX,
+                                  veg_var, veg_lib, INCLUDE_SNOW,
+                                  options.NOFLUX,
                                   options.EXP_TRANS,
                                   snow->snow, FIRST_SOLN, &NetLongBare,
                                   &TmpNetLongSnow, &T1, &energy->deltaH,
@@ -1199,7 +1201,7 @@ error_print_surf_energy_bal(double  Ts,
     write_layer(layer, iveg, frost_fract);
     write_vegvar(&(veg_var[0]), iveg);
     UNUSED(veg_lib);
-    
+
     if (!options.QUICK_FLUX) {
         fprintf(LOG_DEST,
                 "Node\tT\tTnew\tTold\talpha\tbeta\tZsum\tkappa\tCs\tmoist\t"

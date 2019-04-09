@@ -323,7 +323,8 @@ vic_run(force_data_struct   *force,
                                                options.Nlayer, Nveg, band, dp,
                                                iveg, force, dmy,
                                                energy, gp, cell, snow,
-                                               soil_con, veg_var, &(veg_lib[veg_class]), 
+                                               soil_con, veg_var,
+                                               &(veg_lib[veg_class]),
                                                lag_one, sigma_slope, fetch,
                                                veg_con[iveg].CanopLayerBnd);
 
