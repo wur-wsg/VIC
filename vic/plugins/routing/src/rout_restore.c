@@ -12,13 +12,15 @@ rout_check_init_state_file(void)
     size_t                            dimlen;
     size_t                            rout_steps_per_dt;
 
-    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
-                        global_param.model_steps_per_day;
+    if (mpi_rank == VIC_MPI_ROOT) {
+        rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                            global_param.model_steps_per_day;
 
-    dimlen = get_nc_dimension(&(filenames.init_state), "routing_dt");
-    if (dimlen != plugin_options.UH_LENGTH + rout_steps_per_dt) {
-        log_err("Rout delta time in state file does not "
-                "match parameter file");
+        dimlen = get_nc_dimension(&(filenames.init_state), "routing_dt");
+        if (dimlen != plugin_options.UH_LENGTH + rout_steps_per_dt) {
+            log_err("Rout delta time in state file does not "
+                    "match parameter file");
+        }
     }
 }
 
