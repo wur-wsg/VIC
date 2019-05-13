@@ -8,6 +8,7 @@ rout_check_init_state_file(void)
     extern plugin_option_struct       plugin_options;
     extern global_param_struct        global_param;
     extern plugin_global_param_struct plugin_global_param;
+    extern int                        mpi_rank;
 
     size_t                            dimlen;
     size_t                            rout_steps_per_dt;
