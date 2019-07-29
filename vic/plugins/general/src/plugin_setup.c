@@ -96,7 +96,6 @@ plugin_init(void)
     extern plugin_option_struct plugin_options;
 
     plugin_force_init();
-    
     if (plugin_options.ROUTING) {
         rout_init();
     }
