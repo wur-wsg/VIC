@@ -15,6 +15,7 @@ enum {
 };
 
 enum {
+    // routing
     STATE_DISCHARGE_DT,
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
@@ -28,6 +29,14 @@ enum {
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_OUTVAR_TYPES                /**< used as a loop counter*/
+};
+
+enum {
+    // routing
+    FORCING_DISCHARGE,
+    // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
+    // used as a loop counter and must be >= the largest value in this enum
+    PLUGIN_N_FORCING_TYPES                /**< used as a loop counter*/
 };
 
 typedef struct {
@@ -54,15 +63,17 @@ typedef struct {
     nameid_struct decomposition;   /**< basin parameter file */
 
     // forcing
-    nameid_struct routing_forcing;  /**< routing forcing files */
-    char rf_path_pfx[MAXSTRING]; /**< path and prefix for routing forcing files */
+    nameid_struct forcing[PLUGIN_N_FORCING_TYPES]; /**< forcing files */
+    char f_path_pfx[PLUGIN_N_FORCING_TYPES][MAXSTRING]; /**< path and prefix for forcing files */
+    char f_varname[PLUGIN_N_FORCING_TYPES][MAXSTRING]; /**< variable name for forcing files */
 } plugin_filenames_struct;
 
 // Setup
 void plugin_initialize_global_structures(void);
-bool plugin_get_global_param(char optstr[MAXSTRING]);
+bool plugin_get_global_param(char *cmdstr);
+void plugin_set_force_type(char *cmdstr);
 void plugin_validate_global_param(void);
-bool plugin_get_parameters(char optstr[MAXSTRING]);
+bool plugin_get_parameters(char *cmdstr);
 void plugin_validate_parameters(void);
 
 void plugin_initialize_mpi(void);

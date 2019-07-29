@@ -42,9 +42,6 @@ rout_get_global_param(char *cmdstr)
     else if (strcasecmp("DECOMPOSITION_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.decomposition.nc_filename);
     }
-    else if (strcasecmp("ROUTING_FORCING_FILE", optstr) == 0) {
-        sscanf(cmdstr, "%*s %s", plugin_filenames.rf_path_pfx);
-    }
     else {
         return false;
     }
@@ -109,7 +106,7 @@ rout_validate_global_param(void)
 
     // Forcing
     if (plugin_options.FORCE_ROUTING) {
-        if (strcasecmp(plugin_filenames.rf_path_pfx, MISSING_S) == 0) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_DISCHARGE], MISSING_S) == 0) {
             log_err("FORCE_ROUTING = TRUE but file is missing");
         }
     }

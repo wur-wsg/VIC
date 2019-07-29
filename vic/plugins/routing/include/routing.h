@@ -37,21 +37,19 @@ typedef struct {
 bool rout_get_global_param(char *);
 void rout_validate_global_param(void);
 
-void rout_start(void);
 void rout_mpi_map_decomp_domain(size_t, size_t, int **, int **, size_t **);
+
+void rout_start(void);
 void rout_alloc(void);
 void rout_initialize_local_structures(void);
 void rout_init(void);
-void rout_finalize(void);
-
-void rout_history(int, unsigned int *);
-void rout_set_output_met_data_info(void);
 
 void rout_set_nc_state_file_info(nc_file_struct *);
 void rout_add_state_dim(char *, nc_file_struct *);
 void rout_add_state_dim_var(char *, nc_file_struct *);
 void rout_add_state_dim_var_data(char *, nc_file_struct *);
 void rout_set_nc_state_var_info(nc_file_struct *, size_t);
+void rout_set_output_met_data_info(void);
 void rout_set_state_meta_data_info(void);
 void rout_store(nc_file_struct *);
 
@@ -59,10 +57,13 @@ void rout_check_init_state_file(void);
 void rout_restore(void);
 void rout_compute_derived_state_vars(void);
 
+void rout_history(int, unsigned int *);
 void rout_forcing(void);
 void rout_basin_run(size_t);
 void rout_random_run(void);
 void rout_put_data(size_t);
+void rout_finalize(void);
+void rout_add_types(void);
 
 size_t get_downstream_global(size_t, int);
 size_t get_downstream_local(size_t, int, size_t);

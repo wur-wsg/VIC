@@ -7,10 +7,70 @@
 void
 plugin_force(void)
 {
-    extern plugin_option_struct plugin_options;
+    extern plugin_option_struct       plugin_options;
+    extern global_param_struct global_param;
+    extern size_t              current;
+    extern dmy_struct         *dmy;
+    extern plugin_filenames_struct plugin_filenames;
+    extern int mpi_rank;
+    
+    int status;
+    size_t f;
+    
+    for(f = 0; f < PLUGIN_N_FORCING_TYPES; f++){
+        if(strcasecmp(plugin_filenames.f_path_pfx[f], MISSING_S) == 0){
+            continue;
+        }
+        
+        // Open forcing file if it is the first time step
+        if (current == 0 ) {
+            if (mpi_rank == VIC_MPI_ROOT) {  
+                // open new forcing file
+                sprintf(plugin_filenames.forcing[f].nc_filename, "%s%4d.nc",
+                        plugin_filenames.f_path_pfx[f], dmy[current].year);        
+                status = nc_open(plugin_filenames.forcing[f].nc_filename, NC_NOWRITE,
+                                 &(plugin_filenames.forcing[f].nc_id));
+                check_nc_status(status, "Error opening %s",
+                                plugin_filenames.forcing[f].nc_filename);
+            }
+        }
+        // Open forcing file if it is a new year
+        else if (current > 0 && dmy[current].year != dmy[current - 1].year) {
+            if (mpi_rank == VIC_MPI_ROOT) {            
+                // close previous forcing file
+                status = nc_close(plugin_filenames.forcing[f].nc_id);
+                check_nc_status(status, "Error closing %s",
+                                plugin_filenames.forcing[f].nc_filename);
 
+                // open new forcing file
+                sprintf(plugin_filenames.forcing[f].nc_filename, "%s%4d.nc",
+                        plugin_filenames.f_path_pfx[f], dmy[current].year);        
+                status = nc_open(plugin_filenames.forcing[f].nc_filename, NC_NOWRITE,
+                                 &(plugin_filenames.forcing[f].nc_id));
+                check_nc_status(status, "Error opening %s",
+                                plugin_filenames.forcing[f].nc_filename);
+            }
+        }
+    }
+    
     if (plugin_options.ROUTING && plugin_options.FORCE_ROUTING) {
         rout_forcing();
+    }
+    
+    for(f = 0; f < PLUGIN_N_FORCING_TYPES; f++){
+        if(strcasecmp(plugin_filenames.f_path_pfx[f], MISSING_S) == 0){
+            continue;
+        }
+        
+        // Close forcing file if it is the last time step
+        if (current == global_param.nrecs - 1) {
+            if (mpi_rank == VIC_MPI_ROOT) {         
+                // close previous forcing file
+                status = nc_close(plugin_filenames.forcing[f].nc_id);
+                check_nc_status(status, "Error closing %s",
+                                plugin_filenames.forcing[f].nc_filename);
+            }
+        }
     }
 }
 

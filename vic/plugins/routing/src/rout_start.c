@@ -60,20 +60,20 @@ rout_start(void)
 
     if (plugin_options.FORCE_ROUTING) {
         // Check the forcing
-        snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING,
+        snprintf(plugin_filenames.forcing[FORCING_DISCHARGE].nc_filename, MAXSTRING,
                  "%s%4d.nc",
-                 plugin_filenames.rf_path_pfx, global_param.startyear);
-        status = nc_open(plugin_filenames.routing_forcing.nc_filename,
+                 plugin_filenames.f_path_pfx[FORCING_DISCHARGE], global_param.startyear);
+        status = nc_open(plugin_filenames.forcing[FORCING_DISCHARGE].nc_filename,
                          NC_NOWRITE,
-                         &(plugin_filenames.routing_forcing.nc_id));
+                         &(plugin_filenames.forcing[FORCING_DISCHARGE].nc_id));
         check_nc_status(status, "Error opening %s",
-                        plugin_filenames.routing_forcing.nc_filename);
+                        plugin_filenames.forcing[FORCING_DISCHARGE].nc_filename);
 
-        plugin_get_forcing_file_info(&plugin_filenames.routing_forcing);
-        compare_ncdomain_with_global_domain(&plugin_filenames.routing_forcing);
+        plugin_get_forcing_file_info(&plugin_filenames.forcing[FORCING_DISCHARGE]);
+        compare_ncdomain_with_global_domain(&plugin_filenames.forcing[FORCING_DISCHARGE]);
 
-        status = nc_close(plugin_filenames.routing_forcing.nc_id);
+        status = nc_close(plugin_filenames.forcing[FORCING_DISCHARGE].nc_id);
         check_nc_status(status, "Error closing %s",
-                        plugin_filenames.routing_forcing.nc_filename);
+                        plugin_filenames.forcing[FORCING_DISCHARGE].nc_filename);
     }
 }

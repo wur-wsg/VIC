@@ -33,13 +33,17 @@ void
 plugin_initialize_filenames(void)
 {
     extern plugin_filenames_struct plugin_filenames;
-
+    
+    size_t i;
+    
     snprintf(plugin_filenames.routing.nc_filename, MAXSTRING, "%s", MISSING_S);
-    snprintf(plugin_filenames.decomposition.nc_filename, MAXSTRING, "%s",
-             MISSING_S);
-    snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING, "%s",
-             MISSING_S);
-    snprintf(plugin_filenames.rf_path_pfx, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames.decomposition.nc_filename, MAXSTRING, "%s", MISSING_S);
+    
+    for(i = 0; i < PLUGIN_N_FORCING_TYPES; i++){
+        snprintf(plugin_filenames.forcing[i].nc_filename, MAXSTRING, "%s", MISSING_S);
+        snprintf(plugin_filenames.f_path_pfx[i], MAXSTRING, "%s", MISSING_S);
+        snprintf(plugin_filenames.f_varname[i], MAXSTRING, "%s", MISSING_S);
+    }
 }
 
 void

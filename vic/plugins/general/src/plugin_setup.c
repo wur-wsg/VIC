@@ -7,7 +7,14 @@
 bool
 plugin_get_global_param(char cmdstr[MAXSTRING])
 {
-    if (rout_get_global_param(cmdstr)) {
+    char                              optstr[MAXSTRING];
+
+    sscanf(cmdstr, "%s", optstr);
+    
+    if (strcasecmp("PLUGIN_FORCE_TYPE", optstr) == 0) {
+        plugin_set_force_type(cmdstr);
+    }
+    else if (rout_get_global_param(cmdstr)) {
     }
     else {
         return false;

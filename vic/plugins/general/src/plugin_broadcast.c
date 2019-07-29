@@ -66,7 +66,7 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 1;
+    nitems = 2;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -81,8 +81,13 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     }
     i = 0;
 
-    // char rf_path_pfx[MAXSTRING];
-    offsets[i] = offsetof(plugin_filenames_struct, rf_path_pfx);
+    // char f_path_pfx[PLUGIN_N_FORCING_TYPES][MAXSTRING];
+    offsets[i] = offsetof(plugin_filenames_struct, f_path_pfx);
+    blocklengths[i] *= PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_CHAR;
+    // char f_varname[PLUGIN_N_FORCING_TYPES][MAXSTRING];
+    offsets[i] = offsetof(plugin_filenames_struct, f_varname);
+    blocklengths[i] *= PLUGIN_N_FORCING_TYPES;
     mpi_types[i++] = MPI_CHAR;
 
     // make sure that the we have the right number of elements

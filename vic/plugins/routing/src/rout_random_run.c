@@ -16,6 +16,7 @@ rout_random_run()
     extern double                  ***out_data;
     extern size_t                    *routing_order;
     extern int                        mpi_rank;
+    extern size_t                     NR;
 
     size_t                           *nup_global;
     size_t                          **up_global;
