@@ -184,11 +184,6 @@ plugin_force_end(void)
                 plugin_global_param.forceoffset[f] += 1;
                 plugin_global_param.forcerun[f] = true;
             }
-        } else if (plugin_global_param.forcefreq[f] == FORCE_YEAR) {
-            if(current != global_param.nrecs - 1 && dmy[current].year != dmy[current + 1].year){
-                plugin_global_param.forceoffset[f] += 1;
-                plugin_global_param.forcerun[f] = true;
-            }
         }
     }
 }

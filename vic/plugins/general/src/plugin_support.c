@@ -117,14 +117,6 @@ plugin_get_forcing_file_info(short unsigned int type)
                     MONTHS_PER_YEAR,
                     plugin_global_param.force_steps_per_year[type]);
         }
-    } else if(plugin_global_param.forcefreq[type] == FORCE_YEAR){
-        if (plugin_global_param.force_steps_per_year[type] != 1) {
-            log_err("Plugin forcing file timestep must match the force model timestep.  "
-                    "Force model timesteps per year is set to %d and the plugin forcing "
-                    "file timestep is set to %zu (frequency = FORCE_YEAR)",
-                    1,
-                    plugin_global_param.force_steps_per_year[type]);
-        }
     }
     
     if (calendar != global_param.calendar) {

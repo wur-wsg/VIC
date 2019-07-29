@@ -59,7 +59,6 @@ enum
     FORCE_STEP,
     FORCE_DAY,
     FORCE_MONTH,
-    FORCE_YEAR,
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCE_FREQS  /**< Number of force frequencies */
