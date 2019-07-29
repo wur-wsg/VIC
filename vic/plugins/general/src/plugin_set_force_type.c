@@ -8,50 +8,70 @@
 void
 plugin_set_force_type(char *cmdstr)
 {
+    extern plugin_global_param_struct plugin_global_param;
     extern plugin_filenames_struct plugin_filenames;
 
-    char                    optstr[MAXSTRING];
-    char                    flgstr[MAXSTRING];
+    char                    nctype[MAXSTRING];
+    char                    ncfreq[MAXSTRING];
     char                    ncvarname[MAXSTRING];
     char                    ncfilename[MAXSTRING];
     int                     type = SKIP;
+    int                     freq = FORCE_STEP;
 
-    strcpy(ncvarname, "MISSING");
-    strcpy(ncfilename, "MISSING");
+    strcpy(nctype, MISSING_S);
+    strcpy(ncfreq, MISSING_S);
+    strcpy(ncvarname, MISSING_S);
+    strcpy(ncfilename, MISSING_S);
 
-    /** Initialize flgstr **/
-    strcpy(flgstr, "NULL");
-
-    sscanf(cmdstr, "%*s %s %s %s", optstr, ncvarname, ncfilename);
+    sscanf(cmdstr, "%*s %s %s %s %s", nctype, ncvarname, ncfreq, ncfilename);
 
     /***************************************
        Get meteorological data forcing info
     ***************************************/
 
-    if (strcasecmp("DISCHARGE", optstr) == 0) {
+    if (strcasecmp("DISCHARGE", nctype) == 0) {
         type = FORCING_DISCHARGE;
     }
     /** Undefined variable type **/
     else {
         log_err("Undefined forcing variable type %s in forcing file.",
-                optstr);
+                nctype);
     }
 
-    if (strcasecmp("MISSING", ncvarname) != 0) {
+    if (strcasecmp("STEP", ncfreq) == 0) {
+        freq = FORCE_STEP;
+    }
+    else if (strcasecmp("DAY", ncfreq) == 0) {
+        freq = FORCE_DAY;
+    }
+    else if (strcasecmp("MONTH", ncfreq) == 0) {
+        freq = FORCE_MONTH;
+    }
+    else if (strcasecmp("YEAR", ncfreq) == 0) {
+        freq = FORCE_YEAR;
+    }
+    /** Undefined variable frequency **/
+    else {
+        log_err("Undefined forcing variable frequency %s in forcing file.",
+                ncfreq);
+    }
+    plugin_global_param.forcefreq[type] = freq;
+
+    if (strcasecmp(MISSING_S, ncvarname) != 0) {
         strcpy(plugin_filenames.f_varname[type], ncvarname);
     }
     else {
         log_err(
             "Must supply netCDF variable name for %s forcing file",
-            optstr);
+            nctype);
     }
 
-    if (strcasecmp("MISSING", ncfilename) != 0) {
+    if (strcasecmp(MISSING_S, ncfilename) != 0) {
         strcpy(plugin_filenames.f_path_pfx[type], ncfilename);
     }
     else {
         log_err(
             "Must supply netCDF file name for %s forcing file",
-            optstr);
+            nctype);
     }
 }

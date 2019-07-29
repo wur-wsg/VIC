@@ -7,7 +7,7 @@ void
 rout_forcing(void)
 {
     extern domain_struct           local_domain;
-    extern global_param_struct     global_param;
+    extern plugin_global_param_struct     plugin_global_param;
     extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern rout_force_struct      *rout_force;
@@ -33,14 +33,16 @@ rout_forcing(void)
 
     // Get forcing data
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[0] +
-                     global_param.forceoffset[0] + j - NF;
+        d3start[0] = plugin_global_param.forceskip[FORCING_DISCHARGE] +
+                     plugin_global_param.forceoffset[FORCING_DISCHARGE] + j;
 
-        get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_DISCHARGE]),
-                                    plugin_filenames.f_varname[FORCING_DISCHARGE], d3start, d3count, dvar);
+        if(plugin_global_param.forcerun[FORCING_DISCHARGE]){
+            get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_DISCHARGE]),
+                                        plugin_filenames.f_varname[FORCING_DISCHARGE], d3start, d3count, dvar);
 
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            rout_force[i].discharge[j] = dvar[i];
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                rout_force[i].discharge[j] = dvar[i];
+            }
         }
     }
 

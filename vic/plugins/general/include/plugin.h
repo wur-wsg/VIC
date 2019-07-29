@@ -5,6 +5,9 @@
 #include <routing.h>
 #include <support.h>
 
+/******************************************************************************
+ * @brief   Decomposition Type
+ *****************************************************************************/
 enum {
     RANDOM_DECOMPOSITION,
     BASIN_DECOMPOSITION,
@@ -14,6 +17,9 @@ enum {
     PLUGIN_N_DECOMPOSITION                   /**< used as a loop counter*/
 };
 
+/******************************************************************************
+ * @brief   State Variable Type
+ *****************************************************************************/
 enum {
     // routing
     STATE_DISCHARGE_DT,
@@ -22,6 +28,9 @@ enum {
     PLUGIN_N_STATE_VARS                   /**< used as a loop counter*/
 };
 
+/******************************************************************************
+ * @brief   Output Variable Type
+ *****************************************************************************/
 enum {
     // routing
     OUT_DISCHARGE,                      /**< river discharge [m3 s-1]) */
@@ -31,12 +40,29 @@ enum {
     PLUGIN_N_OUTVAR_TYPES                /**< used as a loop counter*/
 };
 
+/******************************************************************************
+ * @brief   Forcing Variable Type
+ *****************************************************************************/
 enum {
     // routing
     FORCING_DISCHARGE,
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES                /**< used as a loop counter*/
+};
+
+/******************************************************************************
+ * @brief   Forcing Variable Frequency
+ *****************************************************************************/
+enum
+{
+    FORCE_STEP,
+    FORCE_DAY,
+    FORCE_MONTH,
+    FORCE_YEAR,
+    // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
+    // used as a loop counter and must be >= the largest value in this enum
+    PLUGIN_N_FORCE_FREQS  /**< Number of force frequencies */
 };
 
 typedef struct {
@@ -52,6 +78,16 @@ typedef struct {
 typedef struct {
     size_t rout_steps_per_day;
     double rout_dt;
+    size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];
+    double force_dt[PLUGIN_N_FORCING_TYPES];
+    unsigned int forcesec[PLUGIN_N_FORCING_TYPES];
+    unsigned short int forceday[PLUGIN_N_FORCING_TYPES];
+    unsigned short int forcemonth[PLUGIN_N_FORCING_TYPES];
+    unsigned short int forceyear[PLUGIN_N_FORCING_TYPES];
+    unsigned short int forcefreq[PLUGIN_N_FORCING_TYPES];
+    unsigned short int forceoffset[PLUGIN_N_FORCING_TYPES];
+    bool forcerun[PLUGIN_N_FORCING_TYPES];
+    unsigned int forceskip[PLUGIN_N_FORCING_TYPES];
 } plugin_global_param_struct;
 
 typedef struct {

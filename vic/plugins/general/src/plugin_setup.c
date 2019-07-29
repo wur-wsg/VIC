@@ -7,12 +7,7 @@
 bool
 plugin_get_global_param(char cmdstr[MAXSTRING])
 {
-    char                              optstr[MAXSTRING];
-
-    sscanf(cmdstr, "%s", optstr);
-    
-    if (strcasecmp("PLUGIN_FORCE_TYPE", optstr) == 0) {
-        plugin_set_force_type(cmdstr);
+    if (plugin_force_get_global_param(cmdstr)) {
     }
     else if (rout_get_global_param(cmdstr)) {
     }
@@ -27,7 +22,8 @@ void
 plugin_validate_global_param(void)
 {
     extern plugin_option_struct plugin_options;
-
+    
+    plugin_force_validate_global_param();
     if (plugin_options.ROUTING) {
         rout_validate_global_param();
     }
@@ -99,6 +95,8 @@ plugin_init(void)
 {
     extern plugin_option_struct plugin_options;
 
+    plugin_force_init();
+    
     if (plugin_options.ROUTING) {
         rout_init();
     }

@@ -1,8 +1,16 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
+// plugin
+bool plugin_force_get_global_param(char *);
+void plugin_force_validate_global_param(void);
+void plugin_force_init(void);
+void plugin_get_forcing_file_info(short unsigned int);
+void plugin_get_forcing_file_skip(short unsigned int);
+void plugin_force_start(void);
+void plugin_force_end(void);
+
 // general
-void plugin_get_forcing_file_info(nameid_struct *);
 void cshift(double *, int, int, int, int);
 void size_t_sort(size_t *, size_t *, size_t, bool);
 void size_t_sort2(size_t *, int *, size_t, bool);

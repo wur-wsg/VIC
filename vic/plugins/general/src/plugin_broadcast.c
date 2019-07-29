@@ -16,7 +16,7 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 2;
+    nitems = 12;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -37,6 +37,46 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     // double rout_dt;
     offsets[i] = offsetof(plugin_global_param_struct, rout_dt);
     mpi_types[i++] = MPI_DOUBLE;
+    // size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, force_steps_per_year);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_AINT;
+    // double force_dt[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, force_dt);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_DOUBLE;
+    // unsigned int forcesec[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcesec);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED;
+    // unsigned short int forceday[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceday);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forcemonth[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcemonth);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forceyear[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceyear);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forcefreq[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcefreq);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forceoffset[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceoffset);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // bool forcerun[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcerun);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_C_BOOL;
+    // unsigned int forceskip[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceskip);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED;
 
     // make sure that the we have the right number of elements
     if (i != (size_t) nitems) {

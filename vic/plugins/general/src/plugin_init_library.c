@@ -16,8 +16,22 @@ plugin_initialize_global(void)
 {
     extern plugin_global_param_struct plugin_global_param;
 
+    size_t i;
+    
     plugin_global_param.rout_steps_per_day = 0;
     plugin_global_param.rout_dt = 0;
+    for(i = 0; i < PLUGIN_N_FORCING_TYPES; i++){
+        plugin_global_param.force_steps_per_year[i] = 0;
+        plugin_global_param.force_dt[i] = 0;
+        plugin_global_param.forceyear[i] = 0;
+        plugin_global_param.forcemonth[i] = 1;
+        plugin_global_param.forceday[i] = 1;
+        plugin_global_param.forcesec[i] = 0;
+        plugin_global_param.forceskip[i] = 0;
+        plugin_global_param.forcerun[i] = true;
+        plugin_global_param.forceoffset[i] = 0;
+        plugin_global_param.forcefreq[i] = 0;
+    }
 }
 
 void
