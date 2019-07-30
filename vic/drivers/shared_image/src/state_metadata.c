@@ -167,8 +167,9 @@ set_state_meta_data_info()
              "snow_melting_phase");
     snprintf(state_metadata[STATE_SNOW_MELT_STATE].units, MAXSTRING, "%s",
              "1 melting, 0 not melting");
-    snprintf(state_metadata[STATE_SNOW_MELT_STATE].description, MAXSTRING, "%s",
-             "flag to indicate whether snowpack is in accumulation or melting phase");
+    snprintf(
+        state_metadata[STATE_SNOW_MELT_STATE].description, MAXSTRING, "%s",
+        "flag to indicate whether snowpack is in accumulation or melting phase");
 
     // STATE_SNOW_COVERAGE
     snprintf(state_metadata[STATE_SNOW_COVERAGE].varname, MAXSTRING, "%s",
@@ -437,9 +438,10 @@ set_state_meta_data_info()
                  "lake_age_since_last_new_snow");
         snprintf(state_metadata[STATE_LAKE_SNOW_AGE].units, MAXSTRING, "%s",
                  "model_time_step");
-        snprintf(state_metadata[STATE_LAKE_SNOW_AGE].description, MAXSTRING,
-                 "%s",
-                 "number of model time steps since the last new snow on lake ice");
+        snprintf(
+            state_metadata[STATE_LAKE_SNOW_AGE].description, MAXSTRING,
+            "%s",
+            "number of model time steps since the last new snow on lake ice");
 
         // STATE_LAKE_SNOW_MELT_STATE
         snprintf(state_metadata[STATE_LAKE_SNOW_MELT_STATE].varname, MAXSTRING,
@@ -454,9 +456,10 @@ set_state_meta_data_info()
         snprintf(state_metadata[STATE_LAKE_SNOW_MELT_STATE].units, MAXSTRING,
                  "%s",
                  "1 melting, 0 not melting");
-        snprintf(state_metadata[STATE_LAKE_SNOW_MELT_STATE].description,
-                 MAXSTRING, "%s",
-                 "flag to indicate whether snowpack is in accumulation or melting phase on lake ice");
+        snprintf(
+            state_metadata[STATE_LAKE_SNOW_MELT_STATE].description,
+            MAXSTRING, "%s",
+            "flag to indicate whether snowpack is in accumulation or melting phase on lake ice");
 
         // STATE_LAKE_SNOW_COVERAGE
         snprintf(state_metadata[STATE_LAKE_SNOW_COVERAGE].varname, MAXSTRING,
@@ -630,9 +633,10 @@ set_state_meta_data_info()
                  "lake_active_layers");
         snprintf(state_metadata[STATE_LAKE_ACTIVE_LAYERS].units, MAXSTRING,
                  "%s", "-");
-        snprintf(state_metadata[STATE_LAKE_ACTIVE_LAYERS].description,
-                 MAXSTRING, "%s",
-                 "number of nodes whose corresponding layers currently contain water");
+        snprintf(
+            state_metadata[STATE_LAKE_ACTIVE_LAYERS].description,
+            MAXSTRING, "%s",
+            "number of nodes whose corresponding layers currently contain water");
 
         // STATE_LAKE_LAYER_DZ
         snprintf(state_metadata[STATE_LAKE_LAYER_DZ].varname, MAXSTRING, "%s",
@@ -644,9 +648,10 @@ set_state_meta_data_info()
                  "lake_thickness_layer_below_surface");
         snprintf(state_metadata[STATE_LAKE_LAYER_DZ].units, MAXSTRING, "%s",
                  "m");
-        snprintf(state_metadata[STATE_LAKE_LAYER_DZ].description, MAXSTRING,
-                 "%s",
-                 "vertical thickness of all horizontal lake water layers below the surface layer");
+        snprintf(
+            state_metadata[STATE_LAKE_LAYER_DZ].description, MAXSTRING,
+            "%s",
+            "vertical thickness of all horizontal lake water layers below the surface layer");
 
         // STATE_LAKE_SURF_LAYER_DZ
         snprintf(state_metadata[STATE_LAKE_SURF_LAYER_DZ].varname, MAXSTRING,
@@ -716,8 +721,9 @@ set_state_meta_data_info()
                  "%s", "lake_volume");
         snprintf(state_metadata[STATE_LAKE_VOLUME].units, MAXSTRING, "%s",
                  "m3");
-        snprintf(state_metadata[STATE_LAKE_VOLUME].description, MAXSTRING, "%s",
-                 "lake total volume including liquid water equivalent of lake ice");
+        snprintf(
+            state_metadata[STATE_LAKE_VOLUME].description, MAXSTRING, "%s",
+            "lake total volume including liquid water equivalent of lake ice");
 
         // STATE_LAKE_LAYER_TEMP
         snprintf(state_metadata[STATE_LAKE_LAYER_TEMP].varname, MAXSTRING, "%s",

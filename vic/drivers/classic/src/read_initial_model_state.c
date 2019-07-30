@@ -246,48 +246,58 @@ read_initial_model_state(FILE            *init_state,
                         /* Read cumulative annual NPP */
                         if (fread(&(veg_var[veg][band].AnnualNPP),
                                   sizeof(double), 1, init_state) != 1) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         if (fread(&(veg_var[veg][band].AnnualNPPPrev),
                                   sizeof(double), 1, init_state) != 1) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         /* Read Soil Carbon Storage */
                         if (fread(&(cell[veg][band].CLitter), sizeof(double), 1,
                                   init_state) != 1) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         if (fread(&(cell[veg][band].CInter), sizeof(double), 1,
                                   init_state) != 1) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         if (fread(&(cell[veg][band].CSlow), sizeof(double), 1,
                                   init_state) != 1) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                     }
                     else {
                         /* Read cumulative annual NPP */
                         if (fscanf(init_state, " %lf",
                                    &veg_var[veg][band].AnnualNPP) == EOF) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         if (fscanf(init_state, " %lf",
                                    &veg_var[veg][band].AnnualNPPPrev) == EOF) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         /* Read Soil Carbon Storage */
                         if (fscanf(init_state, " %lf",
                                    &cell[veg][band].CLitter) == EOF) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         if (fscanf(init_state, " %lf",
                                    &cell[veg][band].CInter) == EOF) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                         if (fscanf(init_state, " %lf",
                                    &cell[veg][band].CSlow) == EOF) {
-                            log_err("End of model state file found unexpectedly");
+                            log_err(
+                                "End of model state file found unexpectedly");
                         }
                     }
                 }
@@ -545,7 +555,8 @@ read_initial_model_state(FILE            *init_state,
                     log_err("End of model state file found unexpectedly");
                 }
             }
-            if (fread(&lake_var->tempavg, sizeof(double), 1, init_state) != 1) {
+            if (fread(&lake_var->tempavg, sizeof(double), 1,
+                      init_state) != 1) {
                 log_err("End of model state file found unexpectedly");
             }
             if (fread(&lake_var->areai, sizeof(double), 1, init_state) != 1) {
@@ -588,7 +599,8 @@ read_initial_model_state(FILE            *init_state,
                       init_state) != 1) {
                 log_err("End of model state file found unexpectedly");
             }
-            if (fread(&lake_var->SAlbedo, sizeof(double), 1, init_state) != 1) {
+            if (fread(&lake_var->SAlbedo, sizeof(double), 1,
+                      init_state) != 1) {
                 log_err("End of model state file found unexpectedly");
             }
             if (fread(&lake_var->sdepth, sizeof(double), 1, init_state) != 1) {
@@ -622,7 +634,8 @@ read_initial_model_state(FILE            *init_state,
                            &lake_var->soil.CLitter) == EOF) {
                     log_err("End of model state file found unexpectedly");
                 }
-                if (fscanf(init_state, " %lf", &lake_var->soil.CInter) == EOF) {
+                if (fscanf(init_state, " %lf",
+                           &lake_var->soil.CInter) == EOF) {
                     log_err("End of model state file found unexpectedly");
                 }
                 if (fscanf(init_state, " %lf", &lake_var->soil.CSlow) == EOF) {

@@ -1,8 +1,34 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Functions to initialize and broadcast plugin structures
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
 /******************************************
-   Setup broadcasting structures
+* @brief   Setup global param broadcasting structure
 ******************************************/
 void
 plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
@@ -94,6 +120,9 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup filenames broadcasting structure
+******************************************/
 void
 plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
 {
@@ -146,6 +175,9 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup options broadcasting structure
+******************************************/
 void
 plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 {
@@ -202,6 +234,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup parameters broadcasting structure
+******************************************/
 void
 plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
 {
@@ -245,6 +280,9 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup plugin broadcasting structure
+******************************************/
 void
 plugin_initialize_mpi(void)
 {
@@ -261,7 +299,7 @@ plugin_initialize_mpi(void)
 }
 
 /******************************************
-   Broadcast global structures
+* @brief   Broadcast filenames structure
 ******************************************/
 void
 plugin_broadcast_filenames(void)
@@ -277,6 +315,9 @@ plugin_broadcast_filenames(void)
     check_mpi_status(status, "MPI error.");
 }
 
+/******************************************
+* @brief   Broadcast global param structure
+******************************************/
 void
 plugin_broadcast_global_params(void)
 {
@@ -291,6 +332,9 @@ plugin_broadcast_global_params(void)
     check_mpi_status(status, "MPI error.");
 }
 
+/******************************************
+* @brief   Broadcast options structure
+******************************************/
 void
 plugin_broadcast_options(void)
 {
@@ -305,6 +349,9 @@ plugin_broadcast_options(void)
     check_mpi_status(status, "MPI error.");
 }
 
+/******************************************
+* @brief   Broadcast parameters structure
+******************************************/
 void
 plugin_broadcast_params(void)
 {

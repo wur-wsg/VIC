@@ -203,10 +203,11 @@ soil_moisture_from_water_table(soil_con_struct *soil_con,
                 bubble = soil_con->bubble[j];
                 tmp_resid_moist =
                     soil_con->resid_moist[j] * soil_con->depth[j] * MM_PER_M;
-                zwt_prime_eff = tmp_depth2_save * CM_PER_M - bubble + bubble *
-                                pow((zwt_prime + bub_save - tmp_depth2_save *
-                                     CM_PER_M) / bub_save,
-                                    b / b_save);
+                zwt_prime_eff = tmp_depth2_save * CM_PER_M - bubble +
+                                bubble *pow(
+                    (zwt_prime + bub_save - tmp_depth2_save *
+                CM_PER_M) /
+                    bub_save, b / b_save);
                 w_avg = -(b / (b - 1)) * bubble *
                         (1 -
                          pow((zwt_prime_eff + bubble - tmp_depth2 *

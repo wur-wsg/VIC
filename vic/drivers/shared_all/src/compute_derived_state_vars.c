@@ -187,22 +187,23 @@ compute_derived_state_vars(all_vars_struct *all_vars,
                                     pow((soil_con->dz_node[1]),
                                         2);
                         if (global_param.dt > dt_thresh) {
-                            log_err("You are currently running FROZEN SOIL "
-                                    "with an explicit method (IMPLICIT is "
-                                    "set to FALSE).  For the explicit method "
-                                    "to be stable, time step %f seconds is too "
-                                    "large for the given thermal node spacing "
-                                    "%f m, soil heat capacity %f J/m3/K, and "
-                                    "soil thermal conductivity %f J/m/s/K.  "
-                                    "Either set IMPLICIT to TRUE in your "
-                                    "global parameter file (this is the "
-                                    "recommended action), or decrease time "
-                                    "step length to <= %f seconds, or decrease "
-                                    "the number of soil thermal nodes.",
-                                    global_param.dt,
-                                    soil_con->dz_node[1],
-                                    energy[veg][band].Cs_node[1],
-                                    energy[veg][band].kappa_node[1], dt_thresh);
+                            log_err(
+                                "You are currently running FROZEN SOIL "
+                                "with an explicit method (IMPLICIT is "
+                                "set to FALSE).  For the explicit method "
+                                "to be stable, time step %f seconds is too "
+                                "large for the given thermal node spacing "
+                                "%f m, soil heat capacity %f J/m3/K, and "
+                                "soil thermal conductivity %f J/m/s/K.  "
+                                "Either set IMPLICIT to TRUE in your "
+                                "global parameter file (this is the "
+                                "recommended action), or decrease time "
+                                "step length to <= %f seconds, or decrease "
+                                "the number of soil thermal nodes.",
+                                global_param.dt,
+                                soil_con->dz_node[1],
+                                energy[veg][band].Cs_node[1],
+                                energy[veg][band].kappa_node[1], dt_thresh);
                         }
                     }
 

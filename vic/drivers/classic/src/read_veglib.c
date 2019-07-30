@@ -102,7 +102,8 @@ read_veglib(FILE   *veglib,
                         if (temp[i].fcanopy[j] < 0 ||
                             temp[i].fcanopy[j] > 1) {
                             log_err(
-                                "Veg cover fraction must be between 0 and 1 " "(%f)",
+                                "Veg cover fraction must be between 0 and 1 "
+                                "(%f)",
                                 temp[i].fcanopy[j]);
                         }
                     }

@@ -363,7 +363,8 @@ read_vegparam(FILE  *vegparam,
         }
 
         // Determine if cell contains non-overstory vegetation
-        if (options.COMPUTE_TREELINE && !veg_lib[temp[i].veg_class].overstory) {
+        if (options.COMPUTE_TREELINE &&
+            !veg_lib[temp[i].veg_class].overstory) {
             NoOverstory++;
         }
     }

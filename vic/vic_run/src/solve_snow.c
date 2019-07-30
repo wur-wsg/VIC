@@ -387,15 +387,21 @@ solve_snow(char               overstory,
                 /** Check for Thin Snowpack which only Partially Covers Grid Cell
                    exists only if not snowing and snowpack has started to melt **/
                 if (options.SPATIAL_SNOW) {
-                    snow->coverage = calc_snow_coverage(&snow->store_snow,
-                                                        soil_con->max_snow_distrib_slope,
-                                                        old_coverage, snow->swq,
-                                                        old_swq, snow->depth, old_depth,
-                                                        melt / MM_PER_M + snow->vapor_flux,
-                                                        &snow->max_snow_depth, *snowfall,
-                                                        &snow->store_swq,
-                                                        &snow->snow_distrib_slope,
-                                                        &snow->store_coverage);
+                    snow->coverage = calc_snow_coverage(
+                        &snow->store_snow,
+                        soil_con->
+                        max_snow_distrib_slope,
+                        old_coverage, snow->swq,
+                        old_swq, snow->depth,
+                        old_depth,
+                        melt / MM_PER_M +
+                        snow->vapor_flux,
+                        &snow->max_snow_depth,
+                        *snowfall,
+                        &snow->store_swq,
+                        &snow->
+                        snow_distrib_slope,
+                        &snow->store_coverage);
                 }
                 else {
                     if (snow->swq > 0) {

@@ -36,7 +36,7 @@ get_global_domain(nameid_struct *domain_nc_nameid,
 {
     int    *run = NULL;
     int    *mask = NULL;
-    int     typeid;
+    int typeid;
     double *var = NULL;
     size_t  i;
     size_t  j;
@@ -186,8 +186,10 @@ get_nc_latlon(nameid_struct *nc_nameid,
     }
 
     // Get number of lat/lon dimensions.
-    nc_domain->info.n_coord_dims = get_nc_varndimensions(nc_nameid,
-                                                         nc_domain->info.lon_var);
+    nc_domain->info.n_coord_dims = get_nc_varndimensions(
+        nc_nameid,
+        nc_domain->info.
+        lon_var);
     if (nc_domain->info.n_coord_dims !=
         (size_t) get_nc_varndimensions(nc_nameid, nc_domain->info.lat_var)) {
         log_err("Un even number of dimensions for %s and %s in: %s",
