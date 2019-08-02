@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin support header file
+ * Water-use start functions
  *
  * @section LICENSE
  *
@@ -24,23 +24,31 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_SUPPORT_H
-#define PLUGIN_SUPPORT_H
+#include <vic_driver_image.h>
+#include <plugin.h>
 
-/******************************************************************************
- * @brief   Functions
- *****************************************************************************/
-void convolute(double, double *, double *, size_t, size_t);
-void cshift(double *, int, int, int, int);
-void size_t_sort(size_t *, size_t *, size_t, bool);
-void size_t_sort2(size_t *, int *, size_t, bool);
-void double_flip(double *, size_t);
-void size_t_swap(size_t, size_t, size_t *);
-void int_swap(size_t, size_t, int *);
-void double_swap(size_t, size_t, double *);
-double between_dmy(dmy_struct, dmy_struct, dmy_struct);
-double between_jday(double, double, double);
-unsigned short int days_per_month(unsigned short int, unsigned short int, unsigned short int);
-double array_average(double *, size_t, size_t, size_t, size_t);
+/******************************************
+* @brief   Check input files
+******************************************/
+void
+wu_start(void)
+{
+    extern plugin_option_struct plugin_options;
+    extern plugin_filenames_struct plugin_filenames;
+    
+    int                     status;
+    
+    // Check domain & get dimensions
+    status = nc_open(plugin_filenames.wateruse.nc_filename, NC_NOWRITE,
+                     &(plugin_filenames.wateruse.nc_id));
+    check_nc_status(status, "Error opening %s",
+                    plugin_filenames.wateruse.nc_filename);
+    
+    plugin_options.NWURECEIVING = get_nc_dimension(&(plugin_filenames.wateruse),
+                                           "wu_receiving");
+    compare_ncdomain_with_global_domain(&plugin_filenames.wateruse);
 
-#endif /* PLUGIN_SUPPORT_H */
+    status = nc_close(plugin_filenames.wateruse.nc_id);
+    check_nc_status(status, "Error closing %s",
+                    plugin_filenames.wateruse.nc_filename);
+}

@@ -33,17 +33,15 @@
 #define WU_BALANCE_ERROR_THRESH 1e-10   /**< water-use balance error threshold */
 
 /******************************************************************************
- * @brief   Water-use Sectors
+ * @brief   Water-use Input type
  *****************************************************************************/
 enum {
-    WU_IRRIGATION,                  /**< irrigation sector */
-    WU_MUNICIPAL,                   /**< domestic sector */
-    WU_MANUFACTURING,               /**< manufacturing sector */
-    WU_ENERGY,                      /**< energy sector */
-    WU_LIVESTOCK,                   /**< livestock sector */
+    WU_FROM_FILE,                   /**< input comes from file */
+    WU_CALCULATE,                   /**< input is calculated */
+    WU_SKIP,                        /**< skip input */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
-    WU_NSECTORS                     /**< used as a loop counter*/
+    WU_NINPUT                       /**< used as a loop counter*/
 };
 
 /******************************************************************************

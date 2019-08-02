@@ -164,6 +164,20 @@ enum
 };
 
 /******************************************************************************
+ * @brief   Water-use Sectors
+ *****************************************************************************/
+enum {
+    WU_IRRIGATION,                  /**< irrigation sector */
+    WU_MUNICIPAL,                   /**< domestic sector */
+    WU_MANUFACTURING,               /**< manufacturing sector */
+    WU_ENERGY,                      /**< energy sector */
+    WU_LIVESTOCK,                   /**< livestock sector */
+    // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
+    // used as a loop counter and must be >= the largest value in this enum
+    WU_NSECTORS                     /**< used as a loop counter*/
+};
+
+/******************************************************************************
  * @brief   Plugin options
  *****************************************************************************/
 typedef struct {
@@ -180,6 +194,7 @@ typedef struct {
     short unsigned int NDAMSERVICE;     /**< maximum number of dam service per dam */
     short unsigned int NWUTYPES;        /**< number of water-use sectors */
     short unsigned int NWURECEIVING;    /**< maximum number of remote water-users per cell */
+    short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
 } plugin_option_struct;

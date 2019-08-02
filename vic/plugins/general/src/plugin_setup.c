@@ -122,9 +122,6 @@ plugin_start(void)
     if (plugin_options.ROUTING) {
         rout_start();
     }
-    if (plugin_options.EFR) {
-        efr_start();
-    }
     if (plugin_options.DAMS) {
         dam_start();
     }

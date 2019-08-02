@@ -33,6 +33,8 @@
 void
 plugin_initialize_options(plugin_option_struct *plugin_options)
 {
+    size_t i;
+    
     plugin_options->DECOMPOSITION = RANDOM_DECOMPOSITION;
     plugin_options->ROUTING = false;
     plugin_options->EFR = false;
@@ -43,8 +45,11 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->FORCE_ROUTING = false;
     plugin_options->NDAMTYPES = 0;
     plugin_options->NDAMSERVICE = 0;
-    plugin_options->NWUTYPES = 0;
+    plugin_options->NWUTYPES = WU_NSECTORS;
     plugin_options->NWURECEIVING = 0;
+    for(i = 0; i < WU_NSECTORS; i++){
+        plugin_options->WU_INPUT[i] = WU_SKIP;
+    }
     plugin_options->NIRRTYPES = 0;
     plugin_options->POTENTIAL_IRRIGATION = false;
 }

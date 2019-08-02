@@ -45,6 +45,8 @@ typedef struct {
  * @brief   Dam Constants
  *****************************************************************************/
 typedef struct {
+    size_t dam_class;               /**< dam class id number */
+    
     unsigned short int year;        /**< build year [year] */
     double capacity;                /**< capacity [hm3] */
     double inflow_frac;             /**< fraction of runoff/discharge used as inflow [-] */

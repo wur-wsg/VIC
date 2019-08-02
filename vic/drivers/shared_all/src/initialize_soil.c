@@ -53,6 +53,7 @@ initialize_soil(cell_data_struct **cell,
                      frost_area++) {
                     cell[veg][band].layer[lindex].ice[frost_area] = 0.0;
                 }
+                cell[veg][band].layer[lindex].Ksat = 0.0;
                 cell[veg][band].layer[lindex].kappa = 0.0;
                 cell[veg][band].layer[lindex].moist = 0.0;
                 cell[veg][band].layer[lindex].eff_sat = 0.0;
