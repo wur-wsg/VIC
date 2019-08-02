@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin support header file
+ * Function to average array values with repetitions, lengths, offsets and skips
  *
  * @section LICENSE
  *
@@ -24,22 +24,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_SUPPORT_H
-#define PLUGIN_SUPPORT_H
+#include <stddef.h>
 
 /******************************************************************************
- * @brief   Functions
+ * @brief   Function to average array values with repetitions, lengths, offsets and skips
  *****************************************************************************/
-void convolute(double, double *, double *, size_t, size_t);
-void cshift(double *, int, int, int, int);
-void size_t_sort(size_t *, size_t *, size_t, bool);
-void size_t_sort2(size_t *, int *, size_t, bool);
-void double_flip(double *, size_t);
-void size_t_swap(size_t, size_t, size_t *);
-void int_swap(size_t, size_t, int *);
-void double_swap(size_t, size_t, double *);
-double between_dmy(dmy_struct, dmy_struct, dmy_struct);
-double between_jday(double, double, double);
-unsigned short int days_per_month(unsigned short int, unsigned short int, unsigned short int);
+double
+array_average(double *array,
+              size_t  repetitions,
+              size_t  length,
+              size_t  offset,
+              size_t  skip)
+{
+    size_t i;
+    size_t j;
 
-#endif /* PLUGIN_SUPPORT_H */
+    double average = 0.0;
+    
+    if(repetitions == 0 || length == 0){
+        return average;
+    }
+
+    for (i = 0; i < repetitions; i++) {
+        for (j = 0; j < length; j++) {
+            average += array[offset + i * (length + skip) + j]; 
+        }
+    }
+    average /= (repetitions * length);
+
+    return average;
+}

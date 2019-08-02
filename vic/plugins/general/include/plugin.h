@@ -29,5 +29,9 @@
 
 #include <plugin_driver_shared_image.h>
 #include <routing.h>
+#include <efr.h>
+#include <dams.h>
+#include <wateruse.h>
+#include <irrigation.h>
 
 #endif /* PLUGIN_H */

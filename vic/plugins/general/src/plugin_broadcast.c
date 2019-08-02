@@ -190,7 +190,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 4;
+    nitems = 14;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -211,11 +211,41 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool ROUTING;
     offsets[i] = offsetof(plugin_option_struct, ROUTING);
     mpi_types[i++] = MPI_C_BOOL;
+    // bool EFR;
+    offsets[i] = offsetof(plugin_option_struct, EFR);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool DAMS;
+    offsets[i] = offsetof(plugin_option_struct, DAMS);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WATERUSE;
+    offsets[i] = offsetof(plugin_option_struct, WATERUSE);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool IRRIGATION;
+    offsets[i] = offsetof(plugin_option_struct, IRRIGATION);
+    mpi_types[i++] = MPI_C_BOOL;
     // short unsigned int UH_LENGTH;
     offsets[i] = offsetof(plugin_option_struct, UH_LENGTH);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
     // bool FORCE_ROUTING;
     offsets[i] = offsetof(plugin_option_struct, FORCE_ROUTING);
+    mpi_types[i++] = MPI_C_BOOL;
+    // short unsigned int NDAMTYPES;
+    offsets[i] = offsetof(plugin_option_struct, NDAMTYPES);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // short unsigned int NDAMSERVICE;
+    offsets[i] = offsetof(plugin_option_struct, NDAMSERVICE);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // short unsigned int NWUTYPES;
+    offsets[i] = offsetof(plugin_option_struct, NWUTYPES);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // short unsigned int NWURECEIVING;
+    offsets[i] = offsetof(plugin_option_struct, NWURECEIVING);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // size_t NIRRTYPES;
+    offsets[i] = offsetof(plugin_option_struct, NIRRTYPES);
+    mpi_types[i++] = MPI_AINT;
+    // bool POTENTIAL_IRRIGATION;
+    offsets[i] = offsetof(plugin_option_struct, POTENTIAL_IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
 
     // make sure that the we have the right number of elements
@@ -249,7 +279,7 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 0;
+    nitems = 5;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -263,6 +293,22 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
         blocklengths[i] = 1;
     }
     i = 0;
+    
+    // double DAM_ALPHA;
+    offsets[i] = offsetof(plugin_parameters_struct, DAM_ALPHA);
+    mpi_types[i++] = MPI_DOUBLE;
+    // double DAM_BETA;
+    offsets[i] = offsetof(plugin_parameters_struct, DAM_BETA);
+    mpi_types[i++] = MPI_DOUBLE;
+    // double DAM_GAMMA;
+    offsets[i] = offsetof(plugin_parameters_struct, DAM_GAMMA);
+    mpi_types[i++] = MPI_DOUBLE;
+    // double Wfc_fract;
+    offsets[i] = offsetof(plugin_parameters_struct, Wfc_fract);
+    mpi_types[i++] = MPI_DOUBLE;
+    // double Ksat_expt;
+    offsets[i] = offsetof(plugin_parameters_struct, Ksat_expt);
+    mpi_types[i++] = MPI_DOUBLE;
 
     // make sure that the we have the right number of elements
     if (i != (size_t) nitems) {

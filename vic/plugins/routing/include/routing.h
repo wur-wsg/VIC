@@ -27,44 +27,44 @@
 #ifndef ROUTING_H
 #define ROUTING_H
 
-#define MAX_UPSTREAM 8 /**< maximum number of upstream cells */
+#define MAX_UPSTREAM 8          /**< maximum number of upstream cells */
 
 /******************************************************************************
  * @brief   Basin structure
  *****************************************************************************/
 typedef struct {
-    int *basin_map; /**< basin grid-map */
-    size_t *sorted_basins; /**< sorted basin ids */
-    size_t Nbasin; /**< number of basins */
-    size_t *Ncells; /**< number of basin cells per basin */
-    size_t **catchment; /**< basin cell ids per basin */
+    int *basin_map;             /**< basin grid-map */
+    size_t *sorted_basins;      /**< sorted basin ids */
+    size_t Nbasin;              /**< number of basins */
+    size_t *Ncells;             /**< number of basin cells per basin */
+    size_t **catchment;         /**< basin cell ids per basin */
 } basin_struct;
 
 /******************************************************************************
  * @brief   Routing Constants
  *****************************************************************************/
 typedef struct {
-    size_t downstream; /**< downstream cell id */
-    size_t Nupstream; /**< number of upstream cells */
-    size_t *upstream; /**< upstream cell id */
-    double *inflow_uh; /**< inflow unit-hydrograph */
-    double *runoff_uh; /**< runoff unit-hydrograph */
+    size_t downstream;          /**< downstream cell id */
+    size_t Nupstream;           /**< number of upstream cells */
+    size_t *upstream;           /**< upstream cell id */
+    double *inflow_uh;          /**< inflow unit-hydrograph */
+    double *runoff_uh;          /**< runoff unit-hydrograph */
 } rout_con_struct;
 
 /******************************************************************************
  * @brief   Routing Variables
  *****************************************************************************/
 typedef struct {
-    double stream; /**< river (in-cell) stream moisture [mm] */
-    double discharge; /**< river (outflow) discharge [m3 s-1] */
-    double *dt_discharge; /**< routing sub-step discharge [m3 s-1] */
+    double stream;              /**< river (in-cell) stream moisture [mm] */
+    double discharge;           /**< river (outflow) discharge [m3 s-1] */
+    double *dt_discharge;       /**< routing sub-step discharge [m3 s-1] */
 } rout_var_struct;
 
 /******************************************************************************
  * @brief   Routing forcing
  *****************************************************************************/
 typedef struct {
-    double *discharge; /**< river (inflow) discharge [m3 s-1] */
+    double *discharge;          /**< river (inflow) discharge [m3 s-1] */
 } rout_force_struct;
 
 /******************************************************************************

@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin support header file
+ * Environmental requirements header file
  *
  * @section LICENSE
  *
@@ -24,22 +24,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_SUPPORT_H
-#define PLUGIN_SUPPORT_H
+#ifndef EFR_H
+#define EFR_H
+
+/******************************************************************************
+ * @brief   Environmental requirements forcing
+ *****************************************************************************/
+typedef struct {
+    double *discharge;          /**< environmental river discharge [m3 s-1] */
+    double *baseflow;           /**< environmental baseflow [mm] */
+    double **moist;             /**< environmental third-layer soil-moisture [mm] */
+} efr_force_struct;
+
+/******************************************************************************
+ * @brief   Public structures
+ *****************************************************************************/
+efr_force_struct *efr_force;
 
 /******************************************************************************
  * @brief   Functions
  *****************************************************************************/
-void convolute(double, double *, double *, size_t, size_t);
-void cshift(double *, int, int, int, int);
-void size_t_sort(size_t *, size_t *, size_t, bool);
-void size_t_sort2(size_t *, int *, size_t, bool);
-void double_flip(double *, size_t);
-void size_t_swap(size_t, size_t, size_t *);
-void int_swap(size_t, size_t, int *);
-void double_swap(size_t, size_t, double *);
-double between_dmy(dmy_struct, dmy_struct, dmy_struct);
-double between_jday(double, double, double);
-unsigned short int days_per_month(unsigned short int, unsigned short int, unsigned short int);
+bool efr_get_global_param(char *);
+void efr_validate_global_param(void);
 
-#endif /* PLUGIN_SUPPORT_H */
+void efr_start(void);
+void efr_alloc(void);
+void efr_initialize_local_structures(void);
+
+void efr_set_output_met_data_info(void);
+void efr_history(int, unsigned int *);
+
+void efr_forcing(void);
+void efr_put_data(size_t);
+void efr_finalize(void);
+
+#endif

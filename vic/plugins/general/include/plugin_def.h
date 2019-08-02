@@ -34,12 +34,12 @@
  * @brief   Decomposition Type
  *****************************************************************************/
 enum {
-    RANDOM_DECOMPOSITION, /**< native VIC (random) decomposition */
-    BASIN_DECOMPOSITION, /**< basin based decomposition */
-    FILE_DECOMPOSITION, /**< file based decomposition */
+    RANDOM_DECOMPOSITION,               /**< native VIC (random) decomposition */
+    BASIN_DECOMPOSITION,                /**< basin based decomposition */
+    FILE_DECOMPOSITION,                 /**< file based decomposition */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
-    PLUGIN_N_DECOMPOSITION                   /**< used as a loop counter*/
+    PLUGIN_N_DECOMPOSITION              /**< used as a loop counter*/
 };
 
 /******************************************************************************
@@ -47,10 +47,10 @@ enum {
  *****************************************************************************/
 enum {
     // routing
-    STATE_DISCHARGE_DT, /**< routing sub-step discharge [m3 s-1] */
+    STATE_DISCHARGE_DT,                 /**< routing sub-step discharge [m3 s-1] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
-    PLUGIN_N_STATE_VARS                   /**< used as a loop counter*/
+    PLUGIN_N_STATE_VARS                 /**< used as a loop counter*/
 };
 
 /******************************************************************************
@@ -60,9 +60,64 @@ enum {
     // routing
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
+    // efr
+    OUT_EFR_DISCHARGE,                  /**< environmental river discharge [m3 s-1] */
+    OUT_EFR_BASEFLOW,                   /**< environmental baseflow [mm] */
+    OUT_EFR_MOIST,                      /**< environmental third-layer soil-moisture [mm] */
+    //dams
+    OUT_LDAM_INFLOW,                    /**< local dam inflow [hm3] */
+    OUT_LDAM_DEMAND,                    /**< local dam water demand [hm3] */
+    OUT_LDAM_EFR,                       /**< local dam environmental requirements [hm3] */
+    OUT_LDAM_RELEASE,                   /**< local dam release [hm3] */
+    OUT_LDAM_STORAGE,                   /**< local dam storage [hm3] */
+    OUT_LDAM_HIST_INFLOW,               /**< local dam historical inflow for this month [hm3] */
+    OUT_LDAM_HIST_DEMAND,               /**< local dam historical demand for this month [hm3] */
+    OUT_LDAM_HIST_EFR,                  /**< local dam historical environmental requirements for this month [hm3] */
+    OUT_LDAM_OP_RELEASE,                /**< local dam calculated release [hm3] */
+    OUT_LDAM_OP_STORAGE,                /**< local dam calculated storage [hm3] */
+    OUT_GDAM_INFLOW,                    /**< global dam inflow [hm3] */
+    OUT_GDAM_DEMAND,                    /**< global dam water demand [hm3] */
+    OUT_GDAM_EFR,                       /**< global dam environmental requirements [hm3] */
+    OUT_GDAM_RELEASE,                   /**< global dam release [hm3] */
+    OUT_GDAM_STORAGE,                   /**< global dam storage [hm3] */
+    OUT_GDAM_HIST_INFLOW,               /**< global dam historical inflow for this month [hm3] */
+    OUT_GDAM_HIST_DEMAND,               /**< global dam historical demand for this month [hm3] */
+    OUT_GDAM_HIST_EFR,                  /**< global dam historical environmental requirements for this month [hm3] */
+    OUT_GDAM_OP_RELEASE,                /**< global dam calculated release [hm3] */
+    OUT_GDAM_OP_STORAGE,                /**< global dam calculated storage [hm3] */
+    // water-use
+    OUT_AV_GW_SECT,                     /**< available groundwater resources per sector [mm] */
+    OUT_AV_SURF_SECT,                   /**< available surface water resources per sector [mm] */
+    OUT_AV_DAM_SECT,                    /**< available dam reservoir resources per sector [mm] */
+    OUT_AV_REM_SECT,                    /**< available remote resources per sector [mm] */
+    OUT_DE_GW_SECT,                     /**< demand for groundwater resources per sector [mm] */
+    OUT_DE_SURF_SECT,                   /**< demand for surface water  resources per sector [mm] */
+    OUT_DE_REM_SECT,                    /**< demand for remote resources per sector [mm] */
+    OUT_WI_GW_SECT,                     /**< withdrawn groundwater resources per sector [mm] */
+    OUT_WI_SURF_SECT,                   /**< withdrawn surface water resources per sector [mm] */
+    OUT_WI_DAM_SECT,                    /**< withdrawn dam reservoir resources per sector [mm] */
+    OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector [mm] */
+    OUT_AV_GW,                          /**< available groundwater resources [mm] */
+    OUT_AV_SURF,                        /**< available surface water resources [mm] */
+    OUT_AV_DAM,                         /**< available dam reservoir resources [mm] */
+    OUT_AV_REM,                         /**< available remote resources [mm] */
+    OUT_DE_GW,                          /**< demand for groundwater resources [mm] */
+    OUT_DE_SURF,                        /**< demand for surface water resources [mm] */
+    OUT_DE_REM,                         /**< demand for remote resources [mm] */
+    OUT_WI_GW,                          /**< withdrawn groundwater resources [mm] */
+    OUT_WI_SURF,                        /**< withdrawn surface water resources [mm] */
+    OUT_WI_DAM,                         /**< withdrawn dam reservoir resources [mm] */
+    OUT_WI_REM,                         /**< withdrawn remote resources [mm] */
+    OUT_AVAILABLE,                      /**< available water resources [mm] */
+    OUT_DEMAND,                         /**< demand for water resources [mm] */
+    OUT_WITHDRAWN,                      /**< withdrawn water resources [mm] */
+    OUT_RETURNED,                       /**< returned water resources [mm] */
+    // irrigation
+    OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
+    OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
-    PLUGIN_N_OUTVAR_TYPES                /**< used as a loop counter*/
+    PLUGIN_N_OUTVAR_TYPES               /**< used as a loop counter*/
 };
 
 /******************************************************************************
@@ -70,10 +125,29 @@ enum {
  *****************************************************************************/
 enum {
     // routing
-    FORCING_DISCHARGE, /**< river (inflow) discharge [m3 s-1] */
+    FORCING_DISCHARGE,                  /**< river (inflow) discharge [m3 s-1] */
+    // efr
+    FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
+    FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
+    // water-use
+    FORCING_IRR_DEMAND,                 /**< irrigation demand [mm] */
+    FORCING_IRR_GROUNDWATER,            /**< irrigation groundwater fraction [-] */
+    FORCING_IRR_CONSUMPTION,            /**< irrigation consumption fraction [-] */
+    FORCING_MUN_DEMAND,                 /**< domestic demand [mm] */
+    FORCING_MUN_GROUNDWATER,            /**< domestic groundwater fraction [-] */
+    FORCING_MUN_CONSUMPTION,            /**< domestic consumption fraction [-] */
+    FORCING_LIV_DEMAND,                 /**< livestock demand [mm] */
+    FORCING_LIV_GROUNDWATER,            /**< livestock groundwater fraction [-] */
+    FORCING_LIV_CONSUMPTION,            /**< livestock consumption fraction [-] */
+    FORCING_MAN_DEMAND,                 /**< manufacturing demand [mm] */
+    FORCING_MAN_GROUNDWATER,            /**< manufacturing groundwater fraction [-] */
+    FORCING_MAN_CONSUMPTION,            /**< manufacturing consumption fraction [-] */
+    FORCING_ENG_DEMAND,                 /**< energy demand [mm] */
+    FORCING_ENG_GROUNDWATER,            /**< energy groundwater fraction [-] */
+    FORCING_ENG_CONSUMPTION,            /**< energy consumption fraction [-] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
-    PLUGIN_N_FORCING_TYPES                /**< used as a loop counter*/
+    PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/
 };
 
 /******************************************************************************
@@ -81,48 +155,62 @@ enum {
  *****************************************************************************/
 enum
 {
-    FORCE_STEP, /**< model step forcing frequency */
-    FORCE_DAY, /**< daily forcing frequency */
-    FORCE_MONTH, /**< monthly forcing frequency */
+    FORCE_STEP,                         /**< model step forcing frequency */
+    FORCE_DAY,                          /**< daily forcing frequency */
+    FORCE_MONTH,                        /**< monthly forcing frequency */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
-    PLUGIN_N_FORCE_FREQS  /**< Number of force frequencies */
+    PLUGIN_N_FORCE_FREQS                /**< Number of force frequencies */
 };
 
 /******************************************************************************
  * @brief   Plugin options
  *****************************************************************************/
 typedef struct {
-    short unsigned int DECOMPOSITION; /**< domain decomposition type */
-    bool ROUTING; /**< routing module flag */
+    short unsigned int DECOMPOSITION;   /**< domain decomposition type */
+    bool ROUTING;                       /**< routing module flag */
+    bool EFR;                           /**< environmental flow module flag */
+    bool DAMS;                          /**< dam module flag */
+    bool WATERUSE;                      /**< water-use module flag */
+    bool IRRIGATION;                    /**< irrigation module flag */
 
-    short unsigned int UH_LENGTH; /**< routing sub-step (unit-hydrograph) length */
-    bool FORCE_ROUTING; /**< routing (inflow) forcing flag */
+    short unsigned int UH_LENGTH;       /**< routing sub-step (unit-hydrograph) length */
+    bool FORCE_ROUTING;                 /**< routing (inflow) forcing flag */
+    short unsigned int NDAMTYPES;       /**< maximum number of dams per cell */
+    short unsigned int NDAMSERVICE;     /**< maximum number of dam service per dam */
+    short unsigned int NWUTYPES;        /**< number of water-use sectors */
+    short unsigned int NWURECEIVING;    /**< maximum number of remote water-users per cell */
+    size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
+    bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
 } plugin_option_struct;
 
 /******************************************************************************
  * @brief   Plugin global parameters
  *****************************************************************************/
 typedef struct {
-    size_t rout_steps_per_day; /**< number of routing steps [d-1] */
-    double rout_dt; /**< routing time step [s] */
-    size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES]; /**< number of forcing steps [d-1] */
-    double force_dt[PLUGIN_N_FORCING_TYPES]; /**< forcing time step [s] */
-    unsigned int forcesec[PLUGIN_N_FORCING_TYPES]; /**< seconds since midnight when forcing files starts */
-    unsigned short int forceday[PLUGIN_N_FORCING_TYPES]; /**< day forcing files starts */
-    unsigned short int forcemonth[PLUGIN_N_FORCING_TYPES]; /**< month forcing files starts */
-    unsigned short int forceyear[PLUGIN_N_FORCING_TYPES]; /**< year forcing files start */
-    unsigned short int forcefreq[PLUGIN_N_FORCING_TYPES]; /**< forcing frequency */
-    unsigned short int forceoffset[PLUGIN_N_FORCING_TYPES]; /**< counter to keep track of offset in reading forcing files; updated after every read */
-    bool forcerun[PLUGIN_N_FORCING_TYPES]; /**< flag to keep track wether to read forcing variable this time step */
-    unsigned int forceskip[PLUGIN_N_FORCING_TYPES]; /**< number of model time steps to skip at the start of the forcing file */
+    size_t rout_steps_per_day;          /**< number of routing steps [d-1] */
+    double rout_dt;                     /**< routing time step [s] */
+    size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];        /**< number of forcing steps [d-1] */
+    double force_dt[PLUGIN_N_FORCING_TYPES];                    /**< forcing time step [s] */
+    unsigned int forcesec[PLUGIN_N_FORCING_TYPES];              /**< seconds since midnight when forcing files starts */
+    unsigned short int forceday[PLUGIN_N_FORCING_TYPES];        /**< day forcing files starts */
+    unsigned short int forcemonth[PLUGIN_N_FORCING_TYPES];      /**< month forcing files starts */
+    unsigned short int forceyear[PLUGIN_N_FORCING_TYPES];       /**< year forcing files start */
+    unsigned short int forcefreq[PLUGIN_N_FORCING_TYPES];       /**< forcing frequency */
+    unsigned short int forceoffset[PLUGIN_N_FORCING_TYPES];     /**< counter to keep track of offset in reading forcing files; updated after every read */
+    bool forcerun[PLUGIN_N_FORCING_TYPES];                      /**< flag to keep track wether to read forcing variable this time step */
+    unsigned int forceskip[PLUGIN_N_FORCING_TYPES];             /**< number of model time steps to skip at the start of the forcing file */
 } plugin_global_param_struct;
 
 /******************************************************************************
  * @brief   Plugin parameters
  *****************************************************************************/
 typedef struct {
-    // used for future plugins
+    double DAM_ALPHA;                   /**< dam preferred maximum storage fraction [-] */
+    double DAM_BETA;                    /**< dam correction exponent [-] */
+    double DAM_GAMMA;                   /**< dam correction period [d-1] */
+    double Wfc_fract;                   /**< field capacity fraction (of critical soil moisture) [-] */
+    double Ksat_expt;                   /**< paddy saturated irrigation conductivity exponent [-] */
 } plugin_parameters_struct;
 
 /******************************************************************************

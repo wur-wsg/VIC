@@ -39,6 +39,12 @@ plugin_force(void)
     if (plugin_options.ROUTING && plugin_options.FORCE_ROUTING) {
         rout_forcing();
     }
+    if (plugin_options.EFR) {
+        efr_forcing();
+    }
+    if (plugin_options.WATERUSE) {
+        wu_forcing();
+    }
     plugin_force_end();
 }
 
@@ -55,17 +61,48 @@ plugin_run(void)
     size_t                      i;
     size_t                      iCell;
 
+    // If running with OpenMP, run this for loop using multiple threads
+    #pragma omp parallel for default(shared) private(i)
+    for (i = 0; i < local_domain.ncells_active; i++) {
+    	if (plugin_options.IRRIGATION) {
+            irr_run_requirement(i);
+            if (plugin_options.WATERUSE) {
+                irr_set_demand(i);
+            }
+        }
+    }
+    
     if (plugin_options.ROUTING) {
         if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
             plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCell = routing_order[i];
-
+		
+                if (plugin_options.DAMS) {
+                    local_dam_run(iCell);
+                }
                 rout_basin_run(iCell);
+                if (plugin_options.WATERUSE) {
+                    wu_run(iCell);
+        	}
+                if (plugin_options.DAMS) {
+                    global_dam_run(iCell);
+                }
             }
         }
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
             rout_random_run();
+        }
+    }
+    
+    // If running with OpenMP, run this for loop using multiple threads
+    #pragma omp parallel for default(shared) private(i)
+    for (i = 0; i < local_domain.ncells_active; i++) {
+    	if (plugin_options.IRRIGATION) {
+            if(plugin_options.POTENTIAL_IRRIGATION || plugin_options.WATERUSE){
+                irr_get_withdrawn(i);
+            }
+            irr_run_shortage(i);
         }
     }
 }
@@ -87,6 +124,18 @@ plugin_put_data()
         if (plugin_options.ROUTING) {
             rout_put_data(i);
         }
+        if (plugin_options.EFR) {
+            efr_put_data(i);
+        }
+        if (plugin_options.DAMS) {
+            dam_put_data(i);
+        }
+        if (plugin_options.WATERUSE) {
+            wu_put_data(i);
+        }
+        if (plugin_options.IRRIGATION) {
+            irr_put_data(i);
+        }
     }
 }
 
@@ -100,5 +149,8 @@ plugin_store(nc_file_struct *state_file)
 
     if (plugin_options.ROUTING) {
         rout_store(state_file);
+    }
+    if (plugin_options.DAMS) {
+        log_warn("DAM state restore not implemented yet...");
     }
 }
