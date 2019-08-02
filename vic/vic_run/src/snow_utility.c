@@ -136,10 +136,10 @@ snow_density(snow_data_struct *snow,
 
         if (new_snow > 0.0) {
             Ps = 0.5 * CONST_G * CONST_RHOFW * swq;
-            ddz2 = -Ps / param.SNOW_DENS_ETA0 *exp(
+            ddz2 = -Ps / param.SNOW_DENS_ETA0 * exp(
                 -(-param.SNOW_DENS_C5 *
                   (Tavg -
-                                                      CONST_TKFRZ) +
+                   CONST_TKFRZ) +
                   param.SNOW_DENS_C6 *
                   density));
         }
@@ -219,7 +219,7 @@ new_snow_density(double air_temp)
 
     if (options.SNOW_DENSITY == DENS_SNTHRM) {
         // new snow density based on Hedstrom and Pomeroy (1998)
-        density_new = param.SNOW_NEW_SNT_C1 + param.SNOW_NEW_SNT_C2 *exp(
+        density_new = param.SNOW_NEW_SNT_C1 + param.SNOW_NEW_SNT_C2 * exp(
             air_temp / param.SNOW_NEW_SNT_C3);
     }
     else if (options.SNOW_DENSITY == DENS_BRAS) {

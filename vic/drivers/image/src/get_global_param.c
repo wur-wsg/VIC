@@ -874,7 +874,7 @@ get_global_param(FILE *gp)
                      lastday);
         if (global_param.stateday > lastday[global_param.statemonth - 1] ||
             global_param.statemonth < 1 ||
-                                      global_param.statemonth > MONTHS_PER_YEAR
+            global_param.statemonth > MONTHS_PER_YEAR
             ||
             global_param.stateday < 1 || global_param.stateday > 31 ||
             global_param.statesec > SEC_PER_DAY) {

@@ -183,7 +183,7 @@ photosynth(char    Ctype,
            !   which is not considered in INITVEGDATA
            ! K scales of course with EK
         ********************************************************************************/
-        K = CO2Specificity * 1.E3 *NscaleFactor *exp(
+        K = CO2Specificity * 1.E3 * NscaleFactor * exp(
             param.PHOTO_EK * (T0 / T1) / (CONST_RGAS * T));
 
         /********************************************************************************

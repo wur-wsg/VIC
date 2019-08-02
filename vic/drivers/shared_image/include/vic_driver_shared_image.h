@@ -214,14 +214,11 @@ void get_nc_var_attr(nameid_struct *nc_nameid, char *var_name, char *attr_name,
 int get_nc_var_type(nameid_struct *nc_nameid, char *var_name);
 int get_nc_varndimensions(nameid_struct *nc_nameid, char *var_name);
 int get_nc_field_double(nameid_struct *nc_nameid, char *var_name, size_t *start,
-                        size_t *count,
-                        double *var);
+                        size_t *count, double *var);
 int get_nc_field_float(nameid_struct *nc_nameid, char *var_name, size_t *start,
-                       size_t *count,
-                       float *var);
+                       size_t *count, float *var);
 int get_nc_field_int(nameid_struct *nc_nameid, char *var_name, size_t *start,
-                     size_t *count,
-                     int *var);
+                     size_t *count, int *var);
 int get_nc_dtype(unsigned short int dtype);
 int get_nc_mode(unsigned short int format);
 void initialize_domain(domain_struct *domain);
@@ -235,11 +232,9 @@ void initialize_state_file(char *filename, nc_file_struct *nc_state_file,
 void initialize_location(location_struct *location);
 int initialize_model_state(all_vars_struct *all_vars, size_t Nveg,
                            size_t Nnodes, double surf_temp,
-                           soil_con_struct *soil_con,
-                           veg_con_struct *veg_con);
+                           soil_con_struct *soil_con, veg_con_struct *veg_con);
 void initialize_nc_file(nc_file_struct *nc_file, size_t nvars,
-                        unsigned int *varids,
-                        unsigned short int *dtypes);
+                        unsigned int *varids, unsigned short int *dtypes);
 void initialize_soil_con(soil_con_struct *soil_con);
 void initialize_veg_con(veg_con_struct *veg_con);
 void parse_output_info(FILE *gp, stream_struct **output_streams,
@@ -257,8 +252,7 @@ void set_state_meta_data_info();
 void set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,
                        nc_var_struct *nc_var);
 void set_nc_var_info(unsigned int varid, unsigned short int dtype,
-                     nc_file_struct *nc_hist_file,
-                     nc_var_struct *nc_var);
+                     nc_file_struct *nc_hist_file, nc_var_struct *nc_var);
 void set_nc_state_file_info(nc_file_struct *nc_state_file);
 void set_nc_state_var_info(nc_file_struct *nc_state_file);
 void sprint_location(char *str, location_struct *loc);

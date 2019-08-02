@@ -100,8 +100,7 @@ void read_atmos_data(FILE *, global_param_struct, int, int, double **,
                      double ***);
 double **read_forcing_data(FILE **, global_param_struct, double ****);
 void read_initial_model_state(FILE *, all_vars_struct *, int, int, int,
-                              soil_con_struct *,
-                              lake_con_struct);
+                              soil_con_struct *, lake_con_struct);
 lake_con_struct read_lakeparam(FILE *, soil_con_struct, veg_con_struct *);
 void read_snowband(FILE *, soil_con_struct *);
 void read_soilparam(FILE *soilparam, soil_con_struct *temp, bool *RUN_MODEL,
@@ -109,12 +108,10 @@ void read_soilparam(FILE *soilparam, soil_con_struct *temp, bool *RUN_MODEL,
 veg_lib_struct *read_veglib(FILE *, size_t *);
 veg_con_struct *read_vegparam(FILE *, int, size_t);
 void vic_force(force_data_struct *, dmy_struct *, FILE **, veg_con_struct *,
-               veg_hist_struct **,
-               soil_con_struct *);
+               veg_hist_struct **, soil_con_struct *);
 void vic_populate_model_state(all_vars_struct *, filep_struct, size_t,
                               soil_con_struct *, veg_con_struct *,
-                              lake_con_struct,
-                              dmy_struct *);
+                              lake_con_struct, dmy_struct *);
 void write_data(stream_struct *streams);
 void write_header(stream_struct **streams, dmy_struct *dmy);
 void write_model_state(all_vars_struct *, int, int, filep_struct *,
