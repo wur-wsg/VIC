@@ -1,9 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * This routine uses Xu Liangs 3-layer energy balance formulation to estimate
- * the temperature between the first and second layers.  Formerly calculated
- * independently in each of the surface energy balance equation routines.
+ * Plugin MPI header file
  *
  * @section LICENSE
  *
@@ -26,36 +24,36 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#include <vic_run.h>
+#ifndef PLUGIN_MPI_H
+#define PLUGIN_MPI_H
+
+#include <vic_mpi.h>
 
 /******************************************************************************
- * @brief    3-layer energy balance formulation to estimate the temperature
- *           between the first and second layers.
+ * @brief   Public structures
  *****************************************************************************/
-double
-estimate_T1(double Ts,
-            double T1_old,
-            double T2,
-            double D1,
-            double D2,
-            double kappa1,
-            double kappa2,
-            double Cs2,
-            double dp,
-            double delta_t)
-{
-    double C1;
-    double C2;
-    double C3;
-    double T1;
+MPI_Datatype plugin_mpi_global_struct_type;
+MPI_Datatype plugin_mpi_filenames_struct_type;
+MPI_Datatype plugin_mpi_option_struct_type;
+MPI_Datatype plugin_mpi_param_struct_type;
 
-    C1 = Cs2 * dp / D2 * (1. - exp(-D2 / dp));
-    C2 = -(1. - exp(D1 / dp)) * exp(-D2 / dp);
-    C3 = kappa1 / D1 - kappa2 / D1 + kappa2 / D1 *exp(-D1 / dp);
+/******************************************************************************
+ * @brief   Functions
+ *****************************************************************************/
+void gather_double(double *, double *);
+void gather_double_2d(double **, double **, int);
+void gather_size_t(size_t *, size_t *);
+void gather_size_t_2d(size_t **, size_t **, int);
+void gather_int(int *, int *);
+void gather_int_2d(int **, int **, int);
+void scatter_double(double *, double *);
+void scatter_double_2d(double **, double **, int);
+void scatter_size_t(size_t *, size_t *);
+void scatter_size_t_2d(size_t **, size_t **, int);
+void scatter_int(int *, int *);
+void scatter_int_2d(int **, int **, int);
+int get_active_nc_field_double(nameid_struct *, char *, size_t *, size_t *,
+                               double *);
+int get_active_nc_field_int(nameid_struct *, char *, size_t *, size_t *, int *);
 
-    T1 = (kappa1 / 2. / D1 / D2 * (Ts) + C1 / delta_t * T1_old +
-          (2. * C2 - 1. + exp(-D1 / dp)) * kappa2 / 2. / D1 / D2 * T2) /
-         (C1 / delta_t + kappa2 / D1 / D2 * C2 + C3 / 2. / D2);
-
-    return(T1);
-}
+#endif /* PLUGIN_MPI_H */

@@ -420,9 +420,10 @@ vic_init(void)
                 options.Nlayer);
     }
     if (options.Nlayer > MAX_LAYERS) {
-        log_err("Global file wants more soil moisture layers (%zu) than "
-                "are defined by MAX_LAYERS (%d).  Edit vic_driver_shared.h and "
-                "recompile.", options.Nlayer, MAX_LAYERS);
+        log_err(
+            "Global file wants more soil moisture layers (%zu) than "
+            "are defined by MAX_LAYERS (%d).  Edit vic_driver_shared.h and "
+            "recompile.", options.Nlayer, MAX_LAYERS);
     }
 
     // latitude and longitude
@@ -1209,7 +1210,8 @@ vic_init(void)
                 for (k = 0; k < options.ROOT_ZONES; k++) {
                     sum += veg_con[i][vidx].zone_fract[k];
                 }
-                if (!assert_close_double(sum, 1.0, 0., AREA_SUM_ERROR_THRESH)) {
+                if (!assert_close_double(sum, 1.0, 0.,
+                                         AREA_SUM_ERROR_THRESH)) {
                     sprint_location(locstr, &(local_domain.locations[i]));
                     log_warn("Sum of root zone fractions !=  1.0 (%.16f) at "
                              "grid cell %zd. Normalizing fractions. If the "
@@ -1223,7 +1225,8 @@ vic_init(void)
                 // library
                 found = false;
                 for (k = 0; k < options.NVEGTYPES; k++) {
-                    if (veg_con[i][vidx].veg_class == veg_lib[i][k].veg_class) {
+                    if (veg_con[i][vidx].veg_class ==
+                        veg_lib[i][k].veg_class) {
                         found = true;
                         break;
                     }

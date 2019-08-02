@@ -423,7 +423,6 @@ get_global_param(FILE *gp)
             /*************************************
                Define parameter files
             *************************************/
-
             else if (strcasecmp("CONSTANTS", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.constants);
             }
@@ -626,8 +625,9 @@ get_global_param(FILE *gp)
                         "file and re-run.");
             }
             else if (strcasecmp("TIME_STEP", optstr) == 0) {
-                log_err("TIME_STEP has been replaced with MODEL_STEPS_PER_DAY, "
-                        "update your global parameter file accordingly");
+                log_err(
+                    "TIME_STEP has been replaced with MODEL_STEPS_PER_DAY, "
+                    "update your global parameter file accordingly");
             }
             else if (strcasecmp("SNOW_STEP", optstr) == 0) {
                 log_err("SNOW_STEP has been replaced with SNOW_STEPS_PER_DAY, "
@@ -646,8 +646,9 @@ get_global_param(FILE *gp)
                         "update your global parameter file accordingly");
             }
             else if (strcasecmp("BINARY_STATE_FILE", optstr) == 0) {
-                log_err("BINARY_STATE_FILE has been replaced with STATE_FORMAT, "
-                        "update your global parameter file accordingly");
+                log_err(
+                    "BINARY_STATE_FILE has been replaced with STATE_FORMAT, "
+                    "update your global parameter file accordingly");
             }
             else if (strcasecmp("ALMA_OUTPUT", optstr) == 0) {
                 log_err("ALMA_OUTPUT has been deprecated, update your global "
@@ -895,9 +896,10 @@ get_global_param(FILE *gp)
         global_param.startsec = 0;
     }
     else if (global_param.startsec > SEC_PER_DAY) {
-        log_err("The specified simulation start second (%u) > 86400.  Make sure "
-                "that the global file defines time between 0 and 86400.",
-                global_param.startsec);
+        log_err(
+            "The specified simulation start second (%u) > 86400.  Make sure "
+            "that the global file defines time between 0 and 86400.",
+            global_param.startsec);
     }
 
 
@@ -974,7 +976,8 @@ get_global_param(FILE *gp)
                         "(ASCII or BINARY) for forcing file %d.", i,
                         param_set.FORCE_FORMAT[i], i);
             }
-            if (param_set.FORCE_INDEX[i][param_set.N_TYPES[i] - 1] == MISSING) {
+            if (param_set.FORCE_INDEX[i][param_set.N_TYPES[i] - 1] ==
+                MISSING) {
                 log_err("Did not define enough forcing variables in forcing "
                         "file %d.",
                         i);
@@ -990,7 +993,8 @@ get_global_param(FILE *gp)
             }
             else {
                 param_set.FORCE_DT[i] = SEC_PER_DAY /
-                                        (double) param_set.force_steps_per_day[i
+                                        (double) param_set.force_steps_per_day[
+                    i
                                         ];
             }
         }
@@ -1213,7 +1217,8 @@ get_global_param(FILE *gp)
                      lastday);
         if (global_param.stateday > lastday[global_param.statemonth - 1] ||
             global_param.statemonth < 1 ||
-            global_param.statemonth > MONTHS_PER_YEAR ||
+                                      global_param.statemonth > MONTHS_PER_YEAR
+            ||
             global_param.stateday < 1 || global_param.stateday > 31 ||
             global_param.statesec > SEC_PER_DAY) {
             log_err("Unusual specification of the date to save state "
@@ -1290,16 +1295,18 @@ get_global_param(FILE *gp)
                 options.Nlayer);
     }
     if (options.Nlayer > MAX_LAYERS) {
-        log_err("Global file wants more soil moisture layers (%zu) than "
-                "are defined by MAX_LAYERS (%d).  Edit vic_run/include/vic_def.h "
-                "and recompile.", options.Nlayer,
-                MAX_LAYERS);
+        log_err(
+            "Global file wants more soil moisture layers (%zu) than "
+            "are defined by MAX_LAYERS (%d).  Edit vic_run/include/vic_def.h "
+            "and recompile.", options.Nlayer,
+            MAX_LAYERS);
     }
     if (options.Nnode > MAX_NODES) {
-        log_err("Global file wants more soil thermal nodes (%zu) than are "
-                "defined by MAX_NODES (%d).  Edit vic_run/include/vic_def.h and "
-                "recompile.", options.Nnode,
-                MAX_NODES);
+        log_err(
+            "Global file wants more soil thermal nodes (%zu) than are "
+            "defined by MAX_NODES (%d).  Edit vic_run/include/vic_def.h and "
+            "recompile.", options.Nnode,
+            MAX_NODES);
     }
     if (!options.FULL_ENERGY && options.CLOSE_ENERGY) {
         log_err("CLOSE_ENERGY is TRUE but FULL_ENERGY is FALSE. Set "
@@ -1319,10 +1326,11 @@ get_global_param(FILE *gp)
                     "run.");
         }
         if (strcmp(filenames.lakeparam, "MISSING") == 0) {
-            log_err("\"LAKES\" was specified, but no lake parameter file "
-                    "has been defined.  Make sure that the global file defines "
-                    "the lake parameter file on the line that begins with "
-                    "\"LAKES\".");
+            log_err(
+                "\"LAKES\" was specified, but no lake parameter file "
+                "has been defined.  Make sure that the global file defines "
+                "the lake parameter file on the line that begins with "
+                "\"LAKES\".");
         }
         if (global_param.resolution == 0) {
             log_err("The model grid cell resolution (RESOLUTION) must be "

@@ -1,6 +1,35 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Routing setup functions (from input file)
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Setup unit hydrograph
+******************************************/
 void
 rout_set_uh(void)
 {
@@ -47,6 +76,9 @@ rout_set_uh(void)
     free(dvar);
 }
 
+/******************************************
+* @brief   Setup downstream cells (local node)
+******************************************/
 void
 rout_basin_set_downstream(void)
 {
@@ -112,6 +144,9 @@ rout_basin_set_downstream(void)
     free(id);
 }
 
+/******************************************
+* @brief   Setup downstream cells (master node)
+******************************************/
 void
 rout_random_set_downstream(void)
 {
@@ -197,6 +232,9 @@ rout_random_set_downstream(void)
     free(id);
 }
 
+/******************************************
+* @brief   Setup upstream cells
+******************************************/
 void
 rout_basin_set_upstream(void)
 {
@@ -215,10 +253,11 @@ rout_basin_set_upstream(void)
                 rout_con[i].Nupstream++;
 
                 if (rout_con[i].Nupstream > MAX_UPSTREAM) {
-                    log_err("Number of upstream cells [%zu] is bigger "
-                            "than the maximum number of upstream cells possible [%d]",
-                            rout_con[i].Nupstream,
-                            MAX_UPSTREAM);
+                    log_err(
+                        "Number of upstream cells [%zu] is bigger "
+                        "than the maximum number of upstream cells possible [%d]",
+                        rout_con[i].Nupstream,
+                        MAX_UPSTREAM);
                 }
             }
         }
@@ -233,6 +272,9 @@ rout_basin_set_upstream(void)
     }
 }
 
+/******************************************
+* @brief   Setup upstream cells (master node)
+******************************************/
 void
 rout_random_set_upstream(void)
 {
@@ -292,10 +334,11 @@ rout_random_set_upstream(void)
                     nup_global[i]++;
 
                     if (nup_global[i] > MAX_UPSTREAM) {
-                        log_err("Number of upstream cells [%zu] is bigger "
-                                "than the maximum number of upstream cells possible [%d]",
-                                nup_global[i],
-                                MAX_UPSTREAM);
+                        log_err(
+                            "Number of upstream cells [%zu] is bigger "
+                            "than the maximum number of upstream cells possible [%d]",
+                            nup_global[i],
+                            MAX_UPSTREAM);
                     }
                 }
             }
@@ -334,6 +377,9 @@ rout_random_set_upstream(void)
     free(up_local);
 }
 
+/******************************************
+* @brief   Setup the upstream-downstream order (local node)
+******************************************/
 void
 rout_basin_set_order()
 {
@@ -392,6 +438,9 @@ rout_basin_set_order()
     }
 }
 
+/******************************************
+* @brief   Setup the upstream-downstream order (master node)
+******************************************/
 void
 rout_random_set_order()
 {
@@ -507,6 +556,9 @@ rout_random_set_order()
     free(nup_local);
 }
 
+/******************************************
+* @brief   Setup the routing module
+******************************************/
 void
 rout_init(void)
 {

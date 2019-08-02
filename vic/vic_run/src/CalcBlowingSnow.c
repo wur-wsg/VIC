@@ -126,19 +126,19 @@ CalcBlowingSnow(double   Dt,
                 /* Find the limits of integration. */
                 if (p == 0) {
                     lower = -9999;
-                    upper = Uo + sigma_w * log(2. * (p + 1) * area);
+                    upper = Uo + sigma_w *log(2. * (p + 1) *area);
                 }
                 else if (p > 0 && p < param.BLOWING_NUMINCS / 2) {
-                    lower = Uo + sigma_w * log(2. * (p) * area);
-                    upper = Uo + sigma_w * log(2. * (p + 1) * area);
+                    lower = Uo + sigma_w *log(2. * (p) *area);
+                    upper = Uo + sigma_w *log(2. * (p + 1) *area);
                 }
                 else if (p < (param.BLOWING_NUMINCS - 1) && p >=
                          (double) param.BLOWING_NUMINCS / 2) {
-                    lower = Uo - sigma_w * log(2. - 2. * (p * area));
-                    upper = Uo - sigma_w * log(2. - 2. * ((p + 1.) * area));
+                    lower = Uo - sigma_w *log(2. - 2. * (p * area));
+                    upper = Uo - sigma_w *log(2. - 2. * ((p + 1.) * area));
                 }
                 else if (p == param.BLOWING_NUMINCS - 1) {
-                    lower = Uo - sigma_w * log(2. - 2. * (p * area));
+                    lower = Uo - sigma_w *log(2. - 2. * (p * area));
                     upper = 9999;
                 }
 
@@ -551,7 +551,7 @@ sub_with_height(double z,
     fluctuat_v = 0.005 * pow(Wind, 1.36);
 
     // Ventilation velocity for turbulent suspension Lee (1975)
-    Vtz = terminal_v + 3. * fluctuat_v * cos(CONST_PI / 4.);
+    Vtz = terminal_v + 3. *fluctuat_v *cos(CONST_PI / 4.);
 
     Re = 2. * Rmean * Vtz / param.BLOWING_KIN_VIS;
     Nu = 1.79 + 0.606 * pow(Re, 0.5);

@@ -157,8 +157,9 @@ print_trace(void)
     /* Note: we are ignoring the first and last stack frame
        the first is this function, the last is the linker, neither are
        particularly useful */
-    fprintf(LOG_DEST,
-            "---------------------------------------------------------------------------\n");
+    fprintf(
+        LOG_DEST,
+        "---------------------------------------------------------------------------\n");
     fprintf(LOG_DEST, "Traceback (most recent call last):\n");
     for (i = size - 2; i > 0; i--) {
         fprintf(LOG_DEST, "%s\n", strings[i]);

@@ -188,8 +188,9 @@ set_output_met_data_info()
     snprintf(out_metadata[OUT_SMFROZFRAC].standard_name, MAXSTRING, "%s",
              "soil_moisture_ice_fraction");
     snprintf(out_metadata[OUT_SMFROZFRAC].units, MAXSTRING, "%s", "1");
-    snprintf(out_metadata[OUT_SMFROZFRAC].description, MAXSTRING, "%s",
-             "fraction of soil moisture (by mass) that is ice, for each soil layer");
+    snprintf(
+        out_metadata[OUT_SMFROZFRAC].description, MAXSTRING, "%s",
+        "fraction of soil moisture (by mass) that is ice, for each soil layer");
 
     /* fraction of soil moisture (by mass) that is liquid, for each soil layer */
     snprintf(out_metadata[OUT_SMLIQFRAC].varname, MAXSTRING, "%s",
@@ -199,8 +200,9 @@ set_output_met_data_info()
     snprintf(out_metadata[OUT_SMLIQFRAC].standard_name, MAXSTRING, "%s",
              "soil_moisture_liquid_fraction");
     snprintf(out_metadata[OUT_SMLIQFRAC].units, MAXSTRING, "%s", "1");
-    snprintf(out_metadata[OUT_SMLIQFRAC].description, MAXSTRING, "%s",
-             "fraction of soil moisture (by mass) that is liquid, for each soil layer");
+    snprintf(
+        out_metadata[OUT_SMLIQFRAC].description, MAXSTRING, "%s",
+        "fraction of soil moisture (by mass) that is liquid, for each soil layer");
 
     /* snow interception storage in canopy [mm] */
     snprintf(out_metadata[OUT_SNOW_CANOPY].varname, MAXSTRING, "%s",
@@ -296,8 +298,9 @@ set_output_met_data_info()
     snprintf(out_metadata[OUT_SOIL_EFF_SAT].standard_name, MAXSTRING, "%s",
              "soil_effective_saturation");
     snprintf(out_metadata[OUT_SOIL_EFF_SAT].units, MAXSTRING, "%s", "-");
-    snprintf(out_metadata[OUT_SOIL_EFF_SAT].description, MAXSTRING, "%s",
-             "soil effective saturation (between residual- and maximum moisture content)");
+    snprintf(
+        out_metadata[OUT_SOIL_EFF_SAT].description, MAXSTRING, "%s",
+        "soil effective saturation (between residual- and maximum moisture content)");
 
     /* vertical average of (soil moisture - wilting point)/(maximum soil moisture - wilting point) [mm/mm] */
     snprintf(out_metadata[OUT_SOIL_WET].varname, MAXSTRING, "%s",
@@ -366,8 +369,9 @@ set_output_met_data_info()
     snprintf(out_metadata[OUT_ZWT_LUMPED].standard_name, MAXSTRING, "%s",
              "lumped_water_table_position");
     snprintf(out_metadata[OUT_ZWT_LUMPED].units, MAXSTRING, "%s", "cm");
-    snprintf(out_metadata[OUT_ZWT_LUMPED].description, MAXSTRING, "%s",
-             "lumped water table position (zwt of total moisture across all layers, lumped together)");
+    snprintf(
+        out_metadata[OUT_ZWT_LUMPED].description, MAXSTRING, "%s",
+        "lumped water table position (zwt of total moisture across all layers, lumped together)");
 
     // Water Balance Terms - fluxes
     /* recharge to the bottom layer [mm] */
@@ -579,8 +583,9 @@ set_output_met_data_info()
     snprintf(out_metadata[OUT_LAKE_DSTOR_V].standard_name, MAXSTRING, "%s",
              "change_in_lake_moisture_volume");
     snprintf(out_metadata[OUT_LAKE_DSTOR_V].units, MAXSTRING, "%s", "m3");
-    snprintf(out_metadata[OUT_LAKE_DSTOR_V].description, MAXSTRING, "%s",
-             "volumetric change in lake moisture storage (liquid plus ice cover)");
+    snprintf(
+        out_metadata[OUT_LAKE_DSTOR_V].description, MAXSTRING, "%s",
+        "volumetric change in lake moisture storage (liquid plus ice cover)");
 
     /* change in snowpack on top of lake ice [mm] */
     snprintf(out_metadata[OUT_LAKE_DSWE].varname, MAXSTRING, "%s",
@@ -1258,8 +1263,9 @@ set_output_met_data_info()
     snprintf(out_metadata[OUT_AERO_RESIST].standard_name, MAXSTRING, "%s",
              "aerodynamic_resistance");
     snprintf(out_metadata[OUT_AERO_RESIST].units, MAXSTRING, "%s", "s m-1");
-    snprintf(out_metadata[OUT_AERO_RESIST].description, MAXSTRING, "%s",
-             "scene aerodynamic resistance (tiles with overstory contribute overstory resistance; others contribue surface resistance)");
+    snprintf(
+        out_metadata[OUT_AERO_RESIST].description, MAXSTRING, "%s",
+        "scene aerodynamic resistance (tiles with overstory contribute overstory resistance; others contribue surface resistance)");
 
     /* surface aerodynamic resistance [m/s] */
     snprintf(out_metadata[OUT_AERO_RESIST1].varname, MAXSTRING, "%s",
@@ -1437,8 +1443,9 @@ set_output_met_data_info()
     /* absorbed PAR [W m-2] */
     snprintf(out_metadata[OUT_APAR].varname, MAXSTRING, "%s", "OUT_APAR");
     snprintf(out_metadata[OUT_APAR].long_name, MAXSTRING, "%s", "apar");
-    snprintf(out_metadata[OUT_APAR].standard_name, MAXSTRING, "%s",
-             "absorbed_surface_diffuse_downwelling_photosynthetic_radiative_flux");
+    snprintf(
+        out_metadata[OUT_APAR].standard_name, MAXSTRING, "%s",
+        "absorbed_surface_diffuse_downwelling_photosynthetic_radiative_flux");
     snprintf(out_metadata[OUT_APAR].units, MAXSTRING, "%s", "W m-2");
     snprintf(out_metadata[OUT_APAR].description, MAXSTRING, "%s",
              "absorbed PAR");

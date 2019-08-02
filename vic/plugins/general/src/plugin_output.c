@@ -1,10 +1,35 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Output and state supporting functions
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
 /******************************************
-   Output initialization
+* @brief   Initialize output metadata
 ******************************************/
-// Set output metadata
 void
 plugin_set_output_met_data_info(void)
 {
@@ -30,7 +55,9 @@ plugin_set_output_met_data_info(void)
     }
 }
 
-// Initialize outfile dimension size & id
+/******************************************
+* @brief   Initialize output file dimension size & id
+******************************************/
 void
 plugin_initialize_nc_file(nc_file_struct *nc_file)
 {
@@ -38,7 +65,9 @@ plugin_initialize_nc_file(nc_file_struct *nc_file)
     UNUSED(nc_file);
 }
 
-// Add dimensions to outfile
+/******************************************
+* @brief   Add output file dimensions
+******************************************/
 void
 plugin_add_hist_dim(nc_file_struct *nc,
                     stream_struct  *stream)
@@ -48,7 +77,9 @@ plugin_add_hist_dim(nc_file_struct *nc,
     UNUSED(stream);
 }
 
-// Set output variable dimension count
+/******************************************
+* @brief   Set output variable dimension sizes
+******************************************/
 void
 plugin_set_nc_var_info(unsigned int       varid,
                        unsigned short int dtype,
@@ -75,7 +106,9 @@ plugin_set_nc_var_info(unsigned int       varid,
     nc_var->nc_counts[2] = nc_hist_file->ni_size;
 }
 
-// Set output variable dimension ids
+/******************************************
+* @brief   Set output variable dimension ids
+******************************************/
 void
 plugin_set_nc_var_dimids(unsigned int    varid,
                          nc_file_struct *nc_hist_file,
@@ -97,6 +130,9 @@ plugin_set_nc_var_dimids(unsigned int    varid,
     nc_var->nc_dimids[2] = nc_hist_file->ni_dimid;
 }
 
+/******************************************
+* @brief   Set output variable aggregation type
+******************************************/
 void
 plugin_get_default_outvar_aggtype(unsigned int  varid,
                                   unsigned int *agg_type)
@@ -109,9 +145,8 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
 }
 
 /******************************************
-   State file initialization
+* @brief   Initialize state metadata
 ******************************************/
-// Set output metadata
 void
 plugin_set_state_meta_data_info(void)
 {
@@ -122,7 +157,9 @@ plugin_set_state_meta_data_info(void)
     }
 }
 
-// Initialize outfile dimension size & id
+/******************************************
+* @brief   Initialize state file dimension size & id
+******************************************/
 void
 plugin_set_nc_state_file_info(nc_file_struct *nc_state_file)
 {
@@ -133,7 +170,9 @@ plugin_set_nc_state_file_info(nc_file_struct *nc_state_file)
     }
 }
 
-// Add dimensions to outfile
+/******************************************
+* @brief   Add state file dimensions
+******************************************/
 void
 plugin_add_state_dim(char           *filename,
                      nc_file_struct *nc_state_file)
@@ -145,7 +184,9 @@ plugin_add_state_dim(char           *filename,
     }
 }
 
-// Add dimensions variable to outfile
+/******************************************
+* @brief   Add state file dimensions
+******************************************/
 void
 plugin_add_state_dim_var(char           *filename,
                          nc_file_struct *nc_state_file)
@@ -157,7 +198,9 @@ plugin_add_state_dim_var(char           *filename,
     }
 }
 
-// Add dimensions variable data to outfile
+/******************************************
+* @brief   Add state file variables
+******************************************/
 void
 plugin_add_state_dim_var_data(char           *filename,
                               nc_file_struct *nc_state_file)
@@ -169,7 +212,9 @@ plugin_add_state_dim_var_data(char           *filename,
     }
 }
 
-// Set output variable dimension count & ids
+/******************************************
+* @brief   Set output variable dimension sizes and ids
+******************************************/
 void
 plugin_set_nc_state_var_info(nc_file_struct *nc)
 {
@@ -201,15 +246,5 @@ plugin_set_nc_state_var_info(nc_file_struct *nc)
         if (nc->nc_vars[i].nc_dims > MAXDIMS) {
             log_err("Too many dimensions specified in variable %zu", i);
         }
-    }
-}
-
-void
-plugin_store(nc_file_struct *state_file)
-{
-    extern plugin_option_struct plugin_options;
-
-    if (plugin_options.ROUTING) {
-        rout_store(state_file);
     }
 }

@@ -364,8 +364,9 @@ set_output_var(stream_struct     *stream,
     }
 
     if (varnum >= stream->nvars) {
-        log_err("Invalid varnum %zu, must be less than the number of variables "
-                "in the stream %zu", varnum, stream->nvars);
+        log_err(
+            "Invalid varnum %zu, must be less than the number of variables "
+            "in the stream %zu", varnum, stream->nvars);
     }
     // Set stream members
     stream->varid[varnum] = varid;

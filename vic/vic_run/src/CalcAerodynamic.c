@@ -155,9 +155,9 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
             U[2] = Uh * exp(n * ((2. + Z0_SNOW) / Height - 1.));
             Ra[2] = log(Zt / Z0_SNOW) * log(Zt / Z0_SNOW) /
                     (K2 * Ut) +
-                    Height *
-                    log((ref_height[0] -
-                         d_Upper) / Z0_Upper) / (n * K2 * (Zw - d_Upper)) *
+                    Height *log((ref_height[0] -
+                                 d_Upper) /
+                                Z0_Upper) / (n * K2 * (Zw - d_Upper)) *
                     (exp(n *
                          (1 - Zt /
                           Height)) - exp(n * (1 - (Z0_SNOW + 2.) / Height)));
@@ -171,9 +171,9 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
             U[2] = Uh;
             Ra[2] = log(Zt / Z0_SNOW) * log(Zt / Z0_SNOW) /
                     (K2 * Ut) +
-                    Height *
-                    log((ref_height[0] -
-                         d_Upper) / Z0_Upper) / (n * K2 * (Zw - d_Upper)) *
+                    Height *log((ref_height[0] -
+                                 d_Upper) /
+                                Z0_Upper) / (n * K2 * (Zw - d_Upper)) *
                     (exp(n * (1 - Zt / Height)) - 1);
             log_warn("Top of overstory is less than 2 meters above the lower "
                      "boundary");

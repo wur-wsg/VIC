@@ -114,8 +114,9 @@ parse_output_info(FILE           *gp,
                 }
                 else if (strcasecmp("AGGFREQ", optstr) == 0) {
                     if (streamnum < 0) {
-                        log_err("Error in global param file: \"OUTFILE\" must be "
-                                "specified before you can specify \"AGGFREQ\".");
+                        log_err(
+                            "Error in global param file: \"OUTFILE\" must be "
+                            "specified before you can specify \"AGGFREQ\".");
                     }
                     found = sscanf(cmdstr, "%*s %s %s", freq_type_str,
                                    freq_value_str);
@@ -154,8 +155,9 @@ parse_output_info(FILE           *gp,
                 }
                 else if (strcasecmp("COMPRESS", optstr) == 0) {
                     if (streamnum < 0) {
-                        log_err("Error in global param file: \"OUTFILE\" must be "
-                                "specified before you can specify \"COMPRESS\".");
+                        log_err(
+                            "Error in global param file: \"OUTFILE\" must be "
+                            "specified before you can specify \"COMPRESS\".");
                     }
                     sscanf(cmdstr, "%*s %s", flgstr);
                     if (strcasecmp("TRUE", flgstr) == 0) {
@@ -170,8 +172,9 @@ parse_output_info(FILE           *gp,
                 }
                 else if (strcasecmp("OUT_FORMAT", optstr) == 0) {
                     if (streamnum < 0) {
-                        log_err("Error in global param file: \"OUTFILE\" must be "
-                                "specified before you can specify \"OUT_FORMAT\".");
+                        log_err(
+                            "Error in global param file: \"OUTFILE\" must be "
+                            "specified before you can specify \"OUT_FORMAT\".");
                     }
                     sscanf(cmdstr, "%*s %s", flgstr);
                     if (strcasecmp("ASCII", flgstr) == 0) {
@@ -187,8 +190,9 @@ parse_output_info(FILE           *gp,
                 }
                 else if (strcasecmp("OUTVAR", optstr) == 0) {
                     if (streamnum < 0) {
-                        log_err("Error in global param file: \"OUTFILE\" must be "
-                                "specified before you can specify \"OUTVAR\".");
+                        log_err(
+                            "Error in global param file: \"OUTFILE\" must be "
+                            "specified before you can specify \"OUTVAR\".");
                     }
                     // parse outvar options
                     snprintf(format, MAXSTRING, "%s", "");

@@ -639,7 +639,8 @@ validate_parameters()
     // LAKE_ZWATER - Currently, no constraints
     // LAKE_ZSNOW - Currently, no constraints
     if (!(param.LAKE_RHOSNOW >= 0.)) {
-        log_err("LAKE_RHOSNOW must be defined on the interval [0, inf) (kg m-3)");
+        log_err(
+            "LAKE_RHOSNOW must be defined on the interval [0, inf) (kg m-3)");
     }
     // LAKE_CONDI - Currently, no constraints
     // LAKE_CONDS - Currently, no constraints
@@ -785,8 +786,10 @@ validate_parameters()
         log_err(
             "SNOW_NEW_SNOW_DENS_MAX must be defined on the interval [0, 700) (kg/m^3)");
     }
-    if (!(param.SNOW_DENS_MAX_CHANGE >= 0 && param.SNOW_DENS_MAX_CHANGE <= 1)) {
-        log_err("SNOW_DENS_MAX_CHANGE must be defined on the interval [0,1] (-)")
+    if (!(param.SNOW_DENS_MAX_CHANGE >= 0 && param.SNOW_DENS_MAX_CHANGE <=
+          1)) {
+        log_err(
+            "SNOW_DENS_MAX_CHANGE must be defined on the interval [0,1] (-)")
     }
     // SNOW_DENS_ETA0 - Currently, no constraints
     // SNOW_DENS_C1 - Currently, no constraints

@@ -599,7 +599,8 @@ bool cell_method_from_agg_type(unsigned short int aggtype, char cell_method[]);
 bool check_write_flag(int rec);
 void collect_eb_terms(energy_bal_struct, snow_data_struct, cell_data_struct,
                       double, double, double, bool, bool, double, bool, int,
-                      double *, double, double **);
+                      double *, double,
+                      double **);
 void collect_wb_terms(cell_data_struct, veg_var_struct, snow_data_struct,
                       double, double, double, bool, double, bool, double *,
                       double **);
@@ -617,12 +618,12 @@ double get_cpu_time();
 void get_current_datetime(char *cdt);
 double get_wall_time();
 double date2num(double origin, dmy_struct *date, double tzoffset,
-                unsigned short int calendar, unsigned short int time_units);
+                unsigned short int calendar,
+                unsigned short int time_units);
 void dmy_all_30_day(double julian, dmy_struct *dmy);
 void dmy_all_leap(double julian, dmy_struct *dmy);
 bool dmy_equal(dmy_struct *a, dmy_struct *b);
-void dmy_julian_day(double julian, unsigned short int calendar,
-                    dmy_struct *dmy);
+void dmy_julian_day(double julian, unsigned short int calendar, dmy_struct *dmy);
 void dmy_no_leap_day(double julian, dmy_struct *dmy);
 void dt_seconds_to_time_units(unsigned short int time_units, double dt_seconds,
                               double *dt_time_units);
@@ -634,7 +635,8 @@ void free_out_data(size_t ngridcells, double ***out_data);
 void free_streams(stream_struct **streams);
 void free_vegcon(veg_con_struct **veg_con);
 void generate_default_state(all_vars_struct *, soil_con_struct *,
-                            veg_con_struct *, dmy_struct *);
+                            veg_con_struct *,
+                            dmy_struct *);
 void generate_default_lake_state(all_vars_struct *, soil_con_struct *,
                                  lake_con_struct);
 void get_default_nstreams_nvars(size_t *nstreams, size_t nvars[]);
@@ -647,8 +649,9 @@ void initialize_options(void);
 void initialize_parameters(void);
 void initialize_save_data(all_vars_struct *all_vars, force_data_struct *force,
                           soil_con_struct *soil_con, veg_con_struct *veg_con,
-                          veg_lib_struct *veg_lib, lake_con_struct *lake_con,
-                          double **out_data, save_data_struct *save_data,
+                          veg_lib_struct *veg_lib,
+                          lake_con_struct *lake_con, double **out_data,
+                          save_data_struct *save_data,
                           timer_struct *timer);
 void initialize_snow(snow_data_struct **snow, size_t veg_num);
 void initialize_soil(cell_data_struct **cell, size_t veg_num);
@@ -673,7 +676,9 @@ void parse_nc_time_units(char *nc_unit_chars, unsigned short int *units,
                          dmy_struct *dmy);
 void put_data(all_vars_struct *, force_data_struct *, soil_con_struct *,
               veg_con_struct *, veg_lib_struct *veg_lib, lake_con_struct *,
-              double **out_data, save_data_struct *, timer_struct *timer);
+              double **out_data,
+              save_data_struct *,
+              timer_struct *timer);
 void print_alarm(alarm_struct *alarm);
 void print_cell_data(cell_data_struct *cell, size_t nlayers, size_t nfrost);
 void print_dmy(dmy_struct *dmy);
@@ -682,7 +687,8 @@ void print_force_type(force_type_struct *force_type);
 void print_global_param(global_param_struct *gp);
 void print_lake_con(lake_con_struct *lcon, size_t nlnodes);
 void print_lake_var(lake_var_struct *lvar, size_t nlnodes, size_t nfronts,
-                    size_t nlayers, size_t nnodes, size_t nfrost);
+                    size_t nlayers, size_t nnodes,
+                    size_t nfrost);
 void print_layer_data_states(layer_data_struct *ldata, size_t nfrost);
 void print_layer_data_fluxes(layer_data_struct *ldata);
 void print_license(void);
@@ -695,10 +701,12 @@ void print_parameters(parameters_struct *param);
 void print_save_data(save_data_struct *save);
 void print_snow_data(snow_data_struct *snow);
 void print_soil_con(soil_con_struct *scon, size_t nlayers, size_t nnodes,
-                    size_t nfrost, size_t nbands, size_t nzwt);
+                    size_t nfrost, size_t nbands,
+                    size_t nzwt);
 void print_stream(stream_struct *stream, metadata_struct *metadata);
 void print_veg_con(veg_con_struct *vcon, size_t nroots, char blowing, char lake,
-                   char carbon, size_t ncanopy);
+                   char carbon,
+                   size_t ncanopy);
 void print_veg_lib(veg_lib_struct *vlib, char carbon);
 void print_veg_var(veg_var_struct *vvar, size_t ncanopy);
 void print_version(char *);
@@ -741,7 +749,8 @@ int invalid_date(unsigned short int calendar, dmy_struct *dmy);
 void validate_parameters(void);
 void validate_streams(stream_struct **stream);
 char will_it_snow(double *t, double t_offset, double max_snow_temp,
-                  double *prcp, size_t n);
+                  double *prcp,
+                  size_t n);
 void zero_output_list(double **);
 
 #endif
