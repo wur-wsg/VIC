@@ -65,8 +65,6 @@ func_canopy_energy_bal(double  Tfoliage,
     double                  *Wind;
 
     /* Vegetation Terms */
-    int                      veg_class;
-
     double                  *displacement;
     double                  *ref_height;
     double                  *roughness;
@@ -82,6 +80,7 @@ func_canopy_energy_bal(double  Tfoliage,
 
     layer_data_struct       *layer;
     veg_var_struct          *veg_var;
+    veg_lib_struct          *veg_lib;
 
     /* Energy Flux Terms */
     double                   LongOverIn;
@@ -133,8 +132,6 @@ func_canopy_energy_bal(double  Tfoliage,
     Wind = (double *) va_arg(ap, double *);
 
     /* Vegetation Terms */
-    veg_class = (unsigned int) va_arg(ap, unsigned int);
-
     displacement = (double *) va_arg(ap, double *);
     ref_height = (double *) va_arg(ap, double *);
     roughness = (double *) va_arg(ap, double *);
@@ -150,6 +147,7 @@ func_canopy_energy_bal(double  Tfoliage,
 
     layer = (layer_data_struct *) va_arg(ap, layer_data_struct *);
     veg_var = (veg_var_struct *) va_arg(ap, veg_var_struct *);
+    veg_lib = (veg_lib_struct *) va_arg(ap, veg_lib_struct *);
 
     /* Energy Flux Terms */
     LongOverIn = (double) va_arg(ap, double);
@@ -239,8 +237,8 @@ func_canopy_energy_bal(double  Tfoliage,
 
         *Wdew = IntRain * MM_PER_M;
         prec = Rainfall * MM_PER_M;
-        *Evap = canopy_evap(layer, veg_var, false,
-                            veg_class, Wdew, delta_t, *NetRadiation,
+        *Evap = canopy_evap(layer, veg_var, veg_lib, false,
+                            Wdew, delta_t, *NetRadiation,
                             Vpd, NetShortOver, Tcanopy, Ra_used[1],
                             elevation, prec, Wmax, Wcr, Wpwp, frost_fract,
                             root, dryFrac, shortwave, Catm, CanopLayerBnd);

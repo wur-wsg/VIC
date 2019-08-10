@@ -61,6 +61,7 @@ set_nc_var_info(unsigned int       varid,
     case OUT_SOIL_ICE_FRAC:
     case OUT_SOIL_LIQ_FRAC:
     case OUT_SOIL_MOIST:
+    case OUT_SOIL_EFF_SAT:
     case OUT_SOIL_TEMP:
         nc_var->nc_dims = 4;
         nc_var->nc_counts[1] = nc_hist_file->layer_size;
@@ -138,6 +139,7 @@ set_nc_var_dimids(unsigned int    varid,
     case OUT_SOIL_ICE_FRAC:
     case OUT_SOIL_LIQ_FRAC:
     case OUT_SOIL_MOIST:
+    case OUT_SOIL_EFF_SAT:
     case OUT_SOIL_TEMP:
         nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
         nc_var->nc_dimids[1] = nc_hist_file->layer_dimid;

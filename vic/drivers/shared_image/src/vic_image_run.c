@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
-#include <rout.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Run VIC for one timestep and store output data
@@ -51,17 +51,22 @@ vic_image_run(dmy_struct *dmy_current)
     char                       dmy_str[MAXSTRING];
     size_t                     i;
     timer_struct               timer;
+    extern int                 mpi_rank;
 
     // Print the current timestep info before running vic_run
-    sprint_dmy(dmy_str, dmy_current);
-    debug("Running timestep %zu: %s", current, dmy_str);
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        sprint_dmy(dmy_str, dmy_current);
+        fprintf(LOG_DEST, "Running timestep %zu: %s", current, dmy_str);
+    }
 
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i, timer, vic_run_ref_str)
     for (i = 0; i < local_domain.ncells_active; i++) {
         // Set global reference string (for debugging inside vic_run)
-        sprintf(vic_run_ref_str, "Gridcell io_idx: %zu, timestep info: %s",
-                local_domain.locations[i].io_idx, dmy_str);
+        snprintf(vic_run_ref_str, MAXSTRING,
+                 "Gridcell io_idx: %zu, timestep info: %s",
+                 local_domain.locations[i].io_idx, dmy_str);
 
         update_step_vars(&(all_vars[i]), veg_con[i], veg_hist[i]);
 
@@ -75,8 +80,8 @@ vic_image_run(dmy_struct *dmy_current)
                  &timer);
     }
 
-    // run routing over the domain
-    rout_run();     // Routing routine (extension)
+    plugin_run();
+    plugin_put_data();
 
     for (i = 0; i < options.Noutstreams; i++) {
         agg_stream_data(&(output_streams[i]), dmy_current, out_data);

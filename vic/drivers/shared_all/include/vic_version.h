@@ -31,11 +31,11 @@
 #define STR(x) STR_HELPER(x)
 
 #ifndef VERSION
-#define VERSION "5.0.1 February 1, 2017"
+#define VERSION "VICWUR 1.0.1 (based on VIC 5.0.1) April 9, 2019"
 #endif
 
 #ifndef SHORT_VERSION
-#define SHORT_VERSION "5.0.1"
+#define SHORT_VERSION "VICWUR 1.0.1"
 #endif
 
 #ifndef GIT_VERSION

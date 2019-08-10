@@ -171,34 +171,34 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(global_param_struct, endyear);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned short forceday[2];
+    // unsigned short forceday[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceday);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned int forcesec[2];
+    // unsigned int forcesec[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forcesec);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED;
 
-    // unsigned short forcemonth[2];
+    // unsigned short forcemonth[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forcemonth);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned short forceoffset[2];
+    // unsigned short forceoffset[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceoffset);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned int forceskip[2];
+    // unsigned int forceskip[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceskip);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED;
 
-    // unsigned short int forceyear[2];
+    // unsigned short int forceyear[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceyear);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // size_t nrecs;
@@ -312,14 +312,14 @@ create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     // reset i
     i = 0;
 
-    // char forcing[2][MAXSTRING];
+    // char forcing[MAX_FORCE_FILES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, forcing);
-    blocklengths[i] *= 2;
+    blocklengths[i] *= MAX_FORCE_FILES;
     mpi_types[i++] = MPI_CHAR;
 
-    // char f_path_pfx[2][MAXSTRING];
+    // char f_path_pfx[MAX_FORCE_FILES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, f_path_pfx);
-    blocklengths[i] *= 2;
+    blocklengths[i] *= MAX_FORCE_FILES;
     mpi_types[i++] = MPI_CHAR;
 
     // char global[MAXSTRING];
@@ -488,7 +488,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 53;
+    nitems = 54;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -656,6 +656,10 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // bool TFALLBACK;
     offsets[i] = offsetof(option_struct, TFALLBACK);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool MATRIC;
+    offsets[i] = offsetof(option_struct, MATRIC);
     mpi_types[i++] = MPI_C_BOOL;
 
     // bool BASEFLOW;
@@ -2340,7 +2344,7 @@ main(int    argc,
     parameters_struct   param;
 
     // Initialize Log Destination
-    strcpy(filenames.log_path, "MISSING");
+    snprintf(filenames.log_path, MAXSTRING, "%s", "MISSING");
     initialize_log();
 
     status = MPI_Init(&argc, &argv);
@@ -2369,7 +2373,7 @@ main(int    argc,
         // last element of location
         location.local_idx = 12345678;
 
-        sprintf(ncfile.fname, "Space Needle, Seattle, WA");
+        snprintf(ncfile.fname, MAXSTRING, "Space Needle, Seattle, WA");
         // last element of ncfile
         ncfile.open = true;
 

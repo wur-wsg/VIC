@@ -698,7 +698,8 @@ initialize_time()
     global_param.time_origin_num = date2num(0., &dmy, 0., global_param.calendar,
                                             TIME_UNITS_DAYS);
     // Set the string representation of time_origin_num
-    strcpy(global_param.time_origin_str, "0001-01-01 00:00:00");
+    snprintf(global_param.time_origin_str, MAXSTRING, "%s",
+             "0001-01-01 00:00:00");
     return;
 }
 

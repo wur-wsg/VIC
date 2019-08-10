@@ -31,7 +31,6 @@
 #include <vic_version.h>
 
 // Define maximum array sizes for driver level objects
-#define MAX_FORCE_FILES 2
 #define MAX_OUTPUT_STREAMS 20
 
 // Output compression setting
@@ -136,6 +135,7 @@ enum
     OUT_SOIL_ICE_FRAC,    /**< soil ice content fraction of column volume [1] for each soil layer */
     OUT_SOIL_LIQ_FRAC,    /**< soil liquid content fraction of column volume [1] for each soil layer */
     OUT_SOIL_MOIST,       /**< soil total moisture content  [mm] for each soil layer */
+    OUT_SOIL_EFF_SAT,     /**< soil effective saturation [-] for each soil layer */
     OUT_SOIL_WET,         /**< vertical average of (soil moisture - wilting point)/(maximum soil moisture - wilting point) [mm/mm] */
     OUT_SURFSTOR,         /**< storage of liquid water and ice (not snow) on surface (ponding) [mm] */
     OUT_SURF_FROST_FRAC,  /**< fraction of soil surface that is frozen [fraction] */
@@ -144,12 +144,12 @@ enum
     OUT_ZWT,              /**< water table position [cm] (zwt within lowest unsaturated layer) */
     OUT_ZWT_LUMPED,       /**< lumped water table position [cm] (zwt of total moisture across all layers, lumped together) */
     // Water Balance Terms - fluxes
+    OUT_RECHARGE,         /**< baseflow to the bottom layer  [mm] */
     OUT_BASEFLOW,         /**< baseflow out of the bottom layer  [mm] */
     OUT_DELINTERCEPT,     /**< change in canopy interception storage  [mm] */
     OUT_DELSOILMOIST,     /**< change in soil water content  [mm] */
     OUT_DELSURFSTOR,      /**< change in surface liquid water storage  [mm] */
     OUT_DELSWE,           /**< change in snow water equivalent  [mm] */
-    OUT_DISCHARGE,        /**< river discharge [m3 s-1]) */
     OUT_EVAP,             /**< total net evaporation [mm] */
     OUT_EVAP_BARE,        /**< net evaporation from bare soil [mm] */
     OUT_EVAP_CANOP,       /**< net evaporation from canopy interception [mm] */
@@ -480,13 +480,14 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     force_type_struct TYPE[N_FORCING_TYPES];
-    double FORCE_DT[2];    /**< forcing file time step */
-    size_t force_steps_per_day[2];    /**< forcing file timesteps per day */
-    unsigned short int FORCE_ENDIAN[2];  /**< endian-ness of input file, used for
-                                            DAILY_BINARY format */
-    int FORCE_FORMAT[2];            /**< ASCII or BINARY */
-    int FORCE_INDEX[2][N_FORCING_TYPES];
-    size_t N_TYPES[2];
+    double FORCE_DT[MAX_FORCE_FILES];    /**< forcing file time step */
+    size_t force_steps_per_day[MAX_FORCE_FILES];    /**< forcing file timesteps per day */
+    unsigned short int FORCE_ENDIAN[MAX_FORCE_FILES];  /**< endian-ness of input file, used for
+                                                          DAILY_BINARY format */
+    int FORCE_FORMAT[MAX_FORCE_FILES];            /**< ASCII or BINARY */
+    int FORCE_INDEX[MAX_FORCE_FILES];
+    int VAR_INDEX[N_FORCING_TYPES];
+    size_t N_FORCE_FILES;
 } param_set_struct;
 
 /******************************************************************************
@@ -706,7 +707,7 @@ double q_to_vp(double q, double p);
 bool raise_alarm(alarm_struct *alarm, dmy_struct *dmy_current);
 void reset_alarm(alarm_struct *alarm, dmy_struct *dmy_current);
 void reset_stream(stream_struct *stream, dmy_struct *dmy_current);
-void set_output_var(stream_struct *stream, char *varname, size_t varnum,
+bool set_output_var(stream_struct *stream, char *varname, size_t varnum,
                     char *format, unsigned short int type, double mult,
                     unsigned short int aggtype);
 unsigned int get_default_outvar_aggtype(unsigned int varid);

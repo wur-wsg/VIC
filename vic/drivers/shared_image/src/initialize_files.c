@@ -38,16 +38,16 @@ initialize_filenames()
 
     size_t                  i;
 
-    strcpy(filenames.init_state.nc_filename, "MISSING");
-    strcpy(filenames.statefile, "MISSING");
-    strcpy(filenames.constants, "MISSING");
-    strcpy(filenames.params.nc_filename, "MISSING");
-    strcpy(filenames.rout_params.nc_filename, "MISSING");
-    strcpy(filenames.domain.nc_filename, "MISSING");
-    strcpy(filenames.result_dir, "MISSING");
-    strcpy(filenames.log_path, "MISSING");
-    for (i = 0; i < 2; i++) {
-        strcpy(filenames.f_path_pfx[i], "MISSING");
+    snprintf(filenames.init_state.nc_filename, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.statefile, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.constants, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.params.nc_filename, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.rout_params.nc_filename, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.domain.nc_filename, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.result_dir, MAXSTRING, "%s", "MISSING");
+    snprintf(filenames.log_path, MAXSTRING, "%s", "MISSING");
+    for (i = 0; i < MAX_FORCE_FILES; i++) {
+        snprintf(filenames.f_path_pfx[i], MAXSTRING, "%s", "MISSING");
     }
 }
 

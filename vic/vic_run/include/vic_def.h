@@ -27,9 +27,11 @@
 #ifndef VIC_DEF_H
 #define VIC_DEF_H
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define __USE_XOPEN
 #define _GNU_SOURCE
+
+#define UNUSED(x) (void)(x)
 
 #include <float.h>
 #include <math.h>
@@ -65,6 +67,7 @@
 #define MAX_FROST_AREAS 10     /**< maximum number of frost sub-areas */
 #define MAX_LAKE_NODES  20     /**< maximum number of lake thermal nodes */
 #define MAX_ZWTVMOIST   11     /**< maximum number of points in water table vs moisture curve for each soil layer; should include points at lower and upper boundaries of the layer */
+#define MAX_FORCE_FILES 15
 
 /***** Define minimum values for model parameters *****/
 #define MINSOILDEPTH    0.001  /**< Minimum layer depth with which model can work (m) */
@@ -262,6 +265,8 @@ typedef struct {
                             FALSE = when iterations fail to converge, report an error
                                     and abort simulation for current grid cell
                             Default = TRUE */
+    bool MATRIC;         /**< TRUE = use matric potential to calculate drainage
+                            Default = FALSE */
 
     // input options
     unsigned short int BASEFLOW;     /**< ARNO: read Ds, Dm, Ws, c; NIJSSEN2001: read d1, d2, d3, d4 */
@@ -306,15 +311,15 @@ typedef struct {
     unsigned short int endday;     /**< Last day of model simulation */
     unsigned short int endmonth;   /**< Last month of model simulation */
     unsigned short int endyear;    /**< Last year of model simulation */
-    unsigned short int forceday[2];  /**< day forcing files starts */
-    unsigned int forcesec[2];          /**< seconds since midnight when forcing
-                                          files starts */
-    unsigned short int forcemonth[2];  /**< month forcing files starts */
-    unsigned short int forceoffset[2];  /**< counter to keep track of offset in reading
-                                           forcing files; updated after every read */
-    unsigned int forceskip[2];   /**< number of model time steps to skip at
-                                      the start of the forcing file */
-    unsigned short int forceyear[2];  /**< year forcing files start */
+    unsigned short int forceday[MAX_FORCE_FILES];  /**< day forcing files starts */
+    unsigned int forcesec[MAX_FORCE_FILES];          /**< seconds since midnight when forcing
+                                                        files starts */
+    unsigned short int forcemonth[MAX_FORCE_FILES];  /**< month forcing files starts */
+    unsigned short int forceoffset[MAX_FORCE_FILES];  /**< counter to keep track of offset in reading
+                                                         forcing files; updated after every read */
+    unsigned int forceskip[MAX_FORCE_FILES];   /**< number of model time steps to skip at
+                                                  the start of the forcing file */
+    unsigned short int forceyear[MAX_FORCE_FILES];  /**< year forcing files start */
     size_t nrecs;                /**< Number of time steps simulated */
     unsigned short int startday;  /**< Starting day of the simulation */
     unsigned short int startmonth;  /**< Starting month of the simulation */
@@ -770,6 +775,7 @@ typedef struct {
                                layer (W/m/K) */
     double moist;           /**< moisture content of the unfrozen sublayer
                                (mm) */
+    double eff_sat;         /**< effective saturation of the soil layer [-] */
     double phi;             /**< moisture diffusion parameter */
     double zwt;             /**< water table position relative to soil surface within the layer (cm) */
     // Fluxes
@@ -806,6 +812,7 @@ typedef struct {
 
     // Fluxes
     double pot_evap;                   /**< potential evaporation (mm) */
+    double recharge;                   /**< recharge from current cell (mm/TS) */
     double baseflow;                   /**< baseflow from current cell (mm/TS) */
     double runoff;                     /**< runoff from current cell (mm/TS) */
     double inflow;                     /**< moisture that reaches the top of

@@ -155,13 +155,13 @@ initialize_veg_con(veg_con_struct *veg_con)
 void
 initialize_domain_info(domain_info_struct *info)
 {
-    strcpy(info->lat_var, "MISSING");
-    strcpy(info->lon_var, "MISSING");
-    strcpy(info->mask_var, "MISSING");
-    strcpy(info->area_var, "MISSING");
-    strcpy(info->frac_var, "MISSING");
-    strcpy(info->y_dim, "MISSING");
-    strcpy(info->x_dim, "MISSING");
+    snprintf(info->lat_var, MAXSTRING, "%s", "MISSING");
+    snprintf(info->lon_var, MAXSTRING, "%s", "MISSING");
+    snprintf(info->mask_var, MAXSTRING, "%s", "MISSING");
+    snprintf(info->area_var, MAXSTRING, "%s", "MISSING");
+    snprintf(info->frac_var, MAXSTRING, "%s", "MISSING");
+    snprintf(info->y_dim, MAXSTRING, "%s", "MISSING");
+    snprintf(info->x_dim, MAXSTRING, "%s", "MISSING");
     info->n_coord_dims = 0;
 }
 

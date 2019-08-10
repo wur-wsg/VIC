@@ -86,7 +86,7 @@ read_soilparam(FILE            *soilparam,
     }
 
     if (!(*MODEL_DONE) && (*RUN_MODEL)) {
-        strcpy(tmpline, line);
+        snprintf(tmpline, MAXSTRING, "%s", line);
         ttrim(tmpline);
         if ((token = strtok(tmpline, delimiters)) == NULL) {
             log_err("Can't find values for CELL NUMBER in soil file");

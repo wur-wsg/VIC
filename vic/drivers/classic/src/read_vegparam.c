@@ -127,13 +127,13 @@ read_vegparam(FILE  *vegparam,
             log_err("unexpected EOF for cell %i while reading "
                     "vegetat_type_num %d", vegcel, vegetat_type_num);
         }
-        strcpy(tmpline, line);
+        snprintf(tmpline, MAXSTRING, "%s", line);
         ttrim(tmpline);
         token = strtok(tmpline, delimiters); /*  token => veg_class, move 'line' pointer to next field */
         Nfields = 0;
         vegarr[Nfields] =
             calloc(MAX_VEGPARAM_LINE_LENGTH, sizeof(*(vegarr[Nfields])));
-        strcpy(vegarr[Nfields], token);
+        snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
         Nfields++;
 
         token = strtok(NULL, delimiters);
@@ -143,7 +143,7 @@ read_vegparam(FILE  *vegparam,
         while (token != NULL) {
             vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                      sizeof(*(vegarr[Nfields])));
-            strcpy(vegarr[Nfields], token);
+            snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
             Nfields++;
             token = strtok(NULL, delimiters);
             while (token != NULL && (length = strlen(token)) == 0) {
@@ -239,16 +239,16 @@ read_vegparam(FILE  *vegparam,
             Nfields = 0;
             vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                      sizeof(*(vegarr[Nfields])));
-            strcpy(tmpline, line);
+            snprintf(tmpline, MAXSTRING, "%s", line);
             ttrim(tmpline);
             token = strtok(tmpline, delimiters);
-            strcpy(vegarr[Nfields], token);
+            snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
             Nfields++;
 
             while ((token = strtok(NULL, delimiters)) != NULL) {
                 vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                          sizeof(*(vegarr[Nfields])));
-                strcpy(vegarr[Nfields], token);
+                snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
                 Nfields++;
             }
             NfieldsMax = MONTHS_PER_YEAR; /* For LAI */
@@ -291,16 +291,16 @@ read_vegparam(FILE  *vegparam,
             Nfields = 0;
             vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                      sizeof(*(vegarr[Nfields])));
-            strcpy(tmpline, line);
+            snprintf(tmpline, MAXSTRING, "%s", line);
             ttrim(tmpline);
             token = strtok(tmpline, delimiters);
-            strcpy(vegarr[Nfields], token);
+            snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
             Nfields++;
 
             while ((token = strtok(NULL, delimiters)) != NULL) {
                 vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                          sizeof(*(vegarr[Nfields])));
-                strcpy(vegarr[Nfields], token);
+                snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
                 Nfields++;
             }
             NfieldsMax = MONTHS_PER_YEAR; /* For fcanopy */
@@ -331,16 +331,16 @@ read_vegparam(FILE  *vegparam,
             Nfields = 0;
             vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                      sizeof(*(vegarr[Nfields])));
-            strcpy(tmpline, line);
+            snprintf(tmpline, MAXSTRING, "%s", line);
             ttrim(tmpline);
             token = strtok(tmpline, delimiters);
-            strcpy(vegarr[Nfields], token);
+            snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
             Nfields++;
 
             while ((token = strtok(NULL, delimiters)) != NULL) {
                 vegarr[Nfields] = calloc(MAX_VEGPARAM_LINE_LENGTH,
                                          sizeof(*(vegarr[Nfields])));
-                strcpy(vegarr[Nfields], token);
+                snprintf(vegarr[Nfields], MAXSTRING, "%s", token);
                 Nfields++;
             }
             NfieldsMax = MONTHS_PER_YEAR; /* For albedo */

@@ -54,7 +54,7 @@ write_vic_timing_table(timer_struct *timers)
 
     // hostname
     if (gethostname(machine, MAXSTRING) != 0) {
-        strcpy(machine, "unknown");
+        snprintf(machine, MAXSTRING, "%s", "unknown");
     }
 
     // username
@@ -62,10 +62,10 @@ write_vic_timing_table(timer_struct *timers)
     pw = getpwuid(uid);
 
     if (pw) {
-        strcpy(user, pw->pw_name);
+        snprintf(user, MAXSTRING, "%s", pw->pw_name);
     }
     else {
-        strcpy(user, "unknown");
+        snprintf(user, MAXSTRING, "%s", "unknown");
     }
 
     // calculate run length

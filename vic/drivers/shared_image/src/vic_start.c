@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    Wrapper function for VIC startup tasks.
@@ -56,11 +57,14 @@ vic_start(void)
     extern int                 mpi_size;
     extern option_struct       options;
     extern parameters_struct   param;
+    extern param_set_struct    param_set;
     size_t                     j;
 
     status = MPI_Bcast(&filenames, 1, mpi_filenames_struct_type,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
+
+    plugin_broadcast_filenames();
 
     // Set Log Destination
     setup_logging(mpi_rank, filenames.log_path, &(filep.logfile));
@@ -91,15 +95,14 @@ vic_start(void)
         check_nc_status(status, "Error closing %s",
                         filenames.domain.nc_filename);
 
+        // Validate forcing files and variables
+        for (i = 0; i < param_set.N_FORCE_FILES; i++) {
+            compare_ncdomain_with_global_domain(&filenames.forcing[i]);
+        }
+
         // add the number of vegetation type to the location info in the
         // global domain struct. This just makes life easier
         add_nveg_to_global_domain(&(filenames.params), &global_domain);
-
-        // decompose the mask
-        mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
-                              &mpi_map_local_array_sizes,
-                              &mpi_map_global_array_offsets,
-                              &mpi_map_mapping_array);
 
         // get the indices for the active cells (used in reading and writing)
         filter_active_cells = malloc(global_domain.ncells_active *
@@ -113,6 +116,18 @@ vic_start(void)
             }
         }
 
+        // decompose the mask
+        mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                              &mpi_map_local_array_sizes,
+                              &mpi_map_global_array_offsets,
+                              &mpi_map_mapping_array);
+
+        // redecompose the mask
+        plugin_mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
+                                     &mpi_map_local_array_sizes,
+                                     &mpi_map_global_array_offsets,
+                                     &mpi_map_mapping_array);
+
         // get dimensions (number of vegetation types, soil zones, etc)
         options.ROOT_ZONES = get_nc_dimension(&(filenames.params), "root_zone");
         options.Nlayer = get_nc_dimension(&(filenames.params), "nlayer");
@@ -125,6 +140,9 @@ vic_start(void)
             options.NLAKENODES = get_nc_dimension(&(filenames.params),
                                                   "lake_node");
         }
+
+        // plugin start
+        plugin_start();
 
         // Check that model parameters are valid
         validate_parameters();
@@ -149,6 +167,10 @@ vic_start(void)
     status = MPI_Bcast(&param, 1, mpi_param_struct_type,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
+
+    plugin_broadcast_global_params();
+    plugin_broadcast_options();
+    plugin_broadcast_params();
 
     // setup the local domain_structs
 

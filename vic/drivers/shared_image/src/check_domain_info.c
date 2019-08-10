@@ -53,10 +53,12 @@ compare_ncdomain_with_global_domain(nameid_struct *nc_nameid)
 
     // dimension shapes match (lat/lon)
     if (global_domain.n_nx != ncfile_domain.n_nx) {
-        log_err("x dimension in parameters file does not match domain");
+        log_err("x dimension in does not match domain for file \"%s\"",
+                nc_nameid->nc_filename);
     }
     if (global_domain.n_ny != ncfile_domain.n_ny) {
-        log_err("y dimension in parameters file does not match domain");
+        log_err("y dimension in does not match domain for file \"%s\"",
+                nc_nameid->nc_filename);
     }
 
     // loop over all grid cells and check that the two domains are identical
@@ -65,19 +67,23 @@ compare_ncdomain_with_global_domain(nameid_struct *nc_nameid)
         if (!assert_close_double(ncfile_domain.locations[i].latitude,
                                  global_domain.locations[i].latitude,
                                  0, 0.01)) {
-            log_err("latitude in parameter (%lf) file does not match the "
-                    "latitude in the domain file (%lf) for gridcell %zu",
+            log_err("latitude in file (%lf) does not match the "
+                    "latitude in the domain file (%lf) for gridcell %zu"
+                    "in file \"%s\"",
                     ncfile_domain.locations[i].latitude,
-                    global_domain.locations[i].latitude, i);
+                    global_domain.locations[i].latitude, i,
+                    nc_nameid->nc_filename);
         }
         // longitude matches
         if (!assert_close_double(ncfile_domain.locations[i].longitude,
                                  global_domain.locations[i].longitude,
                                  0, 0.01)) {
-            log_err("longitude in parameter (%lf) file does not match the "
-                    "longitude in the domain file (%lf) for gridcell %zu",
+            log_err("longitude in file (%lf) does not match the "
+                    "longitude in the domain file (%lf) for gridcell %zu"
+                    "in file \"%s\"",
                     ncfile_domain.locations[i].longitude,
-                    global_domain.locations[i].longitude, i);
+                    global_domain.locations[i].longitude, i,
+                    nc_nameid->nc_filename);
         }
     }
     free(ncfile_domain.locations);

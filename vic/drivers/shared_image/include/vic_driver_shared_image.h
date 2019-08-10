@@ -27,7 +27,6 @@
 #ifndef VIC_DRIVER_SHARED_IMAGE_H
 #define VIC_DRIVER_SHARED_IMAGE_H
 
-#include <rout_extension_name.h>
 #include <vic_driver_shared_all.h>
 #include <vic_image_log.h>
 #include <vic_mpi.h>
@@ -35,7 +34,7 @@
 #include <netcdf.h>
 
 #define MAXDIMS 10
-#define AREA_SUM_ERROR_THRESH 1e-20
+#define AREA_SUM_ERROR_THRESH 1e-2
 
 /******************************************************************************
  * @brief   NetCDF file types
@@ -143,6 +142,10 @@ typedef struct {
     size_t root_zone_size;
     size_t time_size;
     size_t veg_size;
+    // plugins
+    int rdt_dimid;
+    size_t rdt_size;
+
     bool open;
     nc_var_struct *nc_vars;
 } nc_file_struct;
@@ -243,7 +246,7 @@ void print_nc_file(nc_file_struct *nc);
 void print_nc_var(nc_var_struct *nc_var);
 void print_veg_con_map(veg_con_map_struct *veg_con_map);
 void put_nc_attr(int nc_id, int var_id, const char *name, const char *value);
-void set_force_type(char *cmdstr, int file_num, int *field);
+void set_force_type(char *cmdstr, int file_num);
 void set_global_nc_attributes(int ncid, unsigned short int file_type);
 void set_state_meta_data_info();
 void set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,

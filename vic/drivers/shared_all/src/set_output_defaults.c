@@ -116,7 +116,7 @@ set_output_defaults(stream_struct **streams,
     // Variables in first file
     streamnum = 0;
     varnum = 0;
-    strcpy((*streams)[streamnum].prefix, "fluxes");
+    snprintf((*streams)[streamnum].prefix, MAXSTRING, "%s", "fluxes");
     set_output_var(&((*streams)[streamnum]), "OUT_PREC", varnum++, "%.4f",
                    OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
     set_output_var(&((*streams)[streamnum]), "OUT_EVAP", varnum++, "%.4f",
@@ -179,7 +179,7 @@ set_output_defaults(stream_struct **streams,
     // Variables in second file
     streamnum++;
     varnum = 0;
-    strcpy((*streams)[streamnum].prefix, "snow");
+    snprintf((*streams)[streamnum].prefix, MAXSTRING, "%s", "snow");
     set_output_var(&((*streams)[streamnum]), "OUT_SWE", varnum++, "%.4f",
                    OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
     set_output_var(&((*streams)[streamnum]), "OUT_SNOW_DEPTH", varnum++, "%.4f",
@@ -223,7 +223,7 @@ set_output_defaults(stream_struct **streams,
     if (options.FROZEN_SOIL) {
         streamnum++;
         varnum = 0;
-        strcpy((*streams)[streamnum].prefix, "fdepth");
+        snprintf((*streams)[streamnum].prefix, MAXSTRING, "%s", "fdepth");
         set_output_var(&((*streams)[streamnum]), "OUT_FDEPTH", varnum++, "%.4f",
                        OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
         set_output_var(&((*streams)[streamnum]), "OUT_TDEPTH", varnum++, "%.4f",
@@ -236,7 +236,7 @@ set_output_defaults(stream_struct **streams,
     if (options.SNOW_BAND) {
         streamnum++;
         varnum = 0;
-        strcpy((*streams)[streamnum].prefix, "snowband");
+        snprintf((*streams)[streamnum].prefix, MAXSTRING, "%s", "snowband");
         set_output_var(&((*streams)[streamnum]), "OUT_SWE_BAND", varnum++,
                        "%.4f", OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
         set_output_var(&((*streams)[streamnum]), "OUT_SNOW_DEPTH_BAND",
@@ -273,7 +273,7 @@ set_output_defaults(stream_struct **streams,
     if (options.LAKES) {
         streamnum++;
         varnum = 0;
-        strcpy((*streams)[streamnum].prefix, "lake");
+        snprintf((*streams)[streamnum].prefix, MAXSTRING, "%s", "lake");
         set_output_var(&((*streams)[streamnum]), "OUT_LAKE_ICE_TEMP", varnum++,
                        "%.4f", OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
         set_output_var(&((*streams)[streamnum]), "OUT_LAKE_ICE_HEIGHT",

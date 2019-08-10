@@ -31,6 +31,7 @@
  *****************************************************************************/
 
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief    This function handles tasks related to populating model state.
@@ -61,6 +62,9 @@ vic_populate_model_state(dmy_struct *dmy_current)
                                             lake_con[i]);
             }
         }
+
+        // Plugin
+        plugin_generate_default_state();
     }
 
     // compute those state variables that are derived from the others
@@ -71,4 +75,7 @@ vic_populate_model_state(dmy_struct *dmy_current)
                                             lake_con[i]);
         }
     }
+
+    // Plugin
+    plugin_compute_derived_state_vars();
 }

@@ -25,6 +25,7 @@
  *****************************************************************************/
 
 #include <vic_driver_shared_all.h>
+#include <plugin.h>
 
 /******************************************************************************
  * @brief   String to bool conversion
@@ -52,10 +53,13 @@ count_nstreams_nvars(FILE   *gp,
                      size_t *nstreams,
                      size_t  nvars[])
 {
-    unsigned long start_position;
-    char          cmdstr[MAXSTRING];
-    char          optstr[MAXSTRING];
-    size_t        i;
+    extern metadata_struct out_metadata[];
+
+    unsigned long          start_position;
+    char                   cmdstr[MAXSTRING];
+    char                   optstr[MAXSTRING];
+    char                   varname[MAXSTRING];
+    size_t                 i;
 
     // Figure out where we are in the input file
     fflush(gp);
@@ -86,7 +90,15 @@ count_nstreams_nvars(FILE   *gp,
 
             // if the line starts with OUTVAR, add another variable to nvars
             if (strcasecmp("OUTVAR", optstr) == 0) {
-                nvars[*nstreams - 1]++;
+                sscanf(cmdstr, "%*s %s", varname);
+
+                // Find the output varid by looping through out_metadata, comparing to varname
+                for (i = 0; i < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; i++) {
+                    if (strcmp(out_metadata[i].varname, varname) == 0) {
+                        nvars[*nstreams - 1]++;
+                        break;
+                    }
+                }
             }
         }
         fgets(cmdstr, MAXSTRING, gp);
@@ -230,7 +242,7 @@ void
 str_to_ascii_format(char *format)
 {
     if ((strcasecmp("", format) == 0) || (strcasecmp("*", format) == 0)) {
-        strcpy(format, OUT_ASCII_FORMAT_DEFAULT);
+        snprintf(format, MAXSTRING, "%s", OUT_ASCII_FORMAT_DEFAULT);
     }
     // else do nothing
 }
@@ -307,16 +319,16 @@ str_from_time_units(unsigned short int time_units,
                     char              *unit_str)
 {
     if (time_units == TIME_UNITS_SECONDS) {
-        sprintf(unit_str, "seconds");
+        snprintf(unit_str, MAXSTRING, "seconds");
     }
     else if (time_units == TIME_UNITS_MINUTES) {
-        sprintf(unit_str, "minutes");
+        snprintf(unit_str, MAXSTRING, "minutes");
     }
     else if (time_units == TIME_UNITS_HOURS) {
-        sprintf(unit_str, "hours");
+        snprintf(unit_str, MAXSTRING, "hours");
     }
     else if (time_units == TIME_UNITS_DAYS) {
-        sprintf(unit_str, "days");
+        snprintf(unit_str, MAXSTRING, "days");
     }
     else {
         log_err("Invalid value, or no value for OUT_TIME_UNITS (%d).",
@@ -332,31 +344,31 @@ str_from_calendar(unsigned short int calendar,
                   char              *calendar_str)
 {
     if (calendar == CALENDAR_STANDARD) {
-        sprintf(calendar_str, "standard");
+        snprintf(calendar_str, MAXSTRING, "standard");
     }
     else if (calendar == CALENDAR_GREGORIAN) {
-        sprintf(calendar_str, "gregorian");
+        snprintf(calendar_str, MAXSTRING, "gregorian");
     }
     else if (calendar == CALENDAR_PROLEPTIC_GREGORIAN) {
-        sprintf(calendar_str, "proleptic_gregorian");
+        snprintf(calendar_str, MAXSTRING, "proleptic_gregorian");
     }
     else if (calendar == CALENDAR_NOLEAP) {
-        sprintf(calendar_str, "noleap");
+        snprintf(calendar_str, MAXSTRING, "noleap");
     }
     else if (calendar == CALENDAR_365_DAY) {
-        sprintf(calendar_str, "365_day");
+        snprintf(calendar_str, MAXSTRING, "365_day");
     }
     else if (calendar == CALENDAR_360_DAY) {
-        sprintf(calendar_str, "360_day");
+        snprintf(calendar_str, MAXSTRING, "360_day");
     }
     else if (calendar == CALENDAR_JULIAN) {
-        sprintf(calendar_str, "julian");
+        snprintf(calendar_str, MAXSTRING, "julian");
     }
     else if (calendar == CALENDAR_ALL_LEAP) {
-        sprintf(calendar_str, "all_leap");
+        snprintf(calendar_str, MAXSTRING, "all_leap");
     }
     else if (calendar == CALENDAR_366_DAY) {
-        sprintf(calendar_str, "366_day");
+        snprintf(calendar_str, MAXSTRING, "366_day");
     }
     else {
         log_err("Invalid, or no calendar specified");
@@ -373,27 +385,27 @@ cell_method_from_agg_type(unsigned short int aggtype,
                           char               cell_method[])
 {
     if (aggtype == AGG_TYPE_AVG) {
-        strcpy(cell_method, "time: mean");
+        snprintf(cell_method, MAXSTRING, "%s", "time: mean");
         return true;
     }
     else if (aggtype == AGG_TYPE_MAX) {
-        strcpy(cell_method, "time: maximum");
+        snprintf(cell_method, MAXSTRING, "%s", "time: maximum");
         return true;
     }
     else if (aggtype == AGG_TYPE_MIN) {
-        strcpy(cell_method, "time: minimum");
+        snprintf(cell_method, MAXSTRING, "%s", "time: minimum");
         return true;
     }
     else if (aggtype == AGG_TYPE_SUM) {
-        strcpy(cell_method, "time: sum");
+        snprintf(cell_method, MAXSTRING, "%s", "time: sum");
         return true;
     }
     else if (aggtype == AGG_TYPE_END) {
-        strcpy(cell_method, "time: end");
+        snprintf(cell_method, MAXSTRING, "%s", "time: end");
         return true;
     }
     else if (aggtype == AGG_TYPE_BEG) {
-        strcpy(cell_method, "time: beg");
+        snprintf(cell_method, MAXSTRING, "%s", "time: beg");
         return true;
     }
     else {
