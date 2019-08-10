@@ -49,17 +49,21 @@
 
 // Error Level is always active
 #ifdef NO_LINENOS
-#define log_ncerr(e, M, ...) print_trace(); fprintf(LOG_DEST, \
-                                                    "[ERROR] errno: %s: " M "\n", \
-                                                    clean_ncerrno(e), \
-                                                    ## __VA_ARGS__); \
+#define log_ncerr(e, M, ...) print_trace(); fprintf( \
+        LOG_DEST, \
+        "[ERROR] errno: %s: " M \
+        "\n", \
+        clean_ncerrno(e), \
+        ## __VA_ARGS__); \
     exit(EXIT_FAILURE);
 #else
-#define log_ncerr(e, M, ...) print_trace(); fprintf(LOG_DEST, \
-                                                    "[ERROR] %s:%d: errno: %s: " M " \n", \
-                                                    __FILE__, __LINE__, \
-                                                    clean_ncerrno(e), \
-                                                    ## __VA_ARGS__); \
+#define log_ncerr(e, M, ...) print_trace(); fprintf( \
+        LOG_DEST, \
+        "[ERROR] %s:%d: errno: %s: " \
+        M " \n", \
+        __FILE__, __LINE__, \
+        clean_ncerrno(e), \
+        ## __VA_ARGS__); \
     exit(EXIT_FAILURE);
 #endif
 
@@ -75,8 +79,10 @@
                                     ## __VA_ARGS__); \
     MPI_Abort(MPI_COMM_VIC, e);
 
-#define check_mpi_status(A, M, ...) if (A != MPI_SUCCESS) {log_mpi_err(A, M, \
-                                                                       ## __VA_ARGS__); \
+#define check_mpi_status(A, M, ...) if (A != MPI_SUCCESS) {log_mpi_err( \
+                                                               A, M, \
+                                                               ## \
+                                                               __VA_ARGS__); \
                                                            errno = 0; MPI_Abort( \
                                                                MPI_COMM_VIC, A); \
 }

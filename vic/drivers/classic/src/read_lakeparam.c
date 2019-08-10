@@ -69,9 +69,10 @@ read_lakeparam(FILE           *lakeparam,
         veg_con[temp.lake_idx].LAKE = 1;
         fscanf(lakeparam, "%zu", &temp.numnod);
         if (temp.numnod < 1) {
-            log_err("Number of vertical lake nodes (%zu) for cell %d specified "
-                    "in the lake parameter file is < 1; increase this number "
-                    "to at least 1.", temp.numnod, soil_con.gridcel);
+            log_err(
+                "Number of vertical lake nodes (%zu) for cell %d specified "
+                "in the lake parameter file is < 1; increase this number "
+                "to at least 1.", temp.numnod, soil_con.gridcel);
         }
         if (temp.numnod > MAX_LAKE_NODES) {
             log_err("Number of lake nodes (%zu) in cell %d specified in the "

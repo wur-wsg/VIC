@@ -1,6 +1,35 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Routing decomposition functions
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Set basins based on downstream cells
+******************************************/
 void
 set_basins_downstream(size_t *downstream_basin)
 {
@@ -57,6 +86,9 @@ set_basins_downstream(size_t *downstream_basin)
     free(id);
 }
 
+/******************************************
+* @brief   Get and sort basins based on routing input
+******************************************/
 void
 get_basins_routing(basin_struct *basins)
 {
@@ -164,6 +196,9 @@ get_basins_routing(basin_struct *basins)
     free(river);
 }
 
+/******************************************
+* @brief   Get and sort basins based on decomposition input
+******************************************/
 void
 get_basins_decomposition(basin_struct *basins)
 {
@@ -259,6 +294,9 @@ get_basins_decomposition(basin_struct *basins)
     free(basin_list);
 }
 
+/******************************************
+* @brief   Decompose domains from basins
+******************************************/
 void
 rout_decomp_domain_from_basins(size_t        ncells,
                                size_t        mpi_size,
@@ -333,6 +371,10 @@ rout_decomp_domain_from_basins(size_t        ncells,
     free(basins->sorted_basins);
 }
 
+/******************************************
+* @brief   Decompose domains either based on routing input or
+*         based on decomposition input
+******************************************/
 void
 rout_mpi_map_decomp_domain(size_t   ncells,
                            size_t   mpi_size,

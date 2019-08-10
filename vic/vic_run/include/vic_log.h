@@ -113,10 +113,12 @@ void setup_logging(int id, char log_path[], FILE **logfile);
                                                clean_errno(), ## __VA_ARGS__); \
     exit(EXIT_FAILURE);
 #else
-#define log_err(M, ...) print_trace(); fprintf(LOG_DEST, \
-                                               "[ERROR] %s:%d: errno: %s: " M "\n", \
-                                               __FILE__, __LINE__, \
-                                               clean_errno(), ## __VA_ARGS__); \
+#define log_err(M, ...) print_trace(); fprintf( \
+        LOG_DEST, \
+        "[ERROR] %s:%d: errno: %s: " M \
+        "\n", \
+        __FILE__, __LINE__, \
+        clean_errno(), ## __VA_ARGS__); \
     exit(EXIT_FAILURE);
 #endif
 

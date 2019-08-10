@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin header file which combines all plugins
+ * Function to convolute a single quantity over an array (used in routing)
  *
  * @section LICENSE
  *
@@ -24,10 +24,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#include <stddef.h>
 
-#include <plugin_driver_shared_image.h>
-#include <routing.h>
+/******************************************************************************
+ * @brief   Function to convolute a single quantity over an array
+ *****************************************************************************/
+void
+convolute(double  quantity,
+          double *function,
+          double *output,
+          size_t  length,
+          size_t  offset)
+{
+    size_t i;
 
-#endif /* PLUGIN_H */
+    for (i = 0; i < length; i++) {
+        output[offset + i] += quantity * function[i];
+    }
+}

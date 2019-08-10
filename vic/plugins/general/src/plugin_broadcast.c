@@ -1,11 +1,130 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Functions to initialize and broadcast plugin structures
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
 /******************************************
-   Setup broadcasting structures
+* @brief   Setup global param broadcasting structure
 ******************************************/
 void
 plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
+{
+    extern MPI_Comm MPI_COMM_VIC;
+    int             nitems; // number of elements in struct
+    int             status;
+    int            *blocklengths;
+    size_t          i;
+    MPI_Aint       *offsets;
+    MPI_Datatype   *mpi_types;
+
+    // nitems has to equal the number of elements in global_param_struct
+    nitems = 12;
+    blocklengths = malloc(nitems * sizeof(*blocklengths));
+    check_alloc_status(blocklengths, "Memory allocation error.");
+    offsets = malloc(nitems * sizeof(*offsets));
+    check_alloc_status(offsets, "Memory allocation error.");
+    mpi_types = malloc(nitems * sizeof(*mpi_types));
+    check_alloc_status(mpi_types, "Memory allocation error.")
+
+    // most of the elements in global_param_struct are not arrays. Use 1 as
+    // the default block length and reset as needed
+    for (i = 0; i < (size_t) nitems; i++) {
+        blocklengths[i] = 1;
+    }
+    i = 0;
+
+    // size_t rout_steps_per_day;
+    offsets[i] = offsetof(plugin_global_param_struct, rout_steps_per_day);
+    mpi_types[i++] = MPI_AINT;
+    // double rout_dt;
+    offsets[i] = offsetof(plugin_global_param_struct, rout_dt);
+    mpi_types[i++] = MPI_DOUBLE;
+    // size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, force_steps_per_year);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_AINT;
+    // double force_dt[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, force_dt);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_DOUBLE;
+    // unsigned int forcesec[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcesec);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED;
+    // unsigned short int forceday[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceday);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forcemonth[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcemonth);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forceyear[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceyear);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forcefreq[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcefreq);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // unsigned short int forceoffset[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceoffset);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // bool forcerun[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forcerun);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_C_BOOL;
+    // unsigned int forceskip[PLUGIN_N_FORCING_TYPES];
+    offsets[i] = offsetof(plugin_global_param_struct, forceskip);
+    blocklengths[i] = PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_UNSIGNED;
+
+    // make sure that the we have the right number of elements
+    if (i != (size_t) nitems) {
+        log_err("Miscount: %zd not equal to %d.", i, nitems);
+    }
+    status = MPI_Type_create_struct(nitems, blocklengths, offsets, mpi_types,
+                                    mpi_type);
+    check_mpi_status(status, "MPI error.");
+    status = MPI_Type_commit(mpi_type);
+    check_mpi_status(status, "MPI error.");
+
+    // cleanup
+    free(blocklengths);
+    free(offsets);
+    free(mpi_types);
+}
+
+/******************************************
+* @brief   Setup filenames broadcasting structure
+******************************************/
+void
+plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
 {
     extern MPI_Comm MPI_COMM_VIC;
     int             nitems; // number of elements in struct
@@ -27,62 +146,17 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     // most of the elements in global_param_struct are not arrays. Use 1 as
     // the default block length and reset as needed
     for (i = 0; i < (size_t) nitems; i++) {
-        blocklengths[i] = 1;
-    }
-    i = 0;
-
-    // size_t rout_steps_per_day;
-    offsets[i] = offsetof(plugin_global_param_struct, rout_steps_per_day);
-    mpi_types[i++] = MPI_AINT;
-    // double rout_dt;
-    offsets[i] = offsetof(plugin_global_param_struct, rout_dt);
-    mpi_types[i++] = MPI_DOUBLE;
-
-    // make sure that the we have the right number of elements
-    if (i != (size_t) nitems) {
-        log_err("Miscount: %zd not equal to %d.", i, nitems);
-    }
-    status = MPI_Type_create_struct(nitems, blocklengths, offsets, mpi_types,
-                                    mpi_type);
-    check_mpi_status(status, "MPI error.");
-    status = MPI_Type_commit(mpi_type);
-    check_mpi_status(status, "MPI error.");
-
-    // cleanup
-    free(blocklengths);
-    free(offsets);
-    free(mpi_types);
-}
-
-void
-plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
-{
-    extern MPI_Comm MPI_COMM_VIC;
-    int             nitems; // number of elements in struct
-    int             status;
-    int            *blocklengths;
-    size_t          i;
-    MPI_Aint       *offsets;
-    MPI_Datatype   *mpi_types;
-
-    // nitems has to equal the number of elements in global_param_struct
-    nitems = 1;
-    blocklengths = malloc(nitems * sizeof(*blocklengths));
-    check_alloc_status(blocklengths, "Memory allocation error.");
-    offsets = malloc(nitems * sizeof(*offsets));
-    check_alloc_status(offsets, "Memory allocation error.");
-    mpi_types = malloc(nitems * sizeof(*mpi_types));
-    check_alloc_status(mpi_types, "Memory allocation error.")
-
-    // most of the elements in global_param_struct are not arrays. Use 1 as
-    // the default block length and reset as needed
-    for (i = 0; i < (size_t) nitems; i++) {
         blocklengths[i] = MAXSTRING;
     }
     i = 0;
 
-    // char rf_path_pfx[MAXSTRING];
-    offsets[i] = offsetof(plugin_filenames_struct, rf_path_pfx);
+    // char f_path_pfx[PLUGIN_N_FORCING_TYPES][MAXSTRING];
+    offsets[i] = offsetof(plugin_filenames_struct, f_path_pfx);
+    blocklengths[i] *= PLUGIN_N_FORCING_TYPES;
+    mpi_types[i++] = MPI_CHAR;
+    // char f_varname[PLUGIN_N_FORCING_TYPES][MAXSTRING];
+    offsets[i] = offsetof(plugin_filenames_struct, f_varname);
+    blocklengths[i] *= PLUGIN_N_FORCING_TYPES;
     mpi_types[i++] = MPI_CHAR;
 
     // make sure that the we have the right number of elements
@@ -101,6 +175,9 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup options broadcasting structure
+******************************************/
 void
 plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 {
@@ -157,6 +234,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup parameters broadcasting structure
+******************************************/
 void
 plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
 {
@@ -200,6 +280,9 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     free(mpi_types);
 }
 
+/******************************************
+* @brief   Setup plugin broadcasting structure
+******************************************/
 void
 plugin_initialize_mpi(void)
 {
@@ -216,7 +299,7 @@ plugin_initialize_mpi(void)
 }
 
 /******************************************
-   Broadcast global structures
+* @brief   Broadcast filenames structure
 ******************************************/
 void
 plugin_broadcast_filenames(void)
@@ -232,6 +315,9 @@ plugin_broadcast_filenames(void)
     check_mpi_status(status, "MPI error.");
 }
 
+/******************************************
+* @brief   Broadcast global param structure
+******************************************/
 void
 plugin_broadcast_global_params(void)
 {
@@ -246,6 +332,9 @@ plugin_broadcast_global_params(void)
     check_mpi_status(status, "MPI error.");
 }
 
+/******************************************
+* @brief   Broadcast options structure
+******************************************/
 void
 plugin_broadcast_options(void)
 {
@@ -260,6 +349,9 @@ plugin_broadcast_options(void)
     check_mpi_status(status, "MPI error.");
 }
 
+/******************************************
+* @brief   Broadcast parameters structure
+******************************************/
 void
 plugin_broadcast_params(void)
 {

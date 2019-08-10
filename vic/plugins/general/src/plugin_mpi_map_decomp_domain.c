@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin header file which combines all plugins
+ * This routine decomposes the domain based on the routing basins
  *
  * @section LICENSE
  *
@@ -24,10 +24,25 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#include <vic_driver_image.h>
+#include <plugin.h>
 
-#include <plugin_driver_shared_image.h>
-#include <routing.h>
+/******************************************************************************
+ * @brief    This routine decomposes the domain based on the routing basins
+ *****************************************************************************/
+void
+plugin_mpi_map_decomp_domain(size_t   ncells,
+                             size_t   mpi_size,
+                             int    **mpi_map_local_array_sizes,
+                             int    **mpi_map_global_array_offsets,
+                             size_t **mpi_map_mapping_array)
+{
+    extern plugin_option_struct plugin_options;
 
-#endif /* PLUGIN_H */
+    if (plugin_options.ROUTING &&
+        plugin_options.DECOMPOSITION != RANDOM_DECOMPOSITION) {
+        rout_mpi_map_decomp_domain(ncells, mpi_size, mpi_map_local_array_sizes,
+                                   mpi_map_global_array_offsets,
+                                   mpi_map_mapping_array);
+    }
+}

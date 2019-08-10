@@ -337,15 +337,15 @@ get_global_param(FILE *gp)
                     options.STATE_FORMAT = NETCDF4;
                 }
                 else {
-                    log_err("STATE_FORMAT must be either NETCDF3_CLASSIC, "
-                            "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
+                    log_err(
+                        "STATE_FORMAT must be either NETCDF3_CLASSIC, "
+                        "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
 
             /*************************************
                Define forcing files
             *************************************/
-
             else if (strcasecmp("FORCE_TYPE", optstr) == 0) {
                 set_force_type(cmdstr, file_num);
                 file_num++;
@@ -379,8 +379,9 @@ get_global_param(FILE *gp)
                             "NIJSSEN2001\" in your global parameter file.");
                 }
                 else {
-                    log_err("Please change \"ARNO_PARAMS FALSE\" to \"BASEFLOW "
-                            "ARNO\" in your global parameter file.");
+                    log_err(
+                        "Please change \"ARNO_PARAMS FALSE\" to \"BASEFLOW "
+                        "ARNO\" in your global parameter file.");
                 }
             }
             else if (strcasecmp("NIJSSEN2001_BASEFLOW", optstr) == 0) {
@@ -518,8 +519,9 @@ get_global_param(FILE *gp)
                Fail when classic driver specific options are used
             *************************************/
             else if (strcasecmp("ATMOS_STEPS_PER_DAY", optstr) == 0) {
-                log_err("ATMOS_STEPS_PER_DAY is not a valid option for this "
-                        "driver.  Update your global parameter file accordingly.");
+                log_err(
+                    "ATMOS_STEPS_PER_DAY is not a valid option for this "
+                    "driver.  Update your global parameter file accordingly.");
             }
             else if (strcasecmp("OUTPUT_FORCE", optstr) == 0) {
                 log_err("OUTPUT_FORCE is not a valid option for this driver.  "
@@ -710,10 +712,11 @@ get_global_param(FILE *gp)
         global_param.startsec = 0;
     }
     else if (global_param.startsec > SEC_PER_DAY) {
-        log_err("The specified simulation start second (%u) > 86400  Make sure "
-                "that the global file defines a positive integer "
-                "for STARTSEC.",
-                global_param.startsec);
+        log_err(
+            "The specified simulation start second (%u) > 86400  Make sure "
+            "that the global file defines a positive integer "
+            "for STARTSEC.",
+            global_param.startsec);
     }
 
     // Validate simulation end date and/or number of timesteps
@@ -772,8 +775,9 @@ get_global_param(FILE *gp)
     for (file_num = 0; file_num < param_set.N_FORCE_FILES; file_num++) {
         // Validate forcing files and variables
         if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
-            log_err("No forcing file has been defined.  Make sure that the global "
-                    "file defines forcing files for each variable.");
+            log_err(
+                "No forcing file has been defined.  Make sure that the global "
+                "file defines forcing files for each variable.");
         }
 
         // Get information from the forcing file(s)
@@ -800,9 +804,10 @@ get_global_param(FILE *gp)
 
     // Validate parameter file information
     if (strcmp(filenames.params.nc_filename, "MISSING") == 0) {
-        log_err("A parameters file has not been defined.  Make sure that the "
-                "global file defines the parameters parameter file on the line "
-                "that begins with \"PARAMETERS\".");
+        log_err(
+            "A parameters file has not been defined.  Make sure that the "
+            "global file defines the parameters parameter file on the line "
+            "that begins with \"PARAMETERS\".");
     }
 
     // Validate SPATIAL_FROST information
@@ -869,7 +874,8 @@ get_global_param(FILE *gp)
                      lastday);
         if (global_param.stateday > lastday[global_param.statemonth - 1] ||
             global_param.statemonth < 1 ||
-            global_param.statemonth > MONTHS_PER_YEAR ||
+            global_param.statemonth > MONTHS_PER_YEAR
+            ||
             global_param.stateday < 1 || global_param.stateday > 31 ||
             global_param.statesec > SEC_PER_DAY) {
             log_err("Unusual specification of the date to save state "

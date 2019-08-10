@@ -335,16 +335,18 @@ solve_lake(double           snowfall,
              * -------------------------------------------------------------------- */
 
             if (lake->activenod > 0) {
-                ErrorFlag = water_under_ice(freezeflag, sw_ice, wind, Ti,
-                                            water_density,
-                                            soil_con.lat,
-                                            lake->activenod, lake->dz,
-                                            lake->surfdz,
-                                            Tcutoff, &qw, lake->surface,
-                                            &temphi, water_cp,
-                                            mixdepth, lake->hice,
-                                            lake_snow->swq * CONST_RHOFW / param.LAKE_RHOSNOW,
-                                            dt, &energy_out_bottom_ice);
+                ErrorFlag = water_under_ice(
+                    freezeflag, sw_ice, wind, Ti,
+                    water_density,
+                    soil_con.lat,
+                    lake->activenod, lake->dz,
+                    lake->surfdz,
+                    Tcutoff, &qw, lake->surface,
+                    &temphi, water_cp,
+                    mixdepth, lake->hice,
+                    lake_snow->swq * CONST_RHOFW /
+                    param.LAKE_RHOSNOW,
+                    dt, &energy_out_bottom_ice);
                 if (ErrorFlag == ERROR) {
                     return (ERROR);
                 }
@@ -845,7 +847,6 @@ eddy(int     freezeflag,
     /**********************************************************************
     * Avoid too low wind speeds for computational stability.
     **********************************************************************/
-
     else {
         if (wind < 1.0) {
             wind = 1.0;
@@ -1987,7 +1988,8 @@ water_balance(lake_var_struct *lake,
 
             for (j = 0; j < options.Nlayer; j++) {
                 if (Recharge >
-                    (soil_con.max_moist[j] - cell[iveg][band].layer[j].moist)) {
+                    (soil_con.max_moist[j] -
+                     cell[iveg][band].layer[j].moist)) {
                     Recharge -=
                         (soil_con.max_moist[j] -
                          cell[iveg][band].layer[j].moist);
@@ -2034,8 +2036,10 @@ water_balance(lake_var_struct *lake,
     baseflow_out_mm = frac * rel_moist;
     if (rel_moist > soil_con.Ws) {
         frac = (rel_moist - soil_con.Ws) / (1 - soil_con.Ws);
-        baseflow_out_mm += Dsmax * (1 - soil_con.Ds / soil_con.Ws) * pow(frac,
-                                                                         soil_con.c);
+        baseflow_out_mm += Dsmax * (1 - soil_con.Ds / soil_con.Ws) * pow(
+            frac,
+            soil_con
+            .c);
     }
     if (baseflow_out_mm < 0) {
         baseflow_out_mm = 0;

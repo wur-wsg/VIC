@@ -369,26 +369,28 @@ ice_melt(double            z2,
                     snow->surf_temp_fbcount++;
                 }
                 else {
-                    ErrorIcePackEnergyBalance(snow->surf_temp, delta_t,
-                                              aero_resist,
-                                              aero_resist_used, z2,
-                                              displacement, Z0, wind, net_short,
-                                              longwave, density, Le, air_temp,
-                                              pressure * PA_PER_KPA,
-                                              vpd * PA_PER_KPA,
-                                              vp * PA_PER_KPA,
-                                              RainFall, SurfaceSwq,
-                                              snow->surf_water, OldTSurf,
-                                              &RefreezeEnergy,
-                                              &vapor_flux, &blowing_flux,
-                                              &surface_flux,
-                                              &advection, deltaCC, Tcutoff,
-                                              avgcond, SWconducted,
-                                              snow->swq * CONST_RHOFW / param.LAKE_RHOSNOW,
-                                              param.LAKE_RHOSNOW, surf_atten,
-                                              &SnowFlux, &latent_heat,
-                                              &latent_heat_sub,
-                                              &sensible_heat, &LWnet);
+                    ErrorIcePackEnergyBalance(
+                        snow->surf_temp, delta_t,
+                        aero_resist,
+                        aero_resist_used, z2,
+                        displacement, Z0, wind, net_short,
+                        longwave, density, Le, air_temp,
+                        pressure * PA_PER_KPA,
+                        vpd * PA_PER_KPA,
+                        vp * PA_PER_KPA,
+                        RainFall, SurfaceSwq,
+                        snow->surf_water, OldTSurf,
+                        &RefreezeEnergy,
+                        &vapor_flux, &blowing_flux,
+                        &surface_flux,
+                        &advection, deltaCC, Tcutoff,
+                        avgcond, SWconducted,
+                        snow->swq * CONST_RHOFW /
+                        param.LAKE_RHOSNOW,
+                        param.LAKE_RHOSNOW, surf_atten,
+                        &SnowFlux, &latent_heat,
+                        &latent_heat_sub,
+                        &sensible_heat, &LWnet);
                     return(ERROR);
                 }
             }

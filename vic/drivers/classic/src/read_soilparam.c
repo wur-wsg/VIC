@@ -1009,10 +1009,10 @@ read_soilparam(FILE            *soilparam,
                     tmp_resid_moist = temp->resid_moist[layer] *
                                       temp->depth[layer] * MM_PER_M;
                     zwt_prime_eff = tmp_depth2_save * CM_PER_M - bubble +
-                                    bubble *
-                                    pow(
+                                    bubble * pow(
                         (zwt_prime + bub_save - tmp_depth2_save *
-                         CM_PER_M) / bub_save, b / b_save);
+                         CM_PER_M) / bub_save, b /
+                        b_save);
                     w_avg =
                         -(b /
                           (b -

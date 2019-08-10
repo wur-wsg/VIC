@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin header file which combines all plugins
+ * Plugin support header file
  *
  * @section LICENSE
  *
@@ -24,10 +24,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef PLUGIN_SUPPORT_H
+#define PLUGIN_SUPPORT_H
 
-#include <plugin_driver_shared_image.h>
-#include <routing.h>
+/******************************************************************************
+ * @brief   Functions
+ *****************************************************************************/
+void convolute(double, double *, double *, size_t, size_t);
+void cshift(double *, int, int, int, int);
+void size_t_sort(size_t *, size_t *, size_t, bool);
+void size_t_sort2(size_t *, int *, size_t, bool);
+void double_flip(double *, size_t);
+void size_t_swap(size_t, size_t, size_t *);
+void int_swap(size_t, size_t, int *);
+void double_swap(size_t, size_t, double *);
 
-#endif /* PLUGIN_H */
+#endif /* PLUGIN_SUPPORT_H */
