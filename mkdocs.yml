@@ -93,6 +93,6 @@ markdown_extensions:
     - admonition:
     - fenced_code:
 
-copyright: 'Copyright &copy; 2016, <a href="http://uw-hydro.github.io/">University of Washington Computational Hydrology Group</a>.'
+copyright: 'GPLv2, <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt">GNU GENERAL PUBLIC LICENSE</a>.'
 
-google_analytics: ['UA-65965729-1', 'vicwur.readthedocs.org']
+# google_analytics: ['UA-65965729-1', 'vicwur.readthedocs.org']
