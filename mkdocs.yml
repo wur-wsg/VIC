@@ -1,7 +1,7 @@
 site_name: VIC-WUR
 site_description: Variable Infiltration Capacity Model
 site_author: Wageningen University | Water System and Global Change Group (WSG)
-repo_url: https://github.com/wietsefranssen/VIC
+repo_url: https://github.com/wur-wsg/VIC
 site_url: http://vicwur.readthedocs.org/
 theme: readthedocs
 theme_dir: 'docs/custom_rtd_theme'
