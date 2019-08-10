@@ -1,12 +1,12 @@
-site_name: VIC
+site_name: VIC-WUR
 site_description: Variable Infiltration Capacity Model
-site_author: UW Hydro | Computational Hydrology
-repo_url: https://github.com/UW-Hydro/VIC
-site_url: http://vic.readthedocs.org/
+site_author: Wageningen University | Water System and Global Change Group (WSG)
+repo_url: https://github.com/wietsefranssen/VIC
+site_url: http://vicwur.readthedocs.org/
 theme: readthedocs
 theme_dir: 'docs/custom_rtd_theme'
 site_favicon: vic_favicon.jpg
-copyright: 2016
+copyright: GPLv2
 docs_dir: docs
 site_dir: site
 use_directory_urls: true
@@ -16,17 +16,13 @@ pages:
 - Home: 'index.md'
 - About:
     - 'Model Overview': 'Overview/ModelOverview.md'
+    - 'Model Overview VIC-WUR specific': 'Overview/ModelOverview_vicwur.md'
     - 'References': 'Documentation/References.md'
     - 'FAQ': 'FAQ/FAQ.md'
     - 'Contact': 'contact.md'
     - 'Links': 'links.md'
 - Documentation:
     - 'User Guide': 'Documentation/UserGuide.md'
-    - 'VIC Drivers':
-        - 'Classic': 'Documentation/Drivers/Classic/ClassicDriver.md'
-        - 'Image': 'Documentation/Drivers/Image/ImageDriver.md'
-        - 'CESM': 'Documentation/Drivers/CESM/CESMDriver.md'
-        - 'Python': 'Documentation/Drivers/Python/PythonDriver.md'
 - Development:
     - 'Development': 'Development/ModelDevelopment.md'
     - 'Release Notes': 'Development/ReleaseNotes.md'
@@ -99,4 +95,4 @@ markdown_extensions:
 
 copyright: 'Copyright &copy; 2016, <a href="http://uw-hydro.github.io/">University of Washington Computational Hydrology Group</a>.'
 
-google_analytics: ['UA-65965729-1', 'vic.readthedocs.org']
+google_analytics: ['UA-65965729-1', 'vicwur.readthedocs.org']

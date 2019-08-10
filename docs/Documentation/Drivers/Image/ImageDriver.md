@@ -1,4 +1,4 @@
-# VIC Image Driver
+# VIC-WUR Image Driver
 
 The Image Driver represents the modern implementation of the VIC model.  It uses netCDF I/O, runs in a time-before-space evaluation order, and uses MPI for parallel processing.  
 
