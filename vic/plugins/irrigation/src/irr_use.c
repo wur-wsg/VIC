@@ -97,7 +97,6 @@ irr_get_withdrawn(size_t iCell)
     extern soil_con_struct *soil_con;
     extern veg_con_struct **veg_con;
     extern all_vars_struct *all_vars;
-    extern global_param_struct global_param;
     extern wu_con_map_struct *wu_con_map;
     
     double demand;
@@ -107,7 +106,6 @@ irr_get_withdrawn(size_t iCell)
     double avail_irr;
     double area_fract;
     double veg_fract;
-    double max_infilt;
     double max_moist;
     double max_added;
     
@@ -166,9 +164,7 @@ irr_get_withdrawn(size_t iCell)
             area_fract = csoil_con->AreaFract[j];
 
             if(area_fract > 0){
-                //max_infilt = ccell_var->layer[0].Ksat / global_param.model_steps_per_day;
                 max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                //max_added = min(max_infilt, max_moist);
                 max_added = max_moist;
 
                 if(cirr_var->leftover > 0){
@@ -200,9 +196,7 @@ irr_get_withdrawn(size_t iCell)
 
                 if(area_fract > 0){
                     if(cirr_var->flag_req){
-                        //max_infilt = ccell_var->layer[0].Ksat / global_param.model_steps_per_day;
                         max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                        //max_added = min(max_infilt, max_moist);
                         max_added = max_moist;
                         
                         avail_irr = cirr_var->requirement * cirr_con->irrigation_efficiency * avail_frac;
