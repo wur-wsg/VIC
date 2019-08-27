@@ -15,8 +15,8 @@ pages:
 # Main pages
 - Home: 'index.md'
 - About:
-    - 'Model Overview': 'Overview/ModelOverview.md'
-    - 'Model Overview VIC-WUR specific': 'Overview/ModelOverview_vicwur.md'
+    - 'VIC Model Overview': 'Overview/ModelOverview.md'
+    - 'VIC-WUR Model Overview': 'Overview/ModelOverview_vicwur.md'
     - 'References': 'Documentation/References.md'
     - 'FAQ': 'FAQ/FAQ.md'
     - 'Contact': 'contact.md'
