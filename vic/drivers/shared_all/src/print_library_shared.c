@@ -262,16 +262,14 @@ print_global_param(global_param_struct *gp)
     fprintf(LOG_DEST, "\tendmonth            : %hu\n", gp->endmonth);
     fprintf(LOG_DEST, "\tendyear             : %hu\n", gp->endyear);
     for (i = 0; i < 1; i++) {
-        fprintf(LOG_DEST, "\tforceday[%zd]         : %hu\n", i,
-                gp->forceday[i]);
-        fprintf(LOG_DEST, "\tforcesec[%zd]         : %u\n", i, gp->forcesec[i]);
-        fprintf(LOG_DEST, "\tforcemonth[%zd]       : %hu\n", i,
+        fprintf(LOG_DEST, "\tforceday[%zd]        : %hu\n", i, gp->forceday[i]);
+        fprintf(LOG_DEST, "\tforcesec[%zd]        : %u\n", i, gp->forcesec[i]);
+        fprintf(LOG_DEST, "\tforcemonth[%zd]      : %hu\n", i,
                 gp->forcemonth[i]);
-        fprintf(LOG_DEST, "\tforceoffset[%zd]      : %hu\n", i,
+        fprintf(LOG_DEST, "\tforceoffset[%zd]     : %hu\n", i,
                 gp->forceoffset[i]);
-        fprintf(LOG_DEST, "\tforceskip[%zd]        : %u\n", i,
-                gp->forceskip[i]);
-        fprintf(LOG_DEST, "\tforceyear[%zd]        : %hu\n", i,
+        fprintf(LOG_DEST, "\tforceskip[%zd]       : %u\n", i, gp->forceskip[i]);
+        fprintf(LOG_DEST, "\tforceyear[%zd]       : %hu\n", i,
                 gp->forceyear[i]);
     }
     fprintf(LOG_DEST, "\tnrecs               : %zu\n", gp->nrecs);

@@ -77,12 +77,11 @@ read_atmos_data(FILE               *infile,
         techniques are left to the user. **/
     if (param_set.FORCE_DT[file_num] < SEC_PER_DAY &&
         global_param.dt != param_set.FORCE_DT[file_num]) {
-        log_err(
-            "When forcing the model with sub-daily data, the model must be "
-            "run at the same time step as the forcing data.  Currently the "
-            "model time step is %f seconds, while forcing file %i has a "
-            "time step of %f seconds.", global_param.dt, file_num,
-            param_set.FORCE_DT[file_num]);
+        log_err("When forcing the model with sub-daily data, the model must be "
+                "run at the same time step as the forcing data.  Currently the "
+                "model time step is %f seconds, while forcing file %i has a "
+                "time step of %f seconds.", global_param.dt, file_num,
+                param_set.FORCE_DT[file_num]);
     }
 
     if (infile == NULL) {
@@ -204,6 +203,7 @@ read_atmos_data(FILE               *infile,
     /**************************
        Read ASCII Forcing Data
     **************************/
+
     else {
         // No need to skip over a header here, since ascii file headers are skipped
         // in open_file().  However, if we wanted to read information from the header,

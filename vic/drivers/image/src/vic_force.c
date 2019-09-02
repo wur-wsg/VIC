@@ -343,11 +343,7 @@ vic_force(void)
                                                  FCANOPY]] + j;
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[param_set.
-                                                                    VAR_INDEX[
-                                                                        FCANOPY
-                                                                    ]
-                                                  ]),
+                    get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[FCANOPY]]),
                                                 param_set.TYPE[FCANOPY].varname,
                                                 d4start, d4count,
                                                 dvar);
@@ -366,14 +362,10 @@ vic_force(void)
             for (j = 0; j < NF; j++) {
                 d4start[0] =
                     global_param.forceskip[param_set.VAR_INDEX[ALBEDO]] +
-                    global_param.forceoffset[param_set.VAR_INDEX[ALBEDO
-                                             ]] + j;
+                    global_param.forceoffset[param_set.VAR_INDEX[ALBEDO]] + j;
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[param_set.
-                                                                    VAR_INDEX[
-                                                                        ALBEDO]
-                                                  ]),
+                    get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[ALBEDO]]),
                                                 param_set.TYPE[ALBEDO].varname,
                                                 d4start, d4count,
                                                 dvar);
@@ -453,8 +445,7 @@ vic_force(void)
                          (options.FCAN_SRC == FROM_VEGHIST))) {
                         // Only issue this warning once if not using veg hist fractions
                         log_warn(
-                            "cell %zu, veg` %d substep %zu fcanopy %f < minimum of %f; setting = %f",
-                            i, vidx, j,
+                            "cell %zu, veg` %d substep %zu fcanopy %f < minimum of %f; setting = %f", i, vidx, j,
                             veg_hist[i][vidx].fcanopy[j], MIN_FCANOPY,
                             MIN_FCANOPY);
                         veg_hist[i][vidx].fcanopy[j] = MIN_FCANOPY;

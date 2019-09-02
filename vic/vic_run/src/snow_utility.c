@@ -136,12 +136,9 @@ snow_density(snow_data_struct *snow,
 
         if (new_snow > 0.0) {
             Ps = 0.5 * CONST_G * CONST_RHOFW * swq;
-            ddz2 = -Ps / param.SNOW_DENS_ETA0 * exp(
-                -(-param.SNOW_DENS_C5 *
-                  (Tavg -
-                   CONST_TKFRZ) +
-                  param.SNOW_DENS_C6 *
-                  density));
+            ddz2 = -Ps / param.SNOW_DENS_ETA0 *
+                   exp(-(-param.SNOW_DENS_C5 *
+                         (Tavg - CONST_TKFRZ) + param.SNOW_DENS_C6 * density));
         }
         else {
             ddz2 = 0.0;
@@ -273,16 +270,14 @@ snow_albedo(double new_snow,
         /* Accumulation season */
         if (cold_content < 0.0 && !MELTING) {
             albedo = param.SNOW_NEW_SNOW_ALB * pow(param.SNOW_ALB_ACCUM_A,
-                                                   pow((double) last_snow *
-                                                       dt /
+                                                   pow((double) last_snow * dt /
                                                        SEC_PER_DAY,
                                                        param.SNOW_ALB_ACCUM_B));
         }
         /* Melt Season */
         else {
             albedo = param.SNOW_NEW_SNOW_ALB * pow(param.SNOW_ALB_THAW_A,
-                                                   pow((double) last_snow *
-                                                       dt /
+                                                   pow((double) last_snow * dt /
                                                        SEC_PER_DAY,
                                                        param.SNOW_ALB_THAW_B));
         }

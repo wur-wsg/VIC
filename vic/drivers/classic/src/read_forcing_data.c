@@ -62,8 +62,7 @@ read_forcing_data(FILE              **infile,
                                    "Memory allocation error.");
                 for (j = 0; j < param_set.TYPE[i].N_ELEM; j++) {
                     (*veg_hist_data)[i][j] = calloc(global_param.nrecs * NF,
-                                                    sizeof(*((*veg_hist_data)[i
-                                                             ]
+                                                    sizeof(*((*veg_hist_data)[i]
                                                              [j])));
                     check_alloc_status((*veg_hist_data)[i][j],
                                        "Memory allocation error.");

@@ -121,10 +121,8 @@ generate_default_state(all_vars_struct *all_vars,
                     }
                     /* Initial estimate of LongUnderOut for use by snow_intercept() */
                     tmp = energy[veg][band].T[0] + CONST_TKFRZ;
-                    energy[veg][band].LongUnderOut = calc_outgoing_longwave(
-                        tmp,
-                        param
-                        .EMISS_SNOW);
+                    energy[veg][band].LongUnderOut = calc_outgoing_longwave(tmp,
+                                                                            param.EMISS_SNOW);
                     energy[veg][band].Tfoliage = energy[veg][band].T[0] +
                                                  soil_con->Tfactor[band];
                 }

@@ -1082,10 +1082,9 @@ error_print_surf_energy_bal(double  Ts,
        Main Routine
     ***************/
 
-    log_warn(
-        "calc_surf_energy_bal failed to converge to a solution in "
-        "root_brent.  Variable values will be dumped to the screen, check "
-        "for invalid values.");
+    log_warn("calc_surf_energy_bal failed to converge to a solution in "
+             "root_brent.  Variable values will be dumped to the screen, check "
+             "for invalid values.");
 
     /* Print Variables */
     /* general model terms */

@@ -113,15 +113,12 @@ write_vic_timing_table(timer_struct *timers)
             nyears / (timers[TIMER_VIC_ALL].delta_wall / SEC_PER_DAY));
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "  Timing Table:\n");
-    fprintf(
-        LOG_DEST,
-        "|------------|----------------------|----------------------|----------------------|----------------------|\n");
-    fprintf(
-        LOG_DEST,
-        "| Timer      | Wall Time (secs)     | CPU Time (secs)      | Wall Time (secs/day) | CPU Time (secs/day)  |\n");
-    fprintf(
-        LOG_DEST,
-        "|------------|----------------------|----------------------|----------------------|----------------------|\n");
+    fprintf(LOG_DEST,
+            "|------------|----------------------|----------------------|----------------------|----------------------|\n");
+    fprintf(LOG_DEST,
+            "| Timer      | Wall Time (secs)     | CPU Time (secs)      | Wall Time (secs/day) | CPU Time (secs/day)  |\n");
+    fprintf(LOG_DEST,
+            "|------------|----------------------|----------------------|----------------------|----------------------|\n");
     fprintf(LOG_DEST, "| Init Time  | %20g | %20g | %20g | %20g |\n",
             timers[TIMER_VIC_INIT].delta_wall, timers[TIMER_VIC_INIT].delta_cpu,
             timers[TIMER_VIC_INIT].delta_wall / ndays,
@@ -139,9 +136,8 @@ write_vic_timing_table(timer_struct *timers)
             timers[TIMER_VIC_ALL].delta_wall, timers[TIMER_VIC_ALL].delta_cpu,
             timers[TIMER_VIC_ALL].delta_wall / ndays,
             timers[TIMER_VIC_ALL].delta_cpu / ndays);
-    fprintf(
-        LOG_DEST,
-        "|------------|----------------------|----------------------|----------------------|----------------------|\n");
+    fprintf(LOG_DEST,
+            "|------------|----------------------|----------------------|----------------------|----------------------|\n");
     fprintf(LOG_DEST, "\n");
 
     fprintf(LOG_DEST,

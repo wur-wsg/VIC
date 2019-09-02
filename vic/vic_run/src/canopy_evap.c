@@ -59,18 +59,18 @@ canopy_evap(layer_data_struct *layer,
             double            *CanopLayerBnd)
 {
     /** declare global variables **/
-    extern option_struct options;
+    extern option_struct   options;
 
     /** declare local variables **/
-    size_t               i;
-    double               f;     /* fraction of time step used to fill canopy */
-    double               throughfall;
-    double               Evap;
-    double               tmp_Evap;
-    double               canopyevap;
-    double               tmp_Wdew;
-    double               layertransp[MAX_LAYERS];
-    double               rc;
+    size_t                 i;
+    double                 f;   /* fraction of time step used to fill canopy */
+    double                 throughfall;
+    double                 Evap;
+    double                 tmp_Evap;
+    double                 canopyevap;
+    double                 tmp_Wdew;
+    double                 layertransp[MAX_LAYERS];
+    double                 rc;
 
     Evap = 0;
 
@@ -96,8 +96,7 @@ canopy_evap(layer_data_struct *layer,
                  air_temp, vpd, veg_var->LAI, (double) 1.0, false);
     if (veg_var->LAI > 0) {
         canopyevap = pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0)) *
-                     penman(air_temp, elevation, rad, vpd, ra, rc,
-                            veg_lib->rarc) *
+                     penman(air_temp, elevation, rad, vpd, ra, rc, veg_lib->rarc) *
                      delta_t / CONST_CDAY;
     }
     else {

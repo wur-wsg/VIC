@@ -76,9 +76,8 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.FULL_ENERGY = str_to_bool(flgstr);
                 if (options.FULL_ENERGY == false) {
-                    log_warn(
-                        "FULL_ENERGY is set to FALSE. Please double check "
-                        "that this is the setting you intended.");
+                    log_warn("FULL_ENERGY is set to FALSE. Please double check "
+                             "that this is the setting you intended.");
                 }
             }
             else if (strcasecmp("FROZEN_SOIL", optstr) == 0) {
@@ -276,15 +275,15 @@ get_global_param(FILE *gp)
                     options.STATE_FORMAT = NETCDF4;
                 }
                 else {
-                    log_err(
-                        "STATE_FORMAT must be either NETCDF3_CLASSIC, "
-                        "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
+                    log_err("STATE_FORMAT must be either NETCDF3_CLASSIC, "
+                            "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
 
             /*************************************
                Define parameter files
             *************************************/
+
             else if (strcasecmp("CONSTANTS", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", filenames.constants);
             }
@@ -304,9 +303,8 @@ get_global_param(FILE *gp)
                             "NIJSSEN2001\" in your global parameter file.");
                 }
                 else {
-                    log_err(
-                        "Please change \"ARNO_PARAMS FALSE\" to \"BASEFLOW "
-                        "ARNO\" in your global parameter file.");
+                    log_err("Please change \"ARNO_PARAMS FALSE\" to \"BASEFLOW "
+                            "ARNO\" in your global parameter file.");
                 }
             }
             else if (strcasecmp("NIJSSEN2001_BASEFLOW", optstr) == 0) {
@@ -494,10 +492,9 @@ validate_filenames(filenames_struct *filenames)
 
     // Validate parameter file information
     if (strcmp(filenames->params.nc_filename, "MISSING") == 0) {
-        log_err(
-            "A parameters file has not been defined.  Make sure that the "
-            "global file defines the parameters parameter file on the line "
-            "that begins with \"PARAMETERS\".");
+        log_err("A parameters file has not been defined.  Make sure that the "
+                "global file defines the parameters parameter file on the line "
+                "that begins with \"PARAMETERS\".");
     }
 
     // Validate snow parameter file

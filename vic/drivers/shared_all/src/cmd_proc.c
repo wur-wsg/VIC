@@ -138,9 +138,8 @@ print_license()
     fprintf(stdout,
             "  model version %s, Copyright (C) 2016 Computational\n",
             SHORT_VERSION);
-    fprintf(
-        stdout,
-        "  Hydrology Group, Dept. of Civil and Environmental Engineering,\n");
+    fprintf(stdout,
+            "  Hydrology Group, Dept. of Civil and Environmental Engineering,\n");
     fprintf(stdout,
             "  University of Washington.  VIC comes with ABSOLUTELY NO\n");
     fprintf(stdout,
@@ -148,9 +147,8 @@ print_license()
     fprintf(stdout,
             "  under certain conditions; see LICENSE.txt for details.\n\n");
 
-    fprintf(
-        stdout,
-        "  Report Bugs and Issues to : https://github.com/UW-Hydro/VIC/issues\n");
+    fprintf(stdout,
+            "  Report Bugs and Issues to : https://github.com/UW-Hydro/VIC/issues\n");
     fprintf(stdout,
             "  VIC Users Email Listserve : vic_users@u.washington.edu \n\n");
 }
