@@ -83,6 +83,26 @@ plugin_force_validate_global_param(void)
 }
 
 /******************************************
+* @brief   Check plugin forcing skips
+******************************************/
+void
+plugin_force_start(void)
+{
+    extern plugin_filenames_struct plugin_filenames;
+
+    size_t                         i;
+
+    for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
+        // Validate forcing files and variables
+        if (strcmp(plugin_filenames.f_path_pfx[i], MISSING_S) == 0) {
+            continue;
+        }
+
+        plugin_get_forcing_file_skip(i);
+    }
+}
+
+/******************************************
 * @brief   Check plugin forcing files
 ******************************************/
 void
@@ -96,13 +116,13 @@ plugin_force_init(void)
 
     size_t                         i;
 
-    if (mpi_rank == VIC_MPI_ROOT) {
-        for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
-            // Validate forcing files and variables
-            if (strcmp(plugin_filenames.f_path_pfx[i], MISSING_S) == 0) {
-                continue;
-            }
+    for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
+        // Validate forcing files and variables
+        if (strcmp(plugin_filenames.f_path_pfx[i], MISSING_S) == 0) {
+            continue;
+        }
 
+        if (mpi_rank == VIC_MPI_ROOT) {
             // Get information from the forcing file(s)
             // Open first-year forcing files and get info
             snprintf(plugin_filenames.forcing[i].nc_filename, MAXSTRING, "%s%4d.nc",
@@ -112,7 +132,6 @@ plugin_force_init(void)
             check_nc_status(status, "Error opening %s",
                             plugin_filenames.forcing[i].nc_filename);
 
-            plugin_get_forcing_file_skip(i);
             compare_ncdomain_with_global_domain(&plugin_filenames.forcing[i]);
 
             // Close first-year forcing files
@@ -127,7 +146,7 @@ plugin_force_init(void)
 * @brief   Open plugin forcing files
 ******************************************/
 void
-plugin_force_start(void)
+plugin_start_forcing(void)
 {
     extern global_param_struct        global_param;
     extern plugin_global_param_struct plugin_global_param;
@@ -188,7 +207,7 @@ plugin_force_start(void)
 * @brief   Close plugin forcing files (and update counter)
 ******************************************/
 void
-plugin_force_end(void)
+plugin_end_forcing(void)
 {
     extern global_param_struct        global_param;
     extern plugin_global_param_struct plugin_global_param;

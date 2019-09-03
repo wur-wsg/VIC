@@ -119,6 +119,7 @@ plugin_start(void)
 {
     extern plugin_option_struct plugin_options;
 
+    plugin_force_start();
     if (plugin_options.ROUTING) {
         rout_start();
     }

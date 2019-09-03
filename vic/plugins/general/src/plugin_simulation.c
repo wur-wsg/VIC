@@ -35,7 +35,7 @@ plugin_force(void)
 {
     extern plugin_option_struct plugin_options;
 
-    plugin_force_start();
+    plugin_start_forcing();
     if (plugin_options.ROUTING && plugin_options.FORCE_ROUTING) {
         rout_forcing();
     }
@@ -45,7 +45,7 @@ plugin_force(void)
     if (plugin_options.WATERUSE) {
         wu_forcing();
     }
-    plugin_force_end();
+    plugin_end_forcing();
 }
 
 /******************************************

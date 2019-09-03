@@ -272,11 +272,12 @@ void plugin_print_parameters(plugin_parameters_struct *);
 void plugin_force(void);
 bool plugin_force_get_global_param(char *);
 void plugin_force_validate_global_param(void);
+void plugin_force_start(void);
 void plugin_force_init(void);
 void plugin_get_forcing_file_info(short unsigned int);
 void plugin_get_forcing_file_skip(short unsigned int);
-void plugin_force_start(void);
-void plugin_force_end(void);
+void plugin_start_forcing(void);
+void plugin_end_forcing(void);
 void plugin_run(void);
 
 #endif /* PLUGIN_H */
