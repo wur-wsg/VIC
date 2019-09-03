@@ -8,7 +8,7 @@ The [VIC test suite](../Development/Testing.md) includes a series of datasets ro
 
 # VIC Input and Output Data Sets
 
-Here are some notable input and output data sets for VIC. If you use these data sets, please cite the corresponding references.
+Here are some notable input and output data sets for VIC and VIC-WUR. If you use these data sets, please cite the corresponding references.
 
 !!! note
     Some of the following datasets are formatted for earlier versions of VIC. Users should not expect that they are can be used with the current VIC version without modification. If you do modify one of these datasets for use with the current version of VIC, we would appreciate it if you alerted the VIC developers so we can update the publicly available dataset here.
@@ -24,6 +24,17 @@ Here are some notable input and output data sets for VIC. If you use these data 
         *   Vegetation Library File
         *   Snowbands File
     *   References: [Nijssen et al. (2001b)](../Documentation/References.md)
+*   [**Global VIC-WUR Input Parameters at 0.5-Degree Resolution**](http://github.com/bramdr/VIC-WUR_support.html)
+    *   NOTE: All NetCDF (only to be used with VIC-WUR)
+    *   Spatial Resolution: 0.5-degree
+    *   Available data:
+        *   Routing Parameter File
+        *   Irrigation Parameter File
+        *   Revised Vegetation Parameter File (based on MIRCA2000)
+        *   Water-use Parameter File
+        *   Dam Parameter File
+        *   Constants File
+    *   References: [Droppers et al. (2019)](../Documentation/References.md)
 *   [**Global Meteorological Forcing Files at 0.5-Degree Resolution**](http://www.hydro.washington.edu/SurfaceWaterGroup/Data/met_global_0.5deg.html)
     *   Spatial Resolution: 0.5-degree
     *   Temporal Resolution: daily
@@ -34,6 +45,15 @@ Here are some notable input and output data sets for VIC. If you use these data 
         *   Min Temperature
         *   Wind Speed
     *   References: [Adam and Lettenmaier (2003); Adam et al (2006)](../Documentation/References.md)
+*   [**Global Water-Use Forcing Files at 0.5-Degree Resolution**](http://github.com/bramdr/VIC-WUR_support.html)
+    *   NOTE: All NetCDF (only to be used with VIC-WUR)
+    *   Spatial Resolution: 0.5-degree
+    *   Temporal Resolution: monthly
+    *   Time period: 1979-2016
+    *   Available data:
+        *   Demand
+        *	Consumption fraction
+    *   References: [Droppers et al. (2019)](../Documentation/References.md)
 *   [**Global Simulations at 2-Degree Resolution**](http://www.hydro.washington.edu/SurfaceWaterGroup/Data/vic_global.html)
     *   Spatial Resolution: 2-degree
     *   Temporal Resolution: daily
