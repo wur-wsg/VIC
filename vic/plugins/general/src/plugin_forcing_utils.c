@@ -90,33 +90,36 @@ plugin_force_init(void)
 {
     extern global_param_struct     global_param;
     extern plugin_filenames_struct plugin_filenames;
+    extern int                     mpi_rank;
 
     int                            status;
 
     size_t                         i;
 
-    for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
-        // Validate forcing files and variables
-        if (strcmp(plugin_filenames.f_path_pfx[i], MISSING_S) == 0) {
-            continue;
+    if (mpi_rank == VIC_MPI_ROOT) {
+        for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
+            // Validate forcing files and variables
+            if (strcmp(plugin_filenames.f_path_pfx[i], MISSING_S) == 0) {
+                continue;
+            }
+
+            // Get information from the forcing file(s)
+            // Open first-year forcing files and get info
+            snprintf(plugin_filenames.forcing[i].nc_filename, MAXSTRING, "%s%4d.nc",
+                     plugin_filenames.f_path_pfx[i], global_param.startyear);
+            status = nc_open(plugin_filenames.forcing[i].nc_filename, NC_NOWRITE,
+                             &(plugin_filenames.forcing[i].nc_id));
+            check_nc_status(status, "Error opening %s",
+                            plugin_filenames.forcing[i].nc_filename);
+
+            plugin_get_forcing_file_skip(i);
+            compare_ncdomain_with_global_domain(&plugin_filenames.forcing[i]);
+
+            // Close first-year forcing files
+            status = nc_close(plugin_filenames.forcing[i].nc_id);
+            check_nc_status(status, "Error closing %s",
+                            plugin_filenames.forcing[i].nc_filename);
         }
-
-        // Get information from the forcing file(s)
-        // Open first-year forcing files and get info
-        snprintf(plugin_filenames.forcing[i].nc_filename, MAXSTRING, "%s%4d.nc",
-                 plugin_filenames.f_path_pfx[i], global_param.startyear);
-        status = nc_open(plugin_filenames.forcing[i].nc_filename, NC_NOWRITE,
-                         &(plugin_filenames.forcing[i].nc_id));
-        check_nc_status(status, "Error opening %s",
-                        plugin_filenames.forcing[i].nc_filename);
-
-        plugin_get_forcing_file_skip(i);
-        compare_ncdomain_with_global_domain(&plugin_filenames.forcing[i]);
-
-        // Close first-year forcing files
-        status = nc_close(plugin_filenames.forcing[i].nc_id);
-        check_nc_status(status, "Error closing %s",
-                        plugin_filenames.forcing[i].nc_filename);
     }
 }
 
