@@ -80,9 +80,9 @@ wu_forcing(void)
                 groundwater_idx = FORCING_LIV_GROUNDWATER;
                 consumption_idx = FORCING_LIV_CONSUMPTION;
             } else if (k == WU_ENERGY){
-                demand_idx = FORCING_ENG_DEMAND;
-                groundwater_idx = FORCING_ENG_GROUNDWATER;
-                consumption_idx = FORCING_ENG_CONSUMPTION;
+                demand_idx = FORCING_ENE_DEMAND;
+                groundwater_idx = FORCING_ENE_GROUNDWATER;
+                consumption_idx = FORCING_ENE_CONSUMPTION;
             } else if (k == WU_MANUFACTURING){
                 demand_idx = FORCING_MAN_DEMAND;
                 groundwater_idx = FORCING_MAN_GROUNDWATER;

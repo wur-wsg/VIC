@@ -93,9 +93,9 @@ wu_validate_global_param(void)
             strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_CONSUMPTION], MISSING_S) != 0) {
         plugin_options.WU_INPUT[WU_LIVESTOCK] = WU_FROM_FILE;
     }
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENG_DEMAND], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENG_GROUNDWATER], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENG_CONSUMPTION], MISSING_S) != 0) {
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_DEMAND], MISSING_S) != 0 &&
+            strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_GROUNDWATER], MISSING_S) != 0 &&
+            strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_CONSUMPTION], MISSING_S) != 0) {
         plugin_options.WU_INPUT[WU_ENERGY] = WU_FROM_FILE;
     }
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_DEMAND], MISSING_S) != 0 &&

@@ -77,8 +77,8 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("MAN_DEMAND", nctype) == 0) {
         type = FORCING_MAN_DEMAND;
     }
-    else if (strcasecmp("ENG_DEMAND", nctype) == 0) {
-        type = FORCING_ENG_DEMAND;
+    else if (strcasecmp("ENE_DEMAND", nctype) == 0) {
+        type = FORCING_ENE_DEMAND;
     }
     else if (strcasecmp("IRR_GROUNDWATER", nctype) == 0) {
         type = FORCING_IRR_GROUNDWATER;
@@ -92,8 +92,8 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("MAN_GROUNDWATER", nctype) == 0) {
         type = FORCING_MAN_GROUNDWATER;
     }
-    else if (strcasecmp("ENG_GROUNDWATER", nctype) == 0) {
-        type = FORCING_ENG_GROUNDWATER;
+    else if (strcasecmp("ENE_GROUNDWATER", nctype) == 0) {
+        type = FORCING_ENE_GROUNDWATER;
     }
     else if (strcasecmp("IRR_CONSUMPTION", nctype) == 0) {
         type = FORCING_IRR_CONSUMPTION;
@@ -107,8 +107,8 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("MAN_CONSUMPTION", nctype) == 0) {
         type = FORCING_MAN_CONSUMPTION;
     }
-    else if (strcasecmp("ENG_CONSUMPTION", nctype) == 0) {
-        type = FORCING_ENG_CONSUMPTION;
+    else if (strcasecmp("ENE_CONSUMPTION", nctype) == 0) {
+        type = FORCING_ENE_CONSUMPTION;
     }
     /** Undefined variable type **/
     else {

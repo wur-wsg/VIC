@@ -142,9 +142,9 @@ enum {
     FORCING_MAN_DEMAND,                 /**< manufacturing demand [mm] */
     FORCING_MAN_GROUNDWATER,            /**< manufacturing groundwater fraction [-] */
     FORCING_MAN_CONSUMPTION,            /**< manufacturing consumption fraction [-] */
-    FORCING_ENG_DEMAND,                 /**< energy demand [mm] */
-    FORCING_ENG_GROUNDWATER,            /**< energy groundwater fraction [-] */
-    FORCING_ENG_CONSUMPTION,            /**< energy consumption fraction [-] */
+    FORCING_ENE_DEMAND,                 /**< energy demand [mm] */
+    FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
+    FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/
