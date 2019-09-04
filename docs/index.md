@@ -6,7 +6,7 @@
 !!! note
     You are viewing the documentation for VIC-WUR. VIC-WUR extends the VIC model with several modules to simulate the human impact on global water resources. Both VIC and VIC-WUR are described here.
 
-VIC-WUR ([Droppers et al., 2019](Documentation/References.md)) is a macroscale hydrologic model that simulates the human impact on global water resources. VIC-WUR is based on VIC-5 ([Liang et al., 1994](Documentation/References.md)), which solves full water and energy balances. 
+VIC-WUR ([Droppers et al., 2019](Documentation/References.md)) is a macroscale hydrologic model that simulates the human impact on global water resources. VIC-WUR is based on VIC-5 ([Liang et al., 1994](Documentation/References.md); [Hamman et al., 2018](Documentation/References.md)), which solves full water and energy balances. 
 
 VIC-WUR is a research model and has been applied globally. The VIC model is distributed under the [GNU GPL v2.0](http://www.gnu.org/licenses/gpl-2.0.html) license. If you make use of this model, please acknowledge the appropriate references listed on the [references](Documentation/References.md) page. These should include [Liang et al., 1994](Documentation/References.md) and [Droppers et al., 2019](Documentation/References.md) for VIC-WUR, and any references relevant to the features you are using, which are cited in the feature descriptions on the [VIC Model Overview](Overview/ModelOverview.md) and [VIC-WUR Model Overview](Overview/ModelOverview_vicwur.md) page.
 

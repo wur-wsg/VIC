@@ -4,7 +4,7 @@ Running the VIC model may seem to be a formidable task, but approaching the task
 
 ## VIC-WUR Drivers
 
-VIC-WUR uses only the Image driver. In case you want to run vic with ohter driver please go to the [VIC documentation page of UW-Hydro](http://vic.readthedocs.io/).
+VIC-WUR uses only the Image driver. In case you want to run vic with other driver please go to the [VIC documentation page of UW-Hydro](http://vic.readthedocs.io/).
 
 
 1.  [Image Driver manual](./Drivers/Image/ImageDriver.md)

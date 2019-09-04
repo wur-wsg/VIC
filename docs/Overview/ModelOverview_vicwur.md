@@ -49,6 +49,13 @@ The exception is paddy rice irrigation, where irrigation was also supplied to ke
 
 Total irrigation demands also included transportation and application losses. Note that transportation and application losses are not ‘lost’ but rather returned to the soil column without being used by the crop. Total irrigation demands are adjusted by the irrigation efficiency (`irrigation_efficiency`). Paddy irrigation used an irrigation efficiency of 1 since the water losses were already incorporated in the water demand calculation.
 
-## Environmental flow requirements
+## Environmental flow requirement
+Water withdrawals can be constrained by environmental flow requirements (EFRs). These EFRs specify the timing and quantity of water needed to support terrestrial river ecosystems. Surface and groundwater withdrawals are constrained separately in VIC-WUR, based on the EFRs for streamflow and baseflow respectively. EFRs for streamflow specify the minimum river streamflow requirements while EFRs for baseflow specify the minimum subsurface runoff  requirements (from groundwater to surface water). Since baseflow is a function groundwater availability in the hydrological model, baseflow requirements are used to constrain groundwater withdrawals.
+
+### Environmental flow requirement forcing
+In VIC-WUR, EFRs need to be specified for each grid cell. Forcings can be provided at various temporal resolutions (e.g. `FORCE_STEP`, `FORCE_DAY`, `FORCE_MONTH`). EFRs are dynamically included if forcing files (e.g. discharge and baseflow) are provided. See [Droppers et al., 2019](../Documentation/References.md) for more information on how this was calculated in the past.
 
 ## Dam operation
+In VIC-WUR a distinction is made between ‘small’ dam reservoirs (with an upstream area smaller than the cell area) and ‘large’ dam reservoirs. Small dam reservoirs act as buckets that fill using surface runoff of the grid-cell they are located in and reservoirs storage can be used for water withdrawals in the same cell. Large dam reservoirs are located in the main river and used the operation scheme of Hanasaki et al. (2006). The scheme distinguishes between two dam types: (1) dams that do not account for water demands downstream (e.g. hydropower dams or flood protection dams) and (2) dams that do account for water demand downstream (e.g. irrigation dams). For dams that do not account for demands, dam release is aimed at reducing annual fluctuations in discharge. For dams that do account for demands, dam release is additionally adjusted to provide more water during periods of high demand.
+
+The scheme was adjusted slightly to account for monthly varying EFRs and to reduce overflow releases. For more information about the large-dam operation scheme, [click here](DamOperationText.md).
