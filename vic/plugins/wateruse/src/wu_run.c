@@ -41,7 +41,6 @@ calculate_demand(size_t iCell,
     extern wu_con_struct *wu_con;
     extern wu_force_struct **wu_force;
     extern wu_con_map_struct *wu_con_map;
-    extern size_t NR;
     
     size_t i;
     size_t j;
@@ -56,13 +55,13 @@ calculate_demand(size_t iCell,
         }
         
         // groundwater
-        wu_var[iCell][iSector].demand_gw = wu_force[iCell][iSector].demand[NR] * 
-                wu_force[iCell][iSector].groundwater_frac[NR];
+        wu_var[iCell][iSector].demand_gw = wu_force[iCell][iSector].demand * 
+                wu_force[iCell][iSector].groundwater_frac;
         (*demand_gw) += wu_var[iCell][iSector].demand_gw;
         
         // surface water
-        wu_var[iCell][iSector].demand_surf = wu_force[iCell][iSector].demand[NR] * 
-                (1 - wu_force[iCell][iSector].groundwater_frac[NR]);
+        wu_var[iCell][iSector].demand_surf = wu_force[iCell][iSector].demand * 
+                (1 - wu_force[iCell][iSector].groundwater_frac);
         (*demand_surf) += wu_var[iCell][iSector].demand_surf;
         
         // remote
@@ -107,7 +106,6 @@ calculate_availability(size_t iCell,
     extern soil_con_struct     *soil_con;
     extern veg_con_map_struct     *veg_con_map;
     extern veg_con_struct     **veg_con;
-    extern size_t NR;
     extern dam_con_map_struct *local_dam_con_map;
     extern dam_var_struct **local_dam_var;
     
@@ -163,7 +161,7 @@ calculate_availability(size_t iCell,
     (*available_surf) = rout_var[iCell].discharge * global_param.dt / 
             local_domain.locations[iCell].area * MM_PER_M;
     if (plugin_options.EFR) {
-        (*available_surf) -= efr_force[iCell].discharge[NR] * global_param.dt / 
+        (*available_surf) -= efr_force[iCell].discharge * global_param.dt / 
             local_domain.locations[iCell].area * MM_PER_M;
     }
     if((*available_surf) < 0){
@@ -294,7 +292,6 @@ calculate_use(size_t iCell,
     extern wu_con_struct *wu_con;
     extern wu_force_struct **wu_force;
     extern wu_con_map_struct *wu_con_map;
-    extern size_t NR;
     
     double frac;
     
@@ -326,10 +323,10 @@ calculate_use(size_t iCell,
 
         wu_var[iCell][iSector].returned += 
                 wu_var[iCell][iSector].withdrawn_gw * 
-                (1 - wu_force[iCell][iSector].consumption_frac[NR]);
+                (1 - wu_force[iCell][iSector].consumption_frac);
         wu_var[iCell][iSector].consumed += 
                 wu_var[iCell][iSector].withdrawn_gw * 
-                wu_force[iCell][iSector].consumption_frac[NR];
+                wu_force[iCell][iSector].consumption_frac;
         
         // surface water & dams
         if(wu_var[iCell][iSector].available_surf + 
@@ -361,16 +358,16 @@ calculate_use(size_t iCell,
         
         wu_var[iCell][iSector].returned += 
                 wu_var[iCell][iSector].withdrawn_surf * 
-                (1 - wu_force[iCell][iSector].consumption_frac[NR]);
+                (1 - wu_force[iCell][iSector].consumption_frac);
         wu_var[iCell][iSector].returned += 
                 wu_var[iCell][iSector].withdrawn_dam * 
-                (1 - wu_force[iCell][iSector].consumption_frac[NR]);
+                (1 - wu_force[iCell][iSector].consumption_frac);
         wu_var[iCell][iSector].consumed += 
                 wu_var[iCell][iSector].withdrawn_surf * 
-                wu_force[iCell][iSector].consumption_frac[NR];
+                wu_force[iCell][iSector].consumption_frac;
         wu_var[iCell][iSector].consumed += 
                 wu_var[iCell][iSector].withdrawn_dam * 
-                wu_force[iCell][iSector].consumption_frac[NR];
+                wu_force[iCell][iSector].consumption_frac;
         
         // remote
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
@@ -395,10 +392,10 @@ calculate_use(size_t iCell,
             
             wu_var[iCell][iSector].returned += 
                     wu_var[iCell2][iSector2].withdrawn_remote * 
-                    (1 - wu_force[iCell2][iSector2].consumption_frac[NR]);
+                    (1 - wu_force[iCell2][iSector2].consumption_frac);
             wu_var[iCell2][iSector2].consumed += 
                     wu_var[iCell2][iSector2].withdrawn_remote * 
-                    wu_force[iCell2][iSector2].consumption_frac[NR];
+                    wu_force[iCell2][iSector2].consumption_frac;
         }
 
         

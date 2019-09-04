@@ -64,7 +64,7 @@ typedef struct {
  * @brief   Routing forcing
  *****************************************************************************/
 typedef struct {
-    double *discharge;          /**< river (inflow) discharge [m3 s-1] */
+    double discharge;          /**< river (inflow) discharge [m3 s-1] */
 } rout_force_struct;
 
 /******************************************************************************

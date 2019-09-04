@@ -177,27 +177,62 @@ plugin_start_forcing(void)
             }
             plugin_global_param.forcerun[f] = true;
         }
-        // Open forcing file if it is a new year
-        else if (current > 0 && dmy[current].year != dmy[current - 1].year) {
-            // global_param.forceoffset resets every year since the met file restarts
-            // every year
-            // global_param.forceskip should also reset to 0 after the first year
-            plugin_global_param.forceoffset[f] = 0;
-            plugin_global_param.forceskip[f] = 0;
-            if (mpi_rank == VIC_MPI_ROOT) {
-                // close previous forcing file
-                status = nc_close(plugin_filenames.forcing[f].nc_id);
-                check_nc_status(status, "Error closing %s",
-                                plugin_filenames.forcing[f].nc_filename);
+        else {
+            // Open forcing file if it is a new year
+            if (dmy[current].year != dmy[current - 1].year) {
+                // global_param.forceoffset resets every year since the met file restarts
+                // every year
+                // global_param.forceoffset should reset to 0 after the first year
+                // global_param.forceskip should also reset to 0 after the first year
+                plugin_global_param.forceoffset[f] = 0;
+                plugin_global_param.forceskip[f] = 0;
 
-                // open new forcing file
-                sprintf(plugin_filenames.forcing[f].nc_filename, "%s%4d.nc",
-                        plugin_filenames.f_path_pfx[f], dmy[current].year);
-                status =
-                    nc_open(plugin_filenames.forcing[f].nc_filename, NC_NOWRITE,
-                            &(plugin_filenames.forcing[f].nc_id));
-                check_nc_status(status, "Error opening %s",
-                                plugin_filenames.forcing[f].nc_filename);
+                if (mpi_rank == VIC_MPI_ROOT) {
+                    // close previous forcing file
+                    status = nc_close(plugin_filenames.forcing[f].nc_id);
+                    check_nc_status(status, "Error closing %s",
+                                    plugin_filenames.forcing[f].nc_filename);
+
+                    // open new forcing file
+                    sprintf(plugin_filenames.forcing[f].nc_filename, "%s%4d.nc",
+                            plugin_filenames.f_path_pfx[f], dmy[current].year);
+                    status =
+                        nc_open(plugin_filenames.forcing[f].nc_filename, NC_NOWRITE,
+                                &(plugin_filenames.forcing[f].nc_id));
+                    check_nc_status(status, "Error opening %s",
+                                    plugin_filenames.forcing[f].nc_filename);
+                }
+            } else {
+                // global_param.forceoffset should increase during the year
+                if (plugin_global_param.forcefreq[f] == FORCE_STEP) {
+                    plugin_global_param.forceoffset[f] += 1;
+                }
+                else if (plugin_global_param.forcefreq[f] == FORCE_DAY) {
+                    if (dmy[current].day != dmy[current - 1].day) {
+                        plugin_global_param.forceoffset[f] += 1;
+                    }
+                }
+                else if (plugin_global_param.forcefreq[f] == FORCE_MONTH) {
+                    if (dmy[current].month != dmy[current - 1].month) {
+                        plugin_global_param.forceoffset[f] += 1;
+                    }
+                }
+            }
+        
+            // Update the run flag
+            plugin_global_param.forcerun[f] = false;
+            if (plugin_global_param.forcefreq[f] == FORCE_STEP) {
+                plugin_global_param.forcerun[f] = true;
+            }
+            else if (plugin_global_param.forcefreq[f] == FORCE_DAY) {
+                if (dmy[current].day != dmy[current - 1].day) {
+                    plugin_global_param.forcerun[f] = true;
+                }
+            }
+            else if (plugin_global_param.forcefreq[f] == FORCE_MONTH) {
+                if (dmy[current].month != dmy[current - 1].month) {
+                    plugin_global_param.forcerun[f] = true;
+                }
             }
         }
     }
@@ -231,27 +266,6 @@ plugin_end_forcing(void)
                 status = nc_close(plugin_filenames.forcing[f].nc_id);
                 check_nc_status(status, "Error closing %s",
                                 plugin_filenames.forcing[f].nc_filename);
-            }
-        }
-
-        // Update the offset counter and run flag
-        plugin_global_param.forcerun[f] = false;
-        if (plugin_global_param.forcefreq[f] == FORCE_STEP) {
-            plugin_global_param.forceoffset[f] += NF;
-            plugin_global_param.forcerun[f] = true;
-        }
-        else if (plugin_global_param.forcefreq[f] == FORCE_DAY) {
-            if (current != global_param.nrecs - 1 && dmy[current].day !=
-                dmy[current + 1].day) {
-                plugin_global_param.forceoffset[f] += 1;
-                plugin_global_param.forcerun[f] = true;
-            }
-        }
-        else if (plugin_global_param.forcefreq[f] == FORCE_MONTH) {
-            if (current != global_param.nrecs - 1 && dmy[current].month !=
-                dmy[current + 1].month) {
-                plugin_global_param.forceoffset[f] += 1;
-                plugin_global_param.forcerun[f] = true;
             }
         }
     }

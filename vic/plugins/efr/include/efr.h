@@ -31,8 +31,8 @@
  * @brief   Environmental requirements forcing
  *****************************************************************************/
 typedef struct {
-    double *discharge;          /**< environmental river discharge [m3 s-1] */
-    double *baseflow;           /**< environmental baseflow [mm] */
+    double discharge;          /**< environmental river discharge [m3 s-1] */
+    double baseflow;           /**< environmental baseflow [mm] */
     double **moist;             /**< environmental third-layer soil-moisture [mm] */
 } efr_force_struct;
 

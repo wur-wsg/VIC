@@ -84,9 +84,9 @@ typedef struct {
  * @brief   Water-use Forcing
  *****************************************************************************/
 typedef struct {
-    double *demand;                 /**< water demand [mm] */
-    double *consumption_frac;       /**< water groundwater fraction [-] */
-    double *groundwater_frac;       /**< water consumption fraction [-] */
+    double demand;                 /**< water demand [mm] */
+    double consumption_frac;       /**< water groundwater fraction [-] */
+    double groundwater_frac;       /**< water consumption fraction [-] */
 } wu_force_struct;
 
 /******************************************************************************

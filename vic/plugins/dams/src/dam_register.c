@@ -225,9 +225,8 @@ dam_register_efr(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCell)
 {
     extern global_param_struct global_param;
     extern efr_force_struct *efr_force;
-    extern size_t NR;
     
-    dam_var->efr = efr_force[iCell].discharge[NR] * global_param.dt * 
+    dam_var->efr = efr_force[iCell].discharge * global_param.dt * 
             dam_con->inflow_frac / M3_PER_HM3;
 }
 

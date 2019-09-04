@@ -422,6 +422,7 @@ wu_put_data(size_t cur_cell)
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_SURF][0] += wu_var[cur_cell][iSector].withdrawn_surf;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_DAM][0] += wu_var[cur_cell][iSector].withdrawn_dam;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_REM][0] += wu_var[cur_cell][iSector].withdrawn_remote;
+            out_data[cur_cell][N_OUTVAR_TYPES + OUT_RETURNED][0] += wu_var[cur_cell][iSector].returned;
         }
     }
             
@@ -438,5 +439,4 @@ wu_put_data(size_t cur_cell)
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_DAM][0] +
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_REM][0];
-    out_data[cur_cell][N_OUTVAR_TYPES + OUT_RETURNED][0] = wu_var[cur_cell][iSector].returned;
 }

@@ -105,7 +105,6 @@ efr_put_data(size_t iCell)
     extern veg_con_struct **veg_con;
     extern veg_con_map_struct *veg_con_map;
     extern double           ***out_data;
-    extern size_t NR;
     
     double veg_fract;
     double area_fract;
@@ -114,9 +113,9 @@ efr_put_data(size_t iCell)
     size_t j;
 
     out_data[iCell][N_OUTVAR_TYPES +
-                    OUT_EFR_DISCHARGE][0] = efr_force[iCell].discharge[NR];
+                    OUT_EFR_DISCHARGE][0] = efr_force[iCell].discharge;
     out_data[iCell][N_OUTVAR_TYPES +
-                    OUT_EFR_BASEFLOW][0] = efr_force[iCell].baseflow[NR];
+                    OUT_EFR_BASEFLOW][0] = efr_force[iCell].baseflow;
     
     for(i = 0; i < veg_con_map[iCell].nv_active; i++){
         veg_fract = veg_con[iCell][i].Cv;

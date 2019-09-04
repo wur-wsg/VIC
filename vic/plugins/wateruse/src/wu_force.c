@@ -34,12 +34,10 @@ void
 wu_forcing(void)
 {
     extern domain_struct local_domain;
-    extern global_param_struct global_param;
+    extern plugin_global_param_struct plugin_global_param;
     extern domain_struct global_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern wu_force_struct **wu_force;
-    extern size_t NF;
-    extern size_t NR;
     
     double *dvar;
     int demand_idx;
@@ -50,7 +48,6 @@ wu_forcing(void)
     size_t  d3start[3];
     
     size_t i;
-    size_t j;
     size_t k;
     int iSector;
 
@@ -91,10 +88,10 @@ wu_forcing(void)
                 log_err("Unknown water-use sector");
             }
             
-            for (j = 0; j < NF; j++) {
-                d3start[0] = global_param.forceskip[0] +
-                             global_param.forceoffset[0] + j - NF;
+            d3start[0] = plugin_global_param.forceskip[demand_idx] +
+                         plugin_global_param.forceoffset[demand_idx];
 
+            if (plugin_global_param.forcerun[demand_idx]) {
                 get_scatter_nc_field_double(&(plugin_filenames.forcing[demand_idx]), 
                     plugin_filenames.f_varname[demand_idx], d3start, d3count, dvar);
 
@@ -102,10 +99,15 @@ wu_forcing(void)
                     iSector = wu_con_map[i].sidx[k];
 
                     if(iSector != NODATA_WU){
-                        wu_force[i][iSector].demand[j] = dvar[i];
+                        wu_force[i][iSector].demand = dvar[i];
                     }
                 }
+            }
+            
+            d3start[0] = plugin_global_param.forceskip[groundwater_idx] +
+                         plugin_global_param.forceoffset[groundwater_idx];
 
+            if (plugin_global_param.forcerun[groundwater_idx]) {
                 get_scatter_nc_field_double(&(plugin_filenames.forcing[groundwater_idx]), 
                     plugin_filenames.f_varname[groundwater_idx], d3start, d3count, dvar);
 
@@ -113,10 +115,15 @@ wu_forcing(void)
                     iSector = wu_con_map[i].sidx[k];
 
                     if(iSector != NODATA_WU){
-                        wu_force[i][iSector].groundwater_frac[j] = dvar[i];
+                        wu_force[i][iSector].groundwater_frac = dvar[i];
                     }
                 }
+            }
+            
+            d3start[0] = plugin_global_param.forceskip[consumption_idx] +
+                         plugin_global_param.forceoffset[consumption_idx];
 
+            if (plugin_global_param.forcerun[consumption_idx]) {
                 get_scatter_nc_field_double(&(plugin_filenames.forcing[consumption_idx]), 
                     plugin_filenames.f_varname[consumption_idx], d3start, d3count, dvar);
 
@@ -124,22 +131,9 @@ wu_forcing(void)
                     iSector = wu_con_map[i].sidx[k];
 
                     if(iSector != NODATA_WU){
-                        wu_force[i][iSector].consumption_frac[j] = dvar[i];
+                        wu_force[i][iSector].consumption_frac = dvar[i];
                     }
                 }
-            }
-        }
-    }
-
-    // Average forcing data
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        for(k = 0; k < plugin_options.NWUTYPES; k++){
-            iSector = wu_con_map[i].sidx[k];
-            
-            if(iSector != NODATA_WU){
-                wu_force[i][iSector].demand[NR] = average(wu_force[i][iSector].demand, NF);
-                wu_force[i][iSector].groundwater_frac[NR] = average(wu_force[i][iSector].groundwater_frac, NF);
-                wu_force[i][iSector].consumption_frac[NR] = average(wu_force[i][iSector].consumption_frac, NF);
             }
         }
     }

@@ -37,7 +37,6 @@ efr_derived_forcing(void)
     extern global_param_struct     global_param;
     extern option_struct options;
     extern efr_force_struct      *efr_force;
-    extern size_t              NR;
     extern all_vars_struct *all_vars;
     extern veg_con_map_struct *veg_con_map;
     extern soil_con_struct *soil_con;
@@ -100,7 +99,7 @@ efr_derived_forcing(void)
                 }
             }
 
-            if(calculated_baseflow < efr_force[i].baseflow[NR]){
+            if(calculated_baseflow < efr_force[i].baseflow){
                 frac = min(1, frac + 0.01);
                 break;
             }
@@ -131,12 +130,10 @@ void
 efr_forcing(void)
 {
     extern domain_struct           local_domain;
-    extern global_param_struct     global_param;
+    extern plugin_global_param_struct     plugin_global_param;
     extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern efr_force_struct      *efr_force;
-    extern size_t                  NF;
-    extern size_t              NR;
 
     double                        *dvar;
 
@@ -144,7 +141,6 @@ efr_forcing(void)
     size_t                         d3start[3];
 
     size_t                         i;
-    size_t                         j;
 
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
@@ -156,35 +152,34 @@ efr_forcing(void)
     d3count[2] = global_domain.n_nx;
 
     // Get forcing data
-    for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[0] +
-                     global_param.forceoffset[0] + j - NF;
-        
+    d3start[0] = plugin_global_param.forceskip[FORCING_EFR_DISCHARGE] +
+                 plugin_global_param.forceoffset[FORCING_EFR_DISCHARGE];
+
+    if (plugin_global_param.forcerun[FORCING_EFR_DISCHARGE]) {
         if(strcasecmp(plugin_filenames.f_path_pfx[FORCING_EFR_DISCHARGE], MISSING_S) != 0){
             get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_EFR_DISCHARGE]),
                                         plugin_filenames.f_varname[FORCING_EFR_DISCHARGE], 
                                         d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
-                efr_force[i].discharge[j] = dvar[i];
+                efr_force[i].discharge = dvar[i];
             }
         }
+    }
 
+    d3start[0] = plugin_global_param.forceskip[FORCING_EFR_BASEFLOW] +
+                 plugin_global_param.forceoffset[FORCING_EFR_BASEFLOW];
+    
+    if (plugin_global_param.forcerun[FORCING_EFR_BASEFLOW]) {
         if(strcasecmp(plugin_filenames.f_path_pfx[FORCING_EFR_BASEFLOW], MISSING_S) != 0){
             get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_EFR_BASEFLOW]),
                                         plugin_filenames.f_varname[FORCING_EFR_BASEFLOW], 
                                         d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
-                efr_force[i].baseflow[j] = dvar[i];
+                efr_force[i].baseflow = dvar[i];
             }
         }
-    }
-
-    // Average forcing data
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        efr_force[i].discharge[NR] = average(efr_force[i].discharge, NF);
-        efr_force[i].baseflow[NR] = average(efr_force[i].baseflow, NF);
     }
 
     efr_derived_forcing();

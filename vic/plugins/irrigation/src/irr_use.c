@@ -41,7 +41,6 @@ irr_set_demand(size_t iCell)
     extern veg_con_struct **veg_con;
     extern wu_con_map_struct *wu_con_map;
     extern wu_force_struct **wu_force;
-    extern size_t NR;
     
     double demand;
     double area_fract;
@@ -78,9 +77,9 @@ irr_set_demand(size_t iCell)
     
     if(irr_con_map[iCell].ni_active > 0){
         iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
-        wu_force[iCell][iSector].demand[NR] = demand;
-        wu_force[iCell][iSector].consumption_frac[NR] = 1.0;
-        wu_force[iCell][iSector].groundwater_frac[NR] = irr_con[iCell][0].groundwater_fraction;
+        wu_force[iCell][iSector].demand = demand;
+        wu_force[iCell][iSector].consumption_frac = 1.0;
+        wu_force[iCell][iSector].groundwater_frac = irr_con[iCell][0].groundwater_fraction;
     }
 }
 

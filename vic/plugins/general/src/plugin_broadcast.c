@@ -190,7 +190,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 14;
+    nitems = 15;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -240,6 +240,10 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
     // short unsigned int NWURECEIVING;
     offsets[i] = offsetof(plugin_option_struct, NWURECEIVING);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // short unsigned int WU_INPUT;
+    offsets[i] = offsetof(plugin_option_struct, WU_INPUT);
+    blocklengths[i] = WU_NSECTORS;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
     // size_t NIRRTYPES;
     offsets[i] = offsetof(plugin_option_struct, NIRRTYPES);

@@ -33,15 +33,9 @@
 void
 initialize_wu_force(wu_force_struct *wu_force)
 {
-    extern size_t NF;
-
-    size_t               i;
-
-    for (i = 0; i < NF; i++) {
-        wu_force->consumption_frac[i] = 0.0;
-        wu_force->groundwater_frac[i] = 0.0;
-        wu_force->demand[i] = 0.0;
-    }
+    wu_force->consumption_frac = 0.0;
+    wu_force->groundwater_frac = 0.0;
+    wu_force->demand = 0.0;
 }
 
 /******************************************

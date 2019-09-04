@@ -104,7 +104,6 @@ void
 wu_alloc(void)
 {
     extern domain_struct    local_domain;
-    extern size_t           NF;
     extern wu_con_map_struct *wu_con_map;
     extern wu_var_struct **wu_var;
     extern wu_con_struct *wu_con;
@@ -112,7 +111,6 @@ wu_alloc(void)
     extern int mpi_rank;
     
     size_t                     i;
-    size_t                     j;
     int status;
 
     // open parameter file
@@ -143,15 +141,6 @@ wu_alloc(void)
         check_alloc_status(wu_force[i], "Memory allocation error");
         wu_var[i] = malloc(wu_con_map[i].ns_active * sizeof(*wu_var[i]));
         check_alloc_status(wu_var[i], "Memory allocation error");
-        
-        for (j = 0; j < wu_con_map[i].ns_active; j++) {
-            wu_force[i][j].consumption_frac = malloc(NF * sizeof(*wu_force[i][j].consumption_frac));
-            check_alloc_status(wu_force[i][j].consumption_frac, "Memory allocation error");
-            wu_force[i][j].groundwater_frac = malloc(NF * sizeof(*wu_force[i][j].groundwater_frac));
-            check_alloc_status(wu_force[i][j].groundwater_frac, "Memory allocation error");
-            wu_force[i][j].demand = malloc(NF * sizeof(*wu_force[i][j].demand));
-            check_alloc_status(wu_force[i][j].demand, "Memory allocation error");
-        }
     }
     
     wu_set_nreceiving();
@@ -184,15 +173,8 @@ wu_finalize(void)
     extern wu_force_struct **wu_force;
 
     size_t                  i;
-    size_t                     j;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < wu_con_map[i].ns_active; j++) {
-            free(wu_force[i][j].groundwater_frac);
-            free(wu_force[i][j].consumption_frac);
-            free(wu_force[i][j].demand);
-        }
-        
         free(wu_con_map[i].sidx);
         free(wu_con[i].receiving);
         free(wu_var[i]);

@@ -45,7 +45,6 @@ rout_random_run()
     extern double                  ***out_data;
     extern size_t                    *routing_order;
     extern int                        mpi_rank;
-    extern size_t                     NR;
 
     size_t                           *nup_global;
     size_t                          **up_global;
@@ -178,7 +177,7 @@ rout_random_run()
         dis_local[i] = rout_var[i].discharge;
         stream_local[i] = rout_var[i].stream;
         if (plugin_options.FORCE_ROUTING) {
-            force_local[i] = rout_force[i].discharge[NR];
+            force_local[i] = rout_force[i].discharge;
         }
     }
 

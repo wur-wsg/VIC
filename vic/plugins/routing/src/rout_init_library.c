@@ -33,13 +33,7 @@
 void
 initialize_rout_force(rout_force_struct *rout_force)
 {
-    extern size_t NF;
-
-    size_t        i;
-
-    for (i = 0; i < NF; i++) {
-        rout_force->discharge[i] = 0.0;
-    }
+    rout_force->discharge = 0.0;
 }
 
 /******************************************
