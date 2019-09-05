@@ -28,6 +28,41 @@
 #include <plugin.h>
 
 /******************************************
+* @brief   Reset water-use from sectors
+******************************************/
+void
+reset_wu(size_t iCell)
+{
+    extern plugin_option_struct plugin_options;
+    extern wu_var_struct **wu_var;
+    extern wu_con_map_struct *wu_con_map;
+    
+    size_t i;
+    int iSector;
+    
+    for(i = 0; i < plugin_options.NWUTYPES; i ++){
+        iSector = wu_con_map[iCell].sidx[i];        
+        if(iSector == NODATA_WU){
+            continue;
+        }
+        
+        wu_var[iCell][iSector].available_surf = 0.0;
+        wu_var[iCell][iSector].available_gw = 0.0;
+        wu_var[iCell][iSector].available_dam = 0.0;
+        wu_var[iCell][iSector].available_remote = 0.0;
+        wu_var[iCell][iSector].demand_surf = 0.0;
+        wu_var[iCell][iSector].demand_gw = 0.0;
+        wu_var[iCell][iSector].demand_remote = 0.0;
+        wu_var[iCell][iSector].withdrawn_surf = 0.0;
+        wu_var[iCell][iSector].withdrawn_gw = 0.0;
+        wu_var[iCell][iSector].withdrawn_dam = 0.0;
+        wu_var[iCell][iSector].withdrawn_remote = 0.0;
+        wu_var[iCell][iSector].consumed = 0.0;
+        wu_var[iCell][iSector].returned = 0.0;
+    }
+}
+
+/******************************************
 * @brief   Get (cell) demand from sectors
 ******************************************/
 void
@@ -737,6 +772,8 @@ wu_run(size_t iCell)
     withdrawn_dam = 0;
     withdrawn_remote = 0;
     returned = 0;
+    
+    reset_wu(iCell);
     
     /******************************************
      Demand
