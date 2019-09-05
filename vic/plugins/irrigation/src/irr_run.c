@@ -79,7 +79,7 @@ irr_run_requirement(size_t iCell)
                 ccell_var->layer[0].Ksat = csoil_con->Ksat[0];
                 ccell_var->layer[1].Ksat = csoil_con->Ksat[1];
                 
-                if(cveg_var->fcanopy > MIN_FCANOPY){
+                if(cveg_var->fcanopy > 0.01){
                     
                     /**********************************************************************
                     * Initialize
@@ -195,7 +195,7 @@ irr_run_shortage(size_t iCell)
                 // Reset values
                 cirr_var->shortage = 0.0;
                 
-                if(cveg_var->fcanopy > MIN_FCANOPY){
+                if(cveg_var->fcanopy > 0.01){
                     
                     /**********************************************************************
                     * Initialize
