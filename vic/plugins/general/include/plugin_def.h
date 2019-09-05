@@ -167,11 +167,11 @@ enum
  * @brief   Water-use Sectors
  *****************************************************************************/
 enum {
-    WU_IRRIGATION,                  /**< irrigation sector */
     WU_MUNICIPAL,                   /**< domestic sector */
-    WU_MANUFACTURING,               /**< manufacturing sector */
     WU_ENERGY,                      /**< energy sector */
+    WU_MANUFACTURING,               /**< manufacturing sector */
     WU_LIVESTOCK,                   /**< livestock sector */
+    WU_IRRIGATION,                  /**< irrigation sector */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     WU_NSECTORS                     /**< used as a loop counter*/

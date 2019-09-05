@@ -213,16 +213,30 @@ calculate_division(size_t iCell,
         double demand_surf, 
         double demand_remote)
 {
+    UNUSED(demand_gw);
+    UNUSED(demand_surf);
+    UNUSED(demand_remote);
+    
     extern plugin_option_struct plugin_options;
     extern wu_var_struct **wu_var;
     extern wu_con_struct *wu_con;
     extern wu_con_map_struct *wu_con_map;
+    
+    double available_gw_tmp;
+    double available_surf_tmp;
+    double available_dam_tmp;
+    double available_remote_tmp;
     
     size_t i;
     size_t j;
     int iSector;
     size_t iCell2;
     int iSector2;
+    
+    available_gw_tmp = available_gw;
+    available_surf_tmp = available_surf;
+    available_dam_tmp = available_dam;
+    available_remote_tmp = available_remote;
     
     for(i = 0; i < plugin_options.NWUTYPES; i ++){
         iSector = wu_con_map[iCell].sidx[i];        
@@ -231,27 +245,54 @@ calculate_division(size_t iCell,
         }
         
         // groundwater
-        if(demand_gw > 0){
-            wu_var[iCell][iSector].available_gw = available_gw *
-                    wu_var[iCell][iSector].demand_gw / 
-                    demand_gw;
+        if(wu_var[iCell][iSector].demand_gw >= available_gw_tmp){
+            wu_var[iCell][iSector].available_gw = available_gw_tmp;
+            available_gw_tmp = 0.0;
         } else {
-            wu_var[iCell][iSector].available_gw = 0.0;
+            wu_var[iCell][iSector].available_gw = wu_var[iCell][iSector].demand_gw;
+            available_gw_tmp -= wu_var[iCell][iSector].demand_gw;
         }
         
+//        // groundwater
+//        if(demand_gw > 0){
+//            wu_var[iCell][iSector].available_gw = available_gw *
+//                    wu_var[iCell][iSector].demand_gw / 
+//                    demand_gw;
+//        } else {
+//            wu_var[iCell][iSector].available_gw = 0.0;
+//        }
+        
         // surface water & dam
-        if(demand_surf > 0){
-            wu_var[iCell][iSector].available_surf = available_surf *
-                    wu_var[iCell][iSector].demand_surf / 
-                    demand_surf;
-            
-            wu_var[iCell][iSector].available_dam = available_dam *
-                    wu_var[iCell][iSector].demand_surf / 
-                    demand_surf;
+        if(wu_var[iCell][iSector].demand_surf >= available_surf_tmp + available_dam_tmp){
+            wu_var[iCell][iSector].available_surf = available_surf_tmp;
+            wu_var[iCell][iSector].available_dam = available_dam_tmp;
+            available_surf_tmp = 0.0;
+            available_dam_tmp = 0.0;
         } else {
-            wu_var[iCell][iSector].available_surf = 0.0;
-            wu_var[iCell][iSector].available_dam = 0.0;
+            wu_var[iCell][iSector].available_surf = wu_var[iCell][iSector].demand_surf *
+                    (available_surf_tmp / (available_surf_tmp + available_dam_tmp));
+            wu_var[iCell][iSector].available_dam = wu_var[iCell][iSector].demand_surf *
+                    (available_dam_tmp / (available_surf_tmp + available_dam_tmp));
+            
+            available_surf_tmp -= wu_var[iCell][iSector].demand_surf *
+                    (available_surf_tmp / (available_surf_tmp + available_dam_tmp));
+            available_dam_tmp -= wu_var[iCell][iSector].demand_surf *
+                    (available_dam_tmp / (available_surf_tmp + available_dam_tmp));
         }
+        
+//        // surface water & dam
+//        if(demand_surf > 0){
+//            wu_var[iCell][iSector].available_surf = available_surf *
+//                    wu_var[iCell][iSector].demand_surf / 
+//                    demand_surf;
+//            
+//            wu_var[iCell][iSector].available_dam = available_dam *
+//                    wu_var[iCell][iSector].demand_surf / 
+//                    demand_surf;
+//        } else {
+//            wu_var[iCell][iSector].available_surf = 0.0;
+//            wu_var[iCell][iSector].available_dam = 0.0;
+//        }
         
         // remote
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
@@ -261,17 +302,24 @@ calculate_division(size_t iCell,
             if(iSector2 == NODATA_WU){
                 continue;
             }
-                       
-            if(demand_remote > 0){
-                wu_var[iCell2][iSector2].available_remote = 
-                        available_remote *
-                        (wu_var[iCell2][iSector2].demand_surf - 
-                        wu_var[iCell2][iSector2].withdrawn_surf - 
-                        wu_var[iCell2][iSector2].withdrawn_dam) / 
-                        demand_remote;    
+            
+            if(wu_var[iCell2][iSector2].demand_surf >= available_remote_tmp){
+                wu_var[iCell2][iSector2].available_remote = available_remote_tmp;
+                available_remote_tmp = 0.0;
             } else {
-                wu_var[iCell2][iSector2].available_remote = 0.0;
+                wu_var[iCell2][iSector2].available_remote = wu_var[iCell2][iSector2].demand_surf;
+                available_remote_tmp -= wu_var[iCell2][iSector2].demand_surf;
             }
+//            if(demand_remote > 0){
+//                wu_var[iCell2][iSector2].available_remote = 
+//                        available_remote *
+//                        (wu_var[iCell2][iSector2].demand_surf - 
+//                        wu_var[iCell2][iSector2].withdrawn_surf - 
+//                        wu_var[iCell2][iSector2].withdrawn_dam) / 
+//                        demand_remote;    
+//            } else {
+//                wu_var[iCell2][iSector2].available_remote = 0.0;
+//            }
         }
     }
 }
