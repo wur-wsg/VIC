@@ -257,6 +257,7 @@ calculate_division(size_t iCell,
     double available_surf_tmp;
     double available_dam_tmp;
     double available_remote_tmp;
+    double available_surf_tot;
     
     size_t i;
     size_t j;
@@ -296,7 +297,8 @@ calculate_division(size_t iCell,
 //        }
         
         // surface water & dam
-        if(available_surf_tmp + available_dam_tmp > 0 && demand_surf > 0) {
+        available_surf_tot = available_surf_tmp + available_dam_tmp;
+        if(available_surf_tot > 0 && demand_surf > 0) {
             if(wu_var[iCell][iSector].demand_surf >= available_surf_tmp + available_dam_tmp){
                 wu_var[iCell][iSector].available_surf = available_surf_tmp;
                 wu_var[iCell][iSector].available_dam = available_dam_tmp;
@@ -304,14 +306,14 @@ calculate_division(size_t iCell,
                 available_dam_tmp = 0.0;
             } else {
                 wu_var[iCell][iSector].available_surf = wu_var[iCell][iSector].demand_surf *
-                        (available_surf_tmp / (available_surf_tmp + available_dam_tmp));
+                        (available_surf_tmp / available_surf_tot);
                 wu_var[iCell][iSector].available_dam = wu_var[iCell][iSector].demand_surf *
-                        (available_dam_tmp / (available_surf_tmp + available_dam_tmp));
-
+                        (available_dam_tmp / available_surf_tot);
+                
                 available_surf_tmp -= wu_var[iCell][iSector].demand_surf *
-                        (available_surf_tmp / (available_surf_tmp + available_dam_tmp));
+                        (available_surf_tmp / available_surf_tot);
                 available_dam_tmp -= wu_var[iCell][iSector].demand_surf *
-                        (available_dam_tmp / (available_surf_tmp + available_dam_tmp));
+                        (available_dam_tmp / available_surf_tot);
             }
         }
         
