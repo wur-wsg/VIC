@@ -35,12 +35,15 @@
  * @brief   Plugin filenames
  *****************************************************************************/
 typedef struct {
-    nameid_struct routing;  /**< routing parameter file */
-    nameid_struct decomposition;   /**< decomposition parameter file */
+    nameid_struct routing;          /**< routing parameter file */
+    nameid_struct decomposition;    /**< decomposition parameter file */
+    nameid_struct dams;             /**< dams parameter file */
+    nameid_struct wateruse;         /**< water-use parameter file */
+    nameid_struct irrigation;       /**< irrigation parameter file */
 
-    nameid_struct forcing[PLUGIN_N_FORCING_TYPES]; /**< forcing files */
+    nameid_struct forcing[PLUGIN_N_FORCING_TYPES];      /**< forcing files */
     char f_path_pfx[PLUGIN_N_FORCING_TYPES][MAXSTRING]; /**< path and prefix for forcing files */
-    char f_varname[PLUGIN_N_FORCING_TYPES][MAXSTRING]; /**< variable name for forcing files */
+    char f_varname[PLUGIN_N_FORCING_TYPES][MAXSTRING];  /**< variable name for forcing files */
 } plugin_filenames_struct;
 
 /******************************************************************************

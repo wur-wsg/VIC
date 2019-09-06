@@ -51,6 +51,7 @@
 #define CM_PER_M 100  /**< centimeters per meter */
 #define MM_PER_CM 10  /**< milimeters per centimeter */
 #define MM_PER_IN 25.4  /**< milimeters per inch */
+#define M3_PER_HM3 (100 * 100 * 100)  /**< cubic meter per cubic hectometer */
 #define IN_PER_M (MM_PER_M / MM_PER_IN)  /**< inches per meter */
 #define MOLE_PER_KMOLE 1000 /**< moles per kilomole */
 #define FRACT_TO_PERCENT 100

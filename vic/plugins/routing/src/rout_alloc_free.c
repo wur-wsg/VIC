@@ -35,7 +35,6 @@ rout_alloc(void)
 {
     extern domain_struct              global_domain;
     extern domain_struct              local_domain;
-    extern size_t                     NF;
     extern global_param_struct        global_param;
     extern plugin_global_param_struct plugin_global_param;
     extern plugin_option_struct       plugin_options;
@@ -75,13 +74,6 @@ rout_alloc(void)
     if (plugin_options.FORCE_ROUTING) {
         rout_force = malloc(local_domain.ncells_active * sizeof(*rout_force));
         check_alloc_status(rout_force, "Memory allocation error");
-
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            rout_force[i].discharge =
-                malloc(NF * sizeof(*rout_force[i].discharge));
-            check_alloc_status(rout_force[i].discharge,
-                               "Memory allocation error");
-        }
     }
 
     if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
@@ -124,9 +116,6 @@ rout_finalize(void)
     free(rout_con);
 
     if (plugin_options.FORCE_ROUTING) {
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            free(rout_force[i].discharge);
-        }
         free(rout_force);
     }
 

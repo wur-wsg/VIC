@@ -65,11 +65,32 @@ plugin_print_options(plugin_option_struct *op)
             op->DECOMPOSITION);
     fprintf(LOG_DEST, "\tROUTING              : %s\n",
             op->ROUTING ? "true" : "false");
+    fprintf(LOG_DEST, "\tEFR                  : %s\n",
+            op->EFR ? "true" : "false");
+    fprintf(LOG_DEST, "\tDAMS                 : %s\n",
+            op->DAMS ? "true" : "false");
+    fprintf(LOG_DEST, "\tWATERUSE             : %s\n",
+            op->WATERUSE ? "true" : "false");
+    fprintf(LOG_DEST, "\tIRRIGATION           : %s\n",
+            op->IRRIGATION ? "true" : "false");
+    
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",
             op->FORCE_ROUTING ? "true" : "false");
+    fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
+            op->POTENTIAL_IRRIGATION ? "true" : "false");
 
     fprintf(LOG_DEST, "\tUH_LENGTH            : %d\n",
             op->UH_LENGTH);
+    fprintf(LOG_DEST, "\tNDAMTYPES            : %d\n",
+            op->NDAMTYPES);
+    fprintf(LOG_DEST, "\tNDAMSERVICE          : %d\n",
+            op->NDAMSERVICE);
+    fprintf(LOG_DEST, "\tNWUTYPES             : %d\n",
+            op->NWUTYPES);
+    fprintf(LOG_DEST, "\tNWURECEIVING         : %d\n",
+            op->NWURECEIVING);
+    fprintf(LOG_DEST, "\tNIRRTYPES            : %zu\n",
+            op->NIRRTYPES);
 }
 
 /******************************************
@@ -78,8 +99,10 @@ plugin_print_options(plugin_option_struct *op)
 void
 plugin_print_parameters(plugin_parameters_struct *pa)
 {
-    /* Unused variables */
-    UNUSED(pa);
-
     fprintf(LOG_DEST, "plugin parameters:\n");
+    fprintf(LOG_DEST, "\tDAM_ALPHA            : %.4f\n", pa->DAM_ALPHA);
+    fprintf(LOG_DEST, "\tDAM_BETA             : %.4f\n", pa->DAM_BETA);
+    fprintf(LOG_DEST, "\tDAM_GAMMA            : %.4f\n", pa->DAM_GAMMA);
+    fprintf(LOG_DEST, "\tWfc_fract            : %.4f\n", pa->Wfc_fract);
+    fprintf(LOG_DEST, "\tKsat_expt            : %.4f\n", pa->Ksat_expt);
 }

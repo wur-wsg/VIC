@@ -41,7 +41,6 @@ rout_basin_run(size_t iCell)
     extern rout_con_struct           *rout_con;
     extern rout_force_struct         *rout_force;
     extern double                  ***out_data;
-    extern size_t                     NR;
 
     double                            inflow;
     double                            dt_inflow;
@@ -63,7 +62,7 @@ rout_basin_run(size_t iCell)
 
     // Gather inflow from forcing
     if (plugin_options.FORCE_ROUTING) {
-        inflow += rout_force[iCell].discharge[NR];
+        inflow += rout_force[iCell].discharge;
     }
 
     // Gather runoff from VIC

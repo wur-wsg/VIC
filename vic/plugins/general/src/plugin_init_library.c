@@ -33,10 +33,25 @@
 void
 plugin_initialize_options(plugin_option_struct *plugin_options)
 {
+    size_t i;
+    
     plugin_options->DECOMPOSITION = RANDOM_DECOMPOSITION;
     plugin_options->ROUTING = false;
+    plugin_options->EFR = false;
+    plugin_options->DAMS = false;
+    plugin_options->WATERUSE = false;
+    plugin_options->IRRIGATION = false;
     plugin_options->UH_LENGTH = 0;
     plugin_options->FORCE_ROUTING = false;
+    plugin_options->NDAMTYPES = 0;
+    plugin_options->NDAMSERVICE = 0;
+    plugin_options->NWUTYPES = WU_NSECTORS;
+    plugin_options->NWURECEIVING = 0;
+    for(i = 0; i < WU_NSECTORS; i++){
+        plugin_options->WU_INPUT[i] = WU_SKIP;
+    }
+    plugin_options->NIRRTYPES = 0;
+    plugin_options->POTENTIAL_IRRIGATION = false;
 }
 
 /******************************************
@@ -69,8 +84,11 @@ plugin_initialize_global(plugin_global_param_struct *plugin_global_param)
 void
 plugin_initialize_parameters(plugin_parameters_struct *plugin_param)
 {
-    /* Unused variables */
-    UNUSED(plugin_param);
+    plugin_param->DAM_ALPHA = 0.85;
+    plugin_param->DAM_BETA = 0.6;
+    plugin_param->DAM_GAMMA = 5;
+    plugin_param->Wfc_fract = 0.7;
+    plugin_param->Ksat_expt = 0.33;
 }
 
 /******************************************
@@ -84,6 +102,9 @@ plugin_initialize_filenames(plugin_filenames_struct *plugin_filenames)
     snprintf(plugin_filenames->routing.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->decomposition.nc_filename, MAXSTRING, "%s",
              MISSING_S);
+    snprintf(plugin_filenames->dams.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames->wateruse.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames->irrigation.nc_filename, MAXSTRING, "%s", MISSING_S);
 
     for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
         snprintf(plugin_filenames->forcing[i].nc_filename, MAXSTRING, "%s",
