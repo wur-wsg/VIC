@@ -213,8 +213,7 @@ initialize_lake(lake_var_struct  *lake,
         lake->soil.layer[i].T = lake->temp[0];
         lake->soil.layer[i].evap = 0.0;
         lake->soil.layer[i].kappa = cell->layer[i].kappa;
-        lake->soil.layer[i].moist = soil_con->porosity[i] *
-                                    soil_con->depth[i] *
+        lake->soil.layer[i].moist = soil_con->porosity[i] * soil_con->depth[i] *
                                     MM_PER_M;
         lake->soil.layer[i].phi = cell->layer[i].phi;
         for (j = 0; j < options.Nfrost; j++) {

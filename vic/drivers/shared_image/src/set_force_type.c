@@ -139,8 +139,7 @@ set_force_type(char *cmdstr,
         snprintf(filenames.f_path_pfx[file_num], MAXSTRING, "%s", ncfilename);
     }
     else {
-        log_err(
-            "Must supply netCDF file name for %s forcing file number %d",
+        log_err("Must supply netCDF file name for %s forcing file number %d",
             optstr, file_num + 1);
     }
 

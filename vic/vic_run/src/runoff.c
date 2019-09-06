@@ -471,27 +471,24 @@ runoff(cell_data_struct  *cell,
             moist[lindex] = tmp_layer.moist;
         }
 
-        ErrorFlag = distribute_node_moisture_properties(
-            energy->moist,
-            energy->ice,
-            energy->kappa_node,
-            energy->Cs_node,
-            soil_con->Zsum_node,
-            energy->T,
-            soil_con->
-            max_moist_node,
-            soil_con->expt_node,
-            soil_con->bubble_node,
-            moist, soil_con->depth,
-            soil_con->soil_dens_min,
-            soil_con->bulk_dens_min,
-            soil_con->quartz,
-            soil_con->soil_density,
-            soil_con->bulk_density,
-            soil_con->organic,
-            Nnodes,
-            options.Nlayer,
-            soil_con->FS_ACTIVE);
+        ErrorFlag = distribute_node_moisture_properties(energy->moist,
+                                                        energy->ice,
+                                                        energy->kappa_node,
+                                                        energy->Cs_node,
+                                                        soil_con->Zsum_node,
+                                                        energy->T,
+                                                        soil_con->max_moist_node,
+                                                        soil_con->expt_node,
+                                                        soil_con->bubble_node,
+                                                        moist, soil_con->depth,
+                                                        soil_con->soil_dens_min,
+                                                        soil_con->bulk_dens_min,
+                                                        soil_con->quartz,
+                                                        soil_con->soil_density,
+                                                        soil_con->bulk_density,
+                                                        soil_con->organic, Nnodes,
+                                                        options.Nlayer,
+                                                        soil_con->FS_ACTIVE);
         if (ErrorFlag == ERROR) {
             return (ERROR);
         }

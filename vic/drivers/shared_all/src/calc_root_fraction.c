@@ -122,8 +122,7 @@ calc_root_fractions(veg_con_struct  *veg_con,
                     Lstep = soil_con->depth[layer];
                     Lsum += Lstep;
                 }
-                else if (layer == options.Nlayer && zone <
-                         options.ROOT_ZONES) {
+                else if (layer == options.Nlayer && zone < options.ROOT_ZONES) {
                     Zstep = (double) veg_con[veg].zone_depth[zone];
                     Lstep = Zsum + Zstep - Lsum;
                     if (zone < options.ROOT_ZONES - 1) {

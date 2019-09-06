@@ -80,8 +80,7 @@ newt_raph(void (*vecfunc)(double x[], double fvec[], int n, int init, ...),
                 param.NEWT_RAPH_R_MIN) {
                 x[i] += p[i] * param.NEWT_RAPH_RELAX1;
             }
-            else if (k > 20 && k <= 60 && x[i] < param.NEWT_RAPH_R_MAX &&
-                     x[i] >
+            else if (k > 20 && k <= 60 && x[i] < param.NEWT_RAPH_R_MAX && x[i] >
                      param.NEWT_RAPH_R_MIN) {
                 x[i] += p[i] * param.NEWT_RAPH_RELAX2;
             }

@@ -82,6 +82,7 @@ MassRelease(double *InterceptedSnow,
     /* (*InterceptedSnow < MIN_INTERCEPTION_STORAGE) If the amount of snow in
        the canopy is less than some minimum value, MIN_INTERCEPTION_STORAGE,
        then only melt can occur and there is no mass release. */
+
     else {
         TempDrip = min(*TempInterceptionStorage, *InterceptedSnow);
         *Drip += TempDrip;
