@@ -14,7 +14,7 @@
 - distribution of official and bleeding edge releases of the model source code.
 
 ## VIC for Model users (non developers)
-In general, if you are only going to be using the model and not working directly on the source code, you may just download the model either from [VIC github page](https://github.com/UW-Hydro/VIC) or [VIC-WUR github page](https://github.com/wur-wsg/VIC). Additional archived tags and releases (including all previous VIC versions) are available [here](https://github.com/UW-Hydro/VIC/tags).
+In general, if you are only going to be using the model and not working directly on the source code, you may just download the model either from [VIC github page](https://github.com/UW-Hydro/VIC). Additional archived tags and releases (including all previous VIC versions) are available [here](https://github.com/UW-Hydro/VIC/tags).
 
 ## VIC for Developers
 If you plan on contributing to model development or would like a systematic way to incorporate updates to the VIC source code, we encourage you to use Git.  The following sections are designed to get you started using git and working with the VIC source code repository.
@@ -40,7 +40,7 @@ Using [Git](http://git-scm.com/) involves a few different copies of the archive:
 3. **Your Clone(s) of your Fork:** a clone is a copy of your fork, stored on your local machine, where you can edit and test the code.  You can have one or more clones.  Each clone is a snapshot of a particular version of the code in your fork (e.g., you select which branches, and which versions of the code on those branches, to copy to your clone).  You can change which version of the code each of your clones points to at any time.  Your clone is where you edit files and commit changes.  You can then push code changes from your clone back up to your fork.
 
 ## Step 1: Fork the repo
-If you do not have a github account, create one. It's free for public repos (like the VIC one). On the [UW-Hydro/VIC](https://github.com/UW-Hydro/VIC) or [VIC-WUR github page](https://github.com/wur-wsg/VIC) page, click "Fork" in the upper right hand corner.
+If you do not have a github account, create one. It's free for public repos (like the VIC one). On the [UW-Hydro/VIC](https://github.com/UW-Hydro/VIC) page, click "Fork" in the upper right hand corner.
 
 ## Step 2: Clone your fork
 You've successfully forked the VIC repository, but so far it only exists on GitHub. To be able to work on the project, you will need to clone it to your local machine.
@@ -147,7 +147,7 @@ The VIC administrator and other developers will examine your pull request and de
 
 # Github Issues
 
-We use [Github Issues](https://github.com/UW-Hydro/VIC/issues) or [VIC-WUR github page](https://github.com/wur-wsg/VIC/issues) to track bugs and model development in the VIC source code. When issuing a Github Issue for a bug, it is import to include the following information:
+We use [Github Issues](https://github.com/UW-Hydro/VIC/issues) to track bugs and model development in the VIC source code. When issuing a Github Issue for a bug, it is import to include the following information:
 
 - Version of VIC that you are using (e.g. VIC.4.2.b)
 - Name and version of the C compiler you are using

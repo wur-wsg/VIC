@@ -1,6 +1,6 @@
 # Open Source
 
-We encourage any users who have modified (or would like to modify) VIC, either to fix bugs or develop new features, to contact us and coordinate development work with us. The VIC model source code is archived in Git and is publicly available through [GitHub](https://github.com). To access the source code, visit [GitHub](https://github.com), create an account, and visit [github.com/UW-Hydro/VIC](https://github.com/UW-Hydro/VIC) or [github.com/wur-wsg/VIC](https://github.com/wur-wsg/VIC). The routing model will soon be added to the archive as well.
+We encourage any users who have modified (or would like to modify) VIC, either to fix bugs or develop new features, to contact us and coordinate development work with us. The VIC model source code is archived in Git and is publicly available through [GitHub](https://github.com). To access the source code, visit [GitHub](https://github.com), create an account, and visit [github.com/UW-Hydro/VIC](https://github.com/UW-Hydro/VIC). The routing model will soon be added to the archive as well.
 
 VIC is an [open source](open-source-philosophy.md) development model and is released under the terms of the [GNU General Public License v2 (GPL).](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 
@@ -14,10 +14,9 @@ Information about the VIC codebase:
 
 - [Current Versions of VIC and Routing Model](ReleaseNotes.md)
 - [Known issues](https://github.com/UW-Hydro/VIC/issues)
-- [VIC-WUR known issues](https://github.com/wur-wsg/VIC/issues)
 - [Contributing](Contributing.md)
 
-All development activity is coordinated via the [VIC github page](https://github.com/UW-Hydro/VIC) or [VIC-WUR github page](https://github.com/wur-wsg/VIC), where you can also find all archived, current, beta, and development versions of the model.
+All development activity is coordinated via the [VIC github page](https://github.com/UW-Hydro/VIC), where you can also find all archived, current, beta, and development versions of the model.
 
 # Release Naming Convention
 
@@ -46,7 +45,7 @@ Regardless of the release type (major, minor, patch), the VIC model release proc
 1.  Make the release!
     - Merge the `release` branch into the `master` branch.
     - Create the tag. This is best done on the command line as `git tag -f -a VIC.5.1.2 -m 'release tag of VIC 5.1.2, bug fix update for this example`.
-    - Publish the release on [VIC github page](https://github.com/UW-Hydro/VIC/releases) or [VIC-WUR github page](https://github.com/wur-wsg/VIC/releases).
+    - Publish the release on [Github](https://github.com/UW-Hydro/VIC/releases).
     - Update the VIC documentation and _Readme_ files with the releases Zenodo DOI (e.g. [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.35303.svg)](http://dx.doi.org/10.5281/zenodo.35303)).
     - Update the `develop` branch with the changes from the `master` branch.
     - Reset the version strings in the `develop` branch.

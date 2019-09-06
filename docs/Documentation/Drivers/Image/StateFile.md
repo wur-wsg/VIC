@@ -23,7 +23,6 @@ The netCDF state file dimensions include:
 | veg_class      | Number of vegetation types (including bare soil) |
 | snow_band      | Number of snow bands                             |
 | frost_area     | Number of frost areas                            |
-| discharge_dt   | Number of routing timesteps                      |
 
 * * *
 
@@ -41,7 +40,6 @@ The following variables define the basic model information, including grid cell 
 | frost_area      | frost_area | int    | Frost area indices                                                                                                          |
 | dz_node         | [soil_node, lat, lon]  | double | Distances between soil thermal   nodes [m]                                                                                  |
 | node_depth      | [soil_node, lat, lon]  | double | Depth   from surface of each soil thermal node (first node should have a depth of 0m   indicating it is at the surface) [m] |
-| discharge_dt    | discharge_dt           | double | Routing time [s]                                                                                                            |
 
 * * *
 
@@ -137,11 +135,3 @@ If `CARBON=TRUE` in the [global parameter file](GlobalParam.md), the following v
 | STATE_LAKE_ICE_SNOW_PACK_WATER   | double            | Liquid   water content of pack snow layer of lake snow [m]                                                       |
 | STATE_LAKE_ICE_SNOW_ALBEDO       | double            | Albedo of   lake snow [1]                                                                                        |
 | STATE_LAKE_ICE_SNOW_DEPTH        | double            | Depth of   snow on lake ice [m]                                                                                  |
-
-* * *
-
-## Routing Information (only when ROUT are turned on in the [global parameter file](GlobalParam.md#DefineStateFiles))
-
-| State   variable name            | Type              | Description                                  |
-|----------------------------------|-------------------|----------------------------------------------|
-| STATE_DISCHARGE_DT               | double            | routing sub-step discharge stored [m3 s-1]   |

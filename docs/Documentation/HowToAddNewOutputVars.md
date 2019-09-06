@@ -1,12 +1,12 @@
 # How to Add New Output Variables
 
-VIC allows users to select which output variables to write to their output files. Variables that can be selected are listed [here](OutputVarList.md) as well as in the VIC source code file `vic_driver_shared_all.h` and `plugin_def.h` (listed as `OUT_*`). However, not all variables that VIC simulates are available for output. And of course if you are changing VIC's physics, any new variables you add are also not available for output (yet).
+VIC allows users to select which output variables to write to their output files. Variables that can be selected are listed [here](OutputVarList.md) as well as in the VIC source code file `vic_driver_shared_all.h` (listed as `OUT_*`). However, not all variables that VIC simulates are available for output. And of course if you are changing VIC's physics, any new variables you add are also not available for output (yet).
 
 You can enable VIC to output new variables by making a few changes to the code, as follows:
 
-## 1. Make sure VIC sends the variable to `put_data()` or `plugin_put_data()`
+## 1. Make sure VIC sends the variable to `put_data()`
 
-If VIC doesn't already compute the variable you need, or computes it but doesn't store it in one of the structures that is accessible to `put_data()` or `plugin_put_data()`, you'll have to modify VIC to do this. The structures that `put_data()` has access to are: `atmos_data`, `soil_con`, `cell_data`, `veg_con`, `veg_var`, `energy`, `snow_data`, and `lake_var`.  
+If VIC doesn't already compute the variable you need, or computes it but doesn't store it in one of the structures that is accessible to `put_data()`, you'll have to modify VIC to do this. The structures that `put_data()` has access to are: `atmos_data`, `soil_con`, `cell_data`, `veg_con`, `veg_var`, `energy`, `snow_data`, and `lake_var`.  
 
 ## 2. Define the variable's name in `vic_driver_shared_all.h`.
 
@@ -50,7 +50,7 @@ Similarly, for input meteorological variables, we have:
 
 ## 3. For output variables, populate the variable's metadata in `vic_metadata.c`.
 
-In the function `set_output_met_data_info()` or `plugin_set_ouptut_met_data_info()`, there is a series of calls to `strcpy` setting metadata for each output variable:
+In the function `set_output_met_data_info()`, there is a series of calls to `strcpy` setting metadata for each output variable:
 
 ```C
     /* new variable metadata [kg m-2] */
@@ -71,7 +71,7 @@ out_data[OUT_NEW_VAR_NAME].nelem = options.Nlayer;
 
 To add an entry, copy an existing entry and modify it.
 
-Next, define your variable's default aggregation method. This refers to the method used to aggregate up from smaller time steps to larger time steps, e.g. from hourly to daily. By default, variables are aggregated via averaging the original values over the output time step; if this is acceptable for your variable, then you do not need to specify anything here. Otherwise, you need to specify a method. This is done by adding your variable to the appropriate case/switch block in `get_default_outvar_aggtype()` or `plugin_get_default_aggtype()`, for example:
+Next, define your variable's default aggregation method. This refers to the method used to aggregate up from smaller time steps to larger time steps, e.g. from hourly to daily. By default, variables are aggregated via averaging the original values over the output time step; if this is acceptable for your variable, then you do not need to specify anything here. Otherwise, you need to specify a method. This is done by adding your variable to the appropriate case/switch block in `get_default_outvar_aggtype()`, for example:
 
 ```C
     switch (varid) {
@@ -97,7 +97,7 @@ Once again, to add an entry, copy an existing entry and modify it. Possible aggr
 
 ## 4. For output variables, add logic to `put_data.c` to set the variable in the `out_data` array
 
-Assuming that at this point, your variable is computed somewhere in VIC and stored in one of the data structures that `put_data()` or `plugin_put_data()` has access to, you now need to assign this to the appropriate part of the out_data structure. In `put_data()`, there is a loop over elevation bands and veg tiles. The contribution of each band/tile combination is added to the running total (weighted by the band/tile's area fraction) in the out_data structure. For example, for single-element variables:
+Assuming that at this point, your variable is computed somewhere in VIC and stored in one of the data structures that `put_data()` has access to, you now need to assign this to the appropriate part of the out_data structure. In `put_data()`, there is a loop over elevation bands and veg tiles. The contribution of each band/tile combination is added to the running total (weighted by the band/tile's area fraction) in the out_data structure. For example, for single-element variables:
 
 ```C
 /** record canopy interception **/

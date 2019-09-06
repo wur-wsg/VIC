@@ -16,7 +16,7 @@ While we would like to hear about your particular application (especially a copy
 
 The [VIC listserve](https://mailman.u.washington.edu/mailman/listinfo/vic_users) should be used for questions about model setup and application. It is basically VIC users helping other VIC users.
 
-All other exchanges about VIC source code are managed through the [VIC github page](https://github.com/UW-Hydro/VIC) or [VIC-WUR github page](github.com/wur-wsg/VIC).
+All other exchanges about VIC source code are managed through the [VIC github page](https://github.com/UW-Hydro/VIC).
 
 We expected that the user comes prepared with some understanding of the model and scientific computing.  As such, these items are specifically not supported by the VIC development community:
 

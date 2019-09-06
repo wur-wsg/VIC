@@ -1,4 +1,4 @@
-# VIC-WUR documentation README
+# VIC documentation README
 
 This directory contains that builds the VIC website (http://vic.readthedocs.io). Below is a bit of information on how to edit, test, and serve the documentation.
 
