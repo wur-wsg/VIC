@@ -703,8 +703,7 @@ collect_wb_terms(cell_data_struct cell,
 
         out_data[OUT_SOIL_LIQ][index] += tmp_moist * AreaFactor;
         out_data[OUT_SOIL_ICE][index] += tmp_ice * AreaFactor;
-        out_data[OUT_SOIL_EFF_SAT][index] += cell.layer[index].eff_sat *
-                                             AreaFactor;
+        out_data[OUT_SOIL_EFF_SAT][index] += cell.layer[index].eff_sat * AreaFactor;
     }
     out_data[OUT_SOIL_WET][0] += cell.wetness * AreaFactor;
     out_data[OUT_ROOTMOIST][0] += cell.rootmoist * AreaFactor;

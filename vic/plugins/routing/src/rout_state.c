@@ -1,6 +1,35 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Routing state functions
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Set state metadata
+******************************************/
 void
 rout_set_state_meta_data_info(void)
 {
@@ -18,6 +47,9 @@ rout_set_state_meta_data_info(void)
              MAXSTRING, "%s", "sub-step discharge at the cell outflow point");
 }
 
+/******************************************
+* @brief   Initialize state dimension size and ids
+******************************************/
 void
 rout_set_nc_state_file_info(nc_file_struct *nc_state_file)
 {
@@ -34,6 +66,9 @@ rout_set_nc_state_file_info(nc_file_struct *nc_state_file)
     nc_state_file->rdt_size = plugin_options.UH_LENGTH + rout_steps_per_dt;
 }
 
+/******************************************
+* @brief   Add state dimensions
+******************************************/
 void
 rout_add_state_dim(char           *filename,
                    nc_file_struct *nc_state_file)
@@ -47,6 +82,9 @@ rout_add_state_dim(char           *filename,
     check_nc_status(status, "Error defining lake_node in %s", filename);
 }
 
+/******************************************
+* @brief   Add state dimension variables
+******************************************/
 void
 rout_add_state_dim_var(char           *filename,
                        nc_file_struct *nc_state_file)
@@ -74,6 +112,9 @@ rout_add_state_dim_var(char           *filename,
     check_nc_status(status, "Error adding attribute in %s", filename);
 }
 
+/******************************************
+* @brief   Add state dimension variable data
+******************************************/
 void
 rout_add_state_dim_var_data(char           *filename,
                             nc_file_struct *nc_state_file)
@@ -110,6 +151,9 @@ rout_add_state_dim_var_data(char           *filename,
     free(ivar);
 }
 
+/******************************************
+* @brief   Set state variable dimensions
+******************************************/
 void
 rout_set_nc_state_var_info(nc_file_struct *nc,
                            size_t          varid)
@@ -127,6 +171,9 @@ rout_set_nc_state_var_info(nc_file_struct *nc,
     }
 }
 
+/******************************************
+* @brief   Store states
+******************************************/
 void
 rout_store(nc_file_struct *state_file)
 {

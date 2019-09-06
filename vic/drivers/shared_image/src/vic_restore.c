@@ -883,6 +883,7 @@ vic_restore(void)
         }
     }
 
+
     plugin_restore();
 
     free(ivar);

@@ -1,10 +1,35 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Output and state supporting functions
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
 /******************************************
-   Output initialization
+* @brief   Initialize output metadata
 ******************************************/
-// Set output metadata
 void
 plugin_set_output_met_data_info(void)
 {
@@ -28,35 +53,63 @@ plugin_set_output_met_data_info(void)
     if (plugin_options.ROUTING) {
         rout_set_output_met_data_info();
     }
+    if (plugin_options.EFR) {
+        efr_set_output_met_data_info();
+    }
+    if (plugin_options.DAMS) {
+        dam_set_output_met_data_info();
+    }
+    if (plugin_options.WATERUSE) {
+        wu_set_output_met_data_info();
+    }
+    if (plugin_options.IRRIGATION) {
+        irr_set_output_met_data_info();
+    }
 }
 
-// Initialize outfile dimension size & id
+/******************************************
+* @brief   Initialize output file dimension size & id
+******************************************/
 void
 plugin_initialize_nc_file(nc_file_struct *nc_file)
 {
-    /* Unused variables */
-    UNUSED(nc_file);
+    extern plugin_option_struct    plugin_options;
+    
+    if (plugin_options.DAMS) {
+        dam_initialize_nc_file(nc_file);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_initialize_nc_file(nc_file);
+    }
 }
 
-// Add dimensions to outfile
+/******************************************
+* @brief   Add output file dimensions
+******************************************/
 void
 plugin_add_hist_dim(nc_file_struct *nc,
                     stream_struct  *stream)
 {
-    /* Unused variables */
-    UNUSED(nc);
-    UNUSED(stream);
+    extern plugin_option_struct    plugin_options;
+    
+    if (plugin_options.DAMS) {
+        dam_add_hist_dim(nc, stream);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_add_hist_dim(nc, stream);
+    }
 }
 
-// Set output variable dimension count
+/******************************************
+* @brief   Set output variable dimension sizes
+******************************************/
 void
 plugin_set_nc_var_info(unsigned int       varid,
                        unsigned short int dtype,
                        nc_file_struct    *nc_hist_file,
                        nc_var_struct     *nc_var)
 {
-    /* Unused variables */
-    UNUSED(varid);
+    extern plugin_option_struct    plugin_options;
 
     /* Local variables */
     size_t i;
@@ -73,16 +126,24 @@ plugin_set_nc_var_info(unsigned int       varid,
     nc_var->nc_dims = 3;
     nc_var->nc_counts[1] = nc_hist_file->nj_size;
     nc_var->nc_counts[2] = nc_hist_file->ni_size;
+    
+    if (plugin_options.DAMS) {
+        dam_set_nc_var_info(varid, nc_hist_file, nc_var);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_set_nc_var_info(varid, nc_hist_file, nc_var);
+    }
 }
 
-// Set output variable dimension ids
+/******************************************
+* @brief   Set output variable dimension ids
+******************************************/
 void
 plugin_set_nc_var_dimids(unsigned int    varid,
                          nc_file_struct *nc_hist_file,
                          nc_var_struct  *nc_var)
 {
-    /* Unused variables */
-    UNUSED(varid);
+    extern plugin_option_struct    plugin_options;
 
     /* Local variables */
     size_t i;
@@ -95,8 +156,18 @@ plugin_set_nc_var_dimids(unsigned int    varid,
     nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
     nc_var->nc_dimids[1] = nc_hist_file->nj_dimid;
     nc_var->nc_dimids[2] = nc_hist_file->ni_dimid;
+    
+    if (plugin_options.DAMS) {
+        dam_set_nc_var_dimids(varid, nc_hist_file, nc_var);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_set_nc_var_dimids(varid, nc_hist_file, nc_var);
+    }
 }
 
+/******************************************
+* @brief   Set output variable aggregation type
+******************************************/
 void
 plugin_get_default_outvar_aggtype(unsigned int  varid,
                                   unsigned int *agg_type)
@@ -106,12 +177,23 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
     if (plugin_options.ROUTING) {
         rout_history(varid, agg_type);
     }
+    if (plugin_options.EFR) {
+        efr_history(varid, agg_type);
+    }
+    if (plugin_options.DAMS) {
+        dam_history(varid, agg_type);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_history(varid, agg_type);
+    }
+    if (plugin_options.IRRIGATION) {
+        irr_history(varid, agg_type);
+    }
 }
 
 /******************************************
-   State file initialization
+* @brief   Initialize state metadata
 ******************************************/
-// Set output metadata
 void
 plugin_set_state_meta_data_info(void)
 {
@@ -122,7 +204,9 @@ plugin_set_state_meta_data_info(void)
     }
 }
 
-// Initialize outfile dimension size & id
+/******************************************
+* @brief   Initialize state file dimension size & id
+******************************************/
 void
 plugin_set_nc_state_file_info(nc_file_struct *nc_state_file)
 {
@@ -133,7 +217,9 @@ plugin_set_nc_state_file_info(nc_file_struct *nc_state_file)
     }
 }
 
-// Add dimensions to outfile
+/******************************************
+* @brief   Add state file dimensions
+******************************************/
 void
 plugin_add_state_dim(char           *filename,
                      nc_file_struct *nc_state_file)
@@ -145,7 +231,9 @@ plugin_add_state_dim(char           *filename,
     }
 }
 
-// Add dimensions variable to outfile
+/******************************************
+* @brief   Add state file dimensions
+******************************************/
 void
 plugin_add_state_dim_var(char           *filename,
                          nc_file_struct *nc_state_file)
@@ -157,7 +245,9 @@ plugin_add_state_dim_var(char           *filename,
     }
 }
 
-// Add dimensions variable data to outfile
+/******************************************
+* @brief   Add state file variables
+******************************************/
 void
 plugin_add_state_dim_var_data(char           *filename,
                               nc_file_struct *nc_state_file)
@@ -169,7 +259,9 @@ plugin_add_state_dim_var_data(char           *filename,
     }
 }
 
-// Set output variable dimension count & ids
+/******************************************
+* @brief   Set output variable dimension sizes and ids
+******************************************/
 void
 plugin_set_nc_state_var_info(nc_file_struct *nc)
 {
@@ -201,15 +293,5 @@ plugin_set_nc_state_var_info(nc_file_struct *nc)
         if (nc->nc_vars[i].nc_dims > MAXDIMS) {
             log_err("Too many dimensions specified in variable %zu", i);
         }
-    }
-}
-
-void
-plugin_store(nc_file_struct *state_file)
-{
-    extern plugin_option_struct plugin_options;
-
-    if (plugin_options.ROUTING) {
-        rout_store(state_file);
     }
 }

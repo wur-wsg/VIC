@@ -1,6 +1,35 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Run routing on master node (random decomposition)
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Run routing on master node (random decomposition)
+******************************************/
 void
 rout_random_run()
 {
@@ -148,7 +177,7 @@ rout_random_run()
         dis_local[i] = rout_var[i].discharge;
         stream_local[i] = rout_var[i].stream;
         if (plugin_options.FORCE_ROUTING) {
-            force_local[i] = rout_force[i].discharge[NR];
+            force_local[i] = rout_force[i].discharge;
         }
     }
 
@@ -208,7 +237,8 @@ rout_random_run()
             dis_global[iCell] = 0.0;
             prev_stream = stream_global[iCell];
             stream_global[iCell] = 0.0;
-            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
+            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt;
+                 j++) {
                 if (j < rout_steps_per_dt) {
                     dis_global[iCell] += dt_dis_global[iCell][j];
                 }
@@ -221,14 +251,15 @@ rout_random_run()
             if (abs(prev_stream + (inflow + runoff) -
                     (dis_global[iCell] + stream_global[iCell])) >
                 DBL_EPSILON) {
-                log_err("Discharge water balance error [%.4f]. "
-                        "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                        prev_stream + (inflow + runoff) -
-                        (dis_global[iCell] + stream_global[iCell]),
-                        (inflow + runoff),
-                        dis_global[iCell],
-                        prev_stream,
-                        stream_global[iCell]);
+                log_err(
+                    "Discharge water balance error [%.4f]. "
+                    "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
+                    prev_stream + (inflow + runoff) -
+                    (dis_global[iCell] + stream_global[iCell]),
+                    (inflow + runoff),
+                    dis_global[iCell],
+                    prev_stream,
+                    stream_global[iCell]);
             }
         }
     }

@@ -1,7 +1,34 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * MPI support routines for plugins
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
+#include <plugin.h>
 
 /******************************************************************************
- * @brief   Gather double precision variable
+ * @brief   Gather active double precision variable
  * @details Values are gathered to the master node
  *****************************************************************************/
 void
@@ -43,8 +70,8 @@ gather_double(double *dvar,
 }
 
 /******************************************************************************
- * @brief   Scatter double precision variable recursive
- * @details values from master node are scattered to the local nodes
+ * @brief   Gather active double precision variable recursive
+ * @details Values are gathered to the master node
  *****************************************************************************/
 void
 gather_double_2d(double **dvar,
@@ -90,7 +117,7 @@ gather_double_2d(double **dvar,
 }
 
 /******************************************************************************
- * @brief   Gather int variable
+ * @brief   Gather active integer variable
  * @details Values are gathered to the master node
  *****************************************************************************/
 void
@@ -132,7 +159,54 @@ gather_int(int *ivar,
 }
 
 /******************************************************************************
- * @brief   Gather int variable
+ * @brief   Gather integer variable recursive
+ * @details Values are gathered to the master node
+ *****************************************************************************/
+void
+gather_int_2d(int **ivar,
+              int **var_local,
+              int   depth)
+{
+    extern domain_struct global_domain;
+    extern domain_struct local_domain;
+    extern int           mpi_rank;
+
+    int                 *tmp_global = NULL;
+    int                 *tmp_local = NULL;
+
+    size_t               i;
+    size_t               j;
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        tmp_global = malloc(global_domain.ncells_active * sizeof(*tmp_global));
+        check_alloc_status(tmp_global, "Memory allocation error");
+    }
+    tmp_local = malloc(local_domain.ncells_active * sizeof(*tmp_local));
+    check_alloc_status(tmp_local, "Memory allocation error");
+
+    for (i = 0; i < (size_t) depth; i++) {
+        for (j = 0; j < local_domain.ncells_active; j++) {
+            tmp_local[j] = var_local[j][i];
+        }
+
+        gather_int(tmp_global, tmp_local);
+
+
+        if (mpi_rank == VIC_MPI_ROOT) {
+            for (j = 0; j < global_domain.ncells_active; j++) {
+                ivar[j][i] = tmp_global[j];
+            }
+        }
+    }
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        free(tmp_global);
+    }
+    free(tmp_local);
+}
+
+/******************************************************************************
+ * @brief   Gather active size_t variable
  * @details Values are gathered to the master node
  *****************************************************************************/
 void
@@ -174,7 +248,7 @@ gather_size_t(size_t *svar,
 }
 
 /******************************************************************************
- * @brief   Gather int variable
+ * @brief   Gather size_t variable recursive
  * @details Values are gathered to the master node
  *****************************************************************************/
 void
@@ -262,7 +336,7 @@ scatter_double(double *dvar,
 }
 
 /******************************************************************************
- * @brief   Scatter double precision variable
+ * @brief   Scatter double precision variable recursive
  * @details values from master node are scattered to the local nodes
  *****************************************************************************/
 void
@@ -346,6 +420,52 @@ scatter_int(int *ivar,
     if (mpi_rank == VIC_MPI_ROOT) {
         free(ivar_mapped);
     }
+}
+
+/******************************************************************************
+ * @brief   Scatter integer variable recursive
+ * @details values from master node are scattered to the local nodes
+ *****************************************************************************/
+void
+scatter_int_2d(int **ivar,
+               int **var_local,
+               int   depth)
+{
+    extern domain_struct global_domain;
+    extern domain_struct local_domain;
+    extern int           mpi_rank;
+
+    int                 *tmp_global = NULL;
+    int                 *tmp_local = NULL;
+
+    size_t               i;
+    size_t               j;
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        tmp_global = malloc(global_domain.ncells_active * sizeof(*tmp_global));
+        check_alloc_status(tmp_global, "Memory allocation error");
+    }
+    tmp_local = malloc(local_domain.ncells_active * sizeof(*tmp_local));
+    check_alloc_status(tmp_local, "Memory allocation error");
+
+    for (i = 0; i < (size_t) depth; i++) {
+        if (mpi_rank == VIC_MPI_ROOT) {
+            for (j = 0; j < global_domain.ncells_active; j++) {
+                tmp_global[j] = ivar[j][i];
+            }
+        }
+
+        scatter_int(tmp_global, tmp_local);
+
+        for (j = 0; j < local_domain.ncells_active; j++) {
+            var_local[j][i] = tmp_local[j];
+        }
+    }
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        free(tmp_global);
+    }
+    free(tmp_local);
 }
 
 /******************************************************************************
@@ -436,7 +556,7 @@ scatter_size_t_2d(size_t **svar,
 }
 
 /******************************************************************************
- * @brief    Read double precision netCDF field from file.
+ * @brief    Read active double precision netCDF field from file.
  *****************************************************************************/
 int
 get_active_nc_field_double(nameid_struct *nc_nameid,
@@ -469,7 +589,7 @@ get_active_nc_field_double(nameid_struct *nc_nameid,
 }
 
 /******************************************************************************
- * @brief    Read integer netCDF field from file.
+ * @brief    Read active integer netCDF field from file.
  *****************************************************************************/
 int
 get_active_nc_field_int(nameid_struct *nc_nameid,

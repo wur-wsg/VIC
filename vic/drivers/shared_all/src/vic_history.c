@@ -40,9 +40,7 @@ alloc_out_data(size_t    ngridcells,
     size_t                 j;
 
     for (i = 0; i < ngridcells; i++) {
-        out_data[i] =
-            calloc(N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES,
-                   sizeof(*(out_data[i])));
+        out_data[i] = calloc(N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES, sizeof(*(out_data[i])));
         check_alloc_status(out_data[i], "Memory allocation error.");
         // Allocate space for data
         for (j = 0; j < N_OUTVAR_TYPES + PLUGIN_N_OUTVAR_TYPES; j++) {
@@ -365,7 +363,7 @@ set_output_var(stream_struct     *stream,
 
     if (varnum >= stream->nvars) {
         log_err("Invalid varnum %zu, must be less than the number of variables "
-                "in the stream %zu", varnum, stream->nvars);
+            "in the stream %zu", varnum, stream->nvars);
     }
     // Set stream members
     stream->varid[varnum] = varid;

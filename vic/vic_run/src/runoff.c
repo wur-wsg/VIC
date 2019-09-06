@@ -158,7 +158,7 @@ runoff(cell_data_struct  *cell,
            Initialize Variables
         **************************************************/
         for (lindex = 0; lindex < options.Nlayer; lindex++) {
-            Ksat[lindex] = soil_con->Ksat[lindex] /
+            Ksat[lindex] = layer[lindex].Ksat /
                            global_param.runoff_steps_per_day;
 
             /** Set Layer Liquid Moisture Content **/

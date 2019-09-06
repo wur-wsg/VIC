@@ -1,12 +1,12 @@
-site_name: VIC
+site_name: VIC-WUR
 site_description: Variable Infiltration Capacity Model
-site_author: UW Hydro | Computational Hydrology
-repo_url: https://github.com/UW-Hydro/VIC
-site_url: http://vic.readthedocs.org/
+site_author: Wageningen University | Water System and Global Change Group (WSG)
+repo_url: https://github.com/wur-wsg/VIC
+site_url: http://vicwur.readthedocs.org/
 theme: readthedocs
 theme_dir: 'docs/custom_rtd_theme'
 site_favicon: vic_favicon.jpg
-copyright: 2016
+copyright: GPLv2
 docs_dir: docs
 site_dir: site
 use_directory_urls: true
@@ -15,18 +15,15 @@ pages:
 # Main pages
 - Home: 'index.md'
 - About:
-    - 'Model Overview': 'Overview/ModelOverview.md'
+    - 'VIC Model Overview': 'Overview/ModelOverview.md'
+    - 'VIC-WUR Model Overview': 'Overview/ModelOverview_vicwur.md'
     - 'References': 'Documentation/References.md'
     - 'FAQ': 'FAQ/FAQ.md'
-    - 'Contact': 'contact.md'
+    - 'VIC Contact': 'contact.md'
+    - 'VIC-WUR Contact': 'contact_vicwur.md'
     - 'Links': 'links.md'
 - Documentation:
     - 'User Guide': 'Documentation/UserGuide.md'
-    - 'VIC Drivers':
-        - 'Classic': 'Documentation/Drivers/Classic/ClassicDriver.md'
-        - 'Image': 'Documentation/Drivers/Image/ImageDriver.md'
-        - 'CESM': 'Documentation/Drivers/CESM/CESMDriver.md'
-        - 'Python': 'Documentation/Drivers/Python/PythonDriver.md'
 - Development:
     - 'Development': 'Development/ModelDevelopment.md'
     - 'Release Notes': 'Development/ReleaseNotes.md'
@@ -59,15 +56,22 @@ pages:
     - 'Veg Lib': 'Documentation/Drivers/Classic/VegLib.md'
     - 'Veg Param': 'Documentation/Drivers/Classic/VegParam.md'
     # Image Driver
+    - 'ImageDriver': 'Documentation/Drivers/Image/ImageDriver.md'
+    - 'Inputs': 'Documentation/Drivers/Image/Inputs.md'
     - 'ForcingData': 'Documentation/Drivers/Image/ForcingData.md'
     - 'GlobalParam': 'Documentation/Drivers/Image/GlobalParam.md'
-    - 'Inputs': 'Documentation/Drivers/Image/Inputs.md'
     - 'Outputs': 'Documentation/Drivers/Image/Outputs.md'
     - 'Params': 'Documentation/Drivers/Image/Params.md'
     - 'Domain': 'Documentation/Drivers/Image/Domain.md'
     - 'RunVIC': 'Documentation/Drivers/Image/RunVIC.md'
     - 'Lake Param': 'Documentation/Drivers/Image/LakeParam.md'
     - 'StateFile': 'Documentation/Drivers/Image/StateFile.md'
+    - 'Inputs_vicwur': 'Documentation/Drivers/Image/Inputs_vicwur.md'
+    - 'ForcingData_vicwur': 'Documentation/Drivers/Image/ForcingData_vicwur.md'
+    - 'RoutingParam': 'Documentation/Drivers/Image/RoutingParam.md'
+    - 'IrrigationParam': 'Documentation/Drivers/Image/IrrigationParam.md'
+    - 'DamParam': 'Documentation/Drivers/Image/DamParam.md'
+    - 'WateruseParam': 'Documentation/Drivers/Image/WateruseParam.md'
     - 'Ascii_to_NetCDF_params.md': 'Documentation/Drivers/Image/Ascii_to_NetCDF_params.md'
     - 'OutputFormatting': 'Documentation/Drivers/Image/OutputFormatting.md'
     - 'DefaultOutputs': 'Documentation/Drivers/Image/DefaultOutputs.md'
@@ -80,6 +84,7 @@ pages:
 
     # Other
     - 'Constants': 'Documentation/Constants.md'
+    - 'Constants_vicwur': 'Documentation/Constants_vicwur.md'
     - 'Definitions': 'Documentation/Definitions.md'
     - 'HowToAddNewOutputVars': 'Documentation/HowToAddNewOutputVars.md'
     - 'Output Var List': 'Documentation/OutputVarList.md'
@@ -87,6 +92,7 @@ pages:
     - 'FrozenSoilText': 'Overview/FrozenSoilText.md'
     - 'SnowBandsText': 'Overview/SnowBandsText.md'
     - 'SnowModelText': 'Overview/SnowModelText.md'
+    - 'DamOperationText': 'Overview/DamOperationText.md'
     - 'Git Workflow': 'Development/git-workflow.md'
     - 'Open Source': 'Development/open-source-philosophy.md'
     - 'Best Practices': 'Documentation/best_practices.md'
@@ -97,6 +103,6 @@ markdown_extensions:
     - admonition:
     - fenced_code:
 
-copyright: 'Copyright &copy; 2016, <a href="http://uw-hydro.github.io/">University of Washington Computational Hydrology Group</a>.'
+copyright: 'GPLv2, <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt">GNU GENERAL PUBLIC LICENSE</a>.'
 
-google_analytics: ['UA-65965729-1', 'vic.readthedocs.org']
+# google_analytics: ['UA-65965729-1', 'vicwur.readthedocs.org']

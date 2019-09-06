@@ -124,7 +124,8 @@ vic_force(void)
         d3start[0] = global_param.forceskip[param_set.VAR_INDEX[PREC]] +
                      global_param.forceoffset[param_set.VAR_INDEX[PREC]] +
                      j;
-        get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[PREC
+        get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[
+                                                            PREC
                                                         ]]),
                                     param_set.TYPE[PREC].varname,
                                     d3start, d3count, dvar);
@@ -166,7 +167,8 @@ vic_force(void)
         d3start[0] = global_param.forceskip[param_set.VAR_INDEX[WIND]] +
                      global_param.forceoffset[param_set.VAR_INDEX[WIND]] +
                      j;
-        get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[WIND
+        get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[
+                                                            WIND
                                                         ]]),
                                     param_set.TYPE[WIND].varname,
                                     d3start, d3count, dvar);
@@ -206,7 +208,8 @@ vic_force(void)
     if (options.LAKES) {
         // Channel inflow to lake
         d3start[0] = global_param.forceskip[param_set.VAR_INDEX[CHANNEL_IN]] +
-                     global_param.forceoffset[param_set.VAR_INDEX[CHANNEL_IN]] +
+                     global_param.forceoffset[param_set.VAR_INDEX[CHANNEL_IN]]
+                     +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[
                                                             CHANNEL_IN]]),
@@ -224,7 +227,8 @@ vic_force(void)
             d3start[0] = global_param.forceskip[param_set.VAR_INDEX[CATM]] +
                          global_param.forceoffset[param_set.VAR_INDEX[CATM]] +
                          j;
-            get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[
+            get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX
+                                                            [
                                                                 CATM]]),
                                         param_set.TYPE[CATM].varname,
                                         d3start, d3count, dvar);
@@ -247,7 +251,8 @@ vic_force(void)
             d3start[0] = global_param.forceskip[param_set.VAR_INDEX[FDIR]] +
                          global_param.forceoffset[param_set.VAR_INDEX[FDIR]] +
                          j;
-            get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[
+            get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX
+                                                            [
                                                                 FDIR]]),
                                         param_set.TYPE[FDIR].varname,
                                         d3start, d3count, dvar);
@@ -259,7 +264,8 @@ vic_force(void)
         for (j = 0; j < NF; j++) {
             d3start[0] = global_param.forceskip[param_set.VAR_INDEX[PAR]] +
                          global_param.forceoffset[param_set.VAR_INDEX[PAR]] + j;
-            get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[
+            get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX
+                                                            [
                                                                 PAR]]),
                                         param_set.TYPE[PAR].varname,
                                         d3start, d3count, dvar);
@@ -337,10 +343,7 @@ vic_force(void)
                                                  FCANOPY]] + j;
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[param_set.
-                                                                    VAR_INDEX[
-                                                                        FCANOPY]
-                                                  ]),
+                    get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[FCANOPY]]),
                                                 param_set.TYPE[FCANOPY].varname,
                                                 d4start, d4count,
                                                 dvar);
@@ -359,13 +362,10 @@ vic_force(void)
             for (j = 0; j < NF; j++) {
                 d4start[0] =
                     global_param.forceskip[param_set.VAR_INDEX[ALBEDO]] +
-                    global_param.forceoffset[param_set.VAR_INDEX[ALBEDO
-                                             ]] + j;
+                    global_param.forceoffset[param_set.VAR_INDEX[ALBEDO]] + j;
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[param_set.
-                                                                    VAR_INDEX[
-                                                                        ALBEDO]]),
+                    get_scatter_nc_field_double(&(filenames.forcing[param_set.VAR_INDEX[ALBEDO]]),
                                                 param_set.TYPE[ALBEDO].varname,
                                                 d4start, d4count,
                                                 dvar);

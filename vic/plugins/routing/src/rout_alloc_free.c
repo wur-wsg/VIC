@@ -1,12 +1,40 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Routing allocate and finalize functions
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Allocate routing module
+******************************************/
 void
 rout_alloc(void)
 {
     extern domain_struct              global_domain;
     extern domain_struct              local_domain;
-    extern size_t                     NF;
     extern global_param_struct        global_param;
     extern plugin_global_param_struct plugin_global_param;
     extern plugin_option_struct       plugin_options;
@@ -46,13 +74,6 @@ rout_alloc(void)
     if (plugin_options.FORCE_ROUTING) {
         rout_force = malloc(local_domain.ncells_active * sizeof(*rout_force));
         check_alloc_status(rout_force, "Memory allocation error");
-
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            rout_force[i].discharge =
-                malloc(NF * sizeof(*rout_force[i].discharge));
-            check_alloc_status(rout_force[i].discharge,
-                               "Memory allocation error");
-        }
     }
 
     if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
@@ -70,6 +91,9 @@ rout_alloc(void)
     rout_initialize_local_structures();
 }
 
+/******************************************
+* @brief   Finalize routing module
+******************************************/
 void
 rout_finalize(void)
 {
@@ -92,9 +116,6 @@ rout_finalize(void)
     free(rout_con);
 
     if (plugin_options.FORCE_ROUTING) {
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            free(rout_force[i].discharge);
-        }
         free(rout_force);
     }
 

@@ -1,68 +1,53 @@
+/******************************************************************************
+ * @section DESCRIPTION
+ *
+ * Force routing inflow
+ *
+ * @section LICENSE
+ *
+ * The Variable Infiltration Capacity (VIC) macroscale hydrological model
+ * Copyright (C) 2016 The Computational Hydrology Group, Department of Civil
+ * and Environmental Engineering, University of Washington.
+ *
+ * The VIC model is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *****************************************************************************/
+
 #include <vic_driver_image.h>
-#include <routing.h>
+#include <plugin.h>
 
-#include "plugin.h"
-
+/******************************************
+* @brief   Force routing inflow
+******************************************/
 void
 rout_forcing(void)
 {
-    extern size_t                  current;
-    extern domain_struct           local_domain;
-    extern global_param_struct     global_param;
-    extern domain_struct           global_domain;
-    extern dmy_struct             *dmy;
-    extern plugin_filenames_struct plugin_filenames;
-    extern rout_force_struct      *rout_force;
-    extern size_t                  NF;
-    extern size_t                  NR;
-    extern int                     mpi_rank;
+    extern domain_struct              local_domain;
+    extern plugin_global_param_struct plugin_global_param;
+    extern domain_struct              global_domain;
+    extern plugin_filenames_struct    plugin_filenames;
+    extern rout_force_struct         *rout_force;
 
-    int                            status;
+    double                           *dvar;
 
-    double                        *dvar;
+    size_t                            d3count[3];
+    size_t                            d3start[3];
 
-    size_t                         d3count[3];
-    size_t                         d3start[3];
-
-    size_t                         i;
-    size_t                         j;
+    size_t                            i;
 
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
-
-    // Open forcing file if it is the first time step
-    if (current == 0) {
-        if (mpi_rank == VIC_MPI_ROOT) {
-            // open new forcing file
-            snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING,
-                     "%s%4d.nc",
-                     plugin_filenames.rf_path_pfx, dmy[current].year);
-            status = nc_open(plugin_filenames.routing_forcing.nc_filename,
-                             NC_NOWRITE,
-                             &(plugin_filenames.routing_forcing.nc_id));
-            check_nc_status(status, "Error opening %s",
-                            plugin_filenames.routing_forcing.nc_filename);
-        }
-    }
-    // Open forcing file if it is a new year
-    else if (current > 0 && dmy[current].year != dmy[current - 1].year) {
-        if (mpi_rank == VIC_MPI_ROOT) {
-            // close previous forcing file
-            status = nc_close(plugin_filenames.routing_forcing.nc_id);
-            check_nc_status(status, "Error closing %s",
-                            plugin_filenames.routing_forcing.nc_filename);
-
-            // open new forcing file
-            snprintf(plugin_filenames.routing_forcing.nc_filename, MAXSTRING,
-                     "%s%4d.nc",
-                     plugin_filenames.rf_path_pfx, dmy[current].year);
-            status = nc_open(plugin_filenames.routing_forcing.nc_filename,
-                             NC_NOWRITE,
-                             &(plugin_filenames.routing_forcing.nc_id));
-            check_nc_status(status, "Error opening %s",
-                            plugin_filenames.routing_forcing.nc_filename);
-        }
-    }
 
     d3start[1] = 0;
     d3start[2] = 0;
@@ -71,30 +56,19 @@ rout_forcing(void)
     d3count[2] = global_domain.n_nx;
 
     // Get forcing data
-    for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[0] +
-                     global_param.forceoffset[0] + j - NF;
+    d3start[0] = plugin_global_param.forceskip[FORCING_DISCHARGE] +
+                 plugin_global_param.forceoffset[FORCING_DISCHARGE];
 
-        get_scatter_nc_field_double(&(plugin_filenames.routing_forcing),
-                                    "discharge", d3start, d3count, dvar);
+    if (plugin_global_param.forcerun[FORCING_DISCHARGE]) {
+        get_scatter_nc_field_double(
+            &(plugin_filenames.forcing[
+                  FORCING_DISCHARGE]),
+            plugin_filenames.f_varname[
+                FORCING_DISCHARGE], d3start,
+            d3count, dvar);
 
         for (i = 0; i < local_domain.ncells_active; i++) {
-            rout_force[i].discharge[j] = dvar[i];
-        }
-    }
-
-    // Average forcing data
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        rout_force[i].discharge[NR] = average(rout_force[i].discharge, NF);
-    }
-
-    // Close forcing file if it is the last time step
-    if (current == global_param.nrecs - 1) {
-        if (mpi_rank == VIC_MPI_ROOT) {
-            // close previous forcing file
-            status = nc_close(plugin_filenames.routing_forcing.nc_id);
-            check_nc_status(status, "Error closing %s",
-                            plugin_filenames.routing_forcing.nc_filename);
+            rout_force[i].discharge = dvar[i];
         }
     }
 
