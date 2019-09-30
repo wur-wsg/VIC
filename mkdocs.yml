@@ -13,89 +13,41 @@ use_directory_urls: true
 
 pages:
 # Main pages
-- Home: 'index.md'
+- Home: 'index_vicwur.md'
 - About:
-    - 'VIC Model Overview': 'Overview/ModelOverview.md'
     - 'VIC-WUR Model Overview': 'Overview/ModelOverview_vicwur.md'
-    - 'References': 'Documentation/References.md'
-    - 'FAQ': 'FAQ/FAQ.md'
-    - 'VIC Contact': 'contact.md'
+    - 'VIC-WUR References': 'Documentation/References_vicwur.md'
     - 'VIC-WUR Contact': 'contact_vicwur.md'
-    - 'Links': 'links.md'
 - Documentation:
-    - 'User Guide': 'Documentation/UserGuide.md'
+    - 'User Guide': 'Documentation/UserGuide_vicwur.md'
 - Development:
-    - 'Development': 'Development/ModelDevelopment.md'
-    - 'Release Notes': 'Development/ReleaseNotes.md'
-    - 'Contributing': 'Development/Contributing.md'
-    - 'Working with Git and Github': 'Development/working-with-git.md'
-    - 'Docker': 'Development/Docker.md'
-    - 'Testing': 'Development/Testing.md'
+    - 'Development': 'Development/ModelDevelopment_vicwur.md'
+    - 'ReleaseNotes': 'Development/ReleaseNotes_vicwur.md'
 - Downloads:
-    - Datasets: 'Datasets/Datasets.md'
-    - Code: 'SourceCode/Code.md'
+    - Datasets: 'Datasets/Datasets_vicwur.md'
+    - Code: 'SourceCode/Code_vicwur.md'
 # hidden pages
 - hidden:
-    # Classic Driver
-    - 'DefaultOutputs': 'Documentation/Drivers/Classic/DefaultOutputs.md'
-    - 'FluxOutputFiles': 'Documentation/Drivers/Classic/FluxOutputFiles.md'
-    - 'SnowOutputFile': 'Documentation/Drivers/Classic/SnowOutputFile.md'
-    - 'Forcing Data': 'Documentation/Drivers/Classic/ForcingData.md'
-    - 'FrozenSoilOutputFile': 'Documentation/Drivers/Classic/FrozenSoilOutputFile.md'
-    - 'GlobalParam': 'Documentation/Drivers/Classic/GlobalParam.md'
-    - 'Inputs': 'Documentation/Drivers/Classic/Inputs.md'
-    - 'LakeOutputFile': 'Documentation/Drivers/Classic/LakeOutputFile.md'
-    - 'Lake Param': 'Documentation/Drivers/Classic/LakeParam.md'
-    - 'Output Formatting': 'Documentation/Drivers/Classic/OutputFormatting.md'
-    - 'Outputs': 'Documentation/Drivers/Classic/Outputs.md'
-    - 'RunVIC': 'Documentation/Drivers/Classic/RunVIC.md'
-    - 'Snow Band': 'Documentation/Drivers/Classic/SnowBand.md'
-    - 'SnowBandOutputFiles': 'Documentation/Drivers/Classic/SnowBandOutputFiles.md'
-    - 'Soil Param': 'Documentation/Drivers/Classic/SoilParam.md'
-    - 'State File': 'Documentation/Drivers/Classic/StateFile.md'
-    - 'Veg Lib': 'Documentation/Drivers/Classic/VegLib.md'
-    - 'Veg Param': 'Documentation/Drivers/Classic/VegParam.md'
-    # Image Driver
-    - 'ImageDriver': 'Documentation/Drivers/Image/ImageDriver.md'
-    - 'Inputs': 'Documentation/Drivers/Image/Inputs.md'
-    - 'ForcingData': 'Documentation/Drivers/Image/ForcingData.md'
-    - 'GlobalParam': 'Documentation/Drivers/Image/GlobalParam.md'
-    - 'Outputs': 'Documentation/Drivers/Image/Outputs.md'
-    - 'Params': 'Documentation/Drivers/Image/Params.md'
-    - 'Domain': 'Documentation/Drivers/Image/Domain.md'
-    - 'RunVIC': 'Documentation/Drivers/Image/RunVIC.md'
-    - 'Lake Param': 'Documentation/Drivers/Image/LakeParam.md'
-    - 'StateFile': 'Documentation/Drivers/Image/StateFile.md'
-    - 'Inputs_vicwur': 'Documentation/Drivers/Image/Inputs_vicwur.md'
-    - 'ForcingData_vicwur': 'Documentation/Drivers/Image/ForcingData_vicwur.md'
+    # About
+    - 'DamOperationText': 'Overview/DamOperationText.md'
+    
+    # Documentation
+    - 'ImageDriver': 'Documentation/Drivers/Image/ImageDriver_vicwur.md'
+    - 'Inputs': 'Documentation/Drivers/Image/Inputs_vicwur.md'
+    - 'GlobalParam': 'Documentation/Drivers/Image/GlobalParam_vicwur.md'
+    - 'ForcingData': 'Documentation/Drivers/Image/ForcingData_vicwur.md'
     - 'RoutingParam': 'Documentation/Drivers/Image/RoutingParam.md'
     - 'IrrigationParam': 'Documentation/Drivers/Image/IrrigationParam.md'
     - 'DamParam': 'Documentation/Drivers/Image/DamParam.md'
     - 'WateruseParam': 'Documentation/Drivers/Image/WateruseParam.md'
-    - 'Ascii_to_NetCDF_params.md': 'Documentation/Drivers/Image/Ascii_to_NetCDF_params.md'
-    - 'OutputFormatting': 'Documentation/Drivers/Image/OutputFormatting.md'
-    - 'DefaultOutputs': 'Documentation/Drivers/Image/DefaultOutputs.md'
-    - 'FluxOutputFiles': 'Documentation/Drivers/Image/FluxOutputFiles.md'
-    - 'SnowOutputFile': 'Documentation/Drivers/Image/SnowOutputFile.md'
-    - 'FrozenSoilOutputFile': 'Documentation/Drivers/Image/FrozenSoilOutputFile.md'
-    - 'LakeOutputFile': 'Documentation/Drivers/Image/LakeOutputFile.md'
-    # CESM Driver
-    - 'Inputs': 'Documentation/Drivers/CESM/Inputs.md'
-
-    # Other
-    - 'Constants': 'Documentation/Constants.md'
-    - 'Constants_vicwur': 'Documentation/Constants_vicwur.md'
-    - 'Definitions': 'Documentation/Definitions.md'
-    - 'HowToAddNewOutputVars': 'Documentation/HowToAddNewOutputVars.md'
-    - 'Output Var List': 'Documentation/OutputVarList.md'
-    - 'Soiltext': 'Documentation/soiltext.md'
-    - 'FrozenSoilText': 'Overview/FrozenSoilText.md'
-    - 'SnowBandsText': 'Overview/SnowBandsText.md'
-    - 'SnowModelText': 'Overview/SnowModelText.md'
-    - 'DamOperationText': 'Overview/DamOperationText.md'
-    - 'Git Workflow': 'Development/git-workflow.md'
-    - 'Open Source': 'Development/open-source-philosophy.md'
-    - 'Best Practices': 'Documentation/best_practices.md'
+    - 'RunVIC': 'Documentation/Drivers/Image/RunVIC_vicwur.md'
+    - 'Constants': 'Documentation/Constants_vicwur.md'
+    - 'Outputs': 'Documentation/Drivers/Image/Outputs_vicwur.md'
+    - 'OutputVars': 'Documentation/OutputVarList_vicwur.md'
+    - 'StateFile': 'Documentation/Drivers/Image/StateFile_vicwur.md'
+    
+    # Development
+    - 'Testing': 'Development/Testing_vicwur.md'
 
 markdown_extensions:
     - toc:
