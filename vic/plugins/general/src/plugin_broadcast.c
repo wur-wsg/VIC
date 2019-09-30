@@ -42,7 +42,7 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 12;
+    nitems = 14;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -62,6 +62,12 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_AINT;
     // double rout_dt;
     offsets[i] = offsetof(plugin_global_param_struct, rout_dt);
+    mpi_types[i++] = MPI_DOUBLE;
+    // size_t wofost_steps_per_day;
+    offsets[i] = offsetof(plugin_global_param_struct, wofost_steps_per_day);
+    mpi_types[i++] = MPI_AINT;
+    // double wofost_dt;
+    offsets[i] = offsetof(plugin_global_param_struct, wofost_dt);
     mpi_types[i++] = MPI_DOUBLE;
     // size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];
     offsets[i] = offsetof(plugin_global_param_struct, force_steps_per_year);
@@ -135,7 +141,7 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 2;
+    nitems = 3;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -149,7 +155,10 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
         blocklengths[i] = MAXSTRING;
     }
     i = 0;
-
+    
+    // char wofost_text[MAXSTRING]
+    offsets[i] = offsetof(plugin_filenames_struct, wofost_text);
+    mpi_types[i++] = MPI_CHAR;
     // char f_path_pfx[PLUGIN_N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(plugin_filenames_struct, f_path_pfx);
     blocklengths[i] *= PLUGIN_N_FORCING_TYPES;
@@ -190,7 +199,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 15;
+    nitems = 17;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -223,6 +232,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool IRRIGATION;
     offsets[i] = offsetof(plugin_option_struct, IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST);
+    mpi_types[i++] = MPI_C_BOOL;
     // short unsigned int UH_LENGTH;
     offsets[i] = offsetof(plugin_option_struct, UH_LENGTH);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
@@ -251,6 +263,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool POTENTIAL_IRRIGATION;
     offsets[i] = offsetof(plugin_option_struct, POTENTIAL_IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
+    // short unsigned int NCROPTYPES;
+    offsets[i] = offsetof(plugin_option_struct, NCROPTYPES);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // make sure that the we have the right number of elements
     if (i != (size_t) nitems) {

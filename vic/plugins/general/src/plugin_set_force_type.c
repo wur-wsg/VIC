@@ -110,6 +110,9 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("ENE_CONSUMPTION", nctype) == 0) {
         type = FORCING_ENE_CONSUMPTION;
     }
+    else if (strcasecmp("CO2", nctype) == 0) {
+        type = FORCING_CO2;
+    }
     /** Undefined variable type **/
     else {
         log_err("Undefined forcing variable type %s in forcing file.",

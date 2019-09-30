@@ -104,6 +104,10 @@ plugin_run(void)
             }
             irr_run_shortage(i);
         }
+        
+        if(plugin_options.WOFOST){
+            crop_run(i);
+        }
     }
 }
 

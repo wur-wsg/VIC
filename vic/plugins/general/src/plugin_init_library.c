@@ -41,6 +41,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->DAMS = false;
     plugin_options->WATERUSE = false;
     plugin_options->IRRIGATION = false;
+    plugin_options->WOFOST = false;
     plugin_options->UH_LENGTH = 0;
     plugin_options->FORCE_ROUTING = false;
     plugin_options->NDAMTYPES = 0;
@@ -52,6 +53,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     }
     plugin_options->NIRRTYPES = 0;
     plugin_options->POTENTIAL_IRRIGATION = false;
+    plugin_options->NCROPTYPES = 0;
 }
 
 /******************************************
@@ -64,6 +66,8 @@ plugin_initialize_global(plugin_global_param_struct *plugin_global_param)
 
     plugin_global_param->rout_steps_per_day = 0;
     plugin_global_param->rout_dt = 0;
+    plugin_global_param->wofost_steps_per_day = 0;
+    plugin_global_param->wofost_dt = 0;
     for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
         plugin_global_param->force_steps_per_year[i] = 0;
         plugin_global_param->force_dt[i] = 0;
@@ -105,6 +109,8 @@ plugin_initialize_filenames(plugin_filenames_struct *plugin_filenames)
     snprintf(plugin_filenames->dams.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->wateruse.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->irrigation.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames->wofost.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames->wofost_text, MAXSTRING, "%s", MISSING_S);
 
     for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {
         snprintf(plugin_filenames->forcing[i].nc_filename, MAXSTRING, "%s",

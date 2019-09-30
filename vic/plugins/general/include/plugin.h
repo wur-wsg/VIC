@@ -33,5 +33,6 @@
 #include <dams.h>
 #include <wateruse.h>
 #include <irrigation.h>
+#include <crop.h>
 
 #endif /* PLUGIN_H */

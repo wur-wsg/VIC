@@ -27,6 +27,19 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Initialize dmy structure
+******************************************/
+void
+initialize_dmy(dmy_struct *dmy)
+{
+    dmy->day = 0;
+    dmy->day_in_year = 0;
+    dmy->dayseconds = 0;
+    dmy->month = 0;
+    dmy->year = 0;
+}
+
 /******************************************************************************
  * @brief  returns the day in the defined season,
  *         or the number of days past the season

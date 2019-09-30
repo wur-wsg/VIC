@@ -73,6 +73,8 @@ plugin_print_options(plugin_option_struct *op)
             op->WATERUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tIRRIGATION           : %s\n",
             op->IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST           : %s\n",
+            op->WOFOST ? "true" : "false");
     
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",
             op->FORCE_ROUTING ? "true" : "false");
@@ -91,6 +93,8 @@ plugin_print_options(plugin_option_struct *op)
             op->NWURECEIVING);
     fprintf(LOG_DEST, "\tNIRRTYPES            : %zu\n",
             op->NIRRTYPES);
+    fprintf(LOG_DEST, "\tNCROPTYPES           : %d\n",
+            op->NCROPTYPES);
 }
 
 /******************************************

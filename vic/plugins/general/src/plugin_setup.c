@@ -45,6 +45,8 @@ plugin_get_global_param(char cmdstr[MAXSTRING])
     }
     else if (irr_get_global_param(cmdstr)) {
     }
+    else if (crop_get_global_param(cmdstr)) {
+    }
     else {
         return false;
     }
@@ -75,6 +77,9 @@ plugin_validate_global_param(void)
     }
     if (plugin_options.IRRIGATION) {
         irr_validate_global_param();
+    }
+    if(plugin_options.WOFOST){
+        crop_validate_global_param();
     }
 }
 
@@ -132,6 +137,9 @@ plugin_start(void)
     if (plugin_options.IRRIGATION) {
         irr_start();
     }
+    if(plugin_options.WOFOST) {
+        crop_start();
+    }
 }
 
 /******************************************
@@ -177,6 +185,10 @@ plugin_init(void)
     if (plugin_options.IRRIGATION) {
         irr_late_alloc();
         irr_init();
+    }
+    if(plugin_options.WOFOST) {
+        crop_late_alloc();
+        crop_init();
     }
 
     plugin_set_state_meta_data_info();
@@ -268,5 +280,8 @@ plugin_finalize(void)
     }
     if (plugin_options.IRRIGATION) {
         irr_finalize();
+    }
+    if(plugin_options.WOFOST){
+        crop_finalize();
     }
 }

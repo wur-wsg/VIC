@@ -145,6 +145,8 @@ enum {
     FORCING_ENE_DEMAND,                 /**< energy demand [mm] */
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
+    // crops
+    FORCING_CO2,			/**< CO2 concentration [ppm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/
@@ -187,6 +189,7 @@ typedef struct {
     bool DAMS;                          /**< dam module flag */
     bool WATERUSE;                      /**< water-use module flag */
     bool IRRIGATION;                    /**< irrigation module flag */
+    bool WOFOST;                        /**< wofost module flag */
 
     short unsigned int UH_LENGTH;       /**< routing sub-step (unit-hydrograph) length */
     bool FORCE_ROUTING;                 /**< routing (inflow) forcing flag */
@@ -197,6 +200,7 @@ typedef struct {
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
+    short unsigned int NCROPTYPES;      /**< number of crop types */
 } plugin_option_struct;
 
 /******************************************************************************
@@ -205,6 +209,8 @@ typedef struct {
 typedef struct {
     size_t rout_steps_per_day;          /**< number of routing steps [d-1] */
     double rout_dt;                     /**< routing time step [s] */
+    size_t wofost_steps_per_day;        /**< number of wofost steps [d-1] */
+    double wofost_dt;                   /**< wofost time step [s] */
     size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];        /**< number of forcing steps [d-1] */
     double force_dt[PLUGIN_N_FORCING_TYPES];                    /**< forcing time step [s] */
     unsigned int forcesec[PLUGIN_N_FORCING_TYPES];              /**< seconds since midnight when forcing files starts */

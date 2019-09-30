@@ -287,6 +287,11 @@ transpiration(layer_data_struct *layer,
           0.5))) {
         gsm_inv = 1.0;
 
+        for (i = 0; i < options.Nlayer; i++) {
+            // Store water stress for use in plugins
+            layer[i].water_stress = 1.0;
+        }
+        
         /* compute whole-canopy stomatal resistance */
         if (!options.CARBON || options.RC_MODE == RC_JARVIS) {
             /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
@@ -387,6 +392,9 @@ transpiration(layer_data_struct *layer,
                 gsm_inv = 0.0;
             }
 
+            // Store water stress for use in plugins
+            layer[i].water_stress = gsm_inv;
+                
             if (gsm_inv > 0.0) {
                 /* compute whole-canopy stomatal resistance */
                 if (!options.CARBON || options.RC_MODE == RC_JARVIS) {
