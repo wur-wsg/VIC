@@ -76,6 +76,8 @@ plugin_print_options(plugin_option_struct *op)
     
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",
             op->FORCE_ROUTING ? "true" : "false");
+    fprintf(LOG_DEST, "\tFORCE_LANDUSE        : %s\n",
+            op->FORCE_LANDUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
             op->POTENTIAL_IRRIGATION ? "true" : "false");
 

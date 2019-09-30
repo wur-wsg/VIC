@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * Plugin header file which combines all plugins
+ * Land-use initialization functions
  *
  * @section LICENSE
  *
@@ -24,15 +24,36 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#include <vic_driver_image.h>
+#include <plugin.h>
 
-#include <plugin_driver_shared_image.h>
-#include <landuse.h>
-#include <routing.h>
-#include <efr.h>
-#include <dams.h>
-#include <wateruse.h>
-#include <irrigation.h>
+/******************************************
+* @brief   Initialize the land-use forcing
+******************************************/
+void
+initialize_lu_force(lu_force_struct *lu_force, size_t nveg)
+{
+    size_t i;
+    
+    for(i = 0; i < nveg; i++){
+        lu_force->Cv[i] = 0.0;
+        lu_force->veg_class[i] = 0.0;
+    }
+}
 
-#endif /* PLUGIN_H */
+/******************************************
+* @brief   Initialize the land-use structures
+******************************************/
+void
+lu_initialize_local_structures(void)
+{
+    extern domain_struct        local_domain;
+    extern veg_con_map_struct  *veg_con_map;
+    extern lu_force_struct     *lu_force;
+
+    size_t                      i;
+
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        initialize_lu_force(&lu_force[i], veg_con_map[i].nv_active);
+    }
+}

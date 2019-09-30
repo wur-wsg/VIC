@@ -60,6 +60,8 @@ enum {
     // routing
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
+    // land-use
+    OUT_CV,                             /**< vegetation coverage fraction [-] */
     // efr
     OUT_EFR_DISCHARGE,                  /**< environmental river discharge [m3 s-1] */
     OUT_EFR_BASEFLOW,                   /**< environmental baseflow [mm] */
@@ -126,6 +128,8 @@ enum {
 enum {
     // routing
     FORCING_DISCHARGE,                  /**< river (inflow) discharge [m3 s-1] */
+    // landuse
+    FORCING_CV, /**< vegetation coverage [-] */
     // efr
     FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
     FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
@@ -190,6 +194,7 @@ typedef struct {
 
     short unsigned int UH_LENGTH;       /**< routing sub-step (unit-hydrograph) length */
     bool FORCE_ROUTING;                 /**< routing (inflow) forcing flag */
+    bool FORCE_LANDUSE; /**< landuse forcing flag */
     short unsigned int NDAMTYPES;       /**< maximum number of dams per cell */
     short unsigned int NDAMSERVICE;     /**< maximum number of dam service per dam */
     short unsigned int NWUTYPES;        /**< number of water-use sectors */

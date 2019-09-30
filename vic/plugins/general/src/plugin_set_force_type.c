@@ -59,6 +59,9 @@ plugin_set_force_type(char *cmdstr)
     if (strcasecmp("DISCHARGE", nctype) == 0) {
         type = FORCING_DISCHARGE;
     }
+    else if (strcasecmp("CV", nctype) == 0) {
+        type = FORCING_CV;
+    }
     else if (strcasecmp("EFR_DISCHARGE", nctype) == 0) {
         type = FORCING_EFR_DISCHARGE;
     }
