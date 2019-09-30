@@ -47,3 +47,6 @@ __pycache__
 
 # Netbeans
 nbproject/
+
+# Mkdocs
+site/

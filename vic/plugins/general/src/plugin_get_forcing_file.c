@@ -125,12 +125,12 @@ plugin_get_forcing_file_info(short unsigned int type)
     // check that this forcing file will work
     if (plugin_global_param.forcefreq[type] == FORCE_STEP) {
         if (plugin_global_param.force_steps_per_year[type] !=
-            global_param.snow_steps_per_day * days_per_year) {
+            global_param.model_steps_per_day * days_per_year) {
             log_err(
                 "Plugin forcing file timestep must match the force model timestep.  "
                 "Force model timesteps per year is set to %zu and the plugin forcing "
                 "file timestep is set to %zu (frequency = FORCE_STEP)",
-                global_param.snow_steps_per_day * days_per_year,
+                global_param.model_steps_per_day * days_per_year,
                 plugin_global_param.force_steps_per_year[type]);
         }
     }
