@@ -1,8 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * This routine creates an array of structures that contain information about a
- * cell's states and fluxes.
+ * This routine makes an array of vegitation variables for each vegitation type.
  *
  * @section LICENSE
  *
@@ -28,22 +27,15 @@
 #include <vic_driver_shared_all.h>
 
 /******************************************************************************
- * @brief    Creates an array of structures that contain information about a
- *           cell's states and fluxes.
+ * @brief    Make an array of lake variables for each lake type.
  *****************************************************************************/
-all_vars_struct
-make_all_vars(size_t nveg, size_t nlake)
+lake_var_struct *
+make_lake_var(size_t lake_type_num)
 {
-    all_vars_struct temp;
-    size_t          Nitems;
+    lake_var_struct     *temp = NULL;
 
-    Nitems = nveg + 1;
+    temp = calloc(lake_type_num, sizeof(*temp));
+    check_alloc_status(temp, "Memory allocation error.");
 
-    temp.snow = make_snow_data(Nitems);
-    temp.energy = make_energy_bal(Nitems);
-    temp.veg_var = make_veg_var(Nitems);
-    temp.lake_var = make_lake_var(nlake);
-    temp.cell = make_cell_data(Nitems);
-
-    return (temp);
+    return temp;
 }

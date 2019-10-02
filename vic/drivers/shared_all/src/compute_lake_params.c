@@ -86,7 +86,7 @@ compute_lake_params(lake_con_struct *lake_con,
     }
 
     // compute volume corresponding to mindepth
-    ErrFlag = get_volume(*lake_con, lake_con->mindepth, &(lake_con->minvolume));
+    ErrFlag = get_volume(lake_con, lake_con->mindepth, &(lake_con->minvolume));
     if (ErrFlag == ERROR) {
         log_err("Error calculating depth: depth %f volume %f",
                 lake_con->mindepth, lake_con->minvolume);
