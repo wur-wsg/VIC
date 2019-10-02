@@ -77,7 +77,6 @@ calc_surf_energy_bal(double             Le,
                      size_t             hidx,
                      unsigned short     iveg,
                      int                overstory,
-                     unsigned short     veg_class,
                      double            *CanopLayerBnd,
                      double            *dryFrac,
                      force_data_struct *force,
@@ -86,7 +85,8 @@ calc_surf_energy_bal(double             Le,
                      layer_data_struct *layer,
                      snow_data_struct  *snow,
                      soil_con_struct   *soil_con,
-                     veg_var_struct    *veg_var)
+                     veg_var_struct    *veg_var,
+                     veg_lib_struct    *veg_lib)
 {
     extern option_struct     options;
     extern parameters_struct param;
@@ -299,7 +299,7 @@ calc_surf_energy_bal(double             Le,
         }
 
         Tsurf = root_brent(T_lower, T_upper, func_surf_energy_bal,
-                           VEG, veg_class, delta_t, Cs1, Cs2, D1, D2,
+                           VEG, delta_t, Cs1, Cs2, D1, D2,
                            T1_old, T2, Ts_old, energy->T, bubble, dp, expt,
                            ice0, kappa1, kappa2, max_moist, moist, root,
                            CanopLayerBnd, UnderStory, overstory, NetShortBare,
@@ -318,7 +318,8 @@ calc_surf_energy_bal(double             Le,
                            Tnew_node, Tnew_fbflag, Tnew_fbcount, alpha, beta,
                            bubble_node, Zsum_node, expt_node, gamma, ice_node,
                            kappa_node, max_moist_node, moist_node, soil_con,
-                           layer, veg_var, INCLUDE_SNOW, options.NOFLUX,
+                           layer, veg_var, veg_lib, INCLUDE_SNOW,
+                           options.NOFLUX,
                            options.EXP_TRANS,
                            snow->snow, FIRST_SOLN, &NetLongBare,
                            &TmpNetLongSnow, &T1, &energy->deltaH,
@@ -340,7 +341,7 @@ calc_surf_energy_bal(double             Le,
                                                    (int) dmy->day,
                                                    (int) dmy->dayseconds,
                                                    VEG, iveg,
-                                                   veg_class, delta_t, Cs1, Cs2,
+                                                   delta_t, Cs1, Cs2,
                                                    D1, D2,
                                                    T1_old, T2, Ts_old,
                                                    energy->T,
@@ -390,7 +391,7 @@ calc_surf_energy_bal(double             Le,
                                                    gamma, ice_node, kappa_node,
                                                    max_moist_node, moist_node,
                                                    soil_con->frost_fract,
-                                                   layer, veg_var,
+                                                   layer, veg_var, veg_lib,
                                                    INCLUDE_SNOW,
                                                    soil_con->FS_ACTIVE,
                                                    options.NOFLUX,
@@ -419,7 +420,7 @@ calc_surf_energy_bal(double             Le,
             FIRST_SOLN[0] = true;
 
             Tsurf = root_brent(T_lower, T_upper,
-                               func_surf_energy_bal, VEG, veg_class,
+                               func_surf_energy_bal, VEG,
                                delta_t, Cs1, Cs2, D1, D2, T1_old, T2, Ts_old,
                                energy->T, bubble, dp, expt, ice0, kappa1,
                                kappa2, max_moist, moist, root, CanopLayerBnd,
@@ -441,7 +442,7 @@ calc_surf_energy_bal(double             Le,
                                Tnew_node, Tnew_fbflag, Tnew_fbcount, alpha,
                                beta, bubble_node, Zsum_node, expt_node, gamma,
                                ice_node, kappa_node, max_moist_node,
-                               moist_node, soil_con, layer, veg_var,
+                               moist_node, soil_con, layer, veg_var, veg_lib,
                                INCLUDE_SNOW, options.NOFLUX, options.EXP_TRANS,
                                snow->snow,
                                FIRST_SOLN, &NetLongBare, &TmpNetLongSnow, &T1,
@@ -462,7 +463,7 @@ calc_surf_energy_bal(double             Le,
                                                        (int) dmy->day,
                                                        (int) dmy->dayseconds,
                                                        VEG, iveg,
-                                                       veg_class, delta_t, Cs1,
+                                                       delta_t, Cs1,
                                                        Cs2, D1,
                                                        D2, T1_old, T2, Ts_old,
                                                        energy->T,
@@ -518,7 +519,7 @@ calc_surf_energy_bal(double             Le,
                                                        max_moist_node,
                                                        moist_node,
                                                        soil_con->frost_fract,
-                                                       layer, veg_var,
+                                                       layer, veg_var, veg_lib,
                                                        INCLUDE_SNOW,
                                                        soil_con->FS_ACTIVE,
                                                        options.NOFLUX,
@@ -549,7 +550,7 @@ calc_surf_energy_bal(double             Le,
         FIRST_SOLN[0] = true;
     }
 
-    error = solve_surf_energy_bal(Tsurf, VEG, veg_class, delta_t, Cs1,
+    error = solve_surf_energy_bal(Tsurf, VEG, delta_t, Cs1,
                                   Cs2, D1, D2, T1_old, T2, Ts_old, energy->T,
                                   bubble, dp, expt, ice0, kappa1, kappa2,
                                   max_moist, moist, root, CanopLayerBnd,
@@ -572,7 +573,8 @@ calc_surf_energy_bal(double             Le,
                                   alpha, beta, bubble_node, Zsum_node,
                                   expt_node, gamma, ice_node, kappa_node,
                                   max_moist_node, moist_node, soil_con, layer,
-                                  veg_var, INCLUDE_SNOW, options.NOFLUX,
+                                  veg_var, veg_lib, INCLUDE_SNOW,
+                                  options.NOFLUX,
                                   options.EXP_TRANS,
                                   snow->snow, FIRST_SOLN, &NetLongBare,
                                   &TmpNetLongSnow, &T1, &energy->deltaH,
@@ -698,15 +700,19 @@ calc_surf_energy_bal(double             Le,
             /** Check for Thin Snowpack which only Partially Covers Grid Cell
                 exists only if not snowing and snowpack has started to melt **/
             if (options.SPATIAL_SNOW) {
-                snow->coverage = calc_snow_coverage(&snow->store_snow,
-                                                    soil_con->max_snow_distrib_slope,
-                                                    snow_coverage, snow->swq,
-                                                    old_swq, snow->depth, old_depth,
-                                                    (*melt) - snow->vapor_flux,
-                                                    &snow->max_snow_depth, snowfall,
-                                                    &snow->store_swq,
-                                                    &snow->snow_distrib_slope,
-                                                    &snow->store_coverage);
+                snow->coverage = calc_snow_coverage(
+                    &snow->store_snow,
+                    soil_con->
+                    max_snow_distrib_slope,
+                    snow_coverage, snow->swq,
+                    old_swq, snow->depth,
+                    old_depth,
+                    (*melt) - snow->vapor_flux,
+                    &snow->max_snow_depth,
+                    snowfall,
+                    &snow->store_swq,
+                    &snow->snow_distrib_slope,
+                    &snow->store_coverage);
             }
             else {
                 if (snow->swq > 0) {
@@ -803,7 +809,6 @@ error_print_surf_energy_bal(double  Ts,
     int                sec;
     int                iveg;
     int                VEG;
-    int                veg_class;
 
     double             delta_t;
 
@@ -908,6 +913,7 @@ error_print_surf_energy_bal(double  Ts,
     /* model structures */
     layer_data_struct *layer;
     veg_var_struct    *veg_var;
+    veg_lib_struct    *veg_lib;
 
     /* control flags */
     int                INCLUDE_SNOW;
@@ -946,7 +952,6 @@ error_print_surf_energy_bal(double  Ts,
     sec = (int) va_arg(ap, int);
     VEG = (int) va_arg(ap, int);
     iveg = (int) va_arg(ap, int);
-    veg_class = (int) va_arg(ap, int);
 
     delta_t = (double) va_arg(ap, double);
 
@@ -1049,6 +1054,7 @@ error_print_surf_energy_bal(double  Ts,
     /* model structures */
     layer = (layer_data_struct *) va_arg(ap, layer_data_struct *);
     veg_var = (veg_var_struct *) va_arg(ap, veg_var_struct *);
+    veg_lib = (veg_lib_struct *) va_arg(ap, veg_lib_struct *);
 
     /* control flags */
     INCLUDE_SNOW = (int) va_arg(ap, int);
@@ -1088,7 +1094,6 @@ error_print_surf_energy_bal(double  Ts,
     fprintf(LOG_DEST, "day = %i\n", day);
     fprintf(LOG_DEST, "second = %i\n", sec);
     fprintf(LOG_DEST, "VEG = %i\n", VEG);
-    fprintf(LOG_DEST, "veg_class = %i\n", veg_class);
     fprintf(LOG_DEST, "delta_t = %f\n", delta_t);
 
     /* soil layer terms */

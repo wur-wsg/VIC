@@ -71,13 +71,13 @@ snow_intercept(double             Dt,
                int                iveg,
                int                month,
                int                hidx,
-               unsigned short     veg_class,
                double            *CanopLayerBnd,
                double            *dryFrac,
                force_data_struct *force,
                layer_data_struct *layer,
                soil_con_struct   *soil_con,
-               veg_var_struct    *veg_var)
+               veg_var_struct    *veg_var,
+               veg_lib_struct    *veg_lib)
 {
     extern option_struct     options;
     extern parameters_struct param;
@@ -303,10 +303,11 @@ snow_intercept(double             Dt,
                                        soil_con->Wpwp, soil_con->frost_fract,
                                        AirDens, EactAir, Press, Le, Tcanopy,
                                        Vpd, shortwave, Catm, dryFrac, &Evap,
-                                       Ra, Ra_used, *RainFall, Wind, veg_class,
+                                       Ra, Ra_used, *RainFall, Wind,
                                        displacement, ref_height, roughness,
                                        root, CanopLayerBnd, IntRainOrg,
                                        *IntSnow, IntRain, layer, veg_var,
+                                       veg_lib,
                                        LongOverIn, LongUnderOut, *NetShortOver,
                                        AdvectedEnergy, LatentHeat,
                                        LatentHeatSub, LongOverOut, NetLongOver,
@@ -345,10 +346,10 @@ snow_intercept(double             Dt,
                                AirDens, EactAir, Press, Le,
                                Tcanopy, Vpd, shortwave, Catm, dryFrac,
                                &Evap, Ra, Ra_used, *RainFall, Wind,
-                               veg_class, displacement, ref_height,
+                               displacement, ref_height,
                                roughness, root, CanopLayerBnd, IntRainOrg,
                                *IntSnow,
-                               IntRain, layer, veg_var,
+                               IntRain, layer, veg_var, veg_lib,
                                LongOverIn, LongUnderOut,
                                *NetShortOver,
                                AdvectedEnergy,
@@ -377,12 +378,13 @@ snow_intercept(double             Dt,
                                                     &Evap, Ra, Ra_used,
                                                     *RainFall, Wind, UnderStory,
                                                     iveg,
-                                                    veg_class, displacement,
+                                                    displacement,
                                                     ref_height,
                                                     roughness, root,
                                                     CanopLayerBnd, IntRainOrg,
                                                     *IntSnow,
                                                     IntRain, layer, veg_var,
+                                                    veg_lib,
                                                     LongOverIn, LongUnderOut,
                                                     *NetShortOver,
                                                     AdvectedEnergy,
@@ -401,10 +403,11 @@ snow_intercept(double             Dt,
                                        soil_con->Wpwp, soil_con->frost_fract,
                                        AirDens, EactAir, Press, Le, Tcanopy,
                                        Vpd, shortwave, Catm, dryFrac, &Evap,
-                                       Ra, Ra_used, *RainFall, Wind, veg_class,
+                                       Ra, Ra_used, *RainFall, Wind,
                                        displacement, ref_height, roughness,
                                        root, CanopLayerBnd, IntRainOrg,
                                        *IntSnow, IntRain, layer, veg_var,
+                                       veg_lib,
                                        LongOverIn, LongUnderOut, *NetShortOver,
                                        AdvectedEnergy, LatentHeat,
                                        LatentHeatSub, LongOverOut, NetLongOver,
@@ -638,7 +641,6 @@ error_print_canopy_energy_bal(double  Tfoliage,
     /* Vegetation Terms */
     int                  UnderStory;
     int                  iveg;
-    unsigned int         veg_class;
 
     double              *displacement;
     double              *ref_height;
@@ -655,6 +657,7 @@ error_print_canopy_energy_bal(double  Tfoliage,
 
     layer_data_struct   *layer;
     veg_var_struct      *veg_var;
+    veg_lib_struct      *veg_lib;
 
     /* Energy Flux Terms */
     double               LongOverIn;
@@ -708,7 +711,6 @@ error_print_canopy_energy_bal(double  Tfoliage,
     /* Vegetation Terms */
     UnderStory = (int) va_arg(ap, int);
     iveg = (int) va_arg(ap, int);
-    veg_class = (unsigned int) va_arg(ap, unsigned int);
 
     displacement = (double *) va_arg(ap, double *);
     ref_height = (double *) va_arg(ap, double *);
@@ -725,6 +727,7 @@ error_print_canopy_energy_bal(double  Tfoliage,
 
     layer = (layer_data_struct *) va_arg(ap, layer_data_struct *);
     veg_var = (veg_var_struct *) va_arg(ap, veg_var_struct *);
+    veg_lib = (veg_lib_struct *) va_arg(ap, veg_lib_struct *);
 
     /* Energy Flux Terms */
     LongOverIn = (double) va_arg(ap, double);
@@ -779,7 +782,6 @@ error_print_canopy_energy_bal(double  Tfoliage,
     /* Vegetation Terms */
     fprintf(LOG_DEST, "UnderStory = %i\n", UnderStory);
     fprintf(LOG_DEST, "iveg = %i\n", iveg);
-    fprintf(LOG_DEST, "veg_class = %i\n", veg_class);
 
     fprintf(LOG_DEST, "displacement = [%f, %f]\n", displacement[1],
             displacement[UnderStory]);
