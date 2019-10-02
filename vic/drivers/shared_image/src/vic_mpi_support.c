@@ -171,34 +171,34 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(global_param_struct, endyear);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned short forceday[2];
+    // unsigned short forceday[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceday);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned int forcesec[2];
+    // unsigned int forcesec[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forcesec);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED;
 
-    // unsigned short forcemonth[2];
+    // unsigned short forcemonth[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forcemonth);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned short forceoffset[2];
+    // unsigned short forceoffset[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceoffset);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned int forceskip[2];
+    // unsigned int forceskip[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceskip);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED;
 
-    // unsigned short int forceyear[2];
+    // unsigned short int forceyear[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceyear);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // size_t nrecs;
@@ -312,14 +312,14 @@ create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     // reset i
     i = 0;
 
-    // char forcing[2][MAXSTRING];
+    // char forcing[N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, forcing);
-    blocklengths[i] *= 2;
+    blocklengths[i] *= MAX_FORCE_FILES;
     mpi_types[i++] = MPI_CHAR;
 
-    // char f_path_pfx[2][MAXSTRING];
+    // char f_path_pfx[N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, f_path_pfx);
-    blocklengths[i] *= 2;
+    blocklengths[i] *= MAX_FORCE_FILES;
     mpi_types[i++] = MPI_CHAR;
 
     // char global[MAXSTRING];

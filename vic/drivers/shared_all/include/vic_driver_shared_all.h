@@ -31,7 +31,6 @@
 #include <vic_version.h>
 
 // Define maximum array sizes for driver level objects
-#define MAX_FORCE_FILES 2
 #define MAX_OUTPUT_STREAMS 20
 
 // Output compression setting
@@ -480,13 +479,13 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     force_type_struct TYPE[N_FORCING_TYPES];
-    double FORCE_DT[2];    /**< forcing file time step */
-    size_t force_steps_per_day[2];    /**< forcing file timesteps per day */
-    unsigned short int FORCE_ENDIAN[2];  /**< endian-ness of input file, used for
+    double FORCE_DT[N_FORCING_TYPES];    /**< forcing file time step */
+    size_t force_steps_per_day[N_FORCING_TYPES];    /**< forcing file timesteps per day */
+    unsigned short int FORCE_ENDIAN[N_FORCING_TYPES];  /**< endian-ness of input file, used for
                                             DAILY_BINARY format */
-    int FORCE_FORMAT[2];            /**< ASCII or BINARY */
-    int FORCE_INDEX[2][N_FORCING_TYPES];
-    size_t N_TYPES[2];
+    int FORCE_FORMAT[N_FORCING_TYPES];            /**< ASCII or BINARY */
+    int FORCE_INDEX[N_FORCING_TYPES];
+    size_t N_TYPES[N_FORCING_TYPES];
 } param_set_struct;
 
 /******************************************************************************

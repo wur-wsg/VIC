@@ -65,6 +65,7 @@
 #define MAX_FROST_AREAS 10     /**< maximum number of frost sub-areas */
 #define MAX_LAKE_NODES  20     /**< maximum number of lake thermal nodes */
 #define MAX_ZWTVMOIST   11     /**< maximum number of points in water table vs moisture curve for each soil layer; should include points at lower and upper boundaries of the layer */
+#define MAX_FORCE_FILES 15
 
 /***** Define minimum values for model parameters *****/
 #define MINSOILDEPTH    0.001  /**< Minimum layer depth with which model can work (m) */
@@ -306,15 +307,15 @@ typedef struct {
     unsigned short int endday;     /**< Last day of model simulation */
     unsigned short int endmonth;   /**< Last month of model simulation */
     unsigned short int endyear;    /**< Last year of model simulation */
-    unsigned short int forceday[2];  /**< day forcing files starts */
-    unsigned int forcesec[2];          /**< seconds since midnight when forcing
+    unsigned short int forceday[MAX_FORCE_FILES];  /**< day forcing files starts */
+    unsigned int forcesec[MAX_FORCE_FILES];          /**< seconds since midnight when forcing
                                           files starts */
-    unsigned short int forcemonth[2];  /**< month forcing files starts */
-    unsigned short int forceoffset[2];  /**< counter to keep track of offset in reading
+    unsigned short int forcemonth[MAX_FORCE_FILES];  /**< month forcing files starts */
+    unsigned short int forceoffset[MAX_FORCE_FILES];  /**< counter to keep track of offset in reading
                                            forcing files; updated after every read */
-    unsigned int forceskip[2];   /**< number of model time steps to skip at
+    unsigned int forceskip[MAX_FORCE_FILES];   /**< number of model time steps to skip at
                                       the start of the forcing file */
-    unsigned short int forceyear[2];  /**< year forcing files start */
+    unsigned short int forceyear[MAX_FORCE_FILES];  /**< year forcing files start */
     size_t nrecs;                /**< Number of time steps simulated */
     unsigned short int startday;  /**< Starting day of the simulation */
     unsigned short int startmonth;  /**< Starting month of the simulation */
