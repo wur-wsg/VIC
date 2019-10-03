@@ -1,6 +1,6 @@
 # VIC-WUR Routing Forcing File
 
-VIC-WUR requires a NetCDF file with gridded forcings. Forcing timesteps can be each model timestep (`STEP`), each day (`DAY`) or each month (`MONTH`). The required forcing variables and units are listed below and must also be specified in the [Global Parameter File](GlobalParam.md). Each forcing variable is supplied to VIC-WUR in one or multiple NetCDF files.
+VIC-WUR requires a NetCDF file with gridded forcings. Forcing timesteps can be each model timestep (`STEP`), each day (`DAY`) or each month (`MONTH`). The required forcing variables and units are listed below and must also be specified in the [Global Parameter File](GlobalParam_vicwur.md). Each forcing variable is supplied to VIC-WUR in one or multiple NetCDF files.
 
 #### Routing Forcings:
 

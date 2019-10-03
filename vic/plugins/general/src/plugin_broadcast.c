@@ -155,7 +155,7 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
         blocklengths[i] = MAXSTRING;
     }
     i = 0;
-    
+
     // char wofost_text[MAXSTRING]
     offsets[i] = offsetof(plugin_filenames_struct, wofost_text);
     mpi_types[i++] = MPI_CHAR;
@@ -199,7 +199,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 17;
+    nitems = 18;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -240,6 +240,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
     // bool FORCE_ROUTING;
     offsets[i] = offsetof(plugin_option_struct, FORCE_ROUTING);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool FORCE_LANDUSE;
+    offsets[i] = offsetof(plugin_option_struct, FORCE_LANDUSE);
     mpi_types[i++] = MPI_C_BOOL;
     // short unsigned int NDAMTYPES;
     offsets[i] = offsetof(plugin_option_struct, NDAMTYPES);
