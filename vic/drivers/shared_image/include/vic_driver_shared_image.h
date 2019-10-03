@@ -60,6 +60,7 @@ typedef struct {
     double area; /**< area of grid cell */
     double frac; /**< fraction of grid cell that is active */
     size_t nveg; /**< number of vegetation type according to parameter file */
+    size_t nlake; /**< number of lake type according to parameter file */
     size_t global_idx; /**< index of grid cell in global list of grid cells */
     size_t io_idx; /**< index of cell in 1-D I/O arrays */
     size_t local_idx; /**< index of grid cell in local list of grid cells */
@@ -148,6 +149,18 @@ typedef struct {
 } nc_file_struct;
 
 /******************************************************************************
+ * @brief    Structure for mapping the lake types for each grid cell as
+ *           stored in VIC's lake_con_struct to a regular array.
+ *****************************************************************************/
+typedef struct {
+    size_t nl_types; /**< total number of lake types */
+                     /**< size of lidx array */
+    size_t nl_active; /**< number of active lake types */
+    int *lidx;     /**< array of lake indices for active lake types */
+    int *lake_id;    /**< lake id */
+} lake_con_map_struct;
+
+/******************************************************************************
  * @brief    Structure for mapping the vegetation types for each grid cell as
  *           stored in VIC's veg_con_struct to a regular array.
  *****************************************************************************/
@@ -176,7 +189,7 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     nameid_struct forcing[MAX_FORCE_FILES];  /**< atmospheric forcing files */
-    char f_path_pfx[MAX_FORCE_FILES][MAXSTRING]; /**< path and prefix for
+    char f_path_pfx[N_FORCING_TYPES][MAXSTRING]; /**< path and prefix for
                                                     atmospheric forcing files */
     char global[MAXSTRING];     /**< global control file name */
     nameid_struct domain;       /**< domain file name and nc_id*/
@@ -190,6 +203,8 @@ typedef struct {
 } filenames_struct;
 
 void add_nveg_to_global_domain(nameid_struct *nc_nameid,
+                               domain_struct *global_domain);
+void add_nlake_to_global_domain(nameid_struct *nc_nameid,
                                domain_struct *global_domain);
 void alloc_force(force_data_struct *force);
 void alloc_veg_hist(veg_hist_struct *veg_hist);

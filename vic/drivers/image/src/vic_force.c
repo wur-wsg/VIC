@@ -191,7 +191,7 @@ vic_force(void)
         }
     }
     // Optional inputs
-    if (options.LAKES) {
+    if (options.LAKES && options.FORCE_LAKES) {
         // Channel inflow to lake
         d3start[0] = global_param.forceskip[CHANNEL_IN] + global_param.forceoffset[CHANNEL_IN] +
                      j;
@@ -463,7 +463,7 @@ vic_force(void)
         }
 
         // Optional inputs
-        if (options.LAKES) {
+        if (options.LAKES && options.FORCE_LAKES) {
             force[i].channel_in[NR] = average(force[i].channel_in, NF) * NF;
         }
         if (options.CARBON) {

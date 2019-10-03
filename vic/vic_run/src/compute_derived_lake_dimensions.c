@@ -33,7 +33,7 @@
  *****************************************************************************/
 void
 compute_derived_lake_dimensions(lake_var_struct *lake,
-                                lake_con_struct  lake_con)
+                                lake_con_struct *lake_con)
 {
     extern parameters_struct param;
 

@@ -59,6 +59,7 @@ free_all_vars(all_vars_struct *all_vars,
         free((char *)(*all_vars).veg_var[j]);
     }
     free((char *)(*all_vars).veg_var);
+    free((char *)(*all_vars).lake_var);
     for (j = 0; j < Nitems; j++) {
         free((char *) all_vars[0].energy[j]);
     }

@@ -634,7 +634,7 @@ void free_vegcon(veg_con_struct **veg_con);
 void generate_default_state(all_vars_struct *, soil_con_struct *,
                             veg_con_struct *, dmy_struct *);
 void generate_default_lake_state(all_vars_struct *, soil_con_struct *,
-                                 lake_con_struct);
+                                 lake_con_struct *);
 void get_default_nstreams_nvars(size_t *nstreams, size_t nvars[]);
 void get_parameters(FILE *paramfile);
 void init_output_list(double **out_data, int write, char *format, int type,
@@ -654,7 +654,7 @@ void initialize_time(void);
 void initialize_veg(veg_var_struct **veg_var, size_t nveg);
 double julian_day_from_dmy(dmy_struct *dmy, unsigned short int calendar);
 bool leap_year(unsigned short int year, unsigned short int calendar);
-all_vars_struct make_all_vars(size_t nveg);
+all_vars_struct make_all_vars(size_t nveg, size_t nlake);
 cell_data_struct **make_cell_data(size_t veg_type_num);
 dmy_struct *make_dmy(global_param_struct *global);
 energy_bal_struct **make_energy_bal(size_t nveg);
@@ -662,6 +662,7 @@ void make_lastday(unsigned short int calendar, unsigned short int year,
                   unsigned short int lastday[]);
 snow_data_struct **make_snow_data(size_t nveg);
 veg_var_struct **make_veg_var(size_t veg_type_num);
+lake_var_struct *make_lake_var(size_t lake_type_num);
 double no_leap_day_from_dmy(dmy_struct *dmy);
 void num2date(double origin, double time_value, double tzoffset,
               unsigned short int calendar, unsigned short int time_units,

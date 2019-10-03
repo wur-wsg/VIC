@@ -34,28 +34,29 @@
 void
 generate_default_lake_state(all_vars_struct *all_vars,
                             soil_con_struct *soil_con,
-                            lake_con_struct  lake_con)
+                            lake_con_struct *lake_con)
 {
-    extern option_struct options;
+    size_t               iLake;
+    size_t               iNode;
+    size_t               Nlake;
 
-    size_t               k;
+    lake_var_struct      *lake;
 
-    lake_var_struct      lake;
-
+    Nlake = lake_con[0].lake_type_num;
     lake = all_vars->lake_var;
-
-    /************************************************************************
-       Initialize lake state variables
-       TBD: currently setting depth to depth_in from parameter file, but
-            in future we should initialize to mindepth as default and
-            eliminate depth_in (require user to use a state file if they
-            want control over initial depth)
-    ************************************************************************/
-    if (options.LAKES) {
-        lake.ldepth = lake_con.depth_in;
-        for (k = 0; k < lake.activenod; k++) {
+    
+    for (iLake = 0; iLake < Nlake; iLake++){
+        /************************************************************************
+           Initialize lake state variables
+           TBD: currently setting depth to depth_in from parameter file, but
+                in future we should initialize to mindepth as default and
+                eliminate depth_in (require user to use a state file if they
+                want control over initial depth)
+        ************************************************************************/
+        lake[iLake].ldepth = lake_con[iLake].depth_in;
+        for (iNode = 0; iNode < lake_con[iLake].numnod; iNode++) {
             // lake model requires FULL_ENERGY set to true
-            lake.temp[k] = soil_con->avg_temp;
+            lake[iLake].temp[iNode] = soil_con->avg_temp;
         }
     }
 }

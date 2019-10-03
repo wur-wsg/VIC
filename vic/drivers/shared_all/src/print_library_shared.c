@@ -312,16 +312,18 @@ print_lake_con(lake_con_struct *lcon,
         fprintf(LOG_DEST, "\t%.4f", lcon->Cl[i]);
     }
     fprintf(LOG_DEST, "\n");
-    fprintf(LOG_DEST, "\tb        : %.4f\n", lcon->b);
-    fprintf(LOG_DEST, "\tmaxdepth : %.4f\n", lcon->maxdepth);
-    fprintf(LOG_DEST, "\tmindepth : %.4f\n", lcon->mindepth);
-    fprintf(LOG_DEST, "\tmaxvolume: %.4f\n", lcon->maxvolume);
-    fprintf(LOG_DEST, "\tminvolume: %.4f\n", lcon->minvolume);
-    fprintf(LOG_DEST, "\tbpercent : %.4f\n", lcon->bpercent);
-    fprintf(LOG_DEST, "\trpercent : %.4f\n", lcon->rpercent);
-    fprintf(LOG_DEST, "\twfrac    : %.4f\n", lcon->wfrac);
-    fprintf(LOG_DEST, "\tdepth_in : %.4f\n", lcon->depth_in);
-    fprintf(LOG_DEST, "\tlake_idx : %d\n", lcon->lake_idx);
+    fprintf(LOG_DEST, "\tb            : %.4f\n", lcon->b);
+    fprintf(LOG_DEST, "\tmaxdepth     : %.4f\n", lcon->maxdepth);
+    fprintf(LOG_DEST, "\tmindepth     : %.4f\n", lcon->mindepth);
+    fprintf(LOG_DEST, "\tmaxvolume    : %.4f\n", lcon->maxvolume);
+    fprintf(LOG_DEST, "\tminvolume    : %.4f\n", lcon->minvolume);
+    fprintf(LOG_DEST, "\tbpercent     : %.4f\n", lcon->bpercent);
+    fprintf(LOG_DEST, "\trpercent     : %.4f\n", lcon->rpercent);
+    fprintf(LOG_DEST, "\twfrac        : %.4f\n", lcon->wfrac);
+    fprintf(LOG_DEST, "\tdepth_in     : %.4f\n", lcon->depth_in);
+    fprintf(LOG_DEST, "\tlake_type_num: %zu\n", lcon->lake_type_num);
+    fprintf(LOG_DEST, "\tveg_idx      : %d\n", lcon->veg_idx);
+    fprintf(LOG_DEST, "\telev_idx     : %zu\n", lcon->elev_idx);
 }
 
 /******************************************************************************
@@ -1137,6 +1139,7 @@ print_veg_con(veg_con_struct *vcon,
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tveg_class       : %d\n", vcon->veg_class);
     fprintf(LOG_DEST, "\tvegetat_type_num: %zu\n", vcon->vegetat_type_num);
+    fprintf(LOG_DEST, "\tlake_idx        : %d\n", vcon->lake_idx);
     if (blowing) {
         fprintf(LOG_DEST, "\tsigma_slope     : %.4f\n", vcon->sigma_slope);
         fprintf(LOG_DEST, "\tlag_one         : %.4f\n", vcon->lag_one);

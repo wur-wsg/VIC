@@ -94,6 +94,9 @@ vic_start(void)
         // add the number of vegetation type to the location info in the
         // global domain struct. This just makes life easier
         add_nveg_to_global_domain(&(filenames.params), &global_domain);
+        // add the number of lake type to the location info in the
+        // global domain struct. This just makes life easier
+        add_nlake_to_global_domain(&(filenames.params), &global_domain);
 
         // decompose the mask
         mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
@@ -120,10 +123,6 @@ vic_start(void)
         if (options.SNOW_BAND == SNOW_BAND_TRUE_BUT_UNSET) {
             options.SNOW_BAND = get_nc_dimension(&(filenames.params),
                                                  "snow_band");
-        }
-        if (options.LAKES) {
-            options.NLAKENODES = get_nc_dimension(&(filenames.params),
-                                                  "lake_node");
         }
 
         // Check that model parameters are valid

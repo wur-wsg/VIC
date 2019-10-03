@@ -319,7 +319,7 @@ create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
 
     // char f_path_pfx[N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, f_path_pfx);
-    blocklengths[i] *= MAX_FORCE_FILES;
+    blocklengths[i] *= N_FORCING_TYPES;
     mpi_types[i++] = MPI_CHAR;
 
     // char global[MAXSTRING];
@@ -395,7 +395,7 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in location_struct
-    nitems = 9;
+    nitems = 10;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -435,6 +435,10 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
 
     // size_t nveg;
     offsets[i] = offsetof(location_struct, nveg);
+    mpi_types[i++] = MPI_AINT;
+
+    // size_t nlake;
+    offsets[i] = offsetof(location_struct, nlake);
     mpi_types[i++] = MPI_AINT;
 
     // size_t global_idx;
@@ -488,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 53;
+    nitems = 54;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -588,6 +592,10 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // bool LAKES;
     offsets[i] = offsetof(option_struct, LAKES);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool FORCE_LAKES;
+    offsets[i] = offsetof(option_struct, FORCE_LAKES);
     mpi_types[i++] = MPI_C_BOOL;
 
     // size_t Ncanopy;

@@ -39,6 +39,8 @@ vic_restore(void)
     extern domain_struct       local_domain;
     extern option_struct       options;
     extern veg_con_map_struct *veg_con_map;
+    extern lake_con_map_struct *lake_con_map;
+    extern lake_con_struct    **lake_con;
     extern filenames_struct    filenames;
     extern metadata_struct     state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
 
@@ -48,6 +50,7 @@ vic_restore(void)
     size_t                     k;
     size_t                     m;
     size_t                     p;
+    int                        l;
     int                       *ivar = NULL;
     int                        status;
     double                    *dvar = NULL;
@@ -545,341 +548,568 @@ vic_restore(void)
 
     if (options.LAKES) {
         // total soil moisture
-        for (j = 0; j < options.Nlayer; j++) {
-            d3start[0] = j;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[STATE_LAKE_SOIL_MOISTURE].varname,
-                                        d3start, d3count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.soil.layer[j].moist = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (j = 0; j < options.Nlayer; j++) {
+                d4start[1] = j;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_SOIL_MOISTURE].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0) {
+                        all_vars[i].lake_var[l].soil.layer[j].moist = dvar[i];
+                    }
+                }
             }
         }
 
         // ice content
-        for (j = 0; j < options.Nlayer; j++) {
-            d4start[0] = j;
-            for (p = 0; p < options.Nfrost; p++) {
-                d4start[1] = p;
-                get_scatter_nc_field_double(&(filenames.init_state),
-                                            state_metadata[STATE_LAKE_SOIL_ICE].varname,
-                                            d4start, d4count, dvar);
-                for (i = 0; i < local_domain.ncells_active; i++) {
-                    all_vars[i].lake_var.soil.layer[j].ice[p] = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d5start[0] = m;
+            for (j = 0; j < options.Nlayer; j++) {
+                d5start[1] = j;
+                for(p = 0; p < options.Nfrost; p++){
+                    d5start[2] = p;
+                    get_scatter_nc_field_double(&(filenames.init_state),
+                                                state_metadata[STATE_LAKE_SOIL_ICE].varname,
+                                                d5start, d5count, dvar);
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        l = lake_con_map[i].lidx[m];
+                        if (l >= 0) {
+                            all_vars[i].lake_var[l].soil.layer[j].ice[p] = dvar[i];
+                        }
+                    }
                 }
             }
         }
 
         if (options.CARBON) {
             // litter carbon: tmpval = lake_var.soil.CLitter;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[STATE_LAKE_CLITTER].varname,
-                                        d2start, d2count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.soil.CLitter = dvar[i];
+            for (m = 0; m < options.NVEGTYPES; m++) {
+                d3start[0] = m;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_CLITTER].varname,
+                                            d3start, d3count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0) {
+                        all_vars[i].lake_var[l].soil.CLitter = dvar[i];
+                    }
+                }
             }
 
             // intermediate carbon: tmpval = lake_var.soil.CInter;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[STATE_LAKE_CINTER].varname,
-                                        d2start, d2count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.soil.CInter = dvar[i];
+            for (m = 0; m < options.NVEGTYPES; m++) {
+                d3start[0] = m;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_CINTER].varname,
+                                            d3start, d3count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0) {
+                        all_vars[i].lake_var[l].soil.CInter = dvar[i];
+                    }
+                }
             }
 
             // slow carbon: tmpval = lake_var.soil.CSlow;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[STATE_LAKE_CSLOW].varname,
-                                        d2start, d2count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.soil.CSlow = dvar[i];
+            for (m = 0; m < options.NVEGTYPES; m++) {
+                d3start[0] = m;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_CSLOW].varname,
+                                            d3start, d3count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0) {
+                        all_vars[i].lake_var[l].soil.CSlow = dvar[i];
+                    }
+                }
             }
         }
 
         // snow age: lake_var.snow.last_snow
-        get_scatter_nc_field_int(&(filenames.init_state),
-                                 state_metadata[STATE_LAKE_SNOW_AGE].varname,
-                                 d2start, d2count, ivar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.last_snow = ivar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_int(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_AGE].varname,
+                                        d3start, d3count, ivar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.last_snow = ivar[i];
+                }
+            }
         }
 
         // melting state: (int)lake_var.snow.MELTING
-        get_scatter_nc_field_int(&(filenames.init_state),
-                                 state_metadata[STATE_LAKE_SNOW_MELT_STATE].varname,
-                                 d2start, d2count, ivar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.MELTING = ivar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_int(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_MELT_STATE].varname,
+                                        d3start, d3count, ivar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.MELTING = ivar[i];
+                }
+            }
         }
 
         // snow covered fraction: lake_var.snow.coverage
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_COVERAGE].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.coverage = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_COVERAGE].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.coverage = dvar[i];
+                }
+            }
         }
-
         // snow water equivalent: lake_var.snow.swq
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[
-                                        STATE_LAKE_SNOW_WATER_EQUIVALENT].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.swq = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_WATER_EQUIVALENT].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.swq = dvar[i];
+                }
+            }
         }
 
         // snow surface temperature: lake_var.snow.surf_temp
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_SURF_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.surf_temp = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_SURF_TEMP].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.surf_temp = dvar[i];
+                }
+            }
         }
 
         // snow surface water: lake_var.snow.surf_water
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_SURF_WATER].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.surf_water = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_SURF_WATER].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.surf_water = dvar[i];
+                }
+            }
         }
 
         // snow pack temperature: lake_var.snow.pack_temp
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_PACK_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.pack_temp = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_PACK_TEMP].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.pack_temp = dvar[i];
+                }
+            }
         }
 
         // snow pack water: lake_var.snow.pack_water
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_PACK_WATER].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.pack_water = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_PACK_WATER].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.pack_water = dvar[i];
+                }
+            }
         }
 
         // snow density: lake_var.snow.density
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_SURF_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.density = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_DENSITY].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.density = dvar[i];
+                }
+            }
         }
 
         // snow cold content: lake_var.snow.coldcontent
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_COLD_CONTENT].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.coldcontent = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_COLD_CONTENT].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.coldcontent = dvar[i];
+                }
+            }
         }
 
         // snow canopy storage: lake_var.snow.snow_canopy
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SNOW_CANOPY].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.snow.snow_canopy = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SNOW_CANOPY].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.snow_canopy = dvar[i];
+                }
+            }
         }
 
         // soil node temperatures: lake_var.energy.T[nidx]
-        for (j = 0; j < options.Nnode; j++) {
-            d3start[0] = j;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[STATE_LAKE_SOIL_NODE_TEMP].varname,
-                                        d3start, d3count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.soil.layer[j].moist = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (j = 0; j < options.Nnode; j++) {
+                d4start[1] = j;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_SOIL_NODE_TEMP].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0) {
+                        all_vars[i].lake_var[l].energy.T[j] = dvar[i];
+                    }
+                }
             }
         }
 
         // lake active layers: lake_var.activenod
-        get_scatter_nc_field_int(&(filenames.init_state),
-                                 state_metadata[STATE_LAKE_ACTIVE_LAYERS].varname,
-                                 d2start, d2count, ivar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.activenod = ivar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_int(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ACTIVE_LAYERS].varname,
+                                        d3start, d3count, ivar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].activenod = ivar[i];
+                }
+            }
         }
 
         // lake layer thickness: lake_var.dz
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_LAYER_DZ].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.dz = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_LAYER_DZ].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].dz = dvar[i];
+                }
+            }
         }
 
         // lake surface layer thickness: lake_var.surfdz
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SURF_LAYER_DZ].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.surfdz = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SURF_LAYER_DZ].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].surfdz = dvar[i];
+                }
+            }
         }
 
         // lake depth: lake_var.ldepth
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_DEPTH].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.ldepth = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_DEPTH].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].ldepth = dvar[i];
+                }
+            }
         }
 
         // lake layer surface areas: lake_var.surface[ndix]
-        for (j = 0; j < options.NLAKENODES; j++) {
-            d3start[0] = j;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[
-                                            STATE_LAKE_LAYER_SURF_AREA].varname,
-                                        d3start, d3count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.surface[j] = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (j = 0; j < MAX_LAKE_NODES + 1; j++) {
+                d4start[1] = j;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_LAYER_SURF_AREA].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0 && j < lake_con[i][l].numnod) {
+                        all_vars[i].lake_var[l].surface[j] = dvar[i];
+                    }
+                }
             }
         }
 
         // lake surface area: lake_var.sarea
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_SURF_AREA].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.sarea = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_SURF_AREA].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].sarea = dvar[i];
+                }
+            }
         }
 
         // lake volume: lake_var.volume
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_VOLUME].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.volume = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_VOLUME].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].volume = dvar[i];
+                }
+            }
         }
 
         // lake layer temperatures: lake_var.temp[nidx]
-        for (j = 0; j < options.NLAKENODES; j++) {
-            d3start[0] = j;
-            get_scatter_nc_field_double(&(filenames.init_state),
-                                        state_metadata[STATE_LAKE_LAYER_TEMP].varname,
-                                        d3start, d3count, dvar);
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                all_vars[i].lake_var.temp[j] = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (j = 0; j < MAX_LAKE_NODES + 1; j++) {
+                d4start[1] = j;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_LAKE_LAYER_TEMP].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    l = lake_con_map[i].lidx[m];
+                    if (l >= 0 && j < lake_con[i][l].numnod) {
+                        all_vars[i].lake_var[l].temp[j] = dvar[i];
+                    }
+                }
             }
         }
 
         // vertical average lake temperature: lake_var.tempavg
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_AVERAGE_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.tempavg = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_AVERAGE_TEMP].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].tempavg = dvar[i];
+                }
+            }
         }
 
         // lake ice area fraction: lake_var.areai
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_AREA_FRAC].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.areai = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_AREA_FRAC].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].areai = dvar[i];
+                }
+            }
         }
 
         // new lake ice area fraction: lake_var.new_ice_area
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_AREA_FRAC_NEW].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.new_ice_area = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_AREA_FRAC_NEW].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].new_ice_area = dvar[i];
+                }
+            }
         }
 
         // lake ice water equivalent: lake_var.ice_water_eq
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[
-                                        STATE_LAKE_ICE_WATER_EQUIVALENT].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.ice_water_eq = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_WATER_EQUIVALENT].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].ice_water_eq = dvar[i];
+                }
+            }
         }
 
         // lake ice height: lake_var.hice
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_HEIGHT].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.hice = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_HEIGHT].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].hice = dvar[i];
+                }
+            }
         }
 
         // lake ice temperature: lake_var.tempi
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.tempi = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_TEMP].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].tempi = dvar[i];
+                }
+            }
         }
 
         // lake ice snow water equivalent: lake_var.swe
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_SWE].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.swe = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SWE].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].swe = dvar[i];
+                }
+            }
         }
 
         // lake ice snow surface temperature: lake_var.surf_temp
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_SNOW_SURF_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.surf_temp = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_SURF_TEMP].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].surf_temp = dvar[i];
+                }
+            }
         }
 
         // lake ice snow pack temperature: lake_var.pack_temp
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_SNOW_PACK_TEMP].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.pack_temp = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_PACK_TEMP].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].pack_temp = dvar[i];
+                }
+            }
         }
 
         // lake ice snow coldcontent: lake_var.coldcontent
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[
-                                        STATE_LAKE_ICE_SNOW_COLD_CONTENT].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.coldcontent = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_COLD_CONTENT].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].coldcontent = dvar[i];
+                }
+            }
         }
 
         // lake ice snow surface water: lake_var.surf_water
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[
-                                        STATE_LAKE_ICE_SNOW_SURF_WATER].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.surf_water = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_SURF_WATER].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].surf_water = dvar[i];
+                }
+            }
         }
 
         // lake ice snow pack water: lake_var.pack_water
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[
-                                        STATE_LAKE_ICE_SNOW_PACK_WATER].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.pack_water = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_PACK_WATER].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].pack_water = dvar[i];
+                }
+            }
         }
 
         // lake ice snow albedo: lake_var.SAlbedo
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_SNOW_ALBEDO].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.SAlbedo = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_ALBEDO].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].SAlbedo = dvar[i];
+                }
+            }
         }
 
         // lake ice snow depth: lake_var.sdepth
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[STATE_LAKE_ICE_SNOW_DEPTH].varname,
-                                    d2start, d2count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            all_vars[i].lake_var.sdepth = dvar[i];
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d3start[0] = m;
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[STATE_LAKE_ICE_SNOW_DEPTH].varname,
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].sdepth = dvar[i];
+                }
+            }
         }
     }
 
@@ -968,7 +1198,7 @@ check_init_state_file(void)
         }
         if (options.LAKES) {
             dimlen = get_nc_dimension(&(filenames.init_state), "lake_node");
-            if (dimlen != options.NLAKENODES) {
+            if (dimlen > MAX_LAKE_NODES) {
                 log_err("Number of lake nodes in state file does not "
                         "match parameter file");
             }

@@ -471,6 +471,10 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKES = str_to_bool(flgstr);
             }
+            else if (strcasecmp("FORCE_LAKES", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                options.FORCE_LAKES = str_to_bool(flgstr);
+            }
             else if (strcasecmp("LAKE_PROFILE", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
@@ -761,6 +765,7 @@ get_global_param(FILE *gp)
                 log_err("No forcing file has been defined.  Make sure that the global "
                         "file defines forcing files for each variable.");
             }
+            continue;
         }
 
         // Get information from the forcing file(s)

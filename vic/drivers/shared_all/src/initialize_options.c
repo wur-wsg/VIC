@@ -59,6 +59,7 @@ initialize_options()
     options.GRND_FLUX_TYPE = GF_410;
     options.IMPLICIT = true;
     options.LAKES = false;
+    options.FORCE_LAKES = false;
     options.LAKE_PROFILE = false;
     options.NOFLUX = false;
     options.QUICK_FLUX = true;

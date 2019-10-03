@@ -51,11 +51,11 @@ compute_lake_params(lake_con_struct *lake_con,
 
     if (!options.LAKE_PROFILE) {
         // generate lake depth-area relationship
-        tempdz = (lake_con->maxdepth) / ((double) lake_con->numnod);
+        tempdz = (lake_con->maxdepth) / ((double) lake_con->numnod_profile);
         radius = sqrt(lake_con->basin[0] / CONST_PI);
 
-        for (i = 1; i <= lake_con->numnod; i++) {
-            lake_con->z[i] = (lake_con->numnod - i) * tempdz;
+        for (i = 1; i <= lake_con->numnod_profile; i++) {
+            lake_con->z[i] = (lake_con->numnod_profile - i) * tempdz;
             if (lake_con->z[i] < 0.0) {
                 lake_con->z[i] = 0.0;
             }
@@ -68,25 +68,25 @@ compute_lake_params(lake_con_struct *lake_con,
     }
     else {
         // final point in depth-area relationship
-        lake_con->z[lake_con->numnod] = 0;
-        lake_con->Cl[lake_con->numnod] = 0;
+        lake_con->z[lake_con->numnod_profile] = 0;
+        lake_con->Cl[lake_con->numnod_profile] = 0;
 
         // depth-area relationship specified (for area fractions)
         // compute basin node surface areas
-        for (i = 1; i <= lake_con->numnod; i++) {
+        for (i = 1; i <= lake_con->numnod_profile; i++) {
             lake_con->basin[i] = lake_con->Cl[i] * soil_con.cell_area;
         }
     }
 
     // compute max volume
     lake_con->maxvolume = 0.0;
-    for (i = 1; i <= lake_con->numnod; i++) {
+    for (i = 1; i <= lake_con->numnod_profile; i++) {
         lake_con->maxvolume += (lake_con->basin[i] + lake_con->basin[i - 1]) *
                                (lake_con->z[i - 1] - lake_con->z[i]) / 2.;
     }
 
     // compute volume corresponding to mindepth
-    ErrFlag = get_volume(*lake_con, lake_con->mindepth, &(lake_con->minvolume));
+    ErrFlag = get_volume(lake_con, lake_con->mindepth, &(lake_con->minvolume));
     if (ErrFlag == ERROR) {
         log_err("Error calculating depth: depth %f volume %f",
                 lake_con->mindepth, lake_con->minvolume);
