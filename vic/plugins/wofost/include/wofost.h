@@ -3,7 +3,6 @@
 #ifndef WOFOST_H
 #define WOFOST_H
 
-#define DAYS_PER_WEEK           7
 #define NR_VARIABLES_CRP	66
 #define NR_TABLES_CRP   	22
 #define NR_VARIABLES_SITE       12
@@ -186,6 +185,7 @@ typedef struct PARAMETERS {
         float N_fixation; 
         } Parameters;
 
+
 typedef struct STATES {
         float EvapWater;
         float EvapSoil;
@@ -202,6 +202,7 @@ typedef struct STATES {
         float Transpiration;
         float WaterRootExt;
         } States;
+        
 
 typedef struct RATES {
         float EvapWater;
@@ -217,6 +218,7 @@ typedef struct RATES {
         float Transpiration;
         float WaterRootExt;
         } Rates;
+        
  
 typedef struct NUTRIENT_RATES {
         float roots;
@@ -240,6 +242,7 @@ typedef struct NUTRIENT_RATES {
         float death_st;
         float death_ro;
         } nutrient_rates;
+        
 
 typedef struct NUTRIENT_STATES {
         float roots;
@@ -266,6 +269,7 @@ typedef struct NUTRIENT_STATES {
         float Avail_ro;
         
         } nutrient_states;
+        
 
 typedef struct GROWTH_RATES {
         float roots;
@@ -303,12 +307,14 @@ typedef struct DYING_RATES {
         float leaves;
         } dying_rates; 
 
+
 typedef struct GREEN {
 	float weight;
 	float age;
 	float area;
 	struct GREEN *next;
 	} Green;
+        
 
 typedef struct PLANT {
         int Emergence;
@@ -387,8 +393,6 @@ typedef struct FIELD {
         float rt_P_mins;
         float rt_K_mins;
         
-        float CO2;
-        
         /** Table for the fraction of precipitation that does not infiltrate **/
         TABLE *NotInfTB;
         } Field;
@@ -410,8 +414,6 @@ typedef struct VIC_PARAMETERS {
     
     // VIC to WOFOST
     // - constants
-    size_t veg_class;
-    size_t snow_band;
     size_t crop_class;
     float Latitude;
     float Longitude;
@@ -426,9 +428,7 @@ typedef struct VIC_PARAMETERS {
     float Radiation;
     float CO2;
     float WaterStress;
-    float WaterStressAvg;
-    
-    // Derived
+    // - Derived
     float AtmosphTransm;
     float AngotRadiation;
     float Daylength;
@@ -450,11 +450,10 @@ typedef struct SIMUNIT {
         int file;
         dmy_struct start;
         dmy_struct end;
-        char output[MAXSTRING];
         struct SIMUNIT *next;
         } SimUnit;
         
-SimUnit ****Grid;
+SimUnit ***Grid;
 
 extern char *CropParam[MAXSTRING];
 extern char *CropParam2[MAXSTRING];
@@ -474,15 +473,13 @@ void FillSiteVariables();
 void FillSoilVariables();
 void FillManageVariables();
 
-
 /* General help functions */
 float Afgen(TABLE *, float *);
 float List(TABLE_D *);
 float limit(float a, float b, float c);
 float insw(float x1, float x2, float x3);
-void GetSimInputSingle(char *,
-        char *, char *, char *, 
-        int, int,char *,SimUnit *);
+void GetSimInputSingle(char *, char *, char *,
+        char *, int, int, SimUnit *);
 void IfSowing(SimUnit *, dmy_struct*);
 
 /* Additional functions */

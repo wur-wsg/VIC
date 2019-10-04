@@ -5,7 +5,6 @@ void
 wofost_run(SimUnit *Grid)
 {
     int Emergence;
-    FILE *output;
     
     Emergence = Grid->emergence;
             
@@ -19,9 +18,7 @@ wofost_run(SimUnit *Grid)
         {                 
             /* Initialize: set state variables */
             InitializeCrop(Grid);
-            InitializeNutrients(Grid); 
-            /* Initialize average water stress */
-            Grid->vic->WaterStressAvg = 0.;
+            InitializeNutrients(Grid);
         }  
     }
 
@@ -52,12 +49,6 @@ wofost_run(SimUnit *Grid)
         }
         else
         {
-            /* Write to the output files */
-            output = fopen(Grid->output, "a");
-            Output(Grid, output); 
-            fclose(output);
-            
-            //printf("%7d %7d\n", MeteoYear[Day], Crop->GrowthDay);
             Emergence = 0;
             Grid->crp->TSumEmergence = 0;
             Grid->crp->Emergence = 0;

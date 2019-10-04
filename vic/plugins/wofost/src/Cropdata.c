@@ -13,6 +13,7 @@ void GetCropData(Plant *CROP, char *cropfile)
     
     TABLE *Table[NR_TABLES_CRP], *start;
 
+    char line[MAXSTRING];
     int i, c, count;
     float Variable[NR_VARIABLES_CRP], XValue, YValue;
     char x[2], xx[2],  word[100];
@@ -60,34 +61,39 @@ void GetCropData(Plant *CROP, char *cropfile)
 
     i = 0;
     count = 0;
-    while (strcmp(CropParam2[i],"NULL")) 
-    {
-      while ((c=fscanf(fq,"%s",word)) != EOF) 
-      {
-        if (!strcmp(word, CropParam2[i])) {
-            Table[i] = start= malloc(sizeof(TABLE));
-            fscanf(fq,"%s %f %s  %f", x, &Table[i]->x, xx, &Table[i]->y);
-            Table[i]->next = NULL;				     
-
-            while ((c=fgetc(fq)) !='\n');
-            while (fscanf(fq," %f %s  %f",  &XValue, xx, &YValue) > 0)  {
-                Table[i]->next = malloc(sizeof(TABLE));
-                Table[i] = Table[i]->next; 
+    while (strcmp(CropParam2[i],"NULL")) {
+        while(fgets(line, MAXSTRING, fq)) {
+            if(line[0] == '*' || line[0] == ' ' || line[0] == '\n' || line[0] == '\r'){
+                continue;
+            }
+            
+            sscanf(line,"%s",word);
+            if (!strcmp(word, CropParam2[i])) {
+                
+                c = sscanf(line,"%s %s %f %s  %f", word, x, &XValue, xx, &YValue);
+                
+                Table[i] = start= malloc(sizeof(TABLE));
                 Table[i]->next = NULL;
                 Table[i]->x = XValue;
                 Table[i]->y = YValue;
-
-                while ((c=fgetc(fq)) !='\n');
+                
+                while (fgets(line, MAXSTRING, fq)) {  
+                    if((c = sscanf(line," %f %s  %f",  &XValue, xx, &YValue)) != 3) break;
+                    
+                    Table[i]->next = malloc(sizeof(TABLE));
+                    Table[i] = Table[i]->next; 
+                    Table[i]->next = NULL;
+                    Table[i]->x = XValue;
+                    Table[i]->y = YValue;
                 }
-            /* Go back to beginning of the table */
-            Table[i] = start;
-            i++;
-            count++;
-           }      
-      }
-      rewind(fq);
-      if(strcmp(CropParam2[i],"NULL"))
-          i++;
+                /* Go back to beginning of the table */
+                Table[i] = start;
+                count++;
+                break;
+            }
+        }
+        rewind(fq);
+        i++;
     }
 
     fclose(fq);

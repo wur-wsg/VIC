@@ -167,8 +167,6 @@ void FillSiteVariables(Field *SITE, float *Variable) {
     SITE->NotInfiltrating                 = Variable[8];
     SITE->SurfaceStorage                  = Variable[9];
     SITE->MaxInitSoilM                    = Variable[10];
-    
-    SITE->CO2 = Variable[11];
        
     for (i=0;i<=NR_VARIABLES_SITE;i++) 
     {

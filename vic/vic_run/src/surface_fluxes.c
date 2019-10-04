@@ -1041,6 +1041,10 @@ surface_fluxes(bool                 overstory,
         aero_resist_used[1] = param.HUGE_RESIST;
     }
     cell->pot_evap = store_pot_evap;
+    cell->water_stress = 0;
+    for (lidx = 0; lidx < Nlayers; lidx++) {
+        cell->water_stress += layer[lidx].water_stress * root[lidx];
+    }
 
     /**********************************************************
        Store carbon cycle variable sums for sub-model time steps

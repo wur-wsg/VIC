@@ -117,6 +117,27 @@ enum {
     // irrigation
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
+    // crop
+    OUT_CROP_DVS,                       /**< crop development stage [-] */
+    OUT_CROP_WLV,                       /**< crop leafs dry matter [kg ha-1] */
+    OUT_CROP_WST,                       /**< crop stems dry matter [kg ha-1] */
+    OUT_CROP_WSO,                       /**< crop storage organs dry matter [kg ha-1] */
+    OUT_CROP_WRT,                       /**< crop roots dry matter [kg ha-1] */
+    OUT_CROP_LAI,                       /**< crop leaf area index [m2 m-2] */
+    OUT_CROP_WSTR,                      /**< crop water stress factor [mm mm-1] */
+    OUT_CROP_NNI,                       /**< crop nitrogen index [kg kg-1] */
+    OUT_CROP_PNI,                       /**< crop phosphorous index [kg kg-1] */
+    OUT_CROP_KNI,                       /**< crop potassium index [kg kg-1] */
+    OUT_CROP_NPKI,                      /**< crop nutrient index [kg kg-1] */
+    OUT_CROP_NSOIL,                     /**< crop soil nitrogen [kg ha-1] */
+    OUT_CROP_PSOIL,                     /**< crop soil phosporous [kg ha-1] */
+    OUT_CROP_KSOIL,                     /**< crop soil potassium [kg ha-1] */
+    OUT_CROP_NUPT,                      /**< crop nitrogen uptake [kg ha-1] */
+    OUT_CROP_PUPT,                      /**< crop phosporous uptake [kg ha-1] */
+    OUT_CROP_KUPT,                      /**< crop potassium uptake [kg ha-1] */
+    OUT_CROP_NDEM,                      /**< crop nitrogen demand [kg ha-1] */
+    OUT_CROP_PDEM,                      /**< crop phosporous demand [kg ha-1] */
+    OUT_CROP_KDEM,                      /**< crop potassium demand [kg ha-1] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_OUTVAR_TYPES               /**< used as a loop counter*/

@@ -783,7 +783,7 @@ typedef struct {
     double esoil;           /**< soil evaporation from soil layer (mm) */
     double evap;            /**< evapotranspiration from soil layer (mm) */
     double transp;          /**< transpiration from soil layer (mm) */
-    double water_stress;    /**< transpiration water stress of the soil layer [-] */
+    double water_stress;    /**< transpiration water stress of the soil layer [mm/mm] */
 } layer_data_struct;
 
 /******************************************************************************
@@ -808,6 +808,9 @@ typedef struct {
                                           in the root zone (mm) */
     double wetness;                    /**< average of
                                           (layer.moist - Wpwp)/(porosity*depth - Wpwp)
+                                          over all layers (fraction) */
+    double water_stress;               /**< average of
+                                          (layer.moist - Wpwp)/(Wcr - Wpwp)
                                           over all layers (fraction) */
     double zwt;                        /**< average water table position [cm] - using lowest unsaturated layer */
     double zwt_lumped;                 /**< average water table position [cm] - lumping all layers' moisture together */

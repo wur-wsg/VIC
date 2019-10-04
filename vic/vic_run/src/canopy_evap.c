@@ -289,7 +289,7 @@ transpiration(layer_data_struct *layer,
 
         for (i = 0; i < options.Nlayer; i++) {
             // Store water stress for use in plugins
-            layer[i].water_stress = 1.0;
+            layer[i].water_stress = gsm_inv;
         }
         
         /* compute whole-canopy stomatal resistance */

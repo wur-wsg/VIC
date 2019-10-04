@@ -137,6 +137,7 @@ enum
     OUT_SOIL_MOIST,       /**< soil total moisture content  [mm] for each soil layer */
     OUT_SOIL_EFF_SAT,     /**< soil effective saturation [-] for each soil layer */
     OUT_SOIL_WET,         /**< vertical average of (soil moisture - wilting point)/(maximum soil moisture - wilting point) [mm/mm] */
+    OUT_SOIL_WSTRESS,     /**< vertical root-zone average of (soil moisture - wilting point)/(critical moisture - wilting point) [mm/mm] */
     OUT_SURFSTOR,         /**< storage of liquid water and ice (not snow) on surface (ponding) [mm] */
     OUT_SURF_FROST_FRAC,  /**< fraction of soil surface that is frozen [fraction] */
     OUT_SWE,              /**< snow water equivalent in snow pack (including vegetation-intercepted snow)  [mm] */

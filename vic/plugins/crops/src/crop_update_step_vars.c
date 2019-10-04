@@ -2,16 +2,13 @@
 #include <plugin.h>
 
 void
-get_wofost_veg_vars(size_t iCell, size_t veg_class, size_t iVeg, size_t iBand)
+get_wofost_veg_vars(SimUnit *cgrid, 
+        veg_var_struct *cveg_var, 
+        veg_lib_struct *cveg_lib, 
+        double Cc)
 {
     extern parameters_struct param;
-    extern SimUnit ****Grid;
-    extern crop_con_map_struct **crop_con_map;
-    extern all_vars_struct  *all_vars;
-    extern veg_lib_struct **veg_lib;
-    extern dmy_struct current;
     
-    double cc;
     double albedo;
     double lai;
     double fcanopy;
@@ -25,15 +22,6 @@ get_wofost_veg_vars(size_t iCell, size_t veg_class, size_t iVeg, size_t iBand)
     double rarc;
     double rad_atten;
     double RGL;
-    
-    SimUnit *iGrid;
-    size_t crop_class;
-    
-    veg_var_struct *cveg_var;
-    veg_lib_struct *cveg_lib;
-    
-    cveg_var = &(all_vars[iCell].veg_var[iVeg][iBand]);
-    cveg_lib = &(veg_lib[iCell][veg_class]);
     
     albedo = 0;
     lai = 0;
@@ -50,28 +38,20 @@ get_wofost_veg_vars(size_t iCell, size_t veg_class, size_t iVeg, size_t iBand)
     rad_atten = 0;
     RGL = 0;
     
-    iGrid = Grid[iCell][iVeg][iBand];
-    while(iGrid) {
-        crop_class = iGrid->vic->crop_class;
-        cc = crop_con_map[iCell][iVeg].Cc[crop_class][current.month];
-                
-        fcanopy += cc;
-        lai += iGrid->vic->LAI * cc;
-        albedo += iGrid->vic->albedo * cc;
-        displacement += iGrid->vic->displacement * cc;
-        roughness += iGrid->vic->roughness * cc;
-        
-        overstory += iGrid->vic->overstory * cc;
-        trunk_ratio += iGrid->vic->trunk_ratio * cc;
-        wind_atten += iGrid->vic->wind_atten * cc;
-        wind_h += iGrid->vic->wind_h * cc;
-        rmin += iGrid->vic->rmin * cc;
-        rarc += iGrid->vic->rarc * cc;
-        rad_atten += iGrid->vic->rad_atten * cc;
-        RGL += iGrid->vic->RGL * cc;
-        
-        iGrid = iGrid->next;
-    }
+    fcanopy += Cc;
+    lai += cgrid->vic->LAI * Cc;
+    albedo += cgrid->vic->albedo * Cc;
+    displacement += cgrid->vic->displacement * Cc;
+    roughness += cgrid->vic->roughness * Cc;
+
+    overstory += cgrid->vic->overstory * Cc;
+    trunk_ratio += cgrid->vic->trunk_ratio * Cc;
+    wind_atten += cgrid->vic->wind_atten * Cc;
+    wind_h += cgrid->vic->wind_h * Cc;
+    rmin += cgrid->vic->rmin * Cc;
+    rarc += cgrid->vic->rarc * Cc;
+    rad_atten += cgrid->vic->rad_atten * Cc;
+    RGL += cgrid->vic->RGL * Cc;
     
     // Convert values from global (cell) to local (crop)
     albedo += param.ALBEDO_BARE_SOIL * (1 - fcanopy);
@@ -107,24 +87,33 @@ void
 crop_update_step_vars(size_t iCell)
 {
     extern option_struct options;
-    extern crop_con_map_struct **crop_con_map;
     extern veg_con_map_struct  *veg_con_map;
-    extern soil_con_struct *soil_con;
+    extern crop_con_map_struct *crop_con_map;
+    extern all_vars_struct  *all_vars;
+    extern veg_lib_struct **veg_lib;
+    extern dmy_struct current;
     
-    int veg_idx;
+    size_t iBand;
+    size_t crop_class;
     size_t veg_class;
-    size_t elev_class;
+    size_t iVeg;
     
-    for(veg_class = 0; veg_class < options.NVEGTYPES; veg_class++){
-        veg_idx = veg_con_map[iCell].vidx[veg_class];
-        if(veg_idx != NODATA_VEG){
-            if(crop_con_map[iCell][veg_idx].nc_active > 0){
-                for(elev_class = 0; elev_class < options.SNOW_BAND; elev_class++){
-                    if(soil_con[iCell].AreaFract[elev_class] > 0){
-                        get_wofost_veg_vars(iCell, veg_class, (size_t)veg_idx, elev_class);
-                    }
-                }
-            }
+    SimUnit *cgrid;
+
+    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+        cgrid = Grid[iCell][iBand];
+
+        while(cgrid){
+            crop_class = cgrid->vic->crop_class;
+            veg_class = crop_con_map[iCell].veg_class[crop_class];
+            iVeg = veg_con_map[iCell].vidx[veg_class];
+
+            get_wofost_veg_vars(cgrid, 
+                    &(all_vars[iCell].veg_var[iVeg][iBand]),
+                    &(veg_lib[iCell][veg_class]), 
+                    crop_con_map[iCell].Cc[crop_class][current.month]);
+
+            cgrid = cgrid->next;
         }
     }
 }

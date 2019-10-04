@@ -62,6 +62,7 @@ initialize_soil(cell_data_struct **cell,
             }
             cell[veg][band].rootmoist = 0.0;
             cell[veg][band].wetness = 0.0;
+            cell[veg][band].water_stress = 0.0;
             // Fluxes
             cell[veg][band].pot_evap = 0.0;
             cell[veg][band].recharge = 0.0;

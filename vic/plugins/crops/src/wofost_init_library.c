@@ -329,7 +329,6 @@ initialize_wofost_field(Field *ste)
     ste->rt_N_mins = 0.;
     ste->rt_P_mins = 0.;
     ste->rt_K_mins = 0.;
-    ste->CO2 = 0.;
     
     ste->NotInfTB = NULL;
 }
@@ -367,8 +366,6 @@ initialize_wofost_vic(VICparameters *vic)
     vic->rarc = 0.;
     vic->rad_atten = 0.;
     vic->RGL = 0.;
-    vic->veg_class = MISSING_USI;
-    vic->snow_band = MISSING_USI;
     vic->crop_class = MISSING_USI;
     vic->Latitude = 0.;
     vic->Longitude = 0.;
@@ -384,7 +381,6 @@ initialize_wofost_vic(VICparameters *vic)
     vic->Radiation = 0.;
     vic->CO2 = 0.;
     vic->WaterStress = 0.;
-    vic->WaterStressAvg = 0.;
     vic->AtmosphTransm = 0.;
     vic->AngotRadiation = 0.;
     vic->Daylength = 0.;
@@ -419,7 +415,6 @@ initialize_wofost_grid(SimUnit *Grid)
 {
     Grid->emergence = 0;
     Grid->file = 0;
-    snprintf(Grid->output, MAXSTRING, "%s", MISSING_S);
     initialize_dmy(&Grid->start);
     initialize_dmy(&Grid->end);
     
