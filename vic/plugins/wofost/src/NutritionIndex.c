@@ -9,17 +9,17 @@ void NutritionINDX(SimUnit *Grid)
 {    
     float VegetativeMass;
     
-    float N_opt_veg;
-    float P_opt_veg;
-    float K_opt_veg;
+    float N_opt_veg = 0.;
+    float P_opt_veg = 0.;
+    float K_opt_veg = 0.;
     
-    float N_Veg;
-    float P_Veg;
-    float K_Veg;
+    float N_Veg = 0.;
+    float P_Veg = 0.;
+    float K_Veg = 0.;
     
-    float N_res;
-    float P_res;
-    float K_res;
+    float N_res = 0.;
+    float P_res = 0.;
+    float K_res = 0.;
  
     /* Total vegetative living above-ground biomass (kg DM ha-1)     */
     VegetativeMass = Grid->crp->st.leaves + Grid->crp->st.stems;

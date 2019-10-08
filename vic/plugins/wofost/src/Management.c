@@ -20,6 +20,9 @@ void GetManagement(Management *MNG, char *management)
  }
 
  i=0;
+ count = 0;
+ while (strcmp(ManageParam[i],"NULL")) 
+ {
   while ((c=fscanf(fq,"%s",word)) != EOF) 
   {
     if (strlen(word)> 98) 
@@ -29,11 +32,15 @@ void GetManagement(Management *MNG, char *management)
     if (!strcmp(word, ManageParam[i])) {
         while ((c=fgetc(fq)) !='=');
 	fscanf(fq,"%f",  &Variable[i]);
-	i++; 
+        count++;
+        break;
        }  
-  }
+    }
+    rewind(fq);
+    i++;
+ }
 
-  if (i != NR_VARIABLES_MANAGEMENT) {
+  if (count != NR_VARIABLES_MANAGEMENT) {
     log_err("Something wrong with the Site variables"); 
   }
  

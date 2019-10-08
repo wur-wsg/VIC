@@ -40,7 +40,7 @@ typedef struct {
     nameid_struct dams;             /**< dams parameter file */
     nameid_struct wateruse;         /**< water-use parameter file */
     nameid_struct irrigation;       /**< irrigation parameter file */
-    nameid_struct wofost;           /**< wofost parameter file */
+    nameid_struct crop;           /**< wofost parameter file */
     char wofost_text[MAXSTRING];    /**< wofost parameter text file */
 
     nameid_struct forcing[PLUGIN_N_FORCING_TYPES];      /**< forcing files */

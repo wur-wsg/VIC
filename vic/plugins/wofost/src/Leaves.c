@@ -16,7 +16,7 @@ float DyingLeaves(SimUnit *Grid)
 
     /* Dying rate of leaves due to water stress or high LAI */
     CriticalLAI = 3.2/Afgen(Grid->crp->prm.KDiffuseTb, &(Grid->crp->st.Development));
-    Death1      = Grid->crp->st.leaves *(1. - Grid->vic->WaterStress) * Grid->crp->prm.MaxRelDeathRate ;
+    Death1      = Grid->crp->st.leaves *(1. - Grid->soil->WaterStress) * Grid->crp->prm.MaxRelDeathRate ;
     Death2      = Grid->crp->st.leaves * limit(0.,0.03, 0.03*(Grid->crp->st.LAI-CriticalLAI)/CriticalLAI);
     Death       = max(Death1, Death2);  
 

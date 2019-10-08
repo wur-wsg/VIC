@@ -110,7 +110,7 @@ plugin_initialize_filenames(plugin_filenames_struct *plugin_filenames)
     snprintf(plugin_filenames->dams.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->wateruse.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->irrigation.nc_filename, MAXSTRING, "%s", MISSING_S);
-    snprintf(plugin_filenames->wofost.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames->crop.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->wofost_text, MAXSTRING, "%s", MISSING_S);
 
     for (i = 0; i < PLUGIN_N_FORCING_TYPES; i++) {

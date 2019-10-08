@@ -20,7 +20,7 @@ void RateCalculationCrop(SimUnit *Grid)
     GrossAssimilation = DailyTotalAssimilation(Grid);
     
     /* Stress: either nutrient shortage or water shortage */
-    Stress = min(Grid->crp->NutrientStress, Grid->vic->WaterStress);
+    Stress = min(Grid->crp->NutrientStress, Grid->soil->WaterStress);
 
     /* Correction for low minimum temperatures and stress factors */
     TotalAssimilation = Stress * Correct(Grid, GrossAssimilation);       

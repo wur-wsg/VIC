@@ -8,7 +8,7 @@
 /*           starts at emergence (1) or sowing (0)                             */
 /*-----------------------------------------------------------------------------*/
 
-void GetSimInputSingle(char *path,
+void GetSimInput(char *path,
         char *cf, 
         char *mf, 
         char *start, 

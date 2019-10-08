@@ -38,13 +38,12 @@ void GetCropData(Plant *CROP, char *cropfile)
             {
                 while ((c=fgetc(fq)) !='=');
                 fscanf(fq,"%f",  &Variable[i]);
-                i++;
                 count++;
+                break;
             }
-        }  
+        }
         rewind(fq);
-        if(strcmp(CropParam[i],"NULL")) 
-            i++;
+        i++;
     }
 
 

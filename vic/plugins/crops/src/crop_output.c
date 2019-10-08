@@ -441,26 +441,26 @@ crop_put_data(size_t iCell)
         while(cgrid){
             crop_class = cgrid->vic->crop_class;
             
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] = cgrid->crp->st.Development * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] = cgrid->crp->st.leaves * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WST][crop_class] = cgrid->crp->st.stems * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSO][crop_class] = cgrid->crp->st.storage * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WRT][crop_class] = cgrid->crp->st.roots * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] = cgrid->crp->st.LAI * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTR][crop_class] = cgrid->vic->WaterStress * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] = cgrid->crp->N_st.Indx * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] = cgrid->crp->P_st.Indx * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] = cgrid->crp->K_st.Indx * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] = cgrid->crp->NPK_Indx * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NSOIL][crop_class] = cgrid->ste->st_N_tot * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PSOIL][crop_class] = cgrid->ste->st_P_tot * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KSOIL][crop_class] = cgrid->ste->st_K_tot * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NUPT][crop_class] = cgrid->crp->N_rt.Uptake * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PUPT][crop_class] = cgrid->crp->P_rt.Uptake * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KUPT][crop_class] = cgrid->crp->K_rt.Uptake * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] = cgrid->crp->N_rt.Demand_lv + cgrid->crp->N_rt.Demand_st + cgrid->crp->N_rt.Demand_so + cgrid->crp->N_rt.Demand_ro * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] = cgrid->crp->P_rt.Demand_lv + cgrid->crp->P_rt.Demand_st + cgrid->crp->P_rt.Demand_so + cgrid->crp->P_rt.Demand_ro * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] = cgrid->crp->K_rt.Demand_lv + cgrid->crp->K_rt.Demand_st + cgrid->crp->K_rt.Demand_so + cgrid->crp->K_rt.Demand_ro * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] += cgrid->crp->st.Development * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] += cgrid->crp->st.leaves * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WST][crop_class] += cgrid->crp->st.stems * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSO][crop_class] += cgrid->crp->st.storage * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WRT][crop_class] += cgrid->crp->st.roots * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTR][crop_class] += cgrid->soil->WaterStress * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] += cgrid->crp->N_st.Indx * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] += cgrid->crp->P_st.Indx * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] += cgrid->crp->NPK_Indx * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NSOIL][crop_class] += cgrid->ste->st_N_tot * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PSOIL][crop_class] += cgrid->ste->st_P_tot * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KSOIL][crop_class] += cgrid->ste->st_K_tot * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NUPT][crop_class] += cgrid->crp->N_rt.Uptake * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PUPT][crop_class] += cgrid->crp->P_rt.Uptake * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KUPT][crop_class] += cgrid->crp->K_rt.Uptake * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] += cgrid->crp->N_rt.Demand_lv + cgrid->crp->N_rt.Demand_st + cgrid->crp->N_rt.Demand_so + cgrid->crp->N_rt.Demand_ro * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] += cgrid->crp->P_rt.Demand_lv + cgrid->crp->P_rt.Demand_st + cgrid->crp->P_rt.Demand_so + cgrid->crp->P_rt.Demand_ro * area_fract;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] += cgrid->crp->K_rt.Demand_lv + cgrid->crp->K_rt.Demand_st + cgrid->crp->K_rt.Demand_so + cgrid->crp->K_rt.Demand_ro * area_fract;
 
             cgrid = cgrid->next;
         }

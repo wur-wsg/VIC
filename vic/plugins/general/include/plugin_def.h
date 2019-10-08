@@ -310,6 +310,7 @@ void plugin_get_forcing_file_info(short unsigned int);
 void plugin_get_forcing_file_skip(short unsigned int);
 void plugin_start_forcing(void);
 void plugin_end_forcing(void);
+void plugin_update_step_vars(void);
 void plugin_run(void);
 
 #endif /* PLUGIN_H */

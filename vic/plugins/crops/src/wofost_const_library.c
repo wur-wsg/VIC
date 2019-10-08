@@ -4,7 +4,8 @@ float ScatCoef =0.2;
 float XGauss[] ={0.1127017, 0.5000000, 0.8872983};
 float WGauss[] ={0.2777778, 0.4444444, 0.2777778};
 
-char *ManageParam[MAXSTRING] = {"NRFTAB",
+char *ManageParam[MAXSTRING] = {
+               "NRFTAB",
                "PRFTAB",
                "KRFTAB",
                "NMINS",
@@ -15,14 +16,16 @@ char *ManageParam[MAXSTRING] = {"NRFTAB",
                "RTKMINS",
                "NULL"
                };
-char *ManageParam2[MAXSTRING] = {"FERNTAB",
+char *ManageParam2[MAXSTRING] = {
+                "FERNTAB",
                 "FERPTAB",
                 "FERKTAB",
                 "IRRTAB",
                 "NULL"
                 };
 
-char *CropParam[MAXSTRING] = {"TBASEM",
+char *CropParam[MAXSTRING] = {
+               "TBASEM",
                "TEFFMX",
                "TSUMEM",
                "IDSL",
@@ -87,7 +90,7 @@ char *CropParam[MAXSTRING] = {"TBASEM",
                "TCNT",   
                "TCPT",   
                "TCKT",   
-               "NFIX_FR",  
+               "NFIX_FR", 
                "MaxHeight",
                "RGL",
                "RadiationAttenuation",
@@ -95,10 +98,11 @@ char *CropParam[MAXSTRING] = {"TBASEM",
                "TrunkRatio",
                "Albedo",
                "MinStomatalResistance",
-               "MaxArchitecturalResistance",
+               "MaxArchitecturalResistance", 
                "NULL"
                };
-char *CropParam2[MAXSTRING] = {"VERNRT",
+char *CropParam2[MAXSTRING] = {
+                "VERNRT",
                 "DTSMTB",
                 "SLATB",
                 "SSATB",

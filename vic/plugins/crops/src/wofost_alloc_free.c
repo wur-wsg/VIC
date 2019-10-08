@@ -2,7 +2,7 @@
 #include <plugin.h>
 
 void
-wofost_late_alloc(void)
+wofost_alloc(void)
 {
     extern option_struct options;
     extern domain_struct              local_domain;
@@ -15,7 +15,14 @@ wofost_late_alloc(void)
     size_t                            j;
     size_t                            k;
     
+    Grid = malloc(local_domain.ncells_active * sizeof(*Grid));
+    check_alloc_status(Grid, "Memory allocation error");
+    
     for (i = 0; i < local_domain.ncells_active; i++) {
+        
+        Grid[i] = malloc(options.SNOW_BAND * sizeof(*Grid[i]));
+        check_alloc_status(Grid[i], "Memory allocation error");
+        
         for(j = 0; j < options.SNOW_BAND; j++){
             Grid[i][j] = cgrid = NULL;
 

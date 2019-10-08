@@ -38,6 +38,7 @@ void double_flip(double *, size_t);
 void size_t_swap(size_t, size_t, size_t *);
 void int_swap(size_t, size_t, int *);
 void double_swap(size_t, size_t, double *);
+void copy_dmy(dmy_struct *, dmy_struct *);
 void initialize_dmy(dmy_struct *);
 double between_dmy(dmy_struct, dmy_struct, dmy_struct);
 double between_jday(double, double, double);

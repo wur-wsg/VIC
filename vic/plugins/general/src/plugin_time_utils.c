@@ -28,6 +28,19 @@
 #include <plugin.h>
 
 /******************************************
+* @brief   Copy dmy structure
+******************************************/
+void
+copy_dmy(dmy_struct *from, dmy_struct *to)
+{
+    to->day = from->day;
+    to->day_in_year = from->day_in_year;
+    to->dayseconds = from->dayseconds;
+    to->month = from->month;
+    to->year = from->year;
+}
+
+/******************************************
 * @brief   Initialize dmy structure
 ******************************************/
 void

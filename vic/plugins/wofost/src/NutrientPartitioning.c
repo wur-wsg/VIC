@@ -28,7 +28,7 @@ void NutrientPartioning(SimUnit *Grid)
     /* No nutrients are absorbed from the soil after development stage DevelopmentStageNLimit or */
     /* when severe water shortage occurs                                           */
     NutrientLimit = 0.;
-    if (Grid->crp->st.Development < Grid->crp->prm.DevelopmentStageNLimit && Grid->vic->WaterStress > 0.01)
+    if (Grid->crp->st.Development < Grid->crp->prm.DevelopmentStageNLimit && Grid->soil->WaterStress > 0.01)
         NutrientLimit = 1.;
     
     //N_Fix_rt= max(0.,Grid->crp->N_rt.Uptake * Grid->crp->prm.N_fixation / max(0.02, 1.-Grid->crp->prm.N_fixation));

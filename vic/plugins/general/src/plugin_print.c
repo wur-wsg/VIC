@@ -52,6 +52,8 @@ plugin_print_global_param(plugin_global_param_struct *gp)
     fprintf(LOG_DEST, "plugin global_param:\n");
     fprintf(LOG_DEST, "\trout_steps_per_day  : %zu\n", gp->rout_steps_per_day);
     fprintf(LOG_DEST, "\trout_dt             : %.4f\n", gp->rout_dt);
+    fprintf(LOG_DEST, "\twofost_steps_per_day: %zu\n", gp->wofost_steps_per_day);
+    fprintf(LOG_DEST, "\twofost_dt           : %.4f\n", gp->wofost_dt);
 }
 
 /******************************************

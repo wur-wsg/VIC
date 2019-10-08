@@ -170,6 +170,9 @@ plugin_alloc(void)
     if (plugin_options.WATERUSE) {
         wu_alloc();
     }
+    if(plugin_options.WOFOST) {
+        crop_alloc();
+    }
 }
 
 /******************************************
@@ -195,7 +198,6 @@ plugin_init(void)
         irr_init();
     }
     if(plugin_options.WOFOST) {
-        crop_late_alloc();
         crop_init();
     }
 

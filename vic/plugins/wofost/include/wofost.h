@@ -3,7 +3,7 @@
 #ifndef WOFOST_H
 #define WOFOST_H
 
-#define NR_VARIABLES_CRP	66
+#define NR_VARIABLES_CRP	72
 #define NR_TABLES_CRP   	22
 #define NR_VARIABLES_SITE       12
 #define NR_TABLES_SITE          1
@@ -398,37 +398,23 @@ typedef struct FIELD {
         } Field;
 
 typedef struct VIC_PARAMETERS {
-    // WOFOST to VIC
-    double LAI;
-    double roughness;
-    double displacement;
-    double albedo;
-    bool overstory;
-    double trunk_ratio;
-    double wind_atten;
-    double wind_h;
-    double rmin;
-    double rarc;
-    double rad_atten;
-    double RGL;
-    
-    // VIC to WOFOST
-    // - constants
+    /* constants */
     size_t crop_class;
     float Latitude;
     float Longitude;
+    int CycleLength;
+
+    /* variables */
     int MeteoDay;
     int MeteoYear;
-    int CycleLength;
-    // - variables
     double Tmin[DAYS_PER_WEEK];
     double Tmax;
     float Temp;
     float DayTemp;
     float Radiation;
     float CO2;
-    float WaterStress;
-    // - Derived
+
+    /* Derived */
     float AtmosphTransm;
     float AngotRadiation;
     float Daylength;
@@ -478,7 +464,7 @@ float Afgen(TABLE *, float *);
 float List(TABLE_D *);
 float limit(float a, float b, float c);
 float insw(float x1, float x2, float x3);
-void GetSimInputSingle(char *, char *, char *,
+void GetSimInput(char *, char *, char *,
         char *, int, int, SimUnit *);
 void IfSowing(SimUnit *, dmy_struct*);
 

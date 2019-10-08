@@ -19,8 +19,8 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST = str_to_bool(flgstr);
     }
-    else if (strcasecmp("WOFOST_PARAMETERS", optstr) == 0) {
-        sscanf(cmdstr, "%*s %s", plugin_filenames.wofost.nc_filename);
+    else if (strcasecmp("CROP_PARAMETERS", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", plugin_filenames.crop.nc_filename);
     }
     else if (strcasecmp("WOFOST_TEXT_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.wofost_text);
@@ -56,7 +56,7 @@ crop_validate_global_param(void)
     }
     
     // Parameters
-    if (strcasecmp(plugin_filenames.wofost.nc_filename, MISSING_S) == 0) {
+    if (strcasecmp(plugin_filenames.crop.nc_filename, MISSING_S) == 0) {
         log_err("WOFOST = TRUE but netcdf file is missing");
     }
     if (strcasecmp(plugin_filenames.wofost_text, MISSING_S) == 0) {

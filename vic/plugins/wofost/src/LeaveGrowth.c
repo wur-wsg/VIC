@@ -28,7 +28,7 @@ void LeaveGrowth(SimUnit *Grid)
         /* Growth during juvenile stage */
         if (Grid->crp->st.Development < 0.2 && Grid->crp->st.LAI < 0.75)
         {
-            Stress = Grid->vic->WaterStress * exp(-Grid->crp->prm.NitrogenStressLAI * (1. - Grid->crp->NPK_Indx));
+            Stress = Grid->soil->WaterStress * exp(-Grid->crp->prm.NitrogenStressLAI * (1. - Grid->crp->NPK_Indx));
         }
         else
         {

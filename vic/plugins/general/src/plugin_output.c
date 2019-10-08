@@ -68,6 +68,9 @@ plugin_set_output_met_data_info(void)
     if (plugin_options.IRRIGATION) {
         irr_set_output_met_data_info();
     }
+    if (plugin_options.WOFOST) {
+        crop_set_output_met_data_info();
+    }
 }
 
 /******************************************
@@ -83,6 +86,9 @@ plugin_initialize_nc_file(nc_file_struct *nc_file)
     }
     if (plugin_options.WATERUSE) {
         wu_initialize_nc_file(nc_file);
+    }
+    if (plugin_options.WOFOST) {
+        crop_initialize_nc_file(nc_file);
     }
 }
 
@@ -100,6 +106,9 @@ plugin_add_hist_dim(nc_file_struct *nc,
     }
     if (plugin_options.WATERUSE) {
         wu_add_hist_dim(nc, stream);
+    }
+    if (plugin_options.WOFOST) {
+        crop_add_hist_dim(nc, stream);
     }
 }
 
@@ -139,6 +148,9 @@ plugin_set_nc_var_info(unsigned int       varid,
     if (plugin_options.WATERUSE) {
         wu_set_nc_var_info(varid, nc_hist_file, nc_var);
     }
+    if (plugin_options.WOFOST) {
+        crop_set_nc_var_info(varid, nc_hist_file, nc_var);
+    }
 }
 
 /******************************************
@@ -172,6 +184,9 @@ plugin_set_nc_var_dimids(unsigned int    varid,
     if (plugin_options.WATERUSE) {
         wu_set_nc_var_dimids(varid, nc_hist_file, nc_var);
     }
+    if (plugin_options.WOFOST) {
+        crop_set_nc_var_dimids(varid, nc_hist_file, nc_var);
+    }
 }
 
 /******************************************
@@ -200,6 +215,9 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
     }
     if (plugin_options.IRRIGATION) {
         irr_history(varid, agg_type);
+    }
+    if (plugin_options.WOFOST) {
+        crop_history(varid, agg_type);
     }
 }
 

@@ -11,9 +11,9 @@ void Partioning(SimUnit *Grid)
     float factor;
     float flv;
        
-    if (Grid->vic->WaterStress < Grid->crp->N_st.Indx)
+    if (Grid->soil->WaterStress < Grid->crp->N_st.Indx)
     {
-        factor = max(1., 1./(Grid->vic->WaterStress + 0.5));
+        factor = max(1., 1./(Grid->soil->WaterStress + 0.5));
         Grid->crp->fac_ro = min(0.6, Afgen(Grid->crp->prm.Roots, &(Grid->crp->st.Development)) * factor);
         Grid->crp->fac_lv = Afgen(Grid->crp->prm.Leaves, &(Grid->crp->st.Development));
         Grid->crp->fac_st = Afgen(Grid->crp->prm.Stems, &(Grid->crp->st.Development));

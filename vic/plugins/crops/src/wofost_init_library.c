@@ -354,18 +354,6 @@ initialize_wofost_vic(VICparameters *vic)
 {
     size_t i;
     
-    vic->LAI = 0.;
-    vic->roughness = 0.;
-    vic->displacement = 0.;
-    vic->albedo = 0.;
-    vic->overstory = false;
-    vic->trunk_ratio = 0.;
-    vic->wind_atten = 0.;
-    vic->wind_h = 0.;
-    vic->rmin = 0.;
-    vic->rarc = 0.;
-    vic->rad_atten = 0.;
-    vic->RGL = 0.;
     vic->crop_class = MISSING_USI;
     vic->Latitude = 0.;
     vic->Longitude = 0.;
@@ -380,7 +368,6 @@ initialize_wofost_vic(VICparameters *vic)
     vic->DayTemp = 0.;
     vic->Radiation = 0.;
     vic->CO2 = 0.;
-    vic->WaterStress = 0.;
     vic->AtmosphTransm = 0.;
     vic->AngotRadiation = 0.;
     vic->Daylength = 0.;
@@ -423,4 +410,27 @@ initialize_wofost_grid(SimUnit *Grid)
     initialize_wofost_field(Grid->ste);
     initialize_wofost_soil(Grid->soil);
     initialize_wofost_vic(Grid->vic);
+}
+
+void
+wofost_initialize_local_structures(void)
+{
+    extern option_struct options;
+    extern domain_struct        local_domain;
+    extern SimUnit                  ***Grid;
+
+    SimUnit                    *iGrid;
+    size_t                      i;
+    size_t                      j;
+    
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        for(j = 0; j < options.SNOW_BAND; j++) {
+
+            iGrid = Grid[i][j];
+            while(iGrid) {
+                initialize_wofost_grid(iGrid);
+                iGrid = iGrid->next;
+            }
+        }
+    }
 }
