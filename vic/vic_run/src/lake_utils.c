@@ -180,7 +180,7 @@ get_depth(lake_con_struct *lake_con,
                 }
             }
         }
-        if (tempvolume / lake_con->basin[0] > DBL_EPSILON) {
+        if (tempvolume / lake_con->maxvolume > DBL_EPSILON) {
             status = ERROR;
         }
     }

@@ -1876,20 +1876,22 @@ water_balance(lake_var_struct *lake,
     // Add runoff from rest of grid cell and wetland to lake, remove evaporation
     // (precip was added in solve_lake, to allow for snow interception)
     // Evaporation is not allowed to exceed the liquid volume of the lake (after incoming runoff & baseflow are added)
-    if (fabs(lake->evapw) > DBL_EPSILON && lake->evapw >
-        ((lake->volume -
-          lake->ice_water_eq) + lake->ice_throughfall + inflow_volume +
-         lake->snowmlt)) {
-        lake->evapw =
-            (lake->volume -
-             lake->ice_water_eq) + lake->ice_throughfall + inflow_volume +
-            lake->snowmlt;
-        lake->volume = lake->ice_water_eq;
-    }
-    else {
-        lake->volume +=
-            (lake->ice_throughfall + inflow_volume + lake->snowmlt -
-             lake->evapw);
+    if (!options.LAKE_TEMPERATURE) {
+        if (fabs(lake->evapw) > DBL_EPSILON && lake->evapw >
+            ((lake->volume -
+              lake->ice_water_eq) + lake->ice_throughfall + inflow_volume +
+             lake->snowmlt)) {
+            lake->evapw =
+                (lake->volume -
+                 lake->ice_water_eq) + lake->ice_throughfall + inflow_volume +
+                lake->snowmlt;
+            lake->volume = lake->ice_water_eq;
+        }
+        else {
+            lake->volume +=
+                (lake->ice_throughfall + inflow_volume + lake->snowmlt -
+                 lake->evapw);
+        }
     }
 
     // Estimate new surface area of liquid water for recharge calculations
@@ -1970,37 +1972,39 @@ water_balance(lake_var_struct *lake,
 
         // Fill the soil to saturation if possible in inundated area
         // Subtract the recharge (which may be negative) from the lake
-        if (lake->volume - lake->ice_water_eq > lake->recharge) { // enough liquid water to support recharge
-            lake->volume -= lake->recharge;
-        }
-        else { // not enough liquid water to support recharge; fill soil as much as allowed by available liquid water in lake and above-ground storage in newly-flooded area; lake will recede back from this point after recharge is taken out of it
-            lake->recharge = lake->volume - lake->ice_water_eq;
-            lake->volume = lake->ice_water_eq;
+        if (!options.LAKE_TEMPERATURE) {
+            if (lake->volume - lake->ice_water_eq > lake->recharge) { // enough liquid water to support recharge
+                lake->volume -= lake->recharge;
+            }
+            else { // not enough liquid water to support recharge; fill soil as much as allowed by available liquid water in lake and above-ground storage in newly-flooded area; lake will recede back from this point after recharge is taken out of it
+                lake->recharge = lake->volume - lake->ice_water_eq;
+                lake->volume = lake->ice_water_eq;
 
-            Recharge = MM_PER_M * lake->recharge /
-                       ((max_newfraction -
-                         lakefrac) *
-                        lake_con->basin[0]) +
-                       (veg_var[iveg][band].Wdew +
-                        snow[iveg][band].snow_canopy * MM_PER_M +
-                        snow[iveg][band].swq * MM_PER_M);                                                                                                                               // mm over area that has been flooded
+                Recharge = MM_PER_M * lake->recharge /
+                           ((max_newfraction -
+                             lakefrac) *
+                            lake_con->basin[0]) +
+                           (veg_var[iveg][band].Wdew +
+                            snow[iveg][band].snow_canopy * MM_PER_M +
+                            snow[iveg][band].swq * MM_PER_M);                                                                                                                               // mm over area that has been flooded
 
-            for (j = 0; j < options.Nlayer; j++) {
-                if (Recharge >
-                    (soil_con.max_moist[j] - cell[iveg][band].layer[j].moist)) {
-                    Recharge -=
-                        (soil_con.max_moist[j] -
-                         cell[iveg][band].layer[j].moist);
-                    delta_moist[j] =
-                        (soil_con.max_moist[j] -
-                         cell[iveg][band].layer[j].moist) *
-                        (max_newfraction - lakefrac) / (1 - lakefrac);                                                      // mm over (1-lakefrac)
-                }
-                else {
-                    delta_moist[j] = Recharge *
-                                     (max_newfraction -
-                                      lakefrac) / (1 - lakefrac);            // mm over (1-lakefrac)
-                    Recharge = 0.0;
+                for (j = 0; j < options.Nlayer; j++) {
+                    if (Recharge >
+                        (soil_con.max_moist[j] - cell[iveg][band].layer[j].moist)) {
+                        Recharge -=
+                            (soil_con.max_moist[j] -
+                             cell[iveg][band].layer[j].moist);
+                        delta_moist[j] =
+                            (soil_con.max_moist[j] -
+                             cell[iveg][band].layer[j].moist) *
+                            (max_newfraction - lakefrac) / (1 - lakefrac);                                                      // mm over (1-lakefrac)
+                    }
+                    else {
+                        delta_moist[j] = Recharge *
+                                         (max_newfraction -
+                                          lakefrac) / (1 - lakefrac);            // mm over (1-lakefrac)
+                        Recharge = 0.0;
+                    }
                 }
             }
         }
@@ -2054,12 +2058,14 @@ water_balance(lake_var_struct *lake,
                 ldepth, surfacearea);
     }
     lake->baseflow_out = baseflow_out_mm * surfacearea / MM_PER_M;
-    if (lake->volume - lake->ice_water_eq >= lake->baseflow_out) {
-        lake->volume -= lake->baseflow_out;
-    }
-    else {
-        lake->baseflow_out = lake->volume - lake->ice_water_eq;
-        lake->volume -= lake->baseflow_out;
+    if (!options.LAKE_TEMPERATURE) {
+        if (lake->volume - lake->ice_water_eq >= lake->baseflow_out) {
+            lake->volume -= lake->baseflow_out;
+        }
+        else {
+            lake->baseflow_out = lake->volume - lake->ice_water_eq;
+            lake->volume -= lake->baseflow_out;
+        }
     }
 
     // Find new lake depth for runoff calculations
@@ -2077,19 +2083,21 @@ water_balance(lake_var_struct *lake,
         circum = 2 * CONST_PI * pow(surfacearea / CONST_PI, 0.5);
         lake->runoff_out = lake_con->wfrac * circum * dt *
                            1.6 * pow(ldepth - lake_con->mindepth, 1.5);
-        if ((lake->volume - lake->ice_water_eq) >= lake->runoff_out) {
-            /*liquid water is available */
-            if ((lake->volume - lake->runoff_out) < lake_con->minvolume) {
-                lake->runoff_out = lake->volume - lake_con->minvolume;
+        if (!options.LAKE_TEMPERATURE) {
+            if ((lake->volume - lake->ice_water_eq) >= lake->runoff_out) {
+                /*liquid water is available */
+                if ((lake->volume - lake->runoff_out) < lake_con->minvolume) {
+                    lake->runoff_out = lake->volume - lake_con->minvolume;
+                }
+                lake->volume -= lake->runoff_out;
             }
-            lake->volume -= lake->runoff_out;
-        }
-        else {
-            lake->runoff_out = lake->volume - lake->ice_water_eq;
-            if ((lake->volume - lake->runoff_out) < lake_con->minvolume) {
-                lake->runoff_out = lake->volume - lake_con->minvolume;
+            else {
+                lake->runoff_out = lake->volume - lake->ice_water_eq;
+                if ((lake->volume - lake->runoff_out) < lake_con->minvolume) {
+                    lake->runoff_out = lake->volume - lake_con->minvolume;
+                }
+                lake->volume -= lake->runoff_out;
             }
-            lake->volume -= lake->runoff_out;
         }
     }
 

@@ -492,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 54;
+    nitems = 55;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -592,10 +592,6 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // bool LAKES;
     offsets[i] = offsetof(option_struct, LAKES);
-    mpi_types[i++] = MPI_C_BOOL;
-
-    // bool FORCE_LAKES;
-    offsets[i] = offsetof(option_struct, FORCE_LAKES);
     mpi_types[i++] = MPI_C_BOOL;
 
     // size_t Ncanopy;
@@ -708,6 +704,14 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // bool LAKE_PROFILE;
     offsets[i] = offsetof(option_struct, LAKE_PROFILE);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool FORCE_LAKES;
+    offsets[i] = offsetof(option_struct, FORCE_LAKES);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool LAKE_TEMPERATURE;
+    offsets[i] = offsetof(option_struct, LAKE_TEMPERATURE);
     mpi_types[i++] = MPI_C_BOOL;
 
     // bool ORGANIC_FRACT;

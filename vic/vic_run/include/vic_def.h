@@ -228,7 +228,6 @@ typedef struct {
                                 then average July air temperature will be read
                                 from soil file and used in calculating treeline */
     bool LAKES;          /**< TRUE = use lake energy code */
-    bool FORCE_LAKES;     /**< TRUE = force channel inflow */
     size_t Ncanopy;      /**< Number of canopy layers in the model. */
     size_t Nfrost;       /**< Number of frost subareas in model */
     size_t Nlakenode;    /**< Number of lake thermal nodes in the model. */
@@ -281,6 +280,8 @@ typedef struct {
     unsigned short int LAI_SRC;        /**< FROM_VEGLIB = use LAI values from veg library file
                                           FROM_VEGPARAM = use LAI values from the veg param file */
     bool LAKE_PROFILE;   /**< TRUE = user-specified lake/area profile */
+    bool FORCE_LAKES;    /**< TRUE = force channel inflow */
+    bool LAKE_TEMPERATURE;      /**< TRUE = only simulate lakes (omit other vegetation) */
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 
     // state options

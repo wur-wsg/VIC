@@ -46,6 +46,8 @@ vic_populate_model_state(dmy_struct *dmy_current)
     extern veg_con_struct  **veg_con;
 
     size_t                  i;
+    size_t                  iLake;
+    size_t                  Nlake;
 
     // read the model state from the netcdf file if there is one
     if (options.INIT_STATE) {
@@ -67,8 +69,12 @@ vic_populate_model_state(dmy_struct *dmy_current)
     for (i = 0; i < local_domain.ncells_active; i++) {
         compute_derived_state_vars(&(all_vars[i]), &(soil_con[i]), veg_con[i]);
         if (options.LAKES) {
-            compute_derived_lake_dimensions(all_vars[i].lake_var,
-                                            lake_con[i]);
+            Nlake = lake_con[i][0].lake_type_num;
+            
+            for (iLake = 0; iLake < Nlake; iLake++){
+                compute_derived_lake_dimensions(&all_vars[i].lake_var[iLake],
+                                            &lake_con[i][iLake]);
+            }
         }
     }
 }
