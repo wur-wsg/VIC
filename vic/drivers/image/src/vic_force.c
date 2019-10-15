@@ -277,7 +277,6 @@ vic_force(void)
     if (options.LAI_SRC == FROM_VEGHIST ||
         options.FCAN_SRC == FROM_VEGHIST ||
         options.ALB_SRC == FROM_VEGHIST) {
-
         // only the time slice changes for the met file reads. The rest is constant
         d4start[2] = 0;
         d4start[3] = 0;

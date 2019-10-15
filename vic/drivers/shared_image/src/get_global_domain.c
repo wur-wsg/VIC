@@ -81,9 +81,9 @@ get_global_domain(nameid_struct *domain_nc_nameid,
     get_nc_field_int(param_nc_nameid, "run_cell", d2start, d2count,
                      run);
 
-    // Check whether cells with run_cell == 1 are all within the mask domain
+    // Check whether cells within the mask have run_cell == 1
     for (i = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1 && mask[i] != 1) {
+        if (run[i] != 1 && mask[i] == 1) {
             log_err("Run_cell = 1 should only appear within the mask of the "
                     "domain file.");
         }
@@ -91,11 +91,11 @@ get_global_domain(nameid_struct *domain_nc_nameid,
 
     // Store active cell information into variables
     for (i = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1) {
+        if (mask[i] == 1) {
             global_domain->ncells_active++;
         }
     }
-    debug("%zu active grid cells found in run_cell in the parameter file.",
+    debug("%zu active grid cells found in the mask of the domain file.",
           global_domain->ncells_active);
 
     global_domain->locations =
@@ -106,13 +106,13 @@ get_global_domain(nameid_struct *domain_nc_nameid,
     }
 
     for (i = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1) {
+        if (mask[i] == 1) {
             global_domain->locations[i].run = true;
         }
     }
 
     for (i = 0, j = 0; i < global_domain->ncells_total; i++) {
-        if (run[i] == 1) {
+        if (mask[i] == 1) {
             global_domain->locations[i].io_idx = i;
             global_domain->locations[i].global_idx = j;
             j++;

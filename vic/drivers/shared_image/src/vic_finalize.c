@@ -49,7 +49,9 @@ vic_finalize(void)
     extern save_data_struct   *save_data;
     extern soil_con_struct    *soil_con;
     extern veg_con_map_struct *veg_con_map;
+    extern lake_con_map_struct *lake_con_map;
     extern veg_con_struct    **veg_con;
+    extern lake_con_struct    **lake_con;
     extern veg_hist_struct   **veg_hist;
     extern veg_lib_struct    **veg_lib;
     extern MPI_Datatype        mpi_global_struct_type;
@@ -102,6 +104,16 @@ vic_finalize(void)
         free(veg_lib[i]);
     }
 
+    if(options.LAKES) {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            free(lake_con_map[i].lake_id);
+            free(lake_con_map[i].lidx);
+            free(lake_con[i]);
+        }
+        free(lake_con_map);
+        free(lake_con);
+    }
+    
     free_streams(&output_streams);
     free_out_data(local_domain.ncells_active, out_data);
     free(force);

@@ -2171,7 +2171,7 @@ water_balance(lake_var_struct *lake,
     }
 
     if (lake->activenod == isave_n && isave_n == 0) {
-        lake->temp[k] = all_vars->energy[iveg][band].Tsurf;
+        lake->temp[isave_n] = all_vars->energy[iveg][band].Tsurf;
     }
 
     /**********************************************************************
