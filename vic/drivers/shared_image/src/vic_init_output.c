@@ -285,15 +285,17 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining frost_area dimension in %s",
                     stream->filename);
 
-    status = nc_def_dim(nc->nc_id, "lake_class", nc->lake_size,
-                        &(nc->lake_dimid));
-    check_nc_status(status, "Error defining lake_class dimension in %s",
-                    stream->filename);
+    if (options.LAKES) {
+        status = nc_def_dim(nc->nc_id, "lake_class", nc->lake_size,
+                            &(nc->lake_dimid));
+        check_nc_status(status, "Error defining lake_class dimension in %s",
+                        stream->filename);
 
-    status = nc_def_dim(nc->nc_id, "lake_node", nc->lake_node_size,
-                        &(nc->lake_node_dimid));
-    check_nc_status(status, "Error defining lake_node dimension in %s",
-                    stream->filename);
+        status = nc_def_dim(nc->nc_id, "lake_node", nc->lake_node_size,
+                            &(nc->lake_node_dimid));
+        check_nc_status(status, "Error defining lake_node dimension in %s",
+                        stream->filename);
+    }
 
     status = nc_def_dim(nc->nc_id, "nlayer", nc->layer_size,
                         &(nc->layer_dimid));
@@ -710,7 +712,7 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->front_size = MAX_FRONTS;
     nc_file->frost_size = options.Nfrost;
     nc_file->lake_size = options.NVEGTYPES;
-    nc_file->lake_node_size = MAX_LAKE_NODES;
+    nc_file->lake_node_size = MAX_LAKE_NODES + 1;
     nc_file->layer_size = options.Nlayer;
     nc_file->ni_size = global_domain.n_nx;
     nc_file->nj_size = global_domain.n_ny;

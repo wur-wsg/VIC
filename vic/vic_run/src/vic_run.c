@@ -109,6 +109,7 @@ vic_run(force_data_struct   *force,
 
     /* Set number of vegetation tiles */
     Nveg = veg_con[0].vegetat_type_num;
+    overstory = false;
 
     /** Set Damping Depth **/
     dp = soil_con->dp;

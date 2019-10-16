@@ -111,8 +111,8 @@ mpi_lake_decomp_domain()
     lakeid_local = malloc(local_domain.nlakes_active * sizeof(*lakeid_local));
     
     k = 0;
-    for (i = 0; i < local_domain.ncells_active; i++){
-        for (j = 0; j < options.NVEGTYPES; j++) {
+    for (j = 0; j < options.NVEGTYPES; j++) {
+        for (i = 0; i < local_domain.ncells_active; i++){
             id = lake_con_map[i].lake_id[j];
             if (id != NODATA_VEG) {
                 lakeid_local[k] = id;
@@ -142,7 +142,7 @@ mpi_lake_decomp_domain()
                 }
             }
             if(!found){
-                log_err("Lake_id is not perfectly sequential, "
+                log_err("Lake_id is not sequential, "
                         "missing %d in range 0-%d",
                         id, max_id);
             }
@@ -205,6 +205,11 @@ gather_field_double_lake_only(double  fillval,
         // remap the array
         map(sizeof(double), global_domain.nlakes_active, NULL,
             mpi_lake_mapping_array, dvar_gathered, dvar);
+//        fprintf(LOG_DEST, "INID\tOUTID\tOLD\t\t\tNEW\n");
+//        for(i = 0; i < global_domain.nlakes_active; i++){
+//            fprintf(LOG_DEST, "%zu\t%zu\t%.3f\t\t\t%.3f\n",
+//                    i, mpi_lake_mapping_array[i], dvar_gathered[i], dvar[i]);
+//        }
         // cleanup
         free(dvar_gathered);
     }
@@ -491,5 +496,179 @@ gather_put_nc_field_schar_lake_only(int     nc_id,
         // cleanup
         free(cvar);
         free(cvar_gathered);
+    }
+}
+
+/******************************************************************************
+ * @brief   Scatter double precision variable
+ * @details values from master node are scattered to the local nodes
+ *****************************************************************************/
+void
+scatter_field_double_lake_only(double *dvar,
+                     double *var)
+{
+    extern MPI_Comm      MPI_COMM_VIC;
+    extern domain_struct global_domain;
+    extern domain_struct local_domain;
+    extern int           mpi_rank;
+    extern int          *mpi_lake_global_array_offsets;
+    extern int          *mpi_lake_local_array_sizes;
+    extern size_t       *mpi_lake_mapping_array;
+    int                  status;
+    double              *dvar_mapped = NULL;
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        dvar_mapped =
+            malloc(global_domain.nlakes_active * sizeof(*dvar_mapped));
+        check_alloc_status(dvar_mapped, "Memory allocation error.");
+
+        // map to prepare for MPI_Scatterv
+        map(sizeof(double), global_domain.nlakes_active, mpi_lake_mapping_array,
+            NULL, dvar, dvar_mapped);
+        free(dvar);
+    }
+
+    // Scatter the results to the nodes, result for the local node is in the
+    // array *var (which is a function argument)
+    status = MPI_Scatterv(dvar_mapped, mpi_lake_local_array_sizes,
+                          mpi_lake_global_array_offsets, MPI_DOUBLE,
+                          var, local_domain.nlakes_active, MPI_DOUBLE,
+                          VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        free(dvar_mapped);
+    }
+}
+
+/******************************************************************************
+ * @brief   Read double precision NetCDF field from file and scatter
+ * @details Read happens on the master node and is then scattered to the local
+ *          nodes
+ *****************************************************************************/
+void
+get_scatter_nc_field_double_lake_only(nameid_struct *nc_nameid,
+                            char          *var_name,
+                            size_t        *start,
+                            size_t        *count,
+                            double        *var)
+{
+    extern domain_struct global_domain;
+    extern int           mpi_rank;
+    double              *dvar = NULL;
+
+    // Read variable from netcdf
+    if (mpi_rank == VIC_MPI_ROOT) {
+        dvar = malloc(global_domain.nlakes_active * sizeof(*dvar));
+        check_alloc_status(dvar, "Memory allocation error.");
+
+        get_nc_field_double(nc_nameid, var_name, start, count, dvar);
+    }
+
+    // Scatter results to nodes
+    scatter_field_double_lake_only(dvar, var);
+}
+
+/******************************************************************************
+ * @brief   Read single precision NetCDF field from file and scatter
+ * @details Read happens on the master node and is then scattered to the local
+ *          nodes
+ *****************************************************************************/
+void
+get_scatter_nc_field_float_lake_only(nameid_struct *nc_nameid,
+                           char          *var_name,
+                           size_t        *start,
+                           size_t        *count,
+                           float         *var)
+{
+    extern MPI_Comm      MPI_COMM_VIC;
+    extern domain_struct global_domain;
+    extern domain_struct local_domain;
+    extern int           mpi_rank;
+    extern int          *mpi_lake_global_array_offsets;
+    extern int          *mpi_lake_local_array_sizes;
+    extern size_t       *mpi_lake_mapping_array;
+    int                  status;
+    float               *fvar = NULL;
+    float               *fvar_mapped = NULL;
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        fvar = malloc(global_domain.nlakes_active * sizeof(*fvar));
+        check_alloc_status(fvar, "Memory allocation error.");
+
+        fvar_mapped =
+            malloc(global_domain.nlakes_active * sizeof(*fvar_mapped));
+        check_alloc_status(fvar_mapped, "Memory allocation error.");
+
+        get_nc_field_float(nc_nameid, var_name, start, count, fvar);
+        // map to prepare for MPI_Scatterv
+        map(sizeof(float), global_domain.nlakes_active, mpi_lake_mapping_array,
+            NULL,
+            fvar, fvar_mapped);
+        free(fvar);
+    }
+
+    // Scatter the results to the nodes, result for the local node is in the
+    // array *var (which is a function argument)
+    status = MPI_Scatterv(fvar_mapped, mpi_lake_local_array_sizes,
+                          mpi_lake_global_array_offsets, MPI_FLOAT,
+                          var, local_domain.nlakes_active, MPI_FLOAT,
+                          VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        free(fvar_mapped);
+    }
+}
+
+/******************************************************************************
+ * @brief   Read integer NetCDF field from file and scatter
+ * @details Read happens on the master node and is then scattered to the local
+ *          nodes
+ *****************************************************************************/
+void
+get_scatter_nc_field_int_lake_only(nameid_struct *nc_nameid,
+                         char          *var_name,
+                         size_t        *start,
+                         size_t        *count,
+                         int           *var)
+{
+    extern MPI_Comm      MPI_COMM_VIC;
+    extern domain_struct global_domain;
+    extern domain_struct local_domain;
+    extern int           mpi_rank;
+    extern int          *mpi_lake_global_array_offsets;
+    extern int          *mpi_lake_local_array_sizes;
+    extern size_t       *mpi_lake_mapping_array;
+    int                  status;
+    int                 *ivar = NULL;
+    int                 *ivar_mapped = NULL;
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        ivar = malloc(global_domain.nlakes_active * sizeof(*ivar));
+        check_alloc_status(ivar, "Memory allocation error.");
+
+        ivar_mapped =
+            malloc(global_domain.nlakes_active * sizeof(*ivar_mapped));
+        check_alloc_status(ivar_mapped, "Memory allocation error.");
+
+        get_nc_field_int(nc_nameid, var_name, start, count, ivar);
+        // map to prepare for MPI_Scatterv
+        map(sizeof(int), global_domain.nlakes_active, mpi_lake_mapping_array,
+            NULL,
+            ivar, ivar_mapped);
+        free(ivar);
+    }
+
+    // Scatter the results to the nodes, result for the local node is in the
+    // array *var (which is a function argument)
+    status = MPI_Scatterv(ivar_mapped, mpi_lake_local_array_sizes,
+                          mpi_lake_global_array_offsets, MPI_INT,
+                          var, local_domain.nlakes_active, MPI_INT,
+                          VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        free(ivar_mapped);
     }
 }
