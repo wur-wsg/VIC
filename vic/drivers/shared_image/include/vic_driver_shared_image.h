@@ -87,6 +87,7 @@ typedef struct {
 typedef struct {
     size_t ncells_total; /**< total number of grid cells on domain */
     size_t ncells_active; /**< number of active grid cells on domain */
+    size_t nlakes_active; /**< number of active lakes on domain */
     size_t n_nx; /**< size of x-index; */
     size_t n_ny; /**< size of y-index */
     location_struct *locations; /**< locations structs for local domain */
@@ -118,6 +119,7 @@ typedef struct {
     int band_dimid;
     int front_dimid;
     int frost_dimid;
+    int lake_dimid;
     int lake_node_dimid;
     int layer_dimid;
     int ni_dimid;
@@ -134,6 +136,7 @@ typedef struct {
     size_t band_size;
     size_t front_size;
     size_t frost_size;
+    size_t lake_size;
     size_t lake_node_size;
     size_t layer_size;
     size_t ni_size;
@@ -263,7 +266,11 @@ void set_global_nc_attributes(int ncid, unsigned short int file_type);
 void set_state_meta_data_info();
 void set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,
                        nc_var_struct *nc_var);
+void set_nc_var_dimids_lake_only(unsigned int varid, nc_file_struct *nc_hist_file,
+                       nc_var_struct *nc_var);
 void set_nc_var_info(unsigned int varid, unsigned short int dtype,
+                     nc_file_struct *nc_hist_file, nc_var_struct *nc_var);
+void set_nc_var_info_lake_only(unsigned int varid, unsigned short int dtype,
                      nc_file_struct *nc_hist_file, nc_var_struct *nc_var);
 void set_nc_state_file_info(nc_file_struct *nc_state_file);
 void set_nc_state_var_info(nc_file_struct *nc_state_file);
@@ -277,6 +284,8 @@ void vic_restore(void);
 void vic_start(void);
 void vic_store(dmy_struct *dmy_state, char *state_filename);
 void vic_write(stream_struct *stream, nc_file_struct *nc_hist_file,
+               dmy_struct *dmy_current);
+void vic_write_lake_only(stream_struct *stream, nc_file_struct *nc_hist_file,
                dmy_struct *dmy_current);
 void vic_write_output(dmy_struct *dmy);
 void write_vic_timing_table(timer_struct *timers, char *driver);

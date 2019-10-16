@@ -479,6 +479,10 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_TEMPERATURE = str_to_bool(flgstr);
             }
+            else if (strcasecmp("LAKE_ONLY", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                options.LAKE_ONLY = str_to_bool(flgstr);
+            }
             else if (strcasecmp("LAKE_PROFILE", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);

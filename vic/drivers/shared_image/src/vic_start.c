@@ -97,6 +97,13 @@ vic_start(void)
         // add the number of lake type to the location info in the
         // global domain struct. This just makes life easier
         add_nlake_to_global_domain(&(filenames.params), &global_domain);
+        
+        global_domain.nlakes_active = 0;
+        for (i = 0; i < global_domain.ncells_total; i++) {
+            if (global_domain.locations[i].run) {
+                global_domain.nlakes_active += global_domain.locations[i].nlake;
+            }
+        }
 
         // decompose the mask
         mpi_map_decomp_domain(global_domain.ncells_active, mpi_size,
@@ -211,6 +218,11 @@ vic_start(void)
     // Set the local index value
     for (i = 0; i < (size_t) local_domain.ncells_active; i++) {
         local_domain.locations[i].local_idx = i;
+    }
+        
+    local_domain.nlakes_active = 0;
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        local_domain.nlakes_active += local_domain.locations[i].nlake;
     }
 
     // cleanup

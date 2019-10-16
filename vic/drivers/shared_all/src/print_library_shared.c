@@ -321,6 +321,7 @@ print_lake_con(lake_con_struct *lcon,
     fprintf(LOG_DEST, "\trpercent     : %.4f\n", lcon->rpercent);
     fprintf(LOG_DEST, "\twfrac        : %.4f\n", lcon->wfrac);
     fprintf(LOG_DEST, "\tdepth_in     : %.4f\n", lcon->depth_in);
+    fprintf(LOG_DEST, "\tlake_class   : %zu\n", lcon->lake_class);
     fprintf(LOG_DEST, "\tlake_type_num: %zu\n", lcon->lake_type_num);
     fprintf(LOG_DEST, "\tveg_idx      : %d\n", lcon->veg_idx);
     fprintf(LOG_DEST, "\telev_idx     : %zu\n", lcon->elev_idx);

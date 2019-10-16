@@ -285,6 +285,16 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining frost_area dimension in %s",
                     stream->filename);
 
+    status = nc_def_dim(nc->nc_id, "lake_class", nc->lake_size,
+                        &(nc->lake_dimid));
+    check_nc_status(status, "Error defining lake_class dimension in %s",
+                    stream->filename);
+
+    status = nc_def_dim(nc->nc_id, "lake_node", nc->lake_node_size,
+                        &(nc->lake_node_dimid));
+    check_nc_status(status, "Error defining lake_node dimension in %s",
+                    stream->filename);
+
     status = nc_def_dim(nc->nc_id, "nlayer", nc->layer_size,
                         &(nc->layer_dimid));
     check_nc_status(status, "Error defining nlayer dimension in %s",
@@ -440,6 +450,10 @@ initialize_history_file(nc_file_struct *nc,
         varid = stream->varid[j];
 
         set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        
+        if (options.LAKES && options.LAKE_ONLY) {
+           set_nc_var_dimids_lake_only(varid, nc, &(nc->nc_vars[j]));
+        }
 
         // define the variable
         status = nc_def_var(nc->nc_id,
@@ -681,6 +695,7 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->band_dimid = MISSING;
     nc_file->front_dimid = MISSING;
     nc_file->frost_dimid = MISSING;
+    nc_file->lake_dimid = MISSING;
     nc_file->lake_node_dimid = MISSING;
     nc_file->layer_dimid = MISSING;
     nc_file->ni_dimid = MISSING;
@@ -694,6 +709,8 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->band_size = options.SNOW_BAND;
     nc_file->front_size = MAX_FRONTS;
     nc_file->frost_size = options.Nfrost;
+    nc_file->lake_size = options.NVEGTYPES;
+    nc_file->lake_node_size = MAX_LAKE_NODES;
     nc_file->layer_size = options.Nlayer;
     nc_file->ni_size = global_domain.n_nx;
     nc_file->nj_size = global_domain.n_ny;
@@ -708,5 +725,12 @@ initialize_nc_file(nc_file_struct     *nc_file,
 
     for (i = 0; i < nvars; i++) {
         set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+    }
+    
+    if(options.LAKES && options.LAKE_ONLY){
+        nc_file->lake_size = global_domain.nlakes_active;
+        for (i = 0; i < nvars; i++) {
+            set_nc_var_info_lake_only(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+        }
     }
 }

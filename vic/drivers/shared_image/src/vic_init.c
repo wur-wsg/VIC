@@ -61,6 +61,7 @@ vic_init(void)
     size_t                     m;
     size_t                     nveg;
     size_t                     Nnodes;
+    size_t                     max_id;
     int                        vidx;
     int                        lidx;
     size_t                     d2count[2];
@@ -1338,7 +1339,7 @@ vic_init(void)
         // lake_id: for each veg type, read the id into the mapping
         // structure. Then assign only the ones with an id greater than 0 to
         // the lake_con structure
-
+        max_id = 0;
         for (j = 0; j < options.NVEGTYPES; j++) {
             d3start[0] = j;
             get_scatter_nc_field_int(&(filenames.params), "lake_id",
@@ -1346,6 +1347,16 @@ vic_init(void)
             for (i = 0; i < local_domain.ncells_active; i++) {
                 if (veg_con_map[i].vidx[j] != NODATA_VEG) {
                     lake_con_map[i].lake_id[j] = (int) ivar[i];
+                    
+                    if(lake_con_map[i].lake_id[j] < 0){
+                        log_err("Lake ID cannot be < 0, but is %d "
+                                "for cell %zu, veg %zu",
+                                lake_con_map[i].lake_id[j], i, j);
+                    }
+                    
+                    if((size_t)lake_con_map[i].lake_id[j] > max_id){
+                        max_id = (size_t)lake_con_map[i].lake_id[j];
+                    }
                 } else {
                     if(ivar[i] >= 0) {
                         log_warn("Lake %d is set for empty vegetation tile, ignoring", 
@@ -1355,7 +1366,11 @@ vic_init(void)
                 }
             }
         }
-
+        
+        if (options.LAKE_ONLY) {
+            mpi_lake_decomp_domain();
+        }
+        
         // do the mapping
         for (i = 0; i < local_domain.ncells_active; i++) {
             k = 0;
@@ -1363,6 +1378,7 @@ vic_init(void)
                 if (lake_con_map[i].lake_id[j] >= 0) {
                     lake_con_map[i].lidx[j] = k;
                     
+                    lake_con[i][k].lake_class = j;
                     lake_con[i][k].veg_idx = veg_con_map[i].vidx[j];
                     veg_con[i][veg_con_map[i].vidx[j]].LAKE = true;
                     veg_con[i][veg_con_map[i].vidx[j]].lake_idx = k;

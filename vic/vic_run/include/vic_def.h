@@ -282,6 +282,7 @@ typedef struct {
     bool LAKE_PROFILE;   /**< TRUE = user-specified lake/area profile */
     bool FORCE_LAKES;    /**< TRUE = force channel inflow */
     bool LAKE_TEMPERATURE;      /**< TRUE = only simulate lakes (omit other vegetation) */
+    bool LAKE_ONLY;      /**< TRUE = only output lakes (in a single array) */
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 
     // state options
@@ -1037,8 +1038,9 @@ typedef struct {
     double depth_in;              /**< Initial lake depth (distance from surface to deepest point) (m) */
     size_t lake_type_num;         /**< number of lake types in the grid
                                           cell */
+    size_t lake_class;            /**< vegetation class id number */ 
     int veg_idx;                  /**< index number of the lake/wetland veg tile */
-    size_t elev_idx;                 /**< index number of the lake/wetland elevation tile */
+    size_t elev_idx;              /**< index number of the lake/wetland elevation tile */
 } lake_con_struct;
 
 /******************************************************************************

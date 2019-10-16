@@ -1523,4 +1523,10 @@ set_output_met_data_info()
     out_metadata[OUT_SNOW_PACKT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SNOW_SURFT_BAND].nelem = options.SNOW_BAND;
     out_metadata[OUT_SWE_BAND].nelem = options.SNOW_BAND;
+    
+    if (options.LAKES && options.LAKE_ONLY) {
+        for(v = 0; v < N_OUTVAR_TYPES; v++){
+            out_metadata[v].nelem *= options.NVEGTYPES;
+        }
+    }
 }

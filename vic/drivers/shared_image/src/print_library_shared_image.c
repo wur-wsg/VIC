@@ -70,6 +70,7 @@ print_domain(domain_struct *domain,
     fprintf(LOG_DEST, "domain:\n");
     fprintf(LOG_DEST, "\tncells_total : %zd\n", domain->ncells_total);
     fprintf(LOG_DEST, "\tncells_active: %zd\n", domain->ncells_active);
+    fprintf(LOG_DEST, "\tnlakes_active: %zd\n", domain->nlakes_active);
     fprintf(LOG_DEST, "\tn_nx         : %zd\n", domain->n_nx);
     fprintf(LOG_DEST, "\tn_ny         : %zd\n", domain->n_ny);
     fprintf(LOG_DEST, "\tlocations    : %p\n", domain->locations);
@@ -92,6 +93,7 @@ print_location(location_struct *loc)
     fprintf(LOG_DEST, "\tarea           : %.4f\n", loc->area);
     fprintf(LOG_DEST, "\tfrac           : %.4f\n", loc->frac);
     fprintf(LOG_DEST, "\tnveg           : %zd\n", loc->nveg);
+    fprintf(LOG_DEST, "\tnlake          : %zd\n", loc->nlake);
     fprintf(LOG_DEST, "\tglobal_idx     : %zd\n", loc->global_idx);
     fprintf(LOG_DEST, "\tio_idx         : %zd\n", loc->io_idx);
     fprintf(LOG_DEST, "\tlocal_idx      : %zd\n", loc->local_idx);

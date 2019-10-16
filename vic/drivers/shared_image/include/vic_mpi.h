@@ -62,6 +62,17 @@ void gather_put_nc_field_short(int nc_id, int var_id, short int fillval,
                                size_t *start, size_t *count, short int *var);
 void gather_put_nc_field_schar(int nc_id, int var_id, char fillval,
                                size_t *start, size_t *count, char *var);
+void gather_field_double_lake_only(double fillval, double *dvar, double *var);
+void gather_put_nc_field_double_lake_only(int nc_id, int var_id, double fillval,
+                                size_t *start, size_t *count, double *var);
+void gather_put_nc_field_float_lake_only(int nc_id, int var_id, float fillval,
+                               size_t *start, size_t *count, float *var);
+void gather_put_nc_field_int_lake_only(int nc_id, int var_id, int fillval, size_t *start,
+                             size_t *count, int *var);
+void gather_put_nc_field_short_lake_only(int nc_id, int var_id, short int fillval,
+                               size_t *start, size_t *count, short int *var);
+void gather_put_nc_field_schar_lake_only(int nc_id, int var_id, char fillval,
+                               size_t *start, size_t *count, char *var);
 void scatter_field_double(double *dvar, double *var);
 void get_scatter_nc_field_double(nameid_struct *nc_nameid, char *var_name,
                                  size_t *start, size_t *count, double *var);
@@ -76,6 +87,7 @@ void mpi_map_decomp_domain(size_t ncells, size_t mpi_size,
                            int **mpi_map_local_array_sizes,
                            int **mpi_map_global_array_offsets,
                            size_t **mpi_map_mapping_array);
+void mpi_lake_decomp_domain();
 void print_mpi_error_str(int error_code);
 
 #endif

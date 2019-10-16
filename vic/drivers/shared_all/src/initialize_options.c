@@ -62,6 +62,7 @@ initialize_options()
     options.LAKE_PROFILE = false;
     options.FORCE_LAKES = false;
     options.LAKE_TEMPERATURE = false;
+    options.LAKE_ONLY = false;
     options.NOFLUX = false;
     options.QUICK_FLUX = true;
     options.QUICK_SOLVE = false;

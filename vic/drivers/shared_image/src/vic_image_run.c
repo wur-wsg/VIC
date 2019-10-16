@@ -70,9 +70,15 @@ vic_image_run(dmy_struct *dmy_current)
                 lake_con[i], &(soil_con[i]), veg_con[i], veg_lib[i]);
         timer_stop(&timer);
 
-        put_data(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],
+        if (options.LAKES && options.LAKE_ONLY) {
+            put_data_lake_only(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],
                  veg_lib[i], lake_con[i], out_data[i], &(save_data[i]),
                  &timer);
+        } else {
+            put_data(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],
+                     veg_lib[i], lake_con[i], out_data[i], &(save_data[i]),
+                     &timer);
+        }
     }
 
     // run routing over the domain

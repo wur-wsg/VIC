@@ -34,6 +34,7 @@ vic_finalize(void)
 {
     extern size_t             *filter_active_cells;
     extern size_t             *mpi_map_mapping_array;
+    extern size_t             *mpi_lake_mapping_array;
     extern all_vars_struct    *all_vars;
     extern force_data_struct  *force;
     extern domain_struct       global_domain;
@@ -41,6 +42,8 @@ vic_finalize(void)
     extern filep_struct        filep;
     extern int                *mpi_map_local_array_sizes;
     extern int                *mpi_map_global_array_offsets;
+    extern int                *mpi_lake_local_array_sizes;
+    extern int                *mpi_lake_global_array_offsets;
     extern int                 mpi_rank;
     extern nc_file_struct     *nc_hist_files;
     extern option_struct       options;
@@ -131,6 +134,11 @@ vic_finalize(void)
         free(mpi_map_local_array_sizes);
         free(mpi_map_global_array_offsets);
         free(mpi_map_mapping_array);
+        if (options.LAKES && options.LAKE_ONLY) {
+            free(mpi_lake_local_array_sizes);
+            free(mpi_lake_global_array_offsets);
+            free(mpi_lake_mapping_array);
+        }
     }
 
     MPI_Type_free(&mpi_global_struct_type);

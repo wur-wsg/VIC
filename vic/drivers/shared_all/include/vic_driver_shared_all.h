@@ -601,6 +601,12 @@ void collect_eb_terms(energy_bal_struct, snow_data_struct, cell_data_struct,
 void collect_wb_terms(cell_data_struct, veg_var_struct, snow_data_struct,
                       double, double, double, bool, double, bool, double *,
                       double **);
+void collect_eb_terms_lake_only(energy_bal_struct, snow_data_struct, cell_data_struct,
+                      double, double, double, bool, bool, double, bool, int,
+                      double *, double, double **, size_t);
+void collect_wb_terms_lake_only(cell_data_struct, veg_var_struct, snow_data_struct,
+                      double, double, double, bool, double, bool, double *,
+                      double **, size_t);
 void compute_derived_state_vars(all_vars_struct *, soil_con_struct *,
                                 veg_con_struct *);
 void compute_lake_params(lake_con_struct *, soil_con_struct);
@@ -671,6 +677,9 @@ FILE *open_file(char string[], char type[]);
 void parse_nc_time_units(char *nc_unit_chars, unsigned short int *units,
                          dmy_struct *dmy);
 void put_data(all_vars_struct *, force_data_struct *, soil_con_struct *,
+              veg_con_struct *, veg_lib_struct *veg_lib, lake_con_struct *,
+              double **out_data, save_data_struct *, timer_struct *timer);
+void put_data_lake_only(all_vars_struct *, force_data_struct *, soil_con_struct *,
               veg_con_struct *, veg_lib_struct *veg_lib, lake_con_struct *,
               double **out_data, save_data_struct *, timer_struct *timer);
 void print_alarm(alarm_struct *alarm);

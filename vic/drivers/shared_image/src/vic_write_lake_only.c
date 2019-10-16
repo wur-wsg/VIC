@@ -27,50 +27,27 @@
 #include <vic_driver_shared_image.h>
 
 /******************************************************************************
- * @brief    Write output data and convert units if necessary.
- *****************************************************************************/
-void
-vic_write_output(dmy_struct *dmy)
-{
-    extern option_struct   options;
-    extern stream_struct  *output_streams;
-    extern nc_file_struct *nc_hist_files;
-
-    size_t                 stream_idx;
-
-    // Write data
-    for (stream_idx = 0; stream_idx < options.Noutstreams; stream_idx++) {
-        if (raise_alarm(&(output_streams[stream_idx].agg_alarm), dmy)) {
-            debug("raised alarm for stream %zu", stream_idx);
-            if (options.LAKES && options.LAKE_ONLY) {
-                vic_write_lake_only(&(output_streams[stream_idx]),
-                      &(nc_hist_files[stream_idx]), dmy);
-            } else {
-                vic_write(&(output_streams[stream_idx]),
-                          &(nc_hist_files[stream_idx]), dmy);
-            }
-            reset_stream(&(output_streams[stream_idx]), dmy);
-        }
-    }
-}
-
-/******************************************************************************
  * @brief    Write output to netcdf file. Currently everything is cast to
  *           double
  *****************************************************************************/
 void
-vic_write(stream_struct  *stream,
+vic_write_lake_only(stream_struct  *stream,
           nc_file_struct *nc_hist_file,
           dmy_struct     *dmy_current)
 {
+    extern option_struct       options;
     extern global_param_struct global_param;
     extern domain_struct       local_domain;
     extern int                 mpi_rank;
+    extern lake_con_map_struct *lake_con_map;
     extern metadata_struct     out_metadata[N_OUTVAR_TYPES];
 
     size_t                     i;
     size_t                     j;
     size_t                     k;
+    size_t                     l;
+    int                        id_lake;
+    size_t                     nelem;
     size_t                     ndims;
     double                     dtime;
     double                    *dvar = NULL;
@@ -105,35 +82,35 @@ vic_write(stream_struct  *stream,
         if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
             if (dvar == NULL) {
                 // allocate memory for variables to be stored
-                dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+                dvar = malloc(local_domain.nlakes_active * sizeof(*dvar));
                 check_alloc_status(dvar, "Memory allocation error");
             }
         }
         else if (nc_hist_file->nc_vars[k].nc_type == NC_FLOAT) {
             if (fvar == NULL) {
                 // allocate memory for variables to be stored
-                fvar = malloc(local_domain.ncells_active * sizeof(*fvar));
+                fvar = malloc(local_domain.nlakes_active * sizeof(*fvar));
                 check_alloc_status(fvar, "Memory allocation error");
             }
         }
         else if (nc_hist_file->nc_vars[k].nc_type == NC_INT) {
             if (ivar == NULL) {
                 // allocate memory for variables to be stored
-                ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
+                ivar = malloc(local_domain.nlakes_active * sizeof(*ivar));
                 check_alloc_status(ivar, "Memory allocation error");
             }
         }
         else if (nc_hist_file->nc_vars[k].nc_type == NC_SHORT) {
             if (svar == NULL) {
                 // allocate memory for variables to be stored
-                svar = malloc(local_domain.ncells_active * sizeof(*svar));
+                svar = malloc(local_domain.nlakes_active * sizeof(*svar));
                 check_alloc_status(svar, "Memory allocation error");
             }
         }
         else if (nc_hist_file->nc_vars[k].nc_type == NC_CHAR) {
             if (cvar == NULL) {
                 // allocate memory for variables to be stored
-                cvar = malloc(local_domain.ncells_active * sizeof(*cvar));
+                cvar = malloc(local_domain.nlakes_active * sizeof(*cvar));
                 check_alloc_status(cvar, "Memory allocation error");
             }
         }
@@ -149,61 +126,79 @@ vic_write(stream_struct  *stream,
         // The size of the last two dimensions are the grid size; files are
         // written one slice at a time, so all counts are 1, except the last
         // two
-        for (j = ndims - 2; j < ndims; j++) {
+        for (j = ndims - 1; j < ndims; j++) {
             dcount[j] = nc_hist_file->nc_vars[k].nc_counts[j];
         }
         dstart[0] = stream->write_alarm.count;  // Position in the time dimensions
 
-        for (j = 0; j < out_metadata[varid].nelem; j++) {
-            // if there is more than one layer, then dstart needs to advance
-            dstart[1] = j;
-            if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
-                for (i = 0; i < local_domain.ncells_active; i++) {
-                    dvar[i] = (double) stream->aggdata[i][k][j][0];
+        nelem = out_metadata[varid].nelem / options.NVEGTYPES;
+        for (l = 0; l < options.NVEGTYPES; l++) {
+            for (j = 0; j < nelem; j++) {
+                // if there is more than one layer, then dstart needs to advance
+                dstart[1] = j;
+                if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        id_lake = lake_con_map[i].lake_id[l];
+                        if (id_lake != NODATA_VEG) {
+                            dvar[id_lake] = (double) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                        }
+                    }
+                    gather_put_nc_field_double_lake_only(nc_hist_file->nc_id,
+                                               nc_hist_file->nc_vars[k].nc_varid,
+                                               nc_hist_file->d_fillvalue,
+                                               dstart, dcount, dvar);
                 }
-                gather_put_nc_field_double(nc_hist_file->nc_id,
-                                           nc_hist_file->nc_vars[k].nc_varid,
-                                           nc_hist_file->d_fillvalue,
-                                           dstart, dcount, dvar);
-            }
-            else if (nc_hist_file->nc_vars[k].nc_type == NC_FLOAT) {
-                for (i = 0; i < local_domain.ncells_active; i++) {
-                    fvar[i] = (float) stream->aggdata[i][k][j][0];
+                else if (nc_hist_file->nc_vars[k].nc_type == NC_FLOAT) {
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        id_lake = lake_con_map[i].lake_id[l];
+                        if (id_lake != NODATA_VEG) {
+                            fvar[id_lake] = (float) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                        }
+                    }
+                    gather_put_nc_field_float_lake_only(nc_hist_file->nc_id,
+                                              nc_hist_file->nc_vars[k].nc_varid,
+                                              nc_hist_file->f_fillvalue,
+                                              dstart, dcount, fvar);
                 }
-                gather_put_nc_field_float(nc_hist_file->nc_id,
-                                          nc_hist_file->nc_vars[k].nc_varid,
-                                          nc_hist_file->f_fillvalue,
-                                          dstart, dcount, fvar);
-            }
-            else if (nc_hist_file->nc_vars[k].nc_type == NC_INT) {
-                for (i = 0; i < local_domain.ncells_active; i++) {
-                    ivar[i] = (int) stream->aggdata[i][k][j][0];
+                else if (nc_hist_file->nc_vars[k].nc_type == NC_INT) {
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        id_lake = lake_con_map[i].lake_id[l];
+                        if (id_lake != NODATA_VEG) {
+                            ivar[id_lake] = (int) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                        }
+                    }
+                    gather_put_nc_field_int_lake_only(nc_hist_file->nc_id,
+                                            nc_hist_file->nc_vars[k].nc_varid,
+                                            nc_hist_file->i_fillvalue,
+                                            dstart, dcount, ivar);
                 }
-                gather_put_nc_field_int(nc_hist_file->nc_id,
-                                        nc_hist_file->nc_vars[k].nc_varid,
-                                        nc_hist_file->i_fillvalue,
-                                        dstart, dcount, ivar);
-            }
-            else if (nc_hist_file->nc_vars[k].nc_type == NC_SHORT) {
-                for (i = 0; i < local_domain.ncells_active; i++) {
-                    svar[i] = (short int) stream->aggdata[i][k][j][0];
+                else if (nc_hist_file->nc_vars[k].nc_type == NC_SHORT) {
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        id_lake = lake_con_map[i].lake_id[l];
+                        if (id_lake != NODATA_VEG) {
+                            svar[id_lake] = (short int) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                        }
+                    }
+                    gather_put_nc_field_short_lake_only(nc_hist_file->nc_id,
+                                              nc_hist_file->nc_vars[k].nc_varid,
+                                              nc_hist_file->s_fillvalue,
+                                              dstart, dcount, svar);
                 }
-                gather_put_nc_field_short(nc_hist_file->nc_id,
-                                          nc_hist_file->nc_vars[k].nc_varid,
-                                          nc_hist_file->s_fillvalue,
-                                          dstart, dcount, svar);
-            }
-            else if (nc_hist_file->nc_vars[k].nc_type == NC_CHAR) {
-                for (i = 0; i < local_domain.ncells_active; i++) {
-                    cvar[i] = (char) stream->aggdata[i][k][j][0];
+                else if (nc_hist_file->nc_vars[k].nc_type == NC_CHAR) {
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        id_lake = lake_con_map[i].lake_id[l];
+                        if (id_lake != NODATA_VEG) {
+                            cvar[id_lake] = (char) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                        }
+                    }
+                    gather_put_nc_field_schar_lake_only(nc_hist_file->nc_id,
+                                              nc_hist_file->nc_vars[k].nc_varid,
+                                              nc_hist_file->c_fillvalue,
+                                              dstart, dcount, cvar);
                 }
-                gather_put_nc_field_schar(nc_hist_file->nc_id,
-                                          nc_hist_file->nc_vars[k].nc_varid,
-                                          nc_hist_file->c_fillvalue,
-                                          dstart, dcount, cvar);
-            }
-            else {
-                log_err("Unsupported nc_type encountered");
+                else {
+                    log_err("Unsupported nc_type encountered");
+                }
             }
         }
 
