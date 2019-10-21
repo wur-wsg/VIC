@@ -193,6 +193,7 @@ enum
     OUT_FDEPTH,           /**< depth of freezing fronts [cm] */
     OUT_LAKE_ICE_TEMP,    /**< temperature of lake ice [C] */
     OUT_LAKE_SURF_TEMP,   /**< lake surface temperature [C] */
+    OUT_LAKE_LAYER_TEMP,  /**< lake layer temperature [C] */
     OUT_RAD_TEMP,         /**< average radiative surface temperature [K] */
     OUT_SALBEDO,          /**< snow pack albedo [fraction] */
     OUT_SNOW_PACK_TEMP,   /**< snow pack temperature [C] */

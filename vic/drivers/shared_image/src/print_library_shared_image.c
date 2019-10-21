@@ -196,3 +196,22 @@ print_veg_con_map(veg_con_map_struct *veg_con_map)
                 veg_con_map->Cv[i]);
     }
 }
+
+/******************************************************************************
+ * @brief    Print lake_con_map structure.
+ *****************************************************************************/
+void
+print_lake_con_map(lake_con_map_struct *lake_con_map)
+{
+    size_t i;
+
+    fprintf(LOG_DEST, "lake_con_map:\n");
+    fprintf(LOG_DEST, "\tnv_types : %zd\n", lake_con_map->nl_types);
+    fprintf(LOG_DEST, "\tnv_active: %zd\n", lake_con_map->nl_active);
+    for (i = 0; i < lake_con_map->nl_types; i++) {
+        fprintf(LOG_DEST, "\t%zd      : %d (lidx) %d (lake_id) %d (lake_out)\n", i,
+                lake_con_map->lidx[i],
+                lake_con_map->lake_id[i],
+                lake_con_map->lake_out[i]);
+    }
+}

@@ -771,7 +771,7 @@ create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in parameters_struct
-    nitems = 156;
+    nitems = 157;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -879,6 +879,10 @@ create_MPI_param_struct_type(MPI_Datatype *mpi_type)
 
     // double LAKE_MAX_SURFACE
     offsets[i] = offsetof(parameters_struct, LAKE_MAX_SURFACE);
+    mpi_types[i++] = MPI_DOUBLE;
+
+    // double LAKE_MAX_LAYER
+    offsets[i] = offsetof(parameters_struct, LAKE_MAX_LAYER);
     mpi_types[i++] = MPI_DOUBLE;
 
     // double LAKE_BETA

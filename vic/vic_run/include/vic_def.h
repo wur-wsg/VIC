@@ -383,6 +383,7 @@ typedef struct {
     // Lake Parameters
     double LAKE_TMELT;
     double LAKE_MAX_SURFACE;  /**< max. surface layer thickness for E-B (m) */
+    double LAKE_MAX_LAYER;    /**< max. layer thickness for E-B (m) */
     double LAKE_BETA;  /**< Curve shape parameter for lake profile. */
     double LAKE_FRACMIN;  /**< min ice thickness in meters */
     double LAKE_FRACLIM;  /**< lower limit on fractional ice cover */

@@ -67,7 +67,7 @@ mpi_lake_decomp_domain()
     size_t j;
     size_t k;
     size_t n;
-    size_t id;
+    int    id;
     bool   found;
 
     if (mpi_rank == VIC_MPI_ROOT){
@@ -125,12 +125,12 @@ mpi_lake_decomp_domain()
     
     // check lake ids
     if (mpi_rank == VIC_MPI_ROOT){
-        for (id = 0; id < global_domain.nlakes_active; id++) {
+        for (id = 0; id < (int)global_domain.nlakes_active; id++) {
             found = false;
             for (k = 0; k < global_domain.nlakes_active; k++) {
                 if (lakeid_global[k] == id) {
                     if (found) {
-                        log_err("Lake_id is not sequential"
+                        log_err("Lake_id is not sequential, "
                                 "found %d twice in range 0-%zu",
                                 id, global_domain.nlakes_active)
                     }

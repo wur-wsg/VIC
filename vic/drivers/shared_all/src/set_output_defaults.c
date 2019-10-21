@@ -288,6 +288,8 @@ set_output_defaults(stream_struct **streams,
                        "%.4f", OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
         set_output_var(&((*streams)[streamnum]), "OUT_LAKE_SURF_TEMP", varnum++,
                        "%.4f", OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
+        set_output_var(&((*streams)[streamnum]), "OUT_LAKE_LAYER_TEMP", varnum++,
+                       "%.4f", OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
         set_output_var(&((*streams)[streamnum]), "OUT_LAKE_EVAP", varnum++,
                        "%.4f", OUT_TYPE_FLOAT, 1, AGG_TYPE_DEFAULT);
     }

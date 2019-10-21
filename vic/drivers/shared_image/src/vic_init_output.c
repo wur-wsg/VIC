@@ -40,7 +40,7 @@ vic_init_output(dmy_struct *dmy_current)
     extern MPI_Comm           MPI_COMM_VIC;
     extern int                mpi_rank;
     extern nc_file_struct    *nc_hist_files;
-    extern lake_con_struct    lake_con;
+    extern lake_con_struct  **lake_con;
     extern double          ***out_data;
     extern save_data_struct  *save_data;
     extern soil_con_struct   *soil_con;
@@ -66,7 +66,7 @@ vic_init_output(dmy_struct *dmy_current)
     // initialize the save data structures
     for (i = 0; i < local_domain.ncells_active; i++) {
         initialize_save_data(&(all_vars[i]), &(force[i]), &(soil_con[i]),
-                             veg_con[i], veg_lib[i], &lake_con, out_data[i],
+                             veg_con[i], veg_lib[i], lake_con[i], out_data[i],
                              &(save_data[i]), &timer);
     }
 
@@ -446,7 +446,7 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status,
                     "Error adding latitude standard_name attribute in %s",
                     stream->filename);
-
+    
     // create output variables
     for (j = 0; j < stream->nvars; j++) {
         varid = stream->varid[j];

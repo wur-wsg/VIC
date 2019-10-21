@@ -398,6 +398,10 @@ put_data_lake_only(all_vars_struct   *all_vars,
 
                             // Other lake characteristics
                             out_data[OUT_LAKE_SURF_TEMP][lake] = lake_var[ilake].temp[0];
+                            for (index = 0; index < lake_var[ilake].activenod; index++) {
+                                out_data[OUT_LAKE_LAYER_TEMP][index * options.NVEGTYPES  + lake] = 
+                                        lake_var[ilake].temp[index];
+                            }
                             if (out_data[OUT_LAKE_SURF_AREA][lake] > 0) {
                                 // mm over gridcell
                                 out_data[OUT_LAKE_MOIST][lake] =

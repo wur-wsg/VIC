@@ -677,6 +677,7 @@ print_parameters(parameters_struct *param)
             param->CANOPY_VPDMINFACTOR);
     fprintf(LOG_DEST, "\tLAKE_TMELT: %.4f\n", param->LAKE_TMELT);
     fprintf(LOG_DEST, "\tLAKE_MAX_SURFACE: %.4f\n", param->LAKE_MAX_SURFACE);
+    fprintf(LOG_DEST, "\tLAKE_MAX_LAYER: %.4f\n", param->LAKE_MAX_LAYER);
     fprintf(LOG_DEST, "\tLAKE_BETA: %.4f\n", param->LAKE_BETA);
     fprintf(LOG_DEST, "\tLAKE_FRACMIN: %.4f\n", param->LAKE_FRACMIN);
     fprintf(LOG_DEST, "\tLAKE_FRACLIM: %.4f\n", param->LAKE_FRACLIM);

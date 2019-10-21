@@ -261,6 +261,7 @@ void print_location(location_struct *location);
 void print_nc_file(nc_file_struct *nc);
 void print_nc_var(nc_var_struct *nc_var);
 void print_veg_con_map(veg_con_map_struct *veg_con_map);
+void print_lake_con_map(lake_con_map_struct *lake_con_map);
 void put_nc_attr(int nc_id, int var_id, const char *name, const char *value);
 void set_force_type(char *cmdstr);
 void set_global_nc_attributes(int ncid, unsigned short int file_type);
