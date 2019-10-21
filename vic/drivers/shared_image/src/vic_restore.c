@@ -803,6 +803,20 @@ vic_restore(void)
             }
         }
 
+        // snow depth: lake_var.snow.depth
+        get_scatter_nc_field_double_lake_only(&(filenames.init_state),
+                                    state_metadata[STATE_LAKE_SNOW_DEPTH].varname,
+                                    ld1start, ld1count, ldvar);
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                id_lake = lake_con_map[i].lake_id[m];
+                if (l >= 0) {
+                    all_vars[i].lake_var[l].snow.depth = ldvar[id_lake];
+                }
+            }
+        }
+
         // soil node temperatures: lake_var.energy.T[nidx]
         for (j = 0; j < options.Nnode; j++) {
             ld2start[0] = j;

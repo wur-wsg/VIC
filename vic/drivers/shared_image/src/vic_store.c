@@ -1075,6 +1075,25 @@ vic_store(dmy_struct *dmy_state,
             ldvar[id_lake] = nc_state_file.d_fillvalue;
         }
 
+        // snow depth: lake_var.snow.depth
+        nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_DEPTH]);
+        for (m = 0; m < options.NVEGTYPES; m++){
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                l = lake_con_map[i].lidx[m];
+                id_lake = lake_con_map[i].lake_id[m];
+                if (l >= 0) {
+                    ldvar[id_lake] = (double) all_vars[i].lake_var[l].snow.depth;
+                }
+            }
+        }
+        gather_put_nc_field_double_lake_only(nc_state_file.nc_id,
+                                   nc_var->nc_varid,
+                                   nc_state_file.d_fillvalue,
+                                   d1start, nc_var->nc_counts, ldvar);
+        for (id_lake = 0; id_lake < (int)local_domain.nlakes_active; id_lake++) {
+            ldvar[id_lake] = nc_state_file.d_fillvalue;
+        }
+
         // soil node temperatures: lake_var.energy.T[nidx]
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SOIL_NODE_TEMP]);
         for (j = 0; j < options.Nnode; j++) {
@@ -1743,6 +1762,7 @@ set_nc_state_var_info(nc_file_struct *nc)
         case STATE_LAKE_SNOW_DENSITY:
         case STATE_LAKE_SNOW_COLD_CONTENT:
         case STATE_LAKE_SNOW_CANOPY:
+        case STATE_LAKE_SNOW_DEPTH:
         case STATE_LAKE_ACTIVE_LAYERS:
         case STATE_LAKE_LAYER_DZ:
         case STATE_LAKE_SURF_LAYER_DZ:

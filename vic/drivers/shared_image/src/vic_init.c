@@ -1335,11 +1335,11 @@ vic_init(void)
             }
         }
 
-        // lake_id: for each veg type, read the id into the mapping
+        // lake_out: for each veg type, read the id into the mapping
         // structure. Then assign only the ones with an id greater than 0 to
         // the lake_con structure
         // note that the lake_id global output mapping is not done here
-        // but in mpi_lake_decomp_domain() the local lake_id is overwritten later
+        // but in mpi_lake_decomp_domain()
         for (j = 0; j < options.NVEGTYPES; j++) {
             d3start[0] = j;
             get_scatter_nc_field_int(&(filenames.params), "lake_id",
@@ -1347,16 +1347,16 @@ vic_init(void)
             for (i = 0; i < local_domain.ncells_active; i++) {
                 if (veg_con_map[i].vidx[j] != NODATA_VEG) {
                     if(ivar[i] >= 0) {
-                        lake_con_map[i].lake_id[j] = ivar[i];
+                        lake_con_map[i].lake_out[j] = ivar[i];
                     } else {
-                        lake_con_map[i].lake_id[j] = NODATA_VEG;
+                        lake_con_map[i].lake_out[j] = NODATA_VEG;
                     }
                 } else {
                     if(ivar[i] >= 0) {
                         log_warn("Lake %d is set for empty vegetation tile, ignoring", 
                                  ivar[i]);
                     }
-                    lake_con_map[i].lake_id[j] = NODATA_VEG;
+                    lake_con_map[i].lake_out[j] = NODATA_VEG;
                 }
             }
         }
@@ -1370,9 +1370,11 @@ vic_init(void)
         k = 0;
         for (j = 0; j < options.NVEGTYPES; j++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
-                if (lake_con_map[i].lake_id[j] != NODATA_VEG) {
+                if (lake_con_map[i].lake_out[j] != NODATA_VEG) {
                     lake_con_map[i].lake_id[j] = k;
                     k++;
+                } else {
+                    lake_con_map[i].lake_id[j] = NODATA_VEG;
                 }
             }
         }

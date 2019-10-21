@@ -165,6 +165,9 @@ vic_alloc(void)
             lake_con_map[i].lidx = calloc(lake_con_map[i].nl_types,
                                          sizeof(*(lake_con_map[i].lidx)));
             check_alloc_status(lake_con_map[i].lidx, "Memory allocation error.");
+            lake_con_map[i].lake_out = calloc(lake_con_map[i].nl_types,
+                                       sizeof(*(lake_con_map[i].lake_out)));
+            check_alloc_status(lake_con_map[i].lake_out, "Memory allocation error.");
             lake_con_map[i].lake_id = calloc(lake_con_map[i].nl_types,
                                        sizeof(*(lake_con_map[i].lake_id)));
             check_alloc_status(lake_con_map[i].lake_id, "Memory allocation error.");

@@ -79,15 +79,15 @@ compute_lake_params(lake_con_struct *lake_con,
     }
 
     // compute max volume
-    lake_con->maxvolume = 0.0;
-    for (i = 1; i <= lake_con->numnod_profile; i++) {
-        lake_con->maxvolume += (lake_con->basin[i] + lake_con->basin[i - 1]) *
-                               (lake_con->z[i - 1] - lake_con->z[i]) / 2.;
+    ErrFlag = get_volume(lake_con, lake_con->maxdepth, &(lake_con->maxvolume));
+    if (ErrFlag == ERROR || ErrFlag > 0) {
+        log_err("Error calculating depth: depth %f volume %f",
+                lake_con->maxdepth, lake_con->maxvolume);
     }
 
     // compute volume corresponding to mindepth
     ErrFlag = get_volume(lake_con, lake_con->mindepth, &(lake_con->minvolume));
-    if (ErrFlag == ERROR) {
+    if (ErrFlag == ERROR || ErrFlag > 0) {
         log_err("Error calculating depth: depth %f volume %f",
                 lake_con->mindepth, lake_con->minvolume);
     }

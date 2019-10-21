@@ -463,6 +463,17 @@ set_state_meta_data_info()
         strcpy(state_metadata[STATE_LAKE_SNOW_CANOPY].description,
                "snow interception storage in canopy on lake ice");
 
+        // STATE_LAKE_SNOW_DEPTH
+        strcpy(state_metadata[STATE_LAKE_SNOW_DEPTH].varname,
+               "STATE_LAKE_SNOW_DEPTH");
+        strcpy(state_metadata[STATE_LAKE_SNOW_DEPTH].long_name,
+               "lake_snow_depth");
+        strcpy(state_metadata[STATE_LAKE_SNOW_DEPTH].standard_name,
+               "lake_snow_depth");
+        strcpy(state_metadata[STATE_LAKE_SNOW_DEPTH].units, "m");
+        strcpy(state_metadata[STATE_LAKE_SNOW_DEPTH].description,
+               "snow depth on lake ice");
+
         // STATE_LAKE_SOIL_NODE_TEMP
         strcpy(state_metadata[STATE_LAKE_SOIL_NODE_TEMP].varname,
                "STATE_LAKE_SOIL_NODE_TEMP");

@@ -27,7 +27,7 @@
 #ifndef VIC_DEF_H
 #define VIC_DEF_H
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define __USE_XOPEN
 #define _GNU_SOURCE
 

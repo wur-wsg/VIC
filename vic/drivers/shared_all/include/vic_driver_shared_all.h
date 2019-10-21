@@ -334,6 +334,7 @@ enum
     STATE_LAKE_SNOW_DENSITY,           /**<  snow density: lake_var.snow.density */
     STATE_LAKE_SNOW_COLD_CONTENT,      /**<  snow cold content: lake_var.snow.coldcontent */
     STATE_LAKE_SNOW_CANOPY,            /**<  snow canopy storage: lake_var.snow.snow_canopy */
+    STATE_LAKE_SNOW_DEPTH,             /**<  snow depth: lake_var.snow.depth */
     STATE_LAKE_SOIL_NODE_TEMP,         /**<  soil node temperatures: lake_var.energy.T[nidx] */
     STATE_LAKE_ACTIVE_LAYERS,          /**<  lake active layers: lake_var.activenod */
     STATE_LAKE_LAYER_DZ,               /**<  lake layer thickness: lake_var.dz */
@@ -639,7 +640,7 @@ void free_streams(stream_struct **streams);
 void free_vegcon(veg_con_struct **veg_con);
 void generate_default_state(all_vars_struct *, soil_con_struct *,
                             veg_con_struct *, dmy_struct *);
-void generate_default_lake_state(all_vars_struct *, soil_con_struct *,
+void generate_default_lake_state(lake_var_struct *, soil_con_struct *,
                                  lake_con_struct *);
 void get_default_nstreams_nvars(size_t *nstreams, size_t nvars[]);
 void get_parameters(FILE *paramfile);

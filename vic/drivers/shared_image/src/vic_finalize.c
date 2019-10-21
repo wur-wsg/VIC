@@ -109,6 +109,7 @@ vic_finalize(void)
 
     if(options.LAKES) {
         for (i = 0; i < local_domain.ncells_active; i++) {
+            free(lake_con_map[i].lake_out);
             free(lake_con_map[i].lake_id);
             free(lake_con_map[i].lidx);
             free(lake_con[i]);

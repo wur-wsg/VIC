@@ -67,8 +67,7 @@ mpi_lake_decomp_domain()
     size_t j;
     size_t k;
     size_t n;
-    int    id;
-    int    max_id;
+    size_t id;
     bool   found;
 
     if (mpi_rank == VIC_MPI_ROOT){
@@ -113,7 +112,7 @@ mpi_lake_decomp_domain()
     k = 0;
     for (j = 0; j < options.NVEGTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++){
-            id = lake_con_map[i].lake_id[j];
+            id = lake_con_map[i].lake_out[j];
             if (id != NODATA_VEG) {
                 lakeid_local[k] = id;
                 k++;
@@ -126,25 +125,22 @@ mpi_lake_decomp_domain()
     
     // check lake ids
     if (mpi_rank == VIC_MPI_ROOT){
-        max_id = 0;
-        for (k = 0; k < global_domain.nlakes_active; k++) {
-            if (lakeid_global[k] > max_id) {
-                max_id = lakeid_global[k];
-            }
-        }
-        
-        for(id = 0; id < max_id; id++){
+        for (id = 0; id < global_domain.nlakes_active; id++) {
             found = false;
             for (k = 0; k < global_domain.nlakes_active; k++) {
-                if(lakeid_global[k] == id){
+                if (lakeid_global[k] == id) {
+                    if (found) {
+                        log_err("Lake_id is not sequential"
+                                "found %d twice in range 0-%zu",
+                                id, global_domain.nlakes_active)
+                    }
                     found = true;
-                    break;
                 }
             }
-            if(!found){
+            if (!found) {
                 log_err("Lake_id is not sequential, "
-                        "missing %d in range 0-%d",
-                        id, max_id);
+                        "missing %d in range 0-%zu",
+                        id, global_domain.nlakes_active);
             }
         }
     }
@@ -205,11 +201,6 @@ gather_field_double_lake_only(double  fillval,
         // remap the array
         map(sizeof(double), global_domain.nlakes_active, NULL,
             mpi_lake_mapping_array, dvar_gathered, dvar);
-//        fprintf(LOG_DEST, "INID\tOUTID\tOLD\t\t\tNEW\n");
-//        for(i = 0; i < global_domain.nlakes_active; i++){
-//            fprintf(LOG_DEST, "%zu\t%zu\t%.3f\t\t\t%.3f\n",
-//                    i, mpi_lake_mapping_array[i], dvar_gathered[i], dvar[i]);
-//        }
         // cleanup
         free(dvar_gathered);
     }
