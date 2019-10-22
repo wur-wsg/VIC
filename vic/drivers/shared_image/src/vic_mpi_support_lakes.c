@@ -52,7 +52,7 @@ mpi_lake_decomp_domain()
     extern domain_struct global_domain;
     extern domain_struct local_domain;
     extern lake_con_map_struct *lake_con_map;
-    extern size_t        mpi_size;
+    extern int           mpi_size;
     extern int           mpi_rank;
     extern int          *mpi_lake_global_array_offsets;
     extern int          *mpi_lake_local_array_sizes;
@@ -90,12 +90,12 @@ mpi_lake_decomp_domain()
     
     // determine number of lakes per node
     if (mpi_rank == VIC_MPI_ROOT) {
-        for (n = 0; n < mpi_size; n++) {
+        for (n = 0; n < (size_t)mpi_size; n++) {
             mpi_lake_local_array_sizes[n] += nlakes_global[n];
         }
 
         // determine offsets to use for MPI_Scatterv and MPI_Gatherv
-        for (n = 1; n < mpi_size; n++) {
+        for (n = 1; n < (size_t)mpi_size; n++) {
             for (j = 0; j < n; j++) {
                 mpi_lake_global_array_offsets[n] +=
                     mpi_lake_local_array_sizes[j];

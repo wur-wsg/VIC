@@ -215,8 +215,10 @@ put_data_lake_only(all_vars_struct   *all_vars,
                     ThisAreaFract = AreaFract[band];
                     ThisTreeAdjust = TreeAdjustFactor[band];
                     if (IsWet) {
+                        Cv = 1;
                         ThisAreaFract = 1;
                         ThisTreeAdjust = 1;
+                        Clake = 1;
                     }
 
                     if (ThisAreaFract > 0. &&
@@ -646,7 +648,7 @@ collect_wb_terms_lake_only(cell_data_struct cell,
     size_t                   index;
     size_t                   frost_area;
 
-    AreaFactor = lakefactor;
+    AreaFactor = Cv * AreaFract * TreeAdjustFactor * lakefactor;
 
     /** record evaporation components **/
     tmp_evap = 0.0;
@@ -828,7 +830,7 @@ collect_eb_terms_lake_only(energy_bal_struct energy,
     size_t               index;
     size_t               frost_area;
 
-    AreaFactor = lakefactor;
+    AreaFactor = Cv * AreaFract * TreeAdjustFactor * lakefactor;
 
     /**********************************
        Record Frozen Soil Variables

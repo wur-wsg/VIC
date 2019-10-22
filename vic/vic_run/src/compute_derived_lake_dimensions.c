@@ -53,7 +53,7 @@ compute_derived_lake_dimensions(lake_var_struct *lake,
     else if (lake->ldepth >= param.LAKE_MAX_LAYER + param.LAKE_MAX_SURFACE) {
         /* More than two layers. */
         lake->surfdz = param.LAKE_MAX_SURFACE;
-        lake->activenod = (int) (lake->ldepth / param.LAKE_MAX_LAYER);
+        lake->activenod = (int) ((lake->ldepth - param.LAKE_MAX_SURFACE) / param.LAKE_MAX_LAYER) + 1;
         if (lake->activenod > lake_con->numnod) {
             lake->activenod = lake_con->numnod;
         }
