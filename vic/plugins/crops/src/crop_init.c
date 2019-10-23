@@ -169,6 +169,8 @@ crop_init(void)
     
     crop_set_mapping();
     wofost_set_data_text(plugin_filenames.wofost_text);
+    wofost_set_data();
+    wofost_check_data();
 
     // close parameter file
     if (mpi_rank == VIC_MPI_ROOT) {

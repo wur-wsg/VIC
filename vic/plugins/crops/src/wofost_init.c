@@ -95,3 +95,171 @@ wofost_set_data_text(char *list)
     
     Clean(tmpGrid);
 }
+
+void
+wofost_set_data(void)
+{
+    extern option_struct options;
+    extern domain_struct local_domain;
+    extern domain_struct global_domain;
+    extern global_param_struct global_param;
+    extern plugin_filenames_struct plugin_filenames;
+    extern plugin_option_struct       plugin_options;
+    extern crop_con_map_struct *crop_con_map;
+    extern SimUnit ***Grid;
+    
+    double *dvar;
+    
+    size_t i;
+    size_t j;
+    size_t k;
+    size_t l;
+    int iCrop;
+    SimUnit *iGrid;
+    
+    size_t  d3count[3];
+    size_t  d3start[3];
+    size_t  d4count[4];
+    size_t  d4start[4];
+    
+    d3start[0] = 0;
+    d3start[1] = 0;
+    d3start[2] = 0;
+    d3count[0] = 1;
+    d3count[1] = global_domain.n_ny;
+    d3count[2] = global_domain.n_nx;
+    
+    d4start[0] = 0;
+    d4start[1] = 0;
+    d4start[2] = 0;
+    d4start[3] = 0;
+    d4count[0] = 1;
+    d4count[1] = 1;
+    d4count[2] = global_domain.n_ny;
+    d4count[3] = global_domain.n_nx;
+    
+    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+    check_alloc_status(dvar, "Memory allocation error.");
+    
+    
+    // Set plant day
+    for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        d3start[0] = j;
+                        
+        get_scatter_nc_field_double(&plugin_filenames.crop,
+                                 "plant_day", d3start, d3count, dvar);
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            iCrop = crop_con_map[i].cidx[j];
+            if (iCrop != NODATA_VEG) {
+                for (k = 0; k < options.SNOW_BAND; k++) {
+                    iGrid = Grid[i][k];
+                    for(l = 0; l < (size_t)iCrop; l++){
+                        iGrid = iGrid->next;
+                    }
+                    
+                    dmy_julian_day(dvar[i], global_param.calendar, &(iGrid->start));
+                }
+            }
+        }
+    }
+    
+    // Set harvest day
+    for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        d3start[0] = j;
+                        
+        get_scatter_nc_field_double(&plugin_filenames.crop,
+                                 "harvest_day", d3start, d3count, dvar);
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            iCrop = crop_con_map[i].cidx[j];
+            if (iCrop != NODATA_VEG) {
+                for (k = 0; k < options.SNOW_BAND; k++) {
+                    iGrid = Grid[i][k];
+                    for(l = 0; l < (size_t)iCrop; l++){
+                        iGrid = iGrid->next;
+                    }
+                    
+                    dmy_julian_day(dvar[i], global_param.calendar, &(iGrid->end));
+                }
+            }
+        }
+    }
+    
+    // Set TSUM1
+    for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        d3start[0] = j;
+                        
+        get_scatter_nc_field_double(&plugin_filenames.crop,
+                                 "TSUM1", d3start, d3count, dvar);
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            iCrop = crop_con_map[i].cidx[j];
+            if (iCrop != NODATA_VEG) {
+                for (k = 0; k < options.SNOW_BAND; k++) {
+                    iGrid = Grid[i][k];
+                    for(l = 0; l < (size_t)iCrop; l++){
+                        iGrid = iGrid->next;
+                    }
+                    
+                    iGrid->crp->prm.TempSum1 = dvar[i];
+                }
+            }
+        }
+    }
+    
+    // Set TSUM2
+    for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        d3start[0] = j;
+                        
+        get_scatter_nc_field_double(&plugin_filenames.crop,
+                                 "TSUM2", d3start, d3count, dvar);
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            iCrop = crop_con_map[i].cidx[j];
+            if (iCrop != NODATA_VEG) {
+                for (k = 0; k < options.SNOW_BAND; k++) {
+                    iGrid = Grid[i][k];
+                    for(l = 0; l < (size_t)iCrop; l++){
+                        iGrid = iGrid->next;
+                    }
+                    
+                    iGrid->crp->prm.TempSum2 = dvar[i];
+                }
+            }
+        }
+    }
+    
+    free(dvar);
+}
+
+void
+wofost_check_data(void)
+{
+    extern option_struct options;
+    extern domain_struct local_domain;
+    extern SimUnit ***Grid;
+    
+    size_t i;
+    size_t k;
+    SimUnit *iGrid;
+    
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        for (k = 0; k < options.SNOW_BAND; k++) {
+            iGrid = Grid[i][k];
+
+            while(iGrid) {
+                
+                if (iGrid->crp->prm.TempSum1 <= 0) {
+                    log_err("TempSum1 [%.2f] should be in range [0, inf)",
+                            iGrid->crp->prm.TempSum1);
+                } else if (iGrid->crp->prm.TempSum2 <= 0) {
+                    log_err("TempSum2 [%.2f] should be in range [0, inf)",
+                            iGrid->crp->prm.TempSum2);
+                }
+                
+                iGrid = iGrid->next;
+            }
+        }
+    }
+}

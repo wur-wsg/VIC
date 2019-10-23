@@ -31,6 +31,8 @@ void initialize_wofost_grid(SimUnit *);
 void copy_wofost_grid(SimUnit *, SimUnit *);
 void crop_init(void);
 void wofost_set_data_text(char *);
+void wofost_set_data(void);
+void wofost_check_data(void);
 void crop_finalize(void);
 void wofost_finalize(void);
 
