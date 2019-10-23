@@ -230,13 +230,13 @@ typedef struct {
     bool LAKES;          /**< TRUE = use lake energy code */
     size_t Ncanopy;      /**< Number of canopy layers in the model. */
     size_t Nfrost;       /**< Number of frost subareas in model */
-    size_t Nlakenode;    /**< Number of lake thermal nodes in the model. */
     size_t Nlayer;       /**< Number of layers in model */
     size_t Nnode;        /**< Number of soil thermal nodes in the model */
     bool NOFLUX;         /**< TRUE = Use no flux lower bondary when computing
                             soil thermal fluxes */
     size_t NVEGTYPES;    /**< number of vegetation types in veg_param file */
-    size_t NLAKENODES;   /**< number of lake layers in lake_param file */
+    size_t NLAKETYPES;   /**< number of lake types in lake_param file */
+    size_t NLAKENODES;   /**< number of lake profile layers in lake_param file */
     unsigned short int RC_MODE;        /**< RC_JARVIS = compute canopy resistance via Jarvis formulation (default)
                                           RC_PHOTO = compute canopy resistance based on photosynthetic activity */
     size_t ROOT_ZONES;   /**< Number of root zones used in simulation */

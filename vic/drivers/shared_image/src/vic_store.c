@@ -764,7 +764,7 @@ vic_store(dmy_struct *dmy_state,
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SOIL_MOISTURE]);
         for (j = 0; j < options.Nlayer; j++) {
             d2start[0] = j;
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -788,7 +788,7 @@ vic_store(dmy_struct *dmy_state,
             d3start[0] = j;
             for(p = 0; p < options.Nfrost; p++){
                 d3start[1] = p;
-                for (m = 0; m < options.NVEGTYPES; m++){
+                for (m = 0; m < options.NLAKETYPES; m++){
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         l = lake_con_map[i].lidx[m];
                         id_lake = lake_con_map[i].lake_id[m];
@@ -810,7 +810,7 @@ vic_store(dmy_struct *dmy_state,
         if (options.CARBON) {
             // litter carbon: tmpval = lake_var.soil.CLitter;
             nc_var = &(nc_state_file.nc_vars[STATE_LAKE_CLITTER]);
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -829,7 +829,7 @@ vic_store(dmy_struct *dmy_state,
 
             // intermediate carbon: tmpval = lake_var.soil.CInter;
             nc_var = &(nc_state_file.nc_vars[STATE_LAKE_CINTER]);
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -848,7 +848,7 @@ vic_store(dmy_struct *dmy_state,
 
             // slow carbon: tmpval = lake_var.soil.CSlow;
             nc_var = &(nc_state_file.nc_vars[STATE_LAKE_CSLOW]);
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -868,7 +868,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow age: lake_var.snow.last_snow
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_AGE]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -887,7 +887,7 @@ vic_store(dmy_struct *dmy_state,
 
         // melting state: (int)lake_var.snow.MELTING
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_MELT_STATE]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -906,7 +906,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow covered fraction: lake_var.snow.coverage
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_COVERAGE]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -925,7 +925,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow water equivalent: lake_var.snow.swq
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_WATER_EQUIVALENT]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -944,7 +944,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow surface temperature: lake_var.snow.surf_temp
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_SURF_TEMP]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -963,7 +963,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow surface water: lake_var.snow.surf_water
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_SURF_WATER]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -982,7 +982,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow pack temperature: lake_var.snow.pack_temp
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_PACK_TEMP]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1001,7 +1001,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow pack water: lake_var.snow.pack_water
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_PACK_WATER]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1020,7 +1020,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow density: lake_var.snow.density
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_DENSITY]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1039,7 +1039,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow cold content: lake_var.snow.coldcontent
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_COLD_CONTENT]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1058,7 +1058,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow canopy storage: lake_var.snow.snow_canopy
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_CANOPY]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1077,7 +1077,7 @@ vic_store(dmy_struct *dmy_state,
 
         // snow depth: lake_var.snow.depth
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SNOW_DEPTH]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1098,7 +1098,7 @@ vic_store(dmy_struct *dmy_state,
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SOIL_NODE_TEMP]);
         for (j = 0; j < options.Nnode; j++) {
             d2start[0] = j;
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -1118,7 +1118,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake active layers: lake_var.activenod
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ACTIVE_LAYERS]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1137,7 +1137,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake layer thickness: lake_var.dz
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_LAYER_DZ]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1156,7 +1156,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake surface layer thickness: lake_var.surfdz
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SURF_LAYER_DZ]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1196,7 +1196,7 @@ vic_store(dmy_struct *dmy_state,
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_LAYER_SURF_AREA]);
         for (j = 0; j < MAX_LAKE_NODES + 1; j++) {
             d2start[0] = j;
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -1216,7 +1216,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake surface area: lake_var.sarea
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_SURF_AREA]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1235,7 +1235,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake volume: lake_var.volume
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_VOLUME]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1256,7 +1256,7 @@ vic_store(dmy_struct *dmy_state,
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_LAYER_TEMP]);
         for (j = 0; j < MAX_LAKE_NODES + 1; j++) {
             d2start[0] = j;
-            for (m = 0; m < options.NVEGTYPES; m++){
+            for (m = 0; m < options.NLAKETYPES; m++){
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -1276,7 +1276,7 @@ vic_store(dmy_struct *dmy_state,
 
         // vertical average lake temperature: lake_var.tempavg
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_AVERAGE_TEMP]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1295,7 +1295,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice area fraction: lake_var.areai
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_AREA_FRAC]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1314,7 +1314,7 @@ vic_store(dmy_struct *dmy_state,
 
         // new lake ice area fraction: lake_var.new_ice_area
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_AREA_FRAC_NEW]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1333,7 +1333,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice water equivalent: lake_var.ice_water_eq
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_WATER_EQUIVALENT]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1352,7 +1352,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice height: lake_var.hice
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_HEIGHT]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1371,7 +1371,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice temperature: lake_var.tempi
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_TEMP]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1390,7 +1390,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow water equivalent: lake_var.swe
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SWE]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1409,7 +1409,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow surface temperature: lake_var.surf_temp
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_SURF_TEMP]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1428,7 +1428,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow pack temperature: lake_var.pack_temp
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_PACK_TEMP]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1447,7 +1447,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow coldcontent: lake_var.coldcontent
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_COLD_CONTENT]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1466,7 +1466,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow surface water: lake_var.surf_water
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_SURF_WATER]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1485,7 +1485,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow pack water: lake_var.pack_water
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_PACK_WATER]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1504,7 +1504,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow albedo: lake_var.SAlbedo
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_ALBEDO]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1523,7 +1523,7 @@ vic_store(dmy_struct *dmy_state,
 
         // lake ice snow depth: lake_var.sdepth
         nc_var = &(nc_state_file.nc_vars[STATE_LAKE_ICE_SNOW_DEPTH]);
-        for (m = 0; m < options.NVEGTYPES; m++){
+        for (m = 0; m < options.NLAKETYPES; m++){
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1604,7 +1604,7 @@ set_nc_state_file_info(nc_file_struct *nc_state_file)
     nc_state_file->root_zone_size = options.ROOT_ZONES;
     nc_state_file->time_size = NC_UNLIMITED;
     nc_state_file->veg_size = options.NVEGTYPES;
-
+    
     // set ids and dimension sizes of the extension variables
     set_nc_state_file_info_rout_extension(nc_state_file);
     

@@ -1536,7 +1536,7 @@ set_output_met_data_info()
     
     if (options.LAKES && options.LAKE_ONLY) {
         for(v = 0; v < N_OUTVAR_TYPES; v++){
-            out_metadata[v].nelem *= options.NVEGTYPES;
+            out_metadata[v].nelem *= options.NLAKETYPES;
         }
     }
 }

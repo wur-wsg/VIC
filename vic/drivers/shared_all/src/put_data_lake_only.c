@@ -401,7 +401,7 @@ put_data_lake_only(all_vars_struct   *all_vars,
                             // Other lake characteristics
                             out_data[OUT_LAKE_SURF_TEMP][lake] = lake_var[ilake].temp[0];
                             for (index = 0; index < lake_var[ilake].activenod; index++) {
-                                out_data[OUT_LAKE_LAYER_TEMP][index * options.NVEGTYPES  + lake] = 
+                                out_data[OUT_LAKE_LAYER_TEMP][index * options.NLAKETYPES  + lake] = 
                                         lake_var[ilake].temp[index];
                             }
                             if (out_data[OUT_LAKE_SURF_AREA][lake] > 0) {
@@ -520,19 +520,19 @@ put_data_lake_only(all_vars_struct   *all_vars,
             // Water balance terms
             out_data[OUT_DELSOILMOIST][lake] = 0;
             for (index = 0; index < options.Nlayer; index++) {
-                out_data[OUT_SOIL_MOIST][index * options.NVEGTYPES + lake] =
-                    out_data[OUT_SOIL_LIQ][index * options.NVEGTYPES + lake] +
-                    out_data[OUT_SOIL_ICE][index * options.NVEGTYPES + lake];
+                out_data[OUT_SOIL_MOIST][index * options.NLAKETYPES + lake] =
+                    out_data[OUT_SOIL_LIQ][index * options.NLAKETYPES + lake] +
+                    out_data[OUT_SOIL_ICE][index * options.NLAKETYPES + lake];
                 out_data[OUT_DELSOILMOIST][lake] +=
-                    out_data[OUT_SOIL_MOIST][index * options.NVEGTYPES + lake];
+                    out_data[OUT_SOIL_MOIST][index * options.NLAKETYPES + lake];
 
-                out_data[OUT_SMLIQFRAC][index * options.NVEGTYPES + lake] = out_data[OUT_SOIL_LIQ][index * options.NVEGTYPES + lake] /
-                                                 out_data[OUT_SOIL_MOIST][index * options.NVEGTYPES + lake];
-                out_data[OUT_SMFROZFRAC][index * options.NVEGTYPES + lake] = 1 - out_data[OUT_SMLIQFRAC][index * options.NVEGTYPES + lake];
-                out_data[OUT_SOIL_LIQ_FRAC][index * options.NVEGTYPES + lake] = out_data[OUT_SOIL_LIQ][index * options.NVEGTYPES + lake] /
+                out_data[OUT_SMLIQFRAC][index * options.NLAKETYPES + lake] = out_data[OUT_SOIL_LIQ][index * options.NLAKETYPES + lake] /
+                                                 out_data[OUT_SOIL_MOIST][index * options.NLAKETYPES + lake];
+                out_data[OUT_SMFROZFRAC][index * options.NLAKETYPES + lake] = 1 - out_data[OUT_SMLIQFRAC][index * options.NLAKETYPES + lake];
+                out_data[OUT_SOIL_LIQ_FRAC][index * options.NLAKETYPES + lake] = out_data[OUT_SOIL_LIQ][index * options.NLAKETYPES + lake] /
                                                      (depth[index] *
                                                       MM_PER_M);
-                out_data[OUT_SOIL_ICE_FRAC][index * options.NVEGTYPES + lake] = out_data[OUT_SOIL_ICE][index * options.NVEGTYPES + lake] /
+                out_data[OUT_SOIL_ICE_FRAC][index * options.NLAKETYPES + lake] = out_data[OUT_SOIL_ICE][index * options.NLAKETYPES + lake] /
                                                      (depth[index] *
                                                       MM_PER_M);
             }
@@ -552,7 +552,7 @@ put_data_lake_only(all_vars_struct   *all_vars,
             // Save current moisture state for use in next time step
             save_data->total_soil_moist = 0;
             for (index = 0; index < options.Nlayer; index++) {
-                save_data->total_soil_moist += out_data[OUT_SOIL_MOIST][index * options.NVEGTYPES + lake];
+                save_data->total_soil_moist += out_data[OUT_SOIL_MOIST][index * options.NLAKETYPES + lake];
             }
             save_data->surfstor = out_data[OUT_SURFSTOR][lake];
             save_data->swe = out_data[OUT_SWE][lake] + out_data[OUT_SNOW_CANOPY][lake];
@@ -572,8 +572,8 @@ put_data_lake_only(all_vars_struct   *all_vars,
                       out_data[OUT_BASEFLOW][lake];  // mm over grid cell
             storage = 0.;
             for (index = 0; index < options.Nlayer; index++) {
-                storage += out_data[OUT_SOIL_LIQ][index * options.NVEGTYPES + lake] +
-                           out_data[OUT_SOIL_ICE][index * options.NVEGTYPES + lake];
+                storage += out_data[OUT_SOIL_LIQ][index * options.NLAKETYPES + lake] +
+                           out_data[OUT_SOIL_ICE][index * options.NLAKETYPES + lake];
             }
             storage += out_data[OUT_SWE][lake] + out_data[OUT_SNOW_CANOPY][lake] +
                        out_data[OUT_WDEW][lake] + out_data[OUT_SURFSTOR][lake];
@@ -736,8 +736,8 @@ collect_wb_terms_lake_only(cell_data_struct cell,
         }
         tmp_moist -= tmp_ice;
 
-        out_data[OUT_SOIL_LIQ][index * options.NVEGTYPES + lake] += tmp_moist * AreaFactor;
-        out_data[OUT_SOIL_ICE][index * options.NVEGTYPES + lake] += tmp_ice * AreaFactor;
+        out_data[OUT_SOIL_LIQ][index * options.NLAKETYPES + lake] += tmp_moist * AreaFactor;
+        out_data[OUT_SOIL_ICE][index * options.NLAKETYPES + lake] += tmp_ice * AreaFactor;
     }
     out_data[OUT_SOIL_WET][lake] += cell.wetness * AreaFactor;
     out_data[OUT_ROOTMOIST][lake] += cell.rootmoist * AreaFactor;
@@ -748,7 +748,7 @@ collect_wb_terms_lake_only(cell_data_struct cell,
 
     /** record layer temperatures **/
     for (index = 0; index < options.Nlayer; index++) {
-        out_data[OUT_SOIL_TEMP][index * options.NVEGTYPES + lake] += cell.layer[index].T * AreaFactor;
+        out_data[OUT_SOIL_TEMP][index * options.NLAKETYPES + lake] += cell.layer[index].T * AreaFactor;
     }
 
     /*****************************
@@ -840,11 +840,11 @@ collect_eb_terms_lake_only(energy_bal_struct energy,
     if (options.FROZEN_SOIL) {
         for (index = 0; index < MAX_FRONTS; index++) {
             if (energy.fdepth[index] != MISSING) {
-                out_data[OUT_FDEPTH][index * options.NVEGTYPES + lake] += energy.fdepth[index] *
+                out_data[OUT_FDEPTH][index * options.NLAKETYPES + lake] += energy.fdepth[index] *
                                                AreaFactor * CM_PER_M;
             }
             if (energy.tdepth[index] != MISSING) {
-                out_data[OUT_TDEPTH][index * options.NVEGTYPES + lake] += energy.tdepth[index] *
+                out_data[OUT_TDEPTH][index * options.NLAKETYPES + lake] += energy.tdepth[index] *
                                                AreaFactor * CM_PER_M;
             }
         }
@@ -908,18 +908,18 @@ collect_eb_terms_lake_only(energy_bal_struct energy,
 
     /** record thermal node temperatures **/
     for (index = 0; index < options.Nnode; index++) {
-        out_data[OUT_SOIL_TNODE][index * options.NVEGTYPES + lake] += energy.T[index] * AreaFactor;
+        out_data[OUT_SOIL_TNODE][index * options.NLAKETYPES + lake] += energy.T[index] * AreaFactor;
     }
     if (IsWet) {
         for (index = 0; index < options.Nnode; index++) {
-            out_data[OUT_SOIL_TNODE_WL][index * options.NVEGTYPES + lake] = energy.T[index];
+            out_data[OUT_SOIL_TNODE_WL][index * options.NLAKETYPES + lake] = energy.T[index];
         }
     }
 
     /** record temperature flags  **/
     out_data[OUT_SURFT_FBFLAG][lake] += energy.Tsurf_fbflag * AreaFactor;
     for (index = 0; index < options.Nnode; index++) {
-        out_data[OUT_SOILT_FBFLAG][index * options.NVEGTYPES + lake] += energy.T_fbflag[index] *
+        out_data[OUT_SOILT_FBFLAG][index * options.NLAKETYPES + lake] += energy.T_fbflag[index] *
                                              AreaFactor;
     }
     out_data[OUT_SNOWT_FBFLAG][lake] += snow.surf_temp_fbflag * AreaFactor;
@@ -1003,84 +1003,84 @@ collect_eb_terms_lake_only(energy_bal_struct energy,
     **********************************/
 
     /** record band snow water equivalent **/
-    out_data[OUT_SWE_BAND][band * options.NVEGTYPES + lake] += snow.swq * Cv * lakefactor * MM_PER_M;
+    out_data[OUT_SWE_BAND][band * options.NLAKETYPES + lake] += snow.swq * Cv * lakefactor * MM_PER_M;
 
     /** record band snowpack depth **/
-    out_data[OUT_SNOW_DEPTH_BAND][band * options.NVEGTYPES + lake] += snow.depth * Cv * lakefactor *
+    out_data[OUT_SNOW_DEPTH_BAND][band * options.NLAKETYPES + lake] += snow.depth * Cv * lakefactor *
                                            CM_PER_M;
 
     /** record band canopy intercepted snow **/
     if (HasVeg) {
-        out_data[OUT_SNOW_CANOPY_BAND][band * options.NVEGTYPES + lake] += (snow.snow_canopy) * Cv *
+        out_data[OUT_SNOW_CANOPY_BAND][band * options.NLAKETYPES + lake] += (snow.snow_canopy) * Cv *
                                                 lakefactor * MM_PER_M;
     }
 
     /** record band snow melt **/
-    out_data[OUT_SNOW_MELT_BAND][band * options.NVEGTYPES + lake] += snow.melt * Cv * lakefactor;
+    out_data[OUT_SNOW_MELT_BAND][band * options.NLAKETYPES + lake] += snow.melt * Cv * lakefactor;
 
     /** record band snow coverage **/
-    out_data[OUT_SNOW_COVER_BAND][band * options.NVEGTYPES + lake] += snow.coverage * Cv * lakefactor;
+    out_data[OUT_SNOW_COVER_BAND][band * options.NLAKETYPES + lake] += snow.coverage * Cv * lakefactor;
 
     /** record band cold content **/
-    out_data[OUT_DELTACC_BAND][band * options.NVEGTYPES + lake] += energy.deltaCC * Cv * lakefactor;
+    out_data[OUT_DELTACC_BAND][band * options.NLAKETYPES + lake] += energy.deltaCC * Cv * lakefactor;
 
     /** record band advection **/
-    out_data[OUT_ADVECTION_BAND][band * options.NVEGTYPES + lake] += energy.advection * Cv *
+    out_data[OUT_ADVECTION_BAND][band * options.NLAKETYPES + lake] += energy.advection * Cv *
                                           lakefactor;
 
     /** record band snow flux **/
-    out_data[OUT_SNOW_FLUX_BAND][band * options.NVEGTYPES + lake] += energy.snow_flux * Cv *
+    out_data[OUT_SNOW_FLUX_BAND][band * options.NLAKETYPES + lake] += energy.snow_flux * Cv *
                                           lakefactor;
 
     /** record band refreeze energy **/
-    out_data[OUT_RFRZ_ENERGY_BAND][band * options.NVEGTYPES + lake] += energy.refreeze_energy * Cv *
+    out_data[OUT_RFRZ_ENERGY_BAND][band * options.NLAKETYPES + lake] += energy.refreeze_energy * Cv *
                                             lakefactor;
 
     /** record band melt energy **/
-    out_data[OUT_MELT_ENERGY_BAND][band * options.NVEGTYPES + lake] += energy.melt_energy * Cv *
+    out_data[OUT_MELT_ENERGY_BAND][band * options.NLAKETYPES + lake] += energy.melt_energy * Cv *
                                             lakefactor;
 
     /** record band advected sensble heat **/
-    out_data[OUT_ADV_SENS_BAND][band * options.NVEGTYPES + lake] -= energy.advected_sensible * Cv *
+    out_data[OUT_ADV_SENS_BAND][band * options.NLAKETYPES + lake] -= energy.advected_sensible * Cv *
                                          lakefactor;
 
     /** record surface layer temperature **/
-    out_data[OUT_SNOW_SURFT_BAND][band * options.NVEGTYPES + lake] += snow.surf_temp * Cv *
+    out_data[OUT_SNOW_SURFT_BAND][band * options.NLAKETYPES + lake] += snow.surf_temp * Cv *
                                            lakefactor;
 
     /** record pack layer temperature **/
-    out_data[OUT_SNOW_PACKT_BAND][band * options.NVEGTYPES + lake] += snow.pack_temp * Cv *
+    out_data[OUT_SNOW_PACKT_BAND][band * options.NLAKETYPES + lake] += snow.pack_temp * Cv *
                                            lakefactor;
 
     /** record latent heat of sublimation **/
-    out_data[OUT_LATENT_SUB_BAND][band * options.NVEGTYPES + lake] += energy.latent_sub * Cv *
+    out_data[OUT_LATENT_SUB_BAND][band * options.NLAKETYPES + lake] += energy.latent_sub * Cv *
                                            lakefactor;
 
     /** record band net downwards shortwave radiation **/
-    out_data[OUT_SWNET_BAND][band * options.NVEGTYPES + lake] += energy.NetShortAtmos * Cv *
+    out_data[OUT_SWNET_BAND][band * options.NLAKETYPES + lake] += energy.NetShortAtmos * Cv *
                                       lakefactor;
 
     /** record band net downwards longwave radiation **/
-    out_data[OUT_LWNET_BAND][band * options.NVEGTYPES + lake] += energy.NetLongAtmos * Cv *
+    out_data[OUT_LWNET_BAND][band * options.NLAKETYPES + lake] += energy.NetLongAtmos * Cv *
                                       lakefactor;
 
     /** record band albedo **/
     if (snow.snow && overstory) {
-        out_data[OUT_ALBEDO_BAND][band * options.NVEGTYPES + lake] += energy.AlbedoOver * Cv *
+        out_data[OUT_ALBEDO_BAND][band * options.NLAKETYPES + lake] += energy.AlbedoOver * Cv *
                                            lakefactor;
     }
     else {
-        out_data[OUT_ALBEDO_BAND][band * options.NVEGTYPES + lake] += energy.AlbedoUnder * Cv *
+        out_data[OUT_ALBEDO_BAND][band * options.NLAKETYPES + lake] += energy.AlbedoUnder * Cv *
                                            lakefactor;
     }
 
     /** record band net latent heat flux **/
-    out_data[OUT_LATENT_BAND][band * options.NVEGTYPES + lake] -= energy.latent * Cv * lakefactor;
+    out_data[OUT_LATENT_BAND][band * options.NLAKETYPES + lake] -= energy.latent * Cv * lakefactor;
 
     /** record band net sensible heat flux **/
-    out_data[OUT_SENSIBLE_BAND][band * options.NVEGTYPES + lake] -= energy.sensible * Cv * lakefactor;
+    out_data[OUT_SENSIBLE_BAND][band * options.NLAKETYPES + lake] -= energy.sensible * Cv * lakefactor;
 
     /** record band net ground heat flux **/
-    out_data[OUT_GRND_FLUX_BAND][band * options.NVEGTYPES + lake] -= energy.grnd_flux * Cv *
+    out_data[OUT_GRND_FLUX_BAND][band * options.NLAKETYPES + lake] -= energy.grnd_flux * Cv *
                                           lakefactor;
 }

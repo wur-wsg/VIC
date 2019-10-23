@@ -110,7 +110,7 @@ mpi_lake_decomp_domain()
     lakeid_local = malloc(local_domain.nlakes_active * sizeof(*lakeid_local));
     
     k = 0;
-    for (j = 0; j < options.NVEGTYPES; j++) {
+    for (j = 0; j < options.NLAKETYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++){
             id = lake_con_map[i].lake_out[j];
             if (id != NODATA_VEG) {

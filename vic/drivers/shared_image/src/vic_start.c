@@ -131,6 +131,13 @@ vic_start(void)
             options.SNOW_BAND = get_nc_dimension(&(filenames.params),
                                                  "snow_band");
         }
+        
+        if (options.LAKES) {
+            options.NLAKETYPES = get_nc_dimension(&(filenames.params), "lake_class");
+            if (options.LAKE_PROFILE) {
+                options.NLAKENODES = get_nc_dimension(&(filenames.params), "lake_node");
+            }
+        }
 
         // Check that model parameters are valid
         validate_parameters();

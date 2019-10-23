@@ -159,7 +159,8 @@ typedef struct {
     size_t nl_types; /**< total number of lake types */
                      /**< size of lidx array */
     size_t nl_active; /**< number of active lake types */
-    int *lidx;     /**< array of lake indices for active lake types */
+    int *veg_class;  /**< array of vegetation classes for active lake types */
+    int *lidx;       /**< array of lake indices for active lake types */
     int *lake_out;   /**< lake output id */
     int *lake_id;    /**< lake id */
 } lake_con_map_struct;

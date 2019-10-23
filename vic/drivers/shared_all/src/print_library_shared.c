@@ -478,12 +478,13 @@ print_option(option_struct *option)
             option->LAKES ? "true" : "false");
     fprintf(LOG_DEST, "\tNcanopy              : %zu\n", option->Ncanopy);
     fprintf(LOG_DEST, "\tNfrost               : %zu\n", option->Nfrost);
-    fprintf(LOG_DEST, "\tNlakenode            : %zu\n", option->Nlakenode);
     fprintf(LOG_DEST, "\tNlayer               : %zu\n", option->Nlayer);
     fprintf(LOG_DEST, "\tNnode                : %zu\n", option->Nnode);
     fprintf(LOG_DEST, "\tNOFLUX               : %s\n",
             option->NOFLUX ? "true" : "false");
     fprintf(LOG_DEST, "\tNVEGTYPES            : %zu\n", option->NVEGTYPES);
+    fprintf(LOG_DEST, "\tNLAKETYPES           : %zu\n", option->NLAKETYPES);
+    fprintf(LOG_DEST, "\tNLAKENODES           : %zu\n", option->NLAKENODES);
     fprintf(LOG_DEST, "\tRC_MODE              : %d\n", option->RC_MODE);
     fprintf(LOG_DEST, "\tROOT_ZONES           : %zu\n", option->ROOT_ZONES);
     fprintf(LOG_DEST, "\tQUICK_FLUX           : %s\n",

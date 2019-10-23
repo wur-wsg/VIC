@@ -574,7 +574,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_SOIL_MOISTURE].varname,
                                         ld2start, ld2count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -593,7 +593,7 @@ vic_restore(void)
                 get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                             state_metadata[STATE_LAKE_SOIL_ICE].varname,
                                             ld3start, ld3count, ldvar);
-                for (m = 0; m < options.NVEGTYPES; m++) {
+                for (m = 0; m < options.NLAKETYPES; m++) {
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         l = lake_con_map[i].lidx[m];
                         id_lake = lake_con_map[i].lake_id[m];
@@ -610,7 +610,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_CLITTER].varname,
                                         ld1start, ld1count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -624,7 +624,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_CINTER].varname,
                                         ld1start, ld1count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -638,7 +638,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_CSLOW].varname,
                                         ld1start, ld1count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -653,7 +653,7 @@ vic_restore(void)
         get_scatter_nc_field_int_lake_only(&(filenames.init_state),
                                  state_metadata[STATE_LAKE_SNOW_AGE].varname,
                                  ld1start, ld1count, livar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -667,7 +667,7 @@ vic_restore(void)
         get_scatter_nc_field_int_lake_only(&(filenames.init_state),
                                  state_metadata[STATE_LAKE_SNOW_MELT_STATE].varname,
                                  ld1start, ld1count, livar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -681,7 +681,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_COVERAGE].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -695,7 +695,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_WATER_EQUIVALENT].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -709,7 +709,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_SURF_TEMP].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -723,7 +723,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_SURF_WATER].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -737,7 +737,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_PACK_TEMP].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -751,7 +751,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_PACK_WATER].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -765,7 +765,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_DENSITY].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -779,7 +779,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_COLD_CONTENT].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -793,7 +793,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_CANOPY].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -807,7 +807,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SNOW_DEPTH].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -823,7 +823,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_SOIL_NODE_TEMP].varname,
                                         ld2start, ld2count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -838,7 +838,7 @@ vic_restore(void)
         get_scatter_nc_field_int_lake_only(&(filenames.init_state),
                                  state_metadata[STATE_LAKE_ACTIVE_LAYERS].varname,
                                  ld1start, ld1count, livar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -852,7 +852,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_LAYER_DZ].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -866,7 +866,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SURF_LAYER_DZ].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -880,7 +880,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_DEPTH].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -896,7 +896,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_LAYER_SURF_AREA].varname,
                                         ld2start, ld2count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -911,7 +911,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_SURF_AREA].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -925,7 +925,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_VOLUME].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -941,7 +941,7 @@ vic_restore(void)
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_LAYER_TEMP].varname,
                                         ld2start, ld2count, ldvar);
-            for (m = 0; m < options.NVEGTYPES; m++) {
+            for (m = 0; m < options.NLAKETYPES; m++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     l = lake_con_map[i].lidx[m];
                     id_lake = lake_con_map[i].lake_id[m];
@@ -956,7 +956,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_AVERAGE_TEMP].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -970,7 +970,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_AREA_FRAC].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -984,7 +984,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_AREA_FRAC_NEW].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -998,7 +998,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_WATER_EQUIVALENT].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1012,7 +1012,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_HEIGHT].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1026,7 +1026,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_TEMP].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1040,7 +1040,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SWE].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1054,7 +1054,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_SURF_TEMP].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1068,7 +1068,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_PACK_TEMP].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1082,7 +1082,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_COLD_CONTENT].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1096,7 +1096,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_SURF_WATER].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1110,7 +1110,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_PACK_WATER].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1124,7 +1124,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_ALBEDO].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];
@@ -1138,7 +1138,7 @@ vic_restore(void)
         get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                     state_metadata[STATE_LAKE_ICE_SNOW_DEPTH].varname,
                                     ld1start, ld1count, ldvar);
-        for (m = 0; m < options.NVEGTYPES; m++) {
+        for (m = 0; m < options.NLAKETYPES; m++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 l = lake_con_map[i].lidx[m];
                 id_lake = lake_con_map[i].lake_id[m];

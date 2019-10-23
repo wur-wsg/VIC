@@ -160,8 +160,11 @@ vic_alloc(void)
         // lake tile allocation
         
         if (options.LAKES) {
-            lake_con_map[i].nl_types = options.NVEGTYPES;
+            lake_con_map[i].nl_types = options.NLAKETYPES;
 
+            lake_con_map[i].veg_class = calloc(lake_con_map[i].nl_types,
+                                         sizeof(*(lake_con_map[i].veg_class)));
+            check_alloc_status(lake_con_map[i].veg_class, "Memory allocation error.");
             lake_con_map[i].lidx = calloc(lake_con_map[i].nl_types,
                                          sizeof(*(lake_con_map[i].lidx)));
             check_alloc_status(lake_con_map[i].lidx, "Memory allocation error.");

@@ -131,8 +131,8 @@ vic_write_lake_only(stream_struct  *stream,
         }
         dstart[0] = stream->write_alarm.count;  // Position in the time dimensions
 
-        nelem = out_metadata[varid].nelem / options.NVEGTYPES;
-        for (l = 0; l < options.NVEGTYPES; l++) {
+        nelem = out_metadata[varid].nelem / options.NLAKETYPES;
+        for (l = 0; l < options.NLAKETYPES; l++) {
             for (j = 0; j < nelem; j++) {
                 // if there is more than one layer, then dstart needs to advance
                 dstart[1] = j;
@@ -140,7 +140,7 @@ vic_write_lake_only(stream_struct  *stream,
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            dvar[id_lake] = (double) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                            dvar[id_lake] = (double) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
                     gather_put_nc_field_double_lake_only(nc_hist_file->nc_id,
@@ -152,7 +152,7 @@ vic_write_lake_only(stream_struct  *stream,
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            fvar[id_lake] = (float) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                            fvar[id_lake] = (float) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
                     gather_put_nc_field_float_lake_only(nc_hist_file->nc_id,
@@ -164,7 +164,7 @@ vic_write_lake_only(stream_struct  *stream,
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            ivar[id_lake] = (int) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                            ivar[id_lake] = (int) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
                     gather_put_nc_field_int_lake_only(nc_hist_file->nc_id,
@@ -176,7 +176,7 @@ vic_write_lake_only(stream_struct  *stream,
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            svar[id_lake] = (short int) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                            svar[id_lake] = (short int) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
                     gather_put_nc_field_short_lake_only(nc_hist_file->nc_id,
@@ -188,7 +188,7 @@ vic_write_lake_only(stream_struct  *stream,
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            cvar[id_lake] = (char) stream->aggdata[i][k][j * options.NVEGTYPES + l][0];
+                            cvar[id_lake] = (char) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
                     gather_put_nc_field_schar_lake_only(nc_hist_file->nc_id,
