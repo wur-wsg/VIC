@@ -1635,18 +1635,6 @@ vic_init(void)
                     }
                 }
             }
-            
-            // correct basin_area
-            // TODO: should be handled before
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                for (j = 0; j < options.NLAKETYPES; j++){
-                    lidx = lake_con_map[i].lidx[j];
-                    if (lidx != NODATA_VEG) {
-                        lake_con[i][lidx].Cl[0] = 
-                                veg_con_map[i].Cv[lake_con_map[i].veg_class[j]];
-                    }
-                }
-            }
         }
 
         // validate depth-area relationship
@@ -1671,13 +1659,10 @@ vic_init(void)
                     }
                     if (fabs(1 - lake_con[i][lidx].Cl[0] /
                              veg_con[i][lake_con[i][lidx].veg_idx].Cv) > 0.01) {
-                        log_err("cell %zu lake basin max area fraction is %f but "
-                                "must == area fraction of veg tile containing "
-                                "lake (%f).", i, lake_con[i][lidx].Cl[0],
-                                veg_con[i][lake_con[i][lidx].veg_idx].Cv);
-                    }
-                    else {
-                        lake_con[i][lidx].Cl[0] = veg_con[i][lake_con[i][lidx].veg_idx].Cv;
+                        log_warn("cell %zu lake basin max area fraction is %f but "
+                                 "should == area fraction of veg tile containing "
+                                 "lake (%f).", i, lake_con[i][lidx].Cl[0],
+                                 veg_con[i][lake_con[i][lidx].veg_idx].Cv);
                     }
 
                     // valdate other nodes
