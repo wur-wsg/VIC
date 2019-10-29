@@ -1367,20 +1367,20 @@ vic_init(void)
                     
                     // Check if veg_class is correct
                     if (lake_con_map[i].veg_class[j] < 0 || 
-                            lake_con_map[i].veg_class[j] >= options.NVEGTYPES) {
-                        log_err("Lake %d veg_class [%d] is outside range (1-%zu)",
+                            lake_con_map[i].veg_class[j] >= (int)options.NVEGTYPES) {
+                        log_err("Lake %zu veg_class [%d] is outside range (1-%zu)",
                                 j, lake_con_map[i].veg_class[j], options.NVEGTYPES);
                     }
                     // Check if vegetation exists
                     if (veg_con_map[i].vidx[lake_con_map[i].veg_class[j]] == NODATA_VEG){
-                        log_err("Lake %d vegetation tile %d is empty",
+                        log_err("Lake %zu vegetation tile %d is empty",
                                 j, lake_con_map[i].veg_class[j]);
                     }
                     // Check if several lakes have the same vegetation class
                     for (k = 0; k < options.NLAKETYPES; k++) {
                         if (k != j &&
                                 lake_con_map[i].veg_class[j] == lake_con_map[i].veg_class[k]) {
-                            log_err("Lake %d vegetation class %d is equal to lake %d vegetation class",
+                            log_err("Lake %zu vegetation class %d is equal to lake %zu vegetation class",
                                     j, lake_con_map[i].veg_class[j], k);
                         }
                     }

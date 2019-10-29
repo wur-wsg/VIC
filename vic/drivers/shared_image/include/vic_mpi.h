@@ -67,6 +67,8 @@ void gather_put_nc_field_double_lake_only(int nc_id, int var_id, double fillval,
                                 size_t *start, size_t *count, double *var);
 void gather_put_nc_field_float_lake_only(int nc_id, int var_id, float fillval,
                                size_t *start, size_t *count, float *var);
+void gather_put_nc_field_float_lake_only_2d(int nc_id, int var_id, float fillval,
+                               size_t *start, size_t *count, size_t depth, float *var);
 void gather_put_nc_field_int_lake_only(int nc_id, int var_id, int fillval, size_t *start,
                              size_t *count, int *var);
 void gather_put_nc_field_short_lake_only(int nc_id, int var_id, short int fillval,

@@ -52,6 +52,7 @@ vic_write_lake_only(stream_struct  *stream,
     double                     dtime;
     double                    *dvar = NULL;
     float                     *fvar = NULL;
+    float                     *lvar = NULL;
     int                       *ivar = NULL;
     short int                 *svar = NULL;
     char                      *cvar = NULL;
@@ -79,7 +80,18 @@ vic_write_lake_only(stream_struct  *stream,
     for (k = 0; k < stream->nvars; k++) {
         varid = stream->varid[k];
 
-        if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
+        if (varid == OUT_LAKE_LAYER_TEMP) {
+            if (lvar == NULL) {
+                // allocate memory for variables to be stored
+                lvar = malloc(local_domain.nlakes_active * MAX_LAKE_NODES * sizeof(*lvar));
+                check_alloc_status(lvar, "Memory allocation error");
+            }
+            if (nc_hist_file->nc_vars[k].nc_type != NC_FLOAT) {
+                log_err("OUT_LAKE_LAYER_TEMP, under LAKE_ONLY simulations, "
+                        "should always be a float (for now)");
+            }
+        }
+        else if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
             if (dvar == NULL) {
                 // allocate memory for variables to be stored
                 dvar = malloc(local_domain.nlakes_active * sizeof(*dvar));
@@ -126,78 +138,103 @@ vic_write_lake_only(stream_struct  *stream,
         // The size of the last two dimensions are the grid size; files are
         // written one slice at a time, so all counts are 1, except the last
         // two
-        for (j = ndims - 1; j < ndims; j++) {
-            dcount[j] = nc_hist_file->nc_vars[k].nc_counts[j];
+        if (varid == OUT_LAKE_LAYER_TEMP) {
+            for (j = ndims - 2; j < ndims; j++) {
+                dcount[j] = nc_hist_file->nc_vars[k].nc_counts[j];
+            }
+        }
+        else {
+            for (j = ndims - 1; j < ndims; j++) {
+                dcount[j] = nc_hist_file->nc_vars[k].nc_counts[j];
+            }
         }
         dstart[0] = stream->write_alarm.count;  // Position in the time dimensions
 
         nelem = out_metadata[varid].nelem / options.NLAKETYPES;
-        for (l = 0; l < options.NLAKETYPES; l++) {
-            for (j = 0; j < nelem; j++) {
-                // if there is more than one layer, then dstart needs to advance
-                dstart[1] = j;
-                if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
+        if (varid == OUT_LAKE_LAYER_TEMP) {
+            for (l = 0; l < options.NLAKETYPES; l++) {
+                for (j = 0; j < nelem; j++) {
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            dvar[id_lake] = (double) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            lvar[j * options.NLAKETYPES + id_lake] = (float) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
-                    gather_put_nc_field_double_lake_only(nc_hist_file->nc_id,
-                                               nc_hist_file->nc_vars[k].nc_varid,
-                                               nc_hist_file->d_fillvalue,
-                                               dstart, dcount, dvar);
                 }
-                else if (nc_hist_file->nc_vars[k].nc_type == NC_FLOAT) {
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        id_lake = lake_con_map[i].lake_id[l];
-                        if (id_lake != NODATA_VEG) {
-                            fvar[id_lake] = (float) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+            }
+            gather_put_nc_field_float_lake_only_2d(nc_hist_file->nc_id,
+                                      nc_hist_file->nc_vars[k].nc_varid,
+                                      nc_hist_file->f_fillvalue,
+                                      dstart, dcount, nelem, lvar);
+        }
+        else {
+            for (l = 0; l < options.NLAKETYPES; l++) {
+                for (j = 0; j < nelem; j++) {
+                    // if there is more than one layer, then dstart needs to advance
+                    dstart[1] = j;
+                    if (nc_hist_file->nc_vars[k].nc_type == NC_DOUBLE) {
+                        for (i = 0; i < local_domain.ncells_active; i++) {
+                            id_lake = lake_con_map[i].lake_id[l];
+                            if (id_lake != NODATA_VEG) {
+                                dvar[id_lake] = (double) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            }
                         }
+                        gather_put_nc_field_double_lake_only(nc_hist_file->nc_id,
+                                                   nc_hist_file->nc_vars[k].nc_varid,
+                                                   nc_hist_file->d_fillvalue,
+                                                   dstart, dcount, dvar);
                     }
-                    gather_put_nc_field_float_lake_only(nc_hist_file->nc_id,
-                                              nc_hist_file->nc_vars[k].nc_varid,
-                                              nc_hist_file->f_fillvalue,
-                                              dstart, dcount, fvar);
-                }
-                else if (nc_hist_file->nc_vars[k].nc_type == NC_INT) {
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        id_lake = lake_con_map[i].lake_id[l];
-                        if (id_lake != NODATA_VEG) {
-                            ivar[id_lake] = (int) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                    else if (nc_hist_file->nc_vars[k].nc_type == NC_FLOAT) {
+                        for (i = 0; i < local_domain.ncells_active; i++) {
+                            id_lake = lake_con_map[i].lake_id[l];
+                            if (id_lake != NODATA_VEG) {
+                                fvar[id_lake] = (float) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            }
                         }
+                        gather_put_nc_field_float_lake_only(nc_hist_file->nc_id,
+                                                  nc_hist_file->nc_vars[k].nc_varid,
+                                                  nc_hist_file->f_fillvalue,
+                                                  dstart, dcount, fvar);
                     }
-                    gather_put_nc_field_int_lake_only(nc_hist_file->nc_id,
-                                            nc_hist_file->nc_vars[k].nc_varid,
-                                            nc_hist_file->i_fillvalue,
-                                            dstart, dcount, ivar);
-                }
-                else if (nc_hist_file->nc_vars[k].nc_type == NC_SHORT) {
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        id_lake = lake_con_map[i].lake_id[l];
-                        if (id_lake != NODATA_VEG) {
-                            svar[id_lake] = (short int) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                    else if (nc_hist_file->nc_vars[k].nc_type == NC_INT) {
+                        for (i = 0; i < local_domain.ncells_active; i++) {
+                            id_lake = lake_con_map[i].lake_id[l];
+                            if (id_lake != NODATA_VEG) {
+                                ivar[id_lake] = (int) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            }
                         }
+                        gather_put_nc_field_int_lake_only(nc_hist_file->nc_id,
+                                                nc_hist_file->nc_vars[k].nc_varid,
+                                                nc_hist_file->i_fillvalue,
+                                                dstart, dcount, ivar);
                     }
-                    gather_put_nc_field_short_lake_only(nc_hist_file->nc_id,
-                                              nc_hist_file->nc_vars[k].nc_varid,
-                                              nc_hist_file->s_fillvalue,
-                                              dstart, dcount, svar);
-                }
-                else if (nc_hist_file->nc_vars[k].nc_type == NC_CHAR) {
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        id_lake = lake_con_map[i].lake_id[l];
-                        if (id_lake != NODATA_VEG) {
-                            cvar[id_lake] = (char) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                    else if (nc_hist_file->nc_vars[k].nc_type == NC_SHORT) {
+                        for (i = 0; i < local_domain.ncells_active; i++) {
+                            id_lake = lake_con_map[i].lake_id[l];
+                            if (id_lake != NODATA_VEG) {
+                                svar[id_lake] = (short int) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            }
                         }
+                        gather_put_nc_field_short_lake_only(nc_hist_file->nc_id,
+                                                  nc_hist_file->nc_vars[k].nc_varid,
+                                                  nc_hist_file->s_fillvalue,
+                                                  dstart, dcount, svar);
                     }
-                    gather_put_nc_field_schar_lake_only(nc_hist_file->nc_id,
-                                              nc_hist_file->nc_vars[k].nc_varid,
-                                              nc_hist_file->c_fillvalue,
-                                              dstart, dcount, cvar);
-                }
-                else {
-                    log_err("Unsupported nc_type encountered");
+                    else if (nc_hist_file->nc_vars[k].nc_type == NC_CHAR) {
+                        for (i = 0; i < local_domain.ncells_active; i++) {
+                            id_lake = lake_con_map[i].lake_id[l];
+                            if (id_lake != NODATA_VEG) {
+                                cvar[id_lake] = (char) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            }
+                        }
+                        gather_put_nc_field_schar_lake_only(nc_hist_file->nc_id,
+                                                  nc_hist_file->nc_vars[k].nc_varid,
+                                                  nc_hist_file->c_fillvalue,
+                                                  dstart, dcount, cvar);
+                    }
+                    else {
+                        log_err("Unsupported nc_type encountered");
+                    }
                 }
             }
         }
@@ -268,6 +305,9 @@ vic_write_lake_only(stream_struct  *stream,
     }
     if (fvar != NULL) {
         free(fvar);
+    }
+    if (lvar != NULL) {
+        free(lvar);
     }
     if (ivar != NULL) {
         free(ivar);

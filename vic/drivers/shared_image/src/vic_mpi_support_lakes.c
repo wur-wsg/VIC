@@ -305,6 +305,90 @@ gather_put_nc_field_float_lake_only(int     nc_id,
 }
 
 /******************************************************************************
+ * @brief   Gather and write double precision NetCDF field
+ * @details Values are gathered to the master node and then written from the
+ *          master node
+ *****************************************************************************/
+void
+gather_put_nc_field_float_lake_only_2d(int     nc_id,
+                          int     var_id,
+                          float   fillval,
+                          size_t *start,
+                          size_t *count,
+                          size_t depth,
+                          float  *var)
+{
+    extern MPI_Comm      MPI_COMM_VIC;
+    extern domain_struct global_domain;
+    extern domain_struct local_domain;
+    extern int           mpi_rank;
+    extern int          *mpi_lake_global_array_offsets;
+    extern int          *mpi_lake_local_array_sizes;
+    extern size_t       *mpi_lake_mapping_array;
+    int                  status;
+    float               *fvar_local = NULL;
+    float               *fvar_global = NULL;
+    float               *fvar = NULL;
+    float               *fvar_gathered = NULL;
+    size_t               grid_size;
+    size_t               i;
+    size_t               j;
+
+    fvar_local = malloc(local_domain.nlakes_active * sizeof(*fvar_local));
+    check_alloc_status(fvar_local, "Memory allocation error.");
+    
+    if (mpi_rank == VIC_MPI_ROOT) {
+        grid_size = global_domain.nlakes_active;
+        fvar = malloc(grid_size * sizeof(*fvar));
+        check_alloc_status(fvar, "Memory allocation error.");
+        for (i = 0; i < grid_size; i++) {
+            fvar[i] = fillval;
+        }
+        fvar_gathered =
+            malloc(global_domain.nlakes_active * sizeof(*fvar_gathered));
+        check_alloc_status(fvar_gathered, "Memory allocation error.");
+        fvar_global = malloc(global_domain.nlakes_active * depth * sizeof(*fvar_global));
+        check_alloc_status(fvar_global, "Memory allocation error.");
+    }
+    
+    for (j = 0; j < depth; j++) {
+        // set the local array
+        for (i = 0; i < local_domain.nlakes_active; i++) {
+            fvar_local[i] = var[j * local_domain.nlakes_active + i];
+        }
+        // Gather the results from the nodes, result for the local node is in the
+        // array *var (which is a function argument)
+        status = MPI_Gatherv(fvar_local, local_domain.nlakes_active, MPI_FLOAT,
+                             fvar_gathered, mpi_lake_local_array_sizes,
+                             mpi_lake_global_array_offsets, MPI_FLOAT,
+                             VIC_MPI_ROOT, MPI_COMM_VIC);
+        check_mpi_status(status, "Error with gather of floats");
+
+        if (mpi_rank == VIC_MPI_ROOT) {
+            // remap the array
+            map(sizeof(float), global_domain.nlakes_active, NULL,
+                mpi_lake_mapping_array, fvar_gathered, fvar);
+            // set the global array
+            for (i = 0; i < local_domain.nlakes_active; i++) {
+                fvar_global[j * local_domain.nlakes_active + i] = fvar[i];
+            }
+        }
+    }
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        // write to file
+        status = nc_put_vara_float(nc_id, var_id, start, count, fvar_global);
+        check_nc_status(status, "Error writing values");
+
+        // cleanup
+        free(fvar);
+        free(fvar_gathered);
+        free(fvar_global);
+    }
+    free(fvar_local);
+}
+
+/******************************************************************************
  * @brief   Gather and write integer NetCDF field
  * @details Values are gathered to the master node and then written from the
  *          master node
