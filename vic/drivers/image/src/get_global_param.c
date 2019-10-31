@@ -487,6 +487,9 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);
             }
+            else if (strcasecmp("LAKE_NODES", optstr) == 0) {
+                sscanf(cmdstr, "%*s %zu", &options.NLAKENODES);
+            }
 
             /*************************************
                Define output files
@@ -957,6 +960,15 @@ get_global_param(FILE *gp)
         if (options.COMPUTE_TREELINE) {
             log_err("LAKES = TRUE and COMPUTE_TREELINE = TRUE are "
                     "incompatible options.");
+        }
+        if (options.NLAKENODES == 0) {
+            log_err("LAKE_NODES must be > 0 if the lake model is to "
+                    "be run.");
+        }
+        if (options.NLAKENODES > MAX_LAKE_NODES) {
+            log_err("LAKE_NODES is %zu but we must have 1 "
+                    "<= LAKE_NODES <= %d.", options.NLAKENODES,
+                    MAX_LAKE_NODES);
         }
     }
 

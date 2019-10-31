@@ -484,6 +484,7 @@ print_option(option_struct *option)
             option->NOFLUX ? "true" : "false");
     fprintf(LOG_DEST, "\tNVEGTYPES            : %zu\n", option->NVEGTYPES);
     fprintf(LOG_DEST, "\tNLAKETYPES           : %zu\n", option->NLAKETYPES);
+    fprintf(LOG_DEST, "\tNLAKEPROFILE         : %zu\n", option->NLAKEPROFILE);
     fprintf(LOG_DEST, "\tNLAKENODES           : %zu\n", option->NLAKENODES);
     fprintf(LOG_DEST, "\tRC_MODE              : %d\n", option->RC_MODE);
     fprintf(LOG_DEST, "\tROOT_ZONES           : %zu\n", option->ROOT_ZONES);

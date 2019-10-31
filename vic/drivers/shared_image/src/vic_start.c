@@ -135,7 +135,7 @@ vic_start(void)
         if (options.LAKES) {
             options.NLAKETYPES = get_nc_dimension(&(filenames.params), "lake_class");
             if (options.LAKE_PROFILE) {
-                options.NLAKENODES = get_nc_dimension(&(filenames.params), "lake_node");
+                options.NLAKEPROFILE = get_nc_dimension(&(filenames.params), "lake_node");
             }
         }
 

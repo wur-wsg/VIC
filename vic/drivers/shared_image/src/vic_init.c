@@ -1464,10 +1464,10 @@ vic_init(void)
                 if (lidx != NODATA_VEG) {
                     lake_con[i][lidx].numnod_profile = ivar[i];
                     if (!(lake_con[i][lidx].numnod_profile > 0 &&
-                           lake_con[i][lidx].numnod_profile < MAX_LAKE_PROFILE)) {
+                           lake_con[i][lidx].numnod_profile < options.NLAKENODES)) {
                         log_err("lake %zu numnod is %zu but we must have 1 "
                                 "<= numnod < %d.", i, lake_con[i][lidx].numnod_profile,
-                                MAX_LAKE_PROFILE);
+                                options.NLAKENODES);
                     }
                 }
             }
@@ -1576,7 +1576,7 @@ vic_init(void)
             // basin_depth
             for (j = 0; j < options.NLAKETYPES; j++){
                 d4start[0] = j;
-                for(k = 0; k < options.NLAKENODES; k++){
+                for(k = 0; k < options.NLAKEPROFILE; k++){
                     d4start[1] = k;
                     get_scatter_nc_field_double(&(filenames.params), "basin_depth",
                                              d4start, d4count, dvar);
@@ -1594,7 +1594,7 @@ vic_init(void)
             // basin_area
             for (j = 0; j < options.NLAKETYPES; j++){
                 d4start[0] = j;
-                for(k = 0; k < options.NLAKENODES; k++){
+                for(k = 0; k < options.NLAKEPROFILE; k++){
                     d4start[1] = k;
                     get_scatter_nc_field_double(&(filenames.params), "basin_area",
                                              d4start, d4count, dvar);

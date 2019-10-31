@@ -236,7 +236,8 @@ typedef struct {
                             soil thermal fluxes */
     size_t NVEGTYPES;    /**< number of vegetation types in veg_param file */
     size_t NLAKETYPES;   /**< number of lake types in lake_param file */
-    size_t NLAKENODES;   /**< number of lake profile layers in lake_param file */
+    size_t NLAKEPROFILE; /**< number of lake profile layers in lake_param file */
+    size_t NLAKENODES;   /**< number of lake layers in lake_param file */
     unsigned short int RC_MODE;        /**< RC_JARVIS = compute canopy resistance via Jarvis formulation (default)
                                           RC_PHOTO = compute canopy resistance based on photosynthetic activity */
     size_t ROOT_ZONES;   /**< Number of root zones used in simulation */

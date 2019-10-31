@@ -712,7 +712,7 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->front_size = MAX_FRONTS;
     nc_file->frost_size = options.Nfrost;
     nc_file->lake_size = options.NLAKETYPES;
-    nc_file->lake_node_size = MAX_LAKE_NODES + 1;
+    nc_file->lake_node_size = options.NLAKENODES + 1;
     nc_file->layer_size = options.Nlayer;
     nc_file->ni_size = global_domain.n_nx;
     nc_file->nj_size = global_domain.n_ny;

@@ -492,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 57;
+    nitems = 58;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -620,6 +620,10 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // size_t NLAKETYPES;
     offsets[i] = offsetof(option_struct, NLAKETYPES);
+    mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
+
+    // size_t NLAKEPROFILE;
+    offsets[i] = offsetof(option_struct, NLAKEPROFILE);
     mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
 
     // size_t NLAKENODES;
