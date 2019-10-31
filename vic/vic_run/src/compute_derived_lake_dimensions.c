@@ -97,8 +97,11 @@ compute_derived_lake_dimensions(lake_var_struct *lake,
                 "volume = %e", 0, depth, tmp_volume);
     }
     else if (status > 0) {
-        log_err("lake depth exceeds maximum; "
-                "setting to maximum; record = %d", 0);
+        log_warn("lake depth exceeds maximum; "
+                "setting to maximum; "
+                "record = %d, depth = %f, "
+                "maxdepth = %e", 0,
+                lake->ldepth, lake_con->maxdepth);
     }
     lake->volume = tmp_volume + lake->ice_water_eq;
 }
