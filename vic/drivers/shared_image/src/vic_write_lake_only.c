@@ -83,7 +83,7 @@ vic_write_lake_only(stream_struct  *stream,
         if (varid == OUT_LAKE_LAYER_TEMP) {
             if (lvar == NULL) {
                 // allocate memory for variables to be stored
-                lvar = malloc(local_domain.nlakes_active * MAX_LAKE_NODES * sizeof(*lvar));
+                lvar = malloc(local_domain.nlakes_active * (MAX_LAKE_NODES + 1) * sizeof(*lvar));
                 check_alloc_status(lvar, "Memory allocation error");
             }
             if (nc_hist_file->nc_vars[k].nc_type != NC_FLOAT) {
@@ -157,7 +157,7 @@ vic_write_lake_only(stream_struct  *stream,
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         id_lake = lake_con_map[i].lake_id[l];
                         if (id_lake != NODATA_VEG) {
-                            lvar[j * options.NLAKETYPES + id_lake] = (float) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
+                            lvar[j * local_domain.nlakes_active + id_lake] = (float) stream->aggdata[i][k][j * options.NLAKETYPES + l][0];
                         }
                     }
                 }
