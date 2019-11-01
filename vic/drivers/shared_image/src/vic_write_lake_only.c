@@ -83,7 +83,7 @@ vic_write_lake_only(stream_struct  *stream,
         if (varid == OUT_LAKE_LAYER_TEMP) {
             if (lvar == NULL) {
                 // allocate memory for variables to be stored
-                lvar = malloc(local_domain.nlakes_active * (MAX_LAKE_NODES + 1) * sizeof(*lvar));
+                lvar = malloc(local_domain.nlakes_active * (options.NLAKENODES + 1) * sizeof(*lvar));
                 check_alloc_status(lvar, "Memory allocation error");
             }
             if (nc_hist_file->nc_vars[k].nc_type != NC_FLOAT) {

@@ -891,7 +891,7 @@ vic_restore(void)
         }
 
         // lake layer surface areas: lake_var.surface[ndix]
-        for (j = 0; j < MAX_LAKE_NODES + 1; j++) {
+        for (j = 0; j < options.NLAKENODES + 1; j++) {
             ld2start[0] = j;
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_LAYER_SURF_AREA].varname,
@@ -936,7 +936,7 @@ vic_restore(void)
         }
 
         // lake layer temperatures: lake_var.temp[nidx]
-        for (j = 0; j < MAX_LAKE_NODES + 1; j++) {
+        for (j = 0; j < options.NLAKENODES + 1; j++) {
             ld2start[0] = j;
             get_scatter_nc_field_double_lake_only(&(filenames.init_state),
                                         state_metadata[STATE_LAKE_LAYER_TEMP].varname,
@@ -1242,7 +1242,7 @@ check_init_state_file(void)
             }
             
             dimlen = get_nc_dimension(&(filenames.init_state), "lake_node");
-            if (dimlen != MAX_LAKE_NODES + 1) {
+            if (dimlen != options.NLAKENODES + 1) {
                 log_err("Number of lake nodes in state file does not "
                         "match parameter file");
             }

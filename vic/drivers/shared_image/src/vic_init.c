@@ -1464,10 +1464,10 @@ vic_init(void)
                 if (lidx != NODATA_VEG) {
                     lake_con[i][lidx].numnod_profile = ivar[i];
                     if (!(lake_con[i][lidx].numnod_profile > 0 &&
-                           lake_con[i][lidx].numnod_profile < options.NLAKENODES)) {
+                           lake_con[i][lidx].numnod_profile < MAX_LAKE_PROFILE)) {
                         log_err("lake %zu numnod is %zu but we must have 1 "
                                 "<= numnod < %d.", i, lake_con[i][lidx].numnod_profile,
-                                options.NLAKENODES);
+                                MAX_LAKE_PROFILE);
                     }
                 }
             }
@@ -1483,10 +1483,10 @@ vic_init(void)
                 if (lidx != NODATA_VEG) {
                     lake_con[i][lidx].numnod = ivar[i];
                     if (!(lake_con[i][lidx].numnod > 0 &&
-                           lake_con[i][lidx].numnod < MAX_LAKE_NODES)) {
+                           lake_con[i][lidx].numnod < options.NLAKENODES)) {
                         log_err("lake %zu numnod is %zu but we must have 1 "
                                 "<= numnod < %d.", i, lake_con[i][lidx].numnod,
-                                MAX_LAKE_NODES);
+                                options.NLAKENODES);
                     }
                 }
             }
