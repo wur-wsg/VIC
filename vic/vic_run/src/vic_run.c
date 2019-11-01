@@ -163,7 +163,11 @@ vic_run(force_data_struct   *force,
                     continue;
                 }
             }
-
+            
+            if (options.LAKES && options.LAKE_TEMPERATURE) {
+                continue;
+            }
+            
             /* local pointer to veg_var */
             veg_var = &(all_vars->veg_var[iveg][0]);
 
