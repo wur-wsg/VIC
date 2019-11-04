@@ -13,6 +13,7 @@ crop_update_step_vars(size_t iCell)
     extern dmy_struct *dmy;
     extern size_t current;
     
+    double tmp_min;
     double Cc;
     double height;
     double lai_coverage;
@@ -66,7 +67,8 @@ crop_update_step_vars(size_t iCell)
             iVeg = veg_con_map[iCell].vidx[veg_class];
 
             Cc = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
-            height = cgrid->crp->prm.MaxHeight * min(cgrid->crp->st.Development, 1.0);
+            tmp_min = min(cgrid->crp->st.Development, 1.0);
+            height = cgrid->crp->prm.MaxHeight * tmp_min;
             lai_coverage = min(cgrid->crp->st.LAI, 1.0);
 
             cveg_var->fcanopy += Cc;
@@ -75,7 +77,8 @@ crop_update_step_vars(size_t iCell)
             cveg_var->displacement += height * param.VEG_RATIO_DH_HEIGHT * Cc;
             cveg_var->roughness += height * param.VEG_RATIO_RL_HEIGHT * Cc;
 
-            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * min(cgrid->crp->st.Development, 1.0) * Cc;
+            tmp_min = min(cgrid->crp->st.Development, 1.0);
+            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
 
             cveg_lib->trunk_ratio += cgrid->crp->prm.TrunkRatio * Cc;
             cveg_lib->wind_atten += cgrid->crp->prm.WindAttenuation * Cc;

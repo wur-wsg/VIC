@@ -8,20 +8,9 @@ crop_alloc(void)
     extern plugin_option_struct       plugin_options;
     extern crop_con_map_struct       *crop_con_map;
     extern crop_force_struct    *crop_force;
-    extern int                 mpi_rank;
-    
-    int                        status;
 
     size_t                            i;
     size_t                            j;
-
-    // open parameter file
-    if (mpi_rank == VIC_MPI_ROOT) {
-        status = nc_open(plugin_filenames.crop.nc_filename, NC_NOWRITE,
-                         &(plugin_filenames.crop.nc_id));
-        check_nc_status(status, "Error opening %s",
-                        plugin_filenames.crop.nc_filename);
-    }
 
     crop_con_map = malloc(local_domain.ncells_active * sizeof(*crop_con_map));
     check_alloc_status(crop_con_map, "Memory allocation error");
@@ -50,13 +39,6 @@ crop_alloc(void)
     }
     
     wofost_alloc();
-    
-    // close parameter file
-    if (mpi_rank == VIC_MPI_ROOT) {
-        status = nc_close(plugin_filenames.crop.nc_id);
-        check_nc_status(status, "Error closing %s",
-                        plugin_filenames.crop.nc_filename);
-    }
 
     wofost_initialize_local_structures();
 }

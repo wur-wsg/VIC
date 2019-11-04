@@ -465,7 +465,7 @@ float List(TABLE_D *);
 float limit(float a, float b, float c);
 float insw(float x1, float x2, float x3);
 void GetSimInput(char *, char *, char *,
-        char *, int, int, SimUnit *);
+        int, int, SimUnit *);
 void IfSowing(SimUnit *, dmy_struct*);
 
 /* Additional functions */

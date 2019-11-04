@@ -74,8 +74,9 @@ crop_set_mapping(void)
     
     // Set crop coverage
     for(k = 0; k < MONTHS_PER_YEAR; k++) {
+        d4start[0] = k;
         for(j = 0; j < plugin_options.NCROPTYPES; j++){
-            d3start[0] = j;
+            d4start[1] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
                                         "Cc", d4start, d4count, dvar);
@@ -94,7 +95,7 @@ crop_set_mapping(void)
         for(j = 0; j < plugin_options.NCROPTYPES; j++){
             Cc_sum = 0;
             for(l = 0; l < MONTHS_PER_YEAR; l++) {
-                Cc_sum = crop_con_map[i].Cc[j][l];
+                Cc_sum += crop_con_map[i].Cc[j][l];
             }
             if (Cc_sum > 0) {
                 crop_con_map[i].cidx[j] = k;
@@ -102,7 +103,7 @@ crop_set_mapping(void)
                 if (veg_class == NODATA_VEG || 
                     veg_con_map[i].vidx[veg_class] == NODATA_VEG) {
                     sprint_location(locstr, &(local_domain.locations[i]));
-                    log_err("Crop %zu coverage %.4f is > 0 for "
+                    log_err("Crop %zu coverage sum %.4f is > 0 for "
                             "empty vegetation tile.\n%s", 
                              j, Cc_sum, locstr);
                 }

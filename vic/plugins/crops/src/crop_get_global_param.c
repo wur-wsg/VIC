@@ -57,7 +57,7 @@ crop_validate_global_param(void)
     
     // Parameters
     if (strcasecmp(plugin_filenames.crop.nc_filename, MISSING_S) == 0) {
-        log_err("WOFOST = TRUE but netcdf file is missing");
+        log_err("WOFOST = TRUE but crop netcdf file is missing");
     }
     if (strcasecmp(plugin_filenames.wofost_text, MISSING_S) == 0) {
         log_err("WOFOST = TRUE but text file is missing");

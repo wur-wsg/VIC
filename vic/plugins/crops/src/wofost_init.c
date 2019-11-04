@@ -14,7 +14,6 @@ wofost_set_data_text(char *list)
     int Emergence;
     char line[MAXSTRING];
     char path[MAXSTRING];
-    char start[MAXSTRING];
     char cf[MAXSTRING], mf[MAXSTRING];
         
     size_t i;
@@ -51,8 +50,8 @@ wofost_set_data_text(char *list)
             continue;
         }
 
-        sscanf(line, "%s %s %s %s %d" ,
-            path, cf, mf, start, &Emergence);
+        sscanf(line, "%s %s %s %d" ,
+            path, cf, mf, &Emergence);
 
         if(k >= plugin_options.NCROPTYPES) {
             log_err("Crops in wofost text (%zu) file are more than "
@@ -60,7 +59,7 @@ wofost_set_data_text(char *list)
                     k, plugin_options.NCROPTYPES);
         }
 
-        GetSimInput(path, cf, mf, start, 
+        GetSimInput(path, cf, mf, 
                 Emergence, k, tmpGrid);
         tmpGrid->vic->crop_class = k;
         tmpGrid->vic->CycleLength = 300;
@@ -119,8 +118,8 @@ wofost_set_data(void)
     
     size_t  d3count[3];
     size_t  d3start[3];
-    size_t  d4count[4];
-    size_t  d4start[4];
+//    size_t  d4count[4];
+//    size_t  d4start[4];
     
     d3start[0] = 0;
     d3start[1] = 0;
@@ -129,14 +128,14 @@ wofost_set_data(void)
     d3count[1] = global_domain.n_ny;
     d3count[2] = global_domain.n_nx;
     
-    d4start[0] = 0;
-    d4start[1] = 0;
-    d4start[2] = 0;
-    d4start[3] = 0;
-    d4count[0] = 1;
-    d4count[1] = 1;
-    d4count[2] = global_domain.n_ny;
-    d4count[3] = global_domain.n_nx;
+//    d4start[0] = 0;
+//    d4start[1] = 0;
+//    d4start[2] = 0;
+//    d4start[3] = 0;
+//    d4count[0] = 1;
+//    d4count[1] = 1;
+//    d4count[2] = global_domain.n_ny;
+//    d4count[3] = global_domain.n_nx;
     
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");

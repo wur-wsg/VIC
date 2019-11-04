@@ -10,8 +10,7 @@
 
 void GetSimInput(char *path,
         char *cf, 
-        char *mf, 
-        char *start, 
+        char *mf,
         int Emergence, 
         int count,
         SimUnit *Grid)
@@ -30,11 +29,6 @@ void GetSimInput(char *path,
 
     GetCropData(Grid->crp, cropfile); 
     GetManagement(Grid->mng, management);
-
-    if (strlen(start) >= MAXSTRING) {
-        log_err("file length (%zu) is larger than maximum (%d)", strlen(start), MAXSTRING);
-    }
-    strpdmy(start, "%d-%m-0000", &Grid->start); // Starting string month day of the simulations 
 
     Grid->file  = count;            // number of elements in Grid carousel
     Grid->emergence = Emergence;      // Start the simulations at emergence (1) or at sowing (0)                
