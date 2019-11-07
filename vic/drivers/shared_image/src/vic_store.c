@@ -2207,7 +2207,7 @@ initialize_state_file(char           *filename,
 
             // Add compression (only works for netCDF4 filetype)
             if (options.STATE_COMPRESS) {
-                status = nc_def_var_deflate(nc_state_file->nc_id, nc_state_file->nc_vars[j].nc_varid,
+                status = nc_def_var_deflate(nc_state_file->nc_id, nc_state_file->nc_vars[i].nc_varid,
                                             true, true, options.STATE_COMPRESS);
                 check_nc_status(
                     status,
