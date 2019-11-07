@@ -23,22 +23,6 @@ wofost_set_data_text(char *list)
     int iCrop;
     SimUnit *iGrid;
     SimUnit *tmpGrid;
-    
-    tmpGrid = malloc(sizeof(*tmpGrid));
-    check_alloc_status(tmpGrid, "Memory allocation error");
-    tmpGrid->crp = malloc(sizeof(*(tmpGrid->crp)));
-    check_alloc_status(tmpGrid->crp, "Memory allocation error");
-    tmpGrid->ste = malloc(sizeof(*(tmpGrid->ste)));
-    check_alloc_status(tmpGrid->ste, "Memory allocation error");
-    tmpGrid->mng = malloc(sizeof(*(tmpGrid->mng)));
-    check_alloc_status(tmpGrid->mng, "Memory allocation error");
-    tmpGrid->soil = malloc(sizeof(*(tmpGrid->soil)));
-    check_alloc_status(tmpGrid->soil, "Memory allocation error");
-    tmpGrid->vic = malloc(sizeof(*(tmpGrid->vic)));
-    check_alloc_status(tmpGrid->vic, "Memory allocation error");
-    tmpGrid->next = NULL;
-    
-    initialize_wofost_grid(tmpGrid);
 
     if ((ifp = fopen(list, "r")) == NULL) {
         log_err("Can't open wofost text file, %s\n", list);
@@ -50,6 +34,22 @@ wofost_set_data_text(char *list)
             continue;
         }
 
+        tmpGrid = malloc(sizeof(*tmpGrid));
+        check_alloc_status(tmpGrid, "Memory allocation error");
+        tmpGrid->crp = malloc(sizeof(*(tmpGrid->crp)));
+        check_alloc_status(tmpGrid->crp, "Memory allocation error");
+        tmpGrid->ste = malloc(sizeof(*(tmpGrid->ste)));
+        check_alloc_status(tmpGrid->ste, "Memory allocation error");
+        tmpGrid->mng = malloc(sizeof(*(tmpGrid->mng)));
+        check_alloc_status(tmpGrid->mng, "Memory allocation error");
+        tmpGrid->soil = malloc(sizeof(*(tmpGrid->soil)));
+        check_alloc_status(tmpGrid->soil, "Memory allocation error");
+        tmpGrid->vic = malloc(sizeof(*(tmpGrid->vic)));
+        check_alloc_status(tmpGrid->vic, "Memory allocation error");
+        tmpGrid->next = NULL;
+
+        initialize_wofost_grid(tmpGrid);
+    
         sscanf(line, "%s %s %s %d" ,
             path, cf, mf, &Emergence);
 
@@ -82,6 +82,7 @@ wofost_set_data_text(char *list)
             }
         }
 
+        Clean(tmpGrid);
         k++;
     }
 
@@ -91,8 +92,6 @@ wofost_set_data_text(char *list)
     }
 
     fclose(ifp);
-    
-    Clean(tmpGrid);
 }
 
 void
