@@ -288,6 +288,7 @@ typedef struct {
 
     // state options
     unsigned short int STATE_FORMAT;  /**< TRUE = model state file is binary (default) */
+    unsigned short int STATE_COMPRESS; /**< Compress state files in stream*/
     bool INIT_STATE;     /**< TRUE = initialize model state from file */
     bool SAVE_STATE;     /**< TRUE = save state file */
 

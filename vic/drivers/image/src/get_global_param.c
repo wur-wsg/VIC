@@ -334,6 +334,19 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
+            else if (strcasecmp("STATE_COMPRESS", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                if (strcasecmp("TRUE", flgstr) == 0) {
+                    options.STATE_COMPRESS =
+                        COMPRESSION_LVL_DEFAULT;
+                }
+                else if (strcasecmp("FALSE", flgstr) == 0) {
+                    options.STATE_COMPRESS = 0;
+                }
+                else {
+                    options.STATE_COMPRESS = atoi(flgstr);
+                }
+            }
 
             /*************************************
                Define forcing files

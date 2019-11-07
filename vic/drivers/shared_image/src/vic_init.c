@@ -1485,7 +1485,7 @@ vic_init(void)
                     if (!(lake_con[i][lidx].numnod > 0 &&
                            lake_con[i][lidx].numnod < options.NLAKENODES)) {
                         log_err("lake %zu numnod is %zu but we must have 1 "
-                                "<= numnod < %d.", i, lake_con[i][lidx].numnod,
+                                "<= numnod < %zu.", i, lake_con[i][lidx].numnod,
                                 options.NLAKENODES);
                     }
                 }
