@@ -3,7 +3,7 @@
 #ifndef WOFOST_H
 #define WOFOST_H
 
-#define NR_VARIABLES_CRP	72
+#define NR_VARIABLES_CRP	74
 #define NR_TABLES_CRP   	22
 #define NR_VARIABLES_SITE       12
 #define NR_TABLES_SITE          1

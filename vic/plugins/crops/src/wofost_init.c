@@ -186,48 +186,48 @@ wofost_set_data(void)
     }
     
     // Set TSUM1
-    for(j = 0; j < plugin_options.NCROPTYPES; j++){
-        d3start[0] = j;
-                        
-        get_scatter_nc_field_double(&plugin_filenames.crop,
-                                 "TSUM1", d3start, d3count, dvar);
-
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
-                    }
-                    
-                    iGrid->crp->prm.TempSum1 = dvar[i];
-                }
-            }
-        }
-    }
-    
-    // Set TSUM2
-    for(j = 0; j < plugin_options.NCROPTYPES; j++){
-        d3start[0] = j;
-                        
-        get_scatter_nc_field_double(&plugin_filenames.crop,
-                                 "TSUM2", d3start, d3count, dvar);
-
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
-                    }
-                    
-                    iGrid->crp->prm.TempSum2 = dvar[i];
-                }
-            }
-        }
-    }
+//    for(j = 0; j < plugin_options.NCROPTYPES; j++){
+//        d3start[0] = j;
+//                        
+//        get_scatter_nc_field_double(&plugin_filenames.crop,
+//                                 "TSUM1", d3start, d3count, dvar);
+//
+//        for (i = 0; i < local_domain.ncells_active; i++) {
+//            iCrop = crop_con_map[i].cidx[j];
+//            if (iCrop != NODATA_VEG) {
+//                for (k = 0; k < options.SNOW_BAND; k++) {
+//                    iGrid = Grid[i][k];
+//                    for(l = 0; l < (size_t)iCrop; l++){
+//                        iGrid = iGrid->next;
+//                    }
+//                    
+//                    iGrid->crp->prm.TempSum1 = dvar[i];
+//                }
+//            }
+//        }
+//    }
+//    
+//    // Set TSUM2
+//    for(j = 0; j < plugin_options.NCROPTYPES; j++){
+//        d3start[0] = j;
+//                        
+//        get_scatter_nc_field_double(&plugin_filenames.crop,
+//                                 "TSUM2", d3start, d3count, dvar);
+//
+//        for (i = 0; i < local_domain.ncells_active; i++) {
+//            iCrop = crop_con_map[i].cidx[j];
+//            if (iCrop != NODATA_VEG) {
+//                for (k = 0; k < options.SNOW_BAND; k++) {
+//                    iGrid = Grid[i][k];
+//                    for(l = 0; l < (size_t)iCrop; l++){
+//                        iGrid = iGrid->next;
+//                    }
+//                    
+//                    iGrid->crp->prm.TempSum2 = dvar[i];
+//                }
+//            }
+//        }
+//    }
     
     free(dvar);
 }

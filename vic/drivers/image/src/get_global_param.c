@@ -52,7 +52,6 @@ get_global_param(FILE *gp)
     unsigned short int         lastday[MONTHS_PER_YEAR];
 
 
-    file_num = 0;
     /** Read through global control file to find parameters **/
 
     rewind(gp);
@@ -346,8 +345,7 @@ get_global_param(FILE *gp)
                Define forcing files
             *************************************/
             else if (strcasecmp("FORCE_TYPE", optstr) == 0) {
-                set_force_type(cmdstr, file_num);
-                file_num++;
+                set_force_type(cmdstr);
             }
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
@@ -542,8 +540,6 @@ get_global_param(FILE *gp)
         }
         fgets(cmdstr, MAXSTRING, gp);
     }
-
-    param_set.N_FORCE_FILES = file_num;
 
     /******************************************
        Check for undefined required parameters
@@ -768,12 +764,17 @@ get_global_param(FILE *gp)
                 "Make sure that the global file defines a positive integer "
                 "for NRECS.", global_param.nrecs);
     }
-    for (file_num = 0; file_num < param_set.N_FORCE_FILES; file_num++) {
+    for (file_num = 0; file_num < N_FORCING_TYPES; file_num++) {
+
         // Validate forcing files and variables
         if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
-            log_err(
-                "No forcing file has been defined.  Make sure that the global "
-                "file defines forcing files for each variable.");
+	    if (file_num == AIR_TEMP || file_num == LWDOWN || file_num == PREC ||
+                file_num == PRESSURE || file_num == VP || file_num == SWDOWN ||
+                file_num == WIND) {
+                log_err("No forcing file has been defined.  Make sure that the global "
+                        "file defines forcing files for each variable.");
+            }
+            continue;
         }
 
         // Get information from the forcing file(s)

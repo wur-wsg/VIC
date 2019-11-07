@@ -96,7 +96,10 @@ vic_start(void)
                         filenames.domain.nc_filename);
 
         // Validate forcing files and variables
-        for (i = 0; i < param_set.N_FORCE_FILES; i++) {
+        for (i = 0; i < N_FORCING_TYPES; i++) {
+            if (strcmp(filenames.f_path_pfx[i], "MISSING") == 0) {
+                continue;
+            }
             compare_ncdomain_with_global_domain(&filenames.forcing[i]);
         }
 

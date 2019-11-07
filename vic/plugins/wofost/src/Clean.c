@@ -21,6 +21,15 @@ void Clean(SimUnit *Grid)
     while (Grid)
     {
         /* Free all the Afgen tables */
+        while(Grid->crp->prm.VernalizationRate)
+        {
+            head = Grid->crp->prm.VernalizationRate;
+            Grid->crp->prm.VernalizationRate = Grid->crp->prm.VernalizationRate->next;
+            free(head);
+        }
+        free(Grid->crp->prm.VernalizationRate);
+        Grid->crp->prm.VernalizationRate = NULL;
+        
         while(Grid->crp->prm.DeltaTempSum)
         {
             head = Grid->crp->prm.DeltaTempSum;

@@ -51,14 +51,10 @@ vic_image_run(dmy_struct *dmy_current)
     char                       dmy_str[MAXSTRING];
     size_t                     i;
     timer_struct               timer;
-    extern int                 mpi_rank;
 
     // Print the current timestep info before running vic_run
-
     sprint_dmy(dmy_str, dmy_current);
-    if (mpi_rank == VIC_MPI_ROOT) {
-        fprintf(LOG_DEST, "Running timestep %zu: %s", current, dmy_str);
-    }
+    debug("Running timestep %zu: %s", current, dmy_str);
 
     plugin_update_step_vars();
     
