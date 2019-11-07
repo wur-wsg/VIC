@@ -147,7 +147,7 @@ get_depth(lake_con_struct *lake_con,
         *depth = 0.0;
         tempvolume = volume;
         for (k = lake_con->numnod_profile - 1; k >= 0; k--) {
-            if (tempvolume > ((lake_con->z[k] - lake_con->z[k + 1]) *
+            if (tempvolume >= ((lake_con->z[k] - lake_con->z[k + 1]) *
                               (lake_con->basin[k] +
                                lake_con->basin[k + 1]) / 2.)) {
                 // current layer completely filled
@@ -180,8 +180,10 @@ get_depth(lake_con_struct *lake_con,
                 }
             }
         }
-        if (tempvolume / lake_con->maxvolume > DBL_EPSILON) {
-            status = ERROR;
+        if (tempvolume / lake_con->basin[0] > DBL_EPSILON) {
+            *depth = lake_con->maxdepth;
+            *depth += (volume - lake_con->maxvolume) / lake_con->basin[0];
+	    log_warn("Prev error, tempvolume = %f", tempvolume);
         }
     }
 

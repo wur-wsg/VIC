@@ -1898,13 +1898,17 @@ water_balance(lake_var_struct *lake,
     volume_save = lake->volume;
     ErrorFlag = get_depth(lake_con, lake->volume - lake->ice_water_eq, &ldepth);
     if (ErrorFlag == ERROR) {
-        log_err("Error calculating depth: volume = %f, depth = %e",
-                lake->volume, ldepth);
+        log_err("Error calculating depth: volume = %f, maxvolume = %f, "
+                "depth = %e, maxdepth = %e",
+                lake->volume, lake_con->maxvolume, 
+                ldepth, lake_con->maxdepth);
     }
     ErrorFlag = get_sarea(lake_con, ldepth, &surfacearea);
     if (ErrorFlag == ERROR) {
-        log_err("Error calculating area: depth = %f, sarea = %e",
-                ldepth, surfacearea);
+        log_err("Error calculating area: depth = %f, maxdepth = %f, "
+                "sarea = %e, maxsarea = %e",
+                ldepth, lake_con->maxdepth, 
+                surfacearea, lake_con->basin[0]);
     }
 
     // Estimate the new lake fraction (before recharge)
@@ -2049,13 +2053,17 @@ water_balance(lake_var_struct *lake,
     // baseflow will only come from under the liquid portion of the lake
     ErrorFlag = get_depth(lake_con, lake->volume - lake->ice_water_eq, &ldepth);
     if (ErrorFlag == ERROR) {
-        log_err("Error calculating depth: volume = %f, depth = %e",
-                lake->volume, ldepth);
+        log_err("Error calculating depth: volume = %f, maxvolume = %f, "
+                "depth = %e, maxdepth = %e",
+                lake->volume, lake_con->maxvolume, 
+                ldepth, lake_con->maxvolume);
     }
     ErrorFlag = get_sarea(lake_con, ldepth, &surfacearea);
     if (ErrorFlag == ERROR) {
-        log_err("Error calculating area: depth = %f, sarea = %e",
-                ldepth, surfacearea);
+        log_err("Error calculating area: depth = %f, maxdepth = %f, "
+                "sarea = %e, maxsarea = %e",
+                ldepth, lake_con->maxdepth,
+                surfacearea, lake_con->basin[0]);
     }
     lake->baseflow_out = baseflow_out_mm * surfacearea / MM_PER_M;
     if (!options.LAKE_TEMPERATURE) {
@@ -2071,8 +2079,10 @@ water_balance(lake_var_struct *lake,
     // Find new lake depth for runoff calculations
     ErrorFlag = get_depth(lake_con, lake->volume - lake->ice_water_eq, &ldepth);
     if (ErrorFlag == ERROR) {
-        log_err("Error calculating depth: volume = %f, depth = %e",
-                lake->volume, ldepth);
+        log_err("Error calculating depth: volume = %f, maxvolume = %f, "
+                "depth = %e, maxdepth = %e",
+                lake->volume, lake_con->maxvolume, 
+                ldepth, lake_con->maxdepth);
     }
 
     // Compute runoff volume in m^3 and extract runoff volume from lake
@@ -2134,8 +2144,10 @@ water_balance(lake_var_struct *lake,
     ErrorFlag =
         get_depth(lake_con, lake->volume - lake->ice_water_eq, &(lake->ldepth));
     if (ErrorFlag == ERROR) {
-        log_err("Error calculating depth: volume = %f, depth = %e",
-                lake->volume, lake->ldepth);
+        log_err("Error calculating depth: volume = %f, maxvolume = %f, "
+                "depth = %e, maxdepth = %e",
+                lake->volume, lake_con->maxvolume, 
+                lake->ldepth, lake_con->maxdepth);
     }
 
     /**********************************************************************
