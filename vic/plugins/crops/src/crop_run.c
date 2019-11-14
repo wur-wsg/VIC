@@ -97,7 +97,8 @@ crop_run(size_t iCell)
         crop_reset_meteo(iCell);
     }
     
-    if(current > 0 && dmy[current].day != dmy[current - 1].day){
+    if(current > 0 && current < global_param.nrecs && 
+            dmy[current].day != dmy[current + 1].day){
         for(iBand = 0; iBand < options.SNOW_BAND; iBand ++) {
             cgrid = Grid[iCell][iBand];
 
@@ -110,7 +111,7 @@ crop_run(size_t iCell)
                 cgrid->vic->MeteoYear = dmy[current].year;
 
                 if(cgrid->vic->MeteoDay <= 0){
-                    cgrid->vic->MeteoDay += DAYS_PER_JYEAR + leap_year(cgrid->vic->MeteoYear - 1, global_param.calendar);
+                    cgrid->vic->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->vic->MeteoYear - 1, global_param.calendar);
                 }
 
                 if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] > 0) {

@@ -236,6 +236,8 @@ void GetCropData(Plant *CROP, char *cropfile)
     CROP->K_st.death_lv = 0.;
     CROP->K_st.death_st = 0.;
     CROP->K_st.death_ro = 0.;
-          
+
+    /* Leaf properties */
+    CROP->LeaveProperties = NULL;
 }
 

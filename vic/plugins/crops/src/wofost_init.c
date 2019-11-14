@@ -62,7 +62,6 @@ wofost_set_data_text(char *list)
         GetSimInput(path, cf, mf, 
                 Emergence, k, tmpGrid);
         tmpGrid->vic->crop_class = k;
-        tmpGrid->vic->CycleLength = 300;
     
         for(i = 0; i < local_domain.ncells_active; i++) {
             iCrop = crop_con_map[i].cidx[k];
@@ -156,7 +155,7 @@ wofost_set_data(void)
                         iGrid = iGrid->next;
                     }
                     
-                    dmy_julian_day(dvar[i], global_param.calendar, &(iGrid->start));
+                    dmy_julian_day(dvar[i] - 1, global_param.calendar, &(iGrid->start));
                 }
             }
         }
@@ -178,7 +177,28 @@ wofost_set_data(void)
                         iGrid = iGrid->next;
                     }
                     
-                    dmy_julian_day(dvar[i], global_param.calendar, &(iGrid->end));
+                    dmy_julian_day(dvar[i] - 1, global_param.calendar, &(iGrid->end));
+                }
+            }
+        }
+    }
+    
+    // Set cycle length
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            iCrop = crop_con_map[i].cidx[j];
+            if (iCrop != NODATA_VEG) {
+                for (k = 0; k < options.SNOW_BAND; k++) {
+                    iGrid = Grid[i][k];
+                    for(l = 0; l < (size_t)iCrop; l++){
+                        iGrid = iGrid->next;
+                    }
+                    
+                    if(iGrid->start.day_in_year < iGrid->end.day_in_year){
+                        iGrid->vic->CycleLength = (int)(iGrid->end.day_in_year - iGrid->start.day_in_year);
+                    } else {
+                        iGrid->vic->CycleLength = (int)(iGrid->start.day_in_year - iGrid->end.day_in_year);
+                    }
                 }
             }
         }

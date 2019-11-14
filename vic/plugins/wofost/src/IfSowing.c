@@ -14,7 +14,7 @@ void IfSowing(SimUnit *Grid, dmy_struct* start)
     extern size_t current;
       
     if (dmy[current].month == start->month &&
-        dmy[current].day - 1 == start->day)
+        dmy[current].day == start->day)
     {
         Grid->crp->Sowing = 1;
     }
