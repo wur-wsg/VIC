@@ -15,14 +15,14 @@ crop_reset_meteo(size_t iCell)
         cgrid = Grid[iCell][iBand];
         
         while(cgrid){
-            cshift(cgrid->vic->Tmin, 1, DAYS_PER_WEEK, 1, -1);
+            cshift(cgrid->met->Tmin, 1, DAYS_PER_WEEK, 1, -1);
 
-            cgrid->vic->Tmin[0] = 9999;
-            cgrid->vic->Tmax = -9999;
-            cgrid->vic->Temp = 0.0;
-            cgrid->vic->DayTemp = 0.0;
-            cgrid->vic->Radiation = 0.0;
-            cgrid->vic->CO2 = 0.0;
+            cgrid->met->Tmin[0] = 9999;
+            cgrid->met->Tmax = -9999;
+            cgrid->met->Temp = 0.0;
+            cgrid->met->DayTemp = 0.0;
+            cgrid->met->Radiation = 0.0;
+            cgrid->met->CO2 = 0.0;
             cgrid->soil->WaterStress = 0.0;
 
             cgrid = cgrid->next;
@@ -53,21 +53,21 @@ crop_register_meteo(size_t iCell)
         cgrid = Grid[iCell][iBand];
 
         while(cgrid){
-            crop_class = cgrid->vic->crop_class;
+            crop_class = cgrid->met->crop_class;
             veg_class = crop_con_map[iCell].veg_class[crop_class];
             iVeg = veg_con_map[iCell].vidx[veg_class];
 
-            cgrid->vic->CO2 += crop_force[iCell].CO2 / 
+            cgrid->met->CO2 += crop_force[iCell].CO2 / 
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
-            cgrid->vic->Radiation += force[iCell].shortwave[NR] * SEC_PER_DAY / 
+            cgrid->met->Radiation += force[iCell].shortwave[NR] * SEC_PER_DAY / 
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
             cgrid->soil->WaterStress += all_vars[iCell].cell[iVeg][iBand].water_stress / 
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
 
-            cgrid->vic->Tmin[0] = min(cgrid->vic->Tmin[0], force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
-            cgrid->vic->Tmax = max(cgrid->vic->Tmax, force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
-            cgrid->vic->Temp = 0.5 * (cgrid->vic->Tmin[0] + cgrid->vic->Tmax);
-            cgrid->vic->DayTemp = 0.5 * (cgrid->vic->Temp + cgrid->vic->Tmax);
+            cgrid->met->Tmin[0] = min(cgrid->met->Tmin[0], force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
+            cgrid->met->Tmax = max(cgrid->met->Tmax, force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
+            cgrid->met->Temp = 0.5 * (cgrid->met->Tmin[0] + cgrid->met->Tmax);
+            cgrid->met->DayTemp = 0.5 * (cgrid->met->Temp + cgrid->met->Tmax);
             
             cgrid = cgrid->next;
         }
@@ -103,15 +103,15 @@ crop_run(size_t iCell)
             cgrid = Grid[iCell][iBand];
 
             while(cgrid){
-                crop_class = cgrid->vic->crop_class;
+                crop_class = cgrid->met->crop_class;
                 veg_class = crop_con_map[iCell].veg_class[crop_class];
                 iVeg = veg_con_map[iCell].vidx[veg_class];
                 
-                cgrid->vic->MeteoDay = dmy[current].day_in_year - 1;
-                cgrid->vic->MeteoYear = dmy[current].year;
+                cgrid->met->MeteoDay = dmy[current].day_in_year - 1;
+                cgrid->met->MeteoYear = dmy[current].year;
 
-                if(cgrid->vic->MeteoDay <= 0){
-                    cgrid->vic->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->vic->MeteoYear - 1, global_param.calendar);
+                if(cgrid->met->MeteoDay <= 0){
+                    cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
                 }
 
                 if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] > 0) {

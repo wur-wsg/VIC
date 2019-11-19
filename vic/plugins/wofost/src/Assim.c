@@ -78,30 +78,30 @@ float DailyTotalAssimilation(SimUnit *Grid)
 
     KDiffuse = Afgen(Grid->crp->prm.KDiffuseTb, &(Grid->crp->st.Development));
 
-    EFF      = Afgen(Grid->crp->prm.EFFTb, &Grid->vic->DayTemp);
-    Factor   = Afgen(Grid->crp->prm.CO2EFFTB, &Grid->vic->CO2);
+    EFF      = Afgen(Grid->crp->prm.EFFTb, &Grid->met->DayTemp);
+    Factor   = Afgen(Grid->crp->prm.CO2EFFTB, &Grid->met->CO2);
 
     /* Correction for the atmospheric CO2 concentration */
     EFF      = EFF * Factor ;
 
-    AssimMax = Afgen(Grid->crp->prm.FactorAssimRateTemp, &Grid->vic->DayTemp) * 
+    AssimMax = Afgen(Grid->crp->prm.FactorAssimRateTemp, &Grid->met->DayTemp) * 
                Afgen(Grid->crp->prm.MaxAssimRate, &(Grid->crp->st.Development)) * 
-               Afgen(Grid->crp->prm.CO2AMAXTB, &Grid->vic->CO2);
+               Afgen(Grid->crp->prm.CO2AMAXTB, &Grid->met->CO2);
 
     if (AssimMax > 0. && Grid->crp->st.LAI > 0.)
     {
         for (i=0;i<3;i++)
         {
-            Hour       = 12.0+0.5*Grid->vic->Daylength*XGauss[i];
-            SinB       = max (0.,Grid->vic->SinLD+Grid->vic->CosLD*cos(2.*CONST_PI*(Hour+12.)/24.));
-            PAR        = 0.5*Grid->vic->Radiation*SinB*(1.+0.4*SinB)/Grid->vic->DSinBE;
-            PARDiffuse = min (PAR,SinB*Grid->vic->DiffRadPP);
+            Hour       = 12.0+0.5*Grid->met->Daylength*XGauss[i];
+            SinB       = max (0.,Grid->met->SinLD+Grid->met->CosLD*cos(2.*CONST_PI*(Hour+12.)/24.));
+            PAR        = 0.5*Grid->met->Radiation*SinB*(1.+0.4*SinB)/Grid->met->DSinBE;
+            PARDiffuse = min (PAR,SinB*Grid->met->DiffRadPP);
             PARDirect  = PAR-PARDiffuse;
             DailyTotalAssimilation = DailyTotalAssimilation + 
                 InstantAssimilation(Grid, KDiffuse,EFF,AssimMax,SinB,PARDiffuse,PARDirect) * WGauss[i];
         }  
     }
-    return(DailyTotalAssimilation*Grid->vic->Daylength);
+    return(DailyTotalAssimilation*Grid->met->Daylength);
 }
 
 
@@ -126,7 +126,7 @@ float Correct(SimUnit *Grid, float Assimilation)
     PreviousDay = 0;
     while (PreviousDay >= 0 && Counter < number)
     {
-      TminLowAvg += Grid->vic->Tmin[PreviousDay++]; 
+      TminLowAvg += Grid->met->Tmin[PreviousDay++]; 
       Counter++;
     }
 

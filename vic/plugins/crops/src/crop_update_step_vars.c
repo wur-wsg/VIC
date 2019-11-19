@@ -62,7 +62,7 @@ crop_update_step_vars(size_t iCell)
         cgrid = Grid[iCell][iBand];
         
         while(cgrid){
-            crop_class = cgrid->vic->crop_class;
+            crop_class = cgrid->met->crop_class;
             veg_class = crop_con_map[iCell].veg_class[crop_class];
             iVeg = veg_con_map[iCell].vidx[veg_class];
 

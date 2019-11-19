@@ -27,24 +27,6 @@ typedef struct TBLD {
 	struct TBLD *next;
 	} TABLE_D;
 
-typedef struct MANAGEMENT {
-        /** Tables for fertilizer application and recovery fraction **/
-        TABLE_D *N_Fert_table;
-        TABLE_D *P_Fert_table;
-        TABLE_D *K_Fert_table;
-        TABLE_D *Irrigation;
-        
-        float N_Mins;
-        float NRecoveryFrac;
-        float P_Mins;
-        float PRecoveryFrac;
-        float K_Mins; 
-        float KRecoveryFrac;
-        float N_Uptake_frac;
-        float P_Uptake_frac;
-        float K_Uptake_frac;
-        } Management;
-
 typedef struct CONSTANTS {
         float MaxEvapWater;
         float MoistureFC;
@@ -202,7 +184,6 @@ typedef struct STATES {
         float Transpiration;
         float WaterRootExt;
         } States;
-        
 
 typedef struct RATES {
         float EvapWater;
@@ -218,7 +199,6 @@ typedef struct RATES {
         float Transpiration;
         float WaterRootExt;
         } Rates;
-        
  
 typedef struct NUTRIENT_RATES {
         float roots;
@@ -242,7 +222,6 @@ typedef struct NUTRIENT_RATES {
         float death_st;
         float death_ro;
         } nutrient_rates;
-        
 
 typedef struct NUTRIENT_STATES {
         float roots;
@@ -269,7 +248,6 @@ typedef struct NUTRIENT_STATES {
         float Avail_ro;
         
         } nutrient_states;
-        
 
 typedef struct GROWTH_RATES {
         float roots;
@@ -314,7 +292,6 @@ typedef struct GREEN {
 	float area;
 	struct GREEN *next;
 	} Green;
-        
 
 typedef struct PLANT {
         int Emergence;
@@ -397,7 +374,25 @@ typedef struct FIELD {
         TABLE *NotInfTB;
         } Field;
 
-typedef struct VIC_PARAMETERS {
+typedef struct MANAGEMENT {
+        /** Tables for fertilizer application and recovery fraction **/
+        TABLE_D *N_Fert_table;
+        TABLE_D *P_Fert_table;
+        TABLE_D *K_Fert_table;
+        TABLE_D *Irrigation;
+        
+        float N_Mins;
+        float NRecoveryFrac;
+        float P_Mins;
+        float PRecoveryFrac;
+        float K_Mins; 
+        float KRecoveryFrac;
+        float N_Uptake_frac;
+        float P_Uptake_frac;
+        float K_Uptake_frac;
+        } Management;
+
+typedef struct METEO {
     /* constants */
     size_t crop_class;
     float Latitude;
@@ -423,7 +418,7 @@ typedef struct VIC_PARAMETERS {
     float CosLD; 
     float DiffRadPP;
     float DSinBE;
-} VICparameters;
+} Meteo;
         
 /* Place holder for a simulation unit */
 typedef struct SIMUNIT {
@@ -431,7 +426,7 @@ typedef struct SIMUNIT {
         Field *ste;
         Management *mng;
         Soil  *soil;
-        VICparameters *vic;
+        Meteo *met;
         int emergence;
         int file;
         dmy_struct start;
@@ -471,6 +466,7 @@ void IfSowing(SimUnit *, dmy_struct*);
 /* Additional functions */
 void Astro(SimUnit *);
 void Clean(SimUnit *);
+void CleanHarvest(SimUnit *);
 
 /* Crop growth */
 void Partioning(SimUnit *);

@@ -21,7 +21,7 @@ int EmergenceCrop(SimUnit *Grid, int Emergence)
             else
             {
                 DeltaTempSum = limit(0, Grid->crp->prm.TempEffMax - Grid->crp->prm.TempBaseEmergence, 
-                Grid->vic->Temp - Grid->crp->prm.TempBaseEmergence);
+                Grid->met->Temp - Grid->crp->prm.TempBaseEmergence);
                 Grid->crp->TSumEmergence += DeltaTempSum;
                 if (Grid->crp->TSumEmergence >= Grid->crp->prm.TSumEmergence)
                 {

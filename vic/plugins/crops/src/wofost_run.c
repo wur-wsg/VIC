@@ -24,7 +24,7 @@ wofost_run(SimUnit *Grid)
 
     if (Grid->crp->Sowing >= 1 && Grid->crp->Emergence == 1)
     {   
-        if (Grid->crp->st.Development <= (Grid->crp->prm.DevelopStageHarvest) && Grid->crp->GrowthDay < Grid->vic->CycleLength) 
+        if (Grid->crp->st.Development <= (Grid->crp->prm.DevelopStageHarvest) && Grid->crp->GrowthDay < Grid->met->CycleLength) 
         {
             Astro(Grid);
             
@@ -49,6 +49,7 @@ wofost_run(SimUnit *Grid)
         }
         else
         {
+            CleanHarvest(Grid);
             Emergence = 0;
             Grid->crp->TSumEmergence = 0;
             Grid->crp->Emergence = 0;

@@ -44,14 +44,13 @@ wofost_set_data_text(char *list)
         check_alloc_status(tmpGrid->mng, "Memory allocation error");
         tmpGrid->soil = malloc(sizeof(*(tmpGrid->soil)));
         check_alloc_status(tmpGrid->soil, "Memory allocation error");
-        tmpGrid->vic = malloc(sizeof(*(tmpGrid->vic)));
-        check_alloc_status(tmpGrid->vic, "Memory allocation error");
+        tmpGrid->met = malloc(sizeof(*(tmpGrid->met)));
+        check_alloc_status(tmpGrid->met, "Memory allocation error");
         tmpGrid->next = NULL;
 
         initialize_wofost_grid(tmpGrid);
     
-        sscanf(line, "%s %s %s %d" ,
-            path, cf, mf, &Emergence);
+        sscanf(line, "%s %s %s %d", path, cf, mf, &Emergence);
 
         if(k >= plugin_options.NCROPTYPES) {
             log_err("Crops in wofost text (%zu) file are more than "
@@ -59,16 +58,15 @@ wofost_set_data_text(char *list)
                     k, plugin_options.NCROPTYPES);
         }
 
-        GetSimInput(path, cf, mf, 
-                Emergence, k, tmpGrid);
-        tmpGrid->vic->crop_class = k;
+        GetSimInput(path, cf, mf, Emergence, k, tmpGrid);
+        tmpGrid->met->crop_class = k;
     
         for(i = 0; i < local_domain.ncells_active; i++) {
             iCrop = crop_con_map[i].cidx[k];
 
             if(iCrop != NODATA_VEG){
-                tmpGrid->vic->Latitude = local_domain.locations[i].latitude;
-                tmpGrid->vic->Longitude = local_domain.locations[i].longitude;
+                tmpGrid->met->Latitude = local_domain.locations[i].latitude;
+                tmpGrid->met->Longitude = local_domain.locations[i].longitude;
                     
                 for(l = 0; l < options.SNOW_BAND; l++){
                     iGrid = Grid[i][l];
@@ -195,9 +193,9 @@ wofost_set_data(void)
                     }
                     
                     if(iGrid->start.day_in_year < iGrid->end.day_in_year){
-                        iGrid->vic->CycleLength = (int)(iGrid->end.day_in_year - iGrid->start.day_in_year);
+                        iGrid->met->CycleLength = (int)(iGrid->end.day_in_year - iGrid->start.day_in_year);
                     } else {
-                        iGrid->vic->CycleLength = (int)(iGrid->start.day_in_year - iGrid->end.day_in_year);
+                        iGrid->met->CycleLength = (int)(iGrid->start.day_in_year - iGrid->end.day_in_year);
                     }
                 }
             }

@@ -350,7 +350,7 @@ initialize_wofost_soil(Soil *soil)
 }
 
 void
-initialize_wofost_vic(VICparameters *vic)
+initialize_wofost_vic(Meteo *vic)
 {
     size_t i;
     
@@ -409,7 +409,7 @@ initialize_wofost_grid(SimUnit *Grid)
     initialize_wofost_management(Grid->mng);
     initialize_wofost_field(Grid->ste);
     initialize_wofost_soil(Grid->soil);
-    initialize_wofost_vic(Grid->vic);
+    initialize_wofost_vic(Grid->met);
 }
 
 void

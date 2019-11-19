@@ -43,7 +43,7 @@ void IntegrationCrop(SimUnit *Grid)
     }
 
     /* Establish the age increase */
-    PhysAgeing = max(0., (Grid->vic->Temp - Grid->crp->prm.TempBaseLeaves)/(35.- Grid->crp->prm.TempBaseLeaves));
+    PhysAgeing = max(0., (Grid->met->Temp - Grid->crp->prm.TempBaseLeaves)/(35.- Grid->crp->prm.TempBaseLeaves));
     
     /* Store the initial address */
     LeaveProperties = Grid->crp->LeaveProperties;

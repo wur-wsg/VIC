@@ -428,7 +428,7 @@ copy_wofost_soil(Soil *from, Soil *to)
 }
 
 void
-copy_wofost_vic(VICparameters *from, VICparameters *to)
+copy_wofost_vic(Meteo *from, Meteo *to)
 {
     size_t i;
     
@@ -487,5 +487,5 @@ copy_wofost_grid(SimUnit *from, SimUnit *to)
     copy_wofost_management(from->mng, to->mng);
     copy_wofost_field(from->ste, to->ste);
     copy_wofost_soil(from->soil, to->soil);
-    copy_wofost_vic(from->vic, to->vic);
+    copy_wofost_vic(from->met, to->met);
 }

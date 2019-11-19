@@ -17,7 +17,7 @@ float RespirationRef(SimUnit *Grid, float TotalAssimilation)
     respiration  += Grid->crp->prm.RelRespiRoots * Grid->crp->st.roots;	
     respiration  += Grid->crp->prm.RelRespiStems * Grid->crp->st.stems;
     respiration  *= Afgen(Grid->crp->prm.FactorSenescence, &(Grid->crp->st.Development));
-    respiration  *= pow(Grid->crp->prm.Q10, 0.1 * (Grid->vic->Temp-TempRef));
+    respiration  *= pow(Grid->crp->prm.Q10, 0.1 * (Grid->met->Temp-TempRef));
     
     /* respiration can not exceed the assimilation */
     return (min(respiration, TotalAssimilation));

@@ -439,7 +439,7 @@ crop_put_data(size_t iCell)
         cgrid = Grid[iCell][iBand];
 
         while(cgrid){
-            crop_class = cgrid->vic->crop_class;
+            crop_class = cgrid->met->crop_class;
             
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] += cgrid->crp->st.Development * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] += cgrid->crp->st.leaves * area_fract;

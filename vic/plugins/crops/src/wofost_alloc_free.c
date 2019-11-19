@@ -45,8 +45,8 @@ wofost_alloc(void)
                 check_alloc_status(cgrid->mng, "Memory allocation error");
                 cgrid->soil = malloc(sizeof(*(cgrid->soil)));
                 check_alloc_status(cgrid->soil, "Memory allocation error");
-                cgrid->vic = malloc(sizeof(*(cgrid->vic)));
-                check_alloc_status(cgrid->vic, "Memory allocation error");
+                cgrid->met = malloc(sizeof(*(cgrid->met)));
+                check_alloc_status(cgrid->met, "Memory allocation error");
                 cgrid->next = NULL;
             }
         }

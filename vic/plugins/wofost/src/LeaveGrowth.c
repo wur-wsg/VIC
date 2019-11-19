@@ -36,7 +36,7 @@ void LeaveGrowth(SimUnit *Grid)
         }
        
         /* Effective temperature for leave growth */
-        DTeff = max(0.,Grid->vic->Temp - Grid->crp->prm.TempBaseLeaves);
+        DTeff = max(0.,Grid->met->Temp - Grid->crp->prm.TempBaseLeaves);
         
         /* Correction for nutrient stress */
         GrowthExpLAI = Grid->crp->st.LAIExp * Grid->crp->prm.RelIncreaseLAI * DTeff * Stress;
