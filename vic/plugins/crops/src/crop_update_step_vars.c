@@ -92,8 +92,7 @@ crop_update_step_vars(size_t iCell)
             cveg_hist->albedo[NR] += ((1 - lai_coverage) * param.ALBEDO_BARE_SOIL + lai_coverage * cgrid->crp->prm.Albedo) * Cc;
             cveg_hist->displacement[NR] += height * param.VEG_RATIO_DH_HEIGHT * Cc;
             cveg_hist->roughness[NR] += height * param.VEG_RATIO_RL_HEIGHT * Cc;
-            //cveg_hist->LAI[NR] = 5; // Temporary for testing
-            
+
             tmp_min = min(cgrid->crp->st.Development, 1.0);
             cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
             cveg_lib->trunk_ratio += cgrid->crp->prm.TrunkRatio * Cc;

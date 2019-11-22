@@ -112,17 +112,6 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].description,
              MAXSTRING, "%s", "crop leaf area index");
     
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTR].varname, MAXSTRING,
-             "%s", "OUT_CROP_WSTR");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTR].long_name, MAXSTRING,
-             "%s", "waterstress");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTR].standard_name,
-             MAXSTRING, "%s", "crop_waterstress");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTR].units, MAXSTRING,
-             "%s", "mm mm-1");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTR].description,
-             MAXSTRING, "%s", "crop water stress factor");
-    
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].varname, MAXSTRING,
              "%s", "OUT_CROP_NPKI");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].long_name, MAXSTRING,
@@ -273,7 +262,6 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSO].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WRT].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].nelem = plugin_options.NCROPTYPES;
-    out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTR].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_NNI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_PNI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_KNI].nelem = plugin_options.NCROPTYPES;
@@ -333,7 +321,6 @@ crop_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_CROP_WSO:
         case N_OUTVAR_TYPES + OUT_CROP_WRT:
         case N_OUTVAR_TYPES + OUT_CROP_LAI:
-        case N_OUTVAR_TYPES + OUT_CROP_WSTR:
         case N_OUTVAR_TYPES + OUT_CROP_NNI:
         case N_OUTVAR_TYPES + OUT_CROP_PNI:
         case N_OUTVAR_TYPES + OUT_CROP_KNI:
@@ -371,7 +358,6 @@ crop_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_CROP_WSO:
         case N_OUTVAR_TYPES + OUT_CROP_WRT:
         case N_OUTVAR_TYPES + OUT_CROP_LAI:
-        case N_OUTVAR_TYPES + OUT_CROP_WSTR:
         case N_OUTVAR_TYPES + OUT_CROP_NNI:
         case N_OUTVAR_TYPES + OUT_CROP_PNI:
         case N_OUTVAR_TYPES + OUT_CROP_KNI:
@@ -407,7 +393,6 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_WST:
     case  N_OUTVAR_TYPES + OUT_CROP_WSO:
     case  N_OUTVAR_TYPES + OUT_CROP_WRT:
-    case  N_OUTVAR_TYPES + OUT_CROP_WSTR:
     case  N_OUTVAR_TYPES + OUT_CROP_LAI:
     case  N_OUTVAR_TYPES + OUT_CROP_NNI:
     case  N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -459,7 +444,6 @@ crop_put_data(size_t iCell)
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSO][crop_class] += cgrid->crp->st.storage * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WRT][crop_class] += cgrid->crp->st.roots * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTR][crop_class] += cgrid->soil->WaterStress * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] += cgrid->crp->N_st.Indx * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] += cgrid->crp->P_st.Indx * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract;

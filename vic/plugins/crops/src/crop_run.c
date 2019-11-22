@@ -63,7 +63,6 @@ crop_register_meteo(size_t iCell)
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
             cgrid->soil->WaterStress += all_vars[iCell].cell[iVeg][iBand].water_stress / 
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
-            //cgrid->soil->WaterStress = 1; // Temporary for testing
 
             cgrid->met->Tmin[0] = min(cgrid->met->Tmin[0], force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
             cgrid->met->Tmax = max(cgrid->met->Tmax, force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
