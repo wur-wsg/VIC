@@ -118,6 +118,7 @@ enum {
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
     // crop
+    OUT_CROP_GROW,                   /**< crop growing flag [-] */
     OUT_CROP_DVS,                       /**< crop development stage [-] */
     OUT_CROP_WLV,                       /**< crop leafs dry matter [kg ha-1] */
     OUT_CROP_WST,                       /**< crop stems dry matter [kg ha-1] */

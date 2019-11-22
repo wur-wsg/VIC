@@ -19,6 +19,7 @@ wofost_run(SimUnit *Grid)
             /* Initialize: set state variables */
             InitializeCrop(Grid);
             InitializeNutrients(Grid);
+            Grid->growing = 1;
         }  
     }
 
@@ -54,6 +55,9 @@ wofost_run(SimUnit *Grid)
             Grid->crp->TSumEmergence = 0;
             Grid->crp->Emergence = 0;
             Grid->crp->Sowing    = 0;
+            /* Initialize: set state variables */
+            Grid->crp->st.LAI = 0;
+            Grid->growing = 0;
         }
     }
 }

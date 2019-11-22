@@ -432,6 +432,7 @@ typedef struct SIMUNIT {
         dmy_struct start;
         dmy_struct end;
         struct SIMUNIT *next;
+        int growing;
         } SimUnit;
         
 SimUnit ***Grid;

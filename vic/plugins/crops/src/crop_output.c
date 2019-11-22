@@ -35,6 +35,17 @@ crop_set_output_met_data_info(void)
 {
     extern metadata_struct out_metadata[];
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].varname, MAXSTRING,
+             "%s", "OUT_CROP_GROW");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].long_name, MAXSTRING,
+             "%s", "growing_flag");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].standard_name,
+             MAXSTRING, "%s", "crop_growing_flag");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].units, MAXSTRING,
+             "%s", "-");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].description,
+             MAXSTRING, "%s", "0 = not growing, 1 = growing");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].varname, MAXSTRING,
              "%s", "OUT_CROP_DVS");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].long_name, MAXSTRING,
@@ -255,6 +266,7 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_KDEM].description,
              MAXSTRING, "%s", "crop potassium demand");
 
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WLV].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WST].nelem = plugin_options.NCROPTYPES;
@@ -314,6 +326,7 @@ crop_set_nc_var_info(unsigned int    varid,
     
     // Set the number of dimensions and dimids for each state variable
     switch(varid){
+        case N_OUTVAR_TYPES + OUT_CROP_GROW:
         case N_OUTVAR_TYPES + OUT_CROP_DVS:
         case N_OUTVAR_TYPES + OUT_CROP_WLV:
         case N_OUTVAR_TYPES + OUT_CROP_WST:
@@ -351,6 +364,7 @@ crop_set_nc_var_dimids(unsigned int    varid,
                        nc_var_struct  *nc_var)
 {
     switch(varid){
+        case N_OUTVAR_TYPES + OUT_CROP_GROW:
         case N_OUTVAR_TYPES + OUT_CROP_DVS:
         case N_OUTVAR_TYPES + OUT_CROP_WLV:
         case N_OUTVAR_TYPES + OUT_CROP_WST:
@@ -387,31 +401,28 @@ crop_history(int           varid,
              unsigned int *agg_type)
 {
     switch (varid) {
+    case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_DVS:
     case  N_OUTVAR_TYPES + OUT_CROP_WLV:
     case  N_OUTVAR_TYPES + OUT_CROP_WST:
     case  N_OUTVAR_TYPES + OUT_CROP_WSO:
     case  N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case  N_OUTVAR_TYPES + OUT_CROP_WSTR:
     case  N_OUTVAR_TYPES + OUT_CROP_LAI:
+    case  N_OUTVAR_TYPES + OUT_CROP_NNI:
+    case  N_OUTVAR_TYPES + OUT_CROP_PNI:
+    case  N_OUTVAR_TYPES + OUT_CROP_KNI:
+    case  N_OUTVAR_TYPES + OUT_CROP_NPKI:
     case  N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_KSOIL:
-        (*agg_type) = AGG_TYPE_END;
-        break;
     case  N_OUTVAR_TYPES + OUT_CROP_NUPT:
     case  N_OUTVAR_TYPES + OUT_CROP_PUPT:
     case  N_OUTVAR_TYPES + OUT_CROP_KUPT:
     case  N_OUTVAR_TYPES + OUT_CROP_NDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_PDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_KDEM:
-        (*agg_type) = AGG_TYPE_SUM;
-        break;
-    case  N_OUTVAR_TYPES + OUT_CROP_WSTR:
-    case  N_OUTVAR_TYPES + OUT_CROP_NNI:
-    case  N_OUTVAR_TYPES + OUT_CROP_PNI:
-    case  N_OUTVAR_TYPES + OUT_CROP_KNI:
-    case  N_OUTVAR_TYPES + OUT_CROP_NPKI:
-        (*agg_type) = AGG_TYPE_AVG;
+        (*agg_type) = AGG_TYPE_END;
         break;
     }
 }
@@ -441,6 +452,7 @@ crop_put_data(size_t iCell)
         while(cgrid){
             crop_class = cgrid->met->crop_class;
             
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_GROW][crop_class] += cgrid->growing * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] += cgrid->crp->st.Development * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] += cgrid->crp->st.leaves * area_fract;
             out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WST][crop_class] += cgrid->crp->st.stems * area_fract;
