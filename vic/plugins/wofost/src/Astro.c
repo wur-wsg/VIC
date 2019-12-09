@@ -31,7 +31,9 @@ void Astro(SimUnit *Grid)
   
     Grid->met->SinLD = sin(RAD_PER_DEG*Grid->met->Latitude)*sin(Declination);
     Grid->met->CosLD = cos(RAD_PER_DEG*Grid->met->Latitude)*cos(Declination);
-    AOB   = Grid->met->SinLD/Grid->met->CosLD;
+    AOB = Grid->met->SinLD/Grid->met->CosLD;
+    tmp_min = min(1, AOB);
+    AOB = max(-1, tmp_min);
     
    /* Astronomical day length */
     tmp_min = min(24.,12.0*(1.+2.*asin(AOB)/CONST_PI));
