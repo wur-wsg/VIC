@@ -467,9 +467,9 @@ crop_put_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NUPT][crop_class] += cgrid->crp->N_rt.Uptake * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PUPT][crop_class] += cgrid->crp->P_rt.Uptake * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KUPT][crop_class] += cgrid->crp->K_rt.Uptake * area_fract * cgrid->growing;
-                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] += cgrid->crp->N_rt.Demand_lv + cgrid->crp->N_rt.Demand_st + cgrid->crp->N_rt.Demand_so + cgrid->crp->N_rt.Demand_ro * area_fract * cgrid->growing;
-                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] += cgrid->crp->P_rt.Demand_lv + cgrid->crp->P_rt.Demand_st + cgrid->crp->P_rt.Demand_so + cgrid->crp->P_rt.Demand_ro * area_fract * cgrid->growing;
-                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] += cgrid->crp->K_rt.Demand_lv + cgrid->crp->K_rt.Demand_st + cgrid->crp->K_rt.Demand_so + cgrid->crp->K_rt.Demand_ro * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] += cgrid->crp->N_rt.Demand * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] += cgrid->crp->P_rt.Demand * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] += cgrid->crp->K_rt.Demand * area_fract * cgrid->growing;
                 
                 cgrid = cgrid->next;
             }

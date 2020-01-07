@@ -207,6 +207,25 @@ void GetCropData(Plant *CROP, char *cropfile)
     CROP->N_st.Indx = 1.;
     CROP->P_st.Indx = 1.;
     CROP->K_st.Indx = 1.;
+    
+     /* Set the initial demand states to zero*/
+    CROP->N_st.Demand    = 0.;
+    CROP->N_st.Demand_lv = 0.;
+    CROP->N_st.Demand_st = 0.;
+    CROP->P_st.Demand_so = 0.;
+    CROP->N_st.Demand_ro = 0.;
+
+    CROP->P_st.Demand    = 0.;
+    CROP->P_st.Demand_lv = 0.;
+    CROP->P_st.Demand_st = 0.;
+    CROP->P_st.Demand_so = 0.;
+    CROP->P_st.Demand_ro = 0.;
+
+    CROP->K_st.Demand    = 0.;
+    CROP->K_st.Demand_lv = 0.;
+    CROP->K_st.Demand_st = 0.;
+    CROP->P_st.Demand_so = 0.;
+    CROP->K_st.Demand_ro = 0.;
 
      /* Set the initial uptake states to zero*/
     CROP->N_st.Uptake    = 0.;

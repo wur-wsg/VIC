@@ -56,6 +56,25 @@ void InitializeNutrients(SimUnit *Grid)
     Grid->crp->K_st.death_lv = 0.;
     Grid->crp->K_st.death_st = 0.;
     Grid->crp->K_st.death_ro = 0.;
+    
+    /* Set the initial demand to zero*/
+    Grid->crp->N_st.Demand = 0.;
+    Grid->crp->N_st.Demand_lv = 0.;
+    Grid->crp->N_st.Demand_st = 0.;
+    Grid->crp->N_st.Demand_so = 0.;
+    Grid->crp->N_st.Demand_ro = 0.;
+    
+    Grid->crp->P_st.Demand = 0.;
+    Grid->crp->P_st.Demand_lv = 0.;
+    Grid->crp->P_st.Demand_st = 0.;
+    Grid->crp->P_st.Demand_so = 0.;
+    Grid->crp->P_st.Demand_ro = 0.;
+    
+    Grid->crp->K_st.Demand = 0.;
+    Grid->crp->K_st.Demand_lv = 0.;
+    Grid->crp->K_st.Demand_st = 0.;
+    Grid->crp->K_st.Demand_so = 0.;
+    Grid->crp->K_st.Demand_ro = 0.;
        
     /* Set the initial uptake to zero*/
     Grid->crp->N_st.Uptake    = 0.;

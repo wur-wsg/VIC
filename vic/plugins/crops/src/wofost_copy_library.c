@@ -206,6 +206,7 @@ copy_wofost_nutrient_rates(nutrient_rates *from, nutrient_rates *to)
     to->stems = from->stems;
     to->leaves = from->leaves;
     to->storage = from->storage;
+    to->Demand = from->Demand;
     to->Demand_lv = from->Demand_lv;
     to->Demand_st = from->Demand_st;
     to->Demand_ro = from->Demand_ro;
@@ -230,6 +231,11 @@ copy_wofost_nutrient_states(nutrient_states *from, nutrient_states *to)
     to->stems = from->stems;
     to->leaves = from->leaves;
     to->storage = from->storage;
+    to->Demand = from->Demand;
+    to->Demand_lv = from->Demand_lv;
+    to->Demand_st = from->Demand_st;
+    to->Demand_ro = from->Demand_ro;
+    to->Demand_so = from->Demand_so;
     to->Max_lv = from->Max_lv;
     to->Max_st = from->Max_st;
     to->Max_ro = from->Max_ro;

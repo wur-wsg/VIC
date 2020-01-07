@@ -18,6 +18,11 @@ void IntegrationNutrients(SimUnit *Grid)
     Grid->ste->st_P_mins  = max(0., Grid->ste->st_P_mins - Grid->ste->rt_P_mins);
     Grid->ste->st_K_mins  = max(0., Grid->ste->st_K_mins - Grid->ste->rt_K_mins);
         
+    /* Demand */
+    Grid->crp->N_st.Demand += Grid->crp->N_rt.Demand;
+    Grid->crp->P_st.Demand += Grid->crp->N_rt.Demand;
+    Grid->crp->K_st.Demand += Grid->crp->N_rt.Demand;
+    
     /* Uptake */
     Grid->crp->N_st.Uptake += Grid->crp->N_rt.Uptake;
     Grid->crp->P_st.Uptake += Grid->crp->P_rt.Uptake;

@@ -205,6 +205,7 @@ typedef struct NUTRIENT_RATES {
         float stems;
         float leaves;
         float storage;
+        float Demand;
         float Demand_lv;
         float Demand_st;
         float Demand_ro;
@@ -228,6 +229,11 @@ typedef struct NUTRIENT_STATES {
         float stems;
         float leaves;
         float storage;
+        float Demand;
+        float Demand_lv;
+        float Demand_st;
+        float Demand_ro;
+        float Demand_so;
         float Max_lv;
         float Max_st;
         float Max_ro;

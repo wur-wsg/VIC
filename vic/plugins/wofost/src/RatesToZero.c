@@ -57,16 +57,19 @@ void RatesToZero(SimUnit *Grid)
     Grid->crp->K_rt.storage = 0.;
     
     /* Set the nutrient demand rates */
+    Grid->crp->N_rt.Demand = 0.;
     Grid->crp->N_rt.Demand_lv = 0.;
     Grid->crp->N_rt.Demand_st = 0.;
     Grid->crp->N_rt.Demand_ro = 0.;
     Grid->crp->N_rt.Demand_so = 0.;
     
+    Grid->crp->P_rt.Demand = 0.;
     Grid->crp->P_rt.Demand_lv = 0.;
     Grid->crp->P_rt.Demand_st = 0.;
     Grid->crp->P_rt.Demand_ro = 0.;
     Grid->crp->P_rt.Demand_so = 0.;
     
+    Grid->crp->K_rt.Demand = 0.;
     Grid->crp->K_rt.Demand_lv = 0.;
     Grid->crp->K_rt.Demand_st = 0.;
     Grid->crp->K_rt.Demand_ro = 0.;
