@@ -128,7 +128,9 @@ crop_update_step_vars(size_t iCell)
                 cveg_hist->albedo[NR] += param.ALBEDO_BARE_SOIL * 
                         (1 - cveg_hist->fcanopy[NR]);
                 
-                if(cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
+                if (cveg_hist->fcanopy[NR] == 0) {
+                    cveg_hist->LAI[NR] = 0;
+                } else if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
                     cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];
                     cveg_hist->LAI[NR] = cveg_hist->fcanopy[NR];
                 }

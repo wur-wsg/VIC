@@ -45,6 +45,7 @@ void crop_history(int varid, unsigned int *);
 
 void crop_update_step_vars(size_t);
 void crop_forcing(void);
+bool crop_run_flag(void);
 void crop_run(size_t);
 void wofost_run(SimUnit *);
 void crop_put_data(size_t);

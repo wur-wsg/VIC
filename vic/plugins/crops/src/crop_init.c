@@ -125,32 +125,6 @@ crop_set_mapping(void)
                     locstr);
         }
     }
-     
-    // Run some checks and corrections for crops
-    for (i = 0; i < local_domain.ncells_active; i++) {   
-        for(l = 0; l < MONTHS_PER_YEAR; l++) {
-            Cc_sum = 0;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                if (crop_con_map[i].cidx[j] != NODATA_VEG) {
-                    Cc_sum = crop_con_map[i].Cc[j][l];
-                }
-            }
-            
-            // If the sum of the tile fractions is not within a tolerance,
-            // readjust Ccs to sum to 1.0
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                if (crop_con_map[i].cidx[j] != NODATA_VEG) {
-                    crop_con_map[i].Cc[j][k] /= Cc_sum;
-                }
-            }
-            if (!assert_close_double(Cc_sum, 1., 0., AREA_SUM_ERROR_THRESH)) {
-                sprint_location(locstr, &(local_domain.locations[i]));
-                log_warn("Sum of veg tile area fractions !=  1.0 (%.16f) at grid "
-                         "cell %zd. Adjusting fractions ...\n%s", Cc_sum, i,
-                         locstr);
-            }
-        }
-    }
     
     free(dvar);
     free(ivar);

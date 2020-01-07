@@ -74,6 +74,22 @@ crop_register_meteo(size_t iCell)
     }
 }
 
+bool
+crop_run_flag(void)
+{
+    extern global_param_struct global_param;
+    extern dmy_struct *dmy;
+    extern size_t current;
+    
+    if (current > 0 &&
+            dmy[current].dayseconds == 
+            SEC_PER_DAY - (SEC_PER_DAY / global_param.model_steps_per_day)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void
 crop_run(size_t iCell)
 {
@@ -98,8 +114,7 @@ crop_run(size_t iCell)
     }
     crop_register_meteo(iCell);
     
-    if(current > 0 && current < global_param.nrecs && 
-            dmy[current].day != dmy[current + 1].day){
+    if(crop_run_flag()){
         for(iBand = 0; iBand < options.SNOW_BAND; iBand ++) {
             cgrid = Grid[iCell][iBand];
 
