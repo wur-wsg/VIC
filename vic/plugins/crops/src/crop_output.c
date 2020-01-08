@@ -43,8 +43,52 @@ crop_set_output_met_data_info(void)
              MAXSTRING, "%s", "crop_growing_days");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].units, MAXSTRING,
              "%s", "days");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].description,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].description,
              MAXSTRING, "%s", "crop growing days");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].varname, MAXSTRING,
+             "%s", "OUT_CROP_EVAP");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].long_name, MAXSTRING,
+             "%s", "evapotranspiration");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].standard_name,
+             MAXSTRING, "%s", "crop_evapotranspiration");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].units, MAXSTRING,
+             "%s", "days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].description,
+             MAXSTRING, "%s", "crop evapotranspiration (transpiration + bare soil evaporation + canopy evaporation)");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].varname, MAXSTRING,
+             "%s", "OUT_CROP_EVAP_BARE");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].long_name, MAXSTRING,
+             "%s", "bare_evaporation");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].standard_name,
+             MAXSTRING, "%s", "crop_bare_evaporation");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].units, MAXSTRING,
+             "%s", "days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].description,
+             MAXSTRING, "%s", "crop bare soil evaporation");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP].varname, MAXSTRING,
+             "%s", "OUT_CROP_EVAP_CANOP");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP].long_name, MAXSTRING,
+             "%s", "canopy_evaporation");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP].standard_name,
+             MAXSTRING, "%s", "crop_canopy_evaporation");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP].units, MAXSTRING,
+             "%s", "days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP].description,
+             MAXSTRING, "%s", "crop canopy evaporation");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG].varname, MAXSTRING,
+             "%s", "OUT_CROP_TRANSP_VEG");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG].long_name, MAXSTRING,
+             "%s", "transpiration");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG].standard_name,
+             MAXSTRING, "%s", "crop_transpiration");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG].units, MAXSTRING,
+             "%s", "days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG].description,
+             MAXSTRING, "%s", "crop transpiration");
 
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].varname, MAXSTRING,
              "%s", "OUT_CROP_DVS");
@@ -267,6 +311,10 @@ crop_set_output_met_data_info(void)
              MAXSTRING, "%s", "crop potassium demand");
 
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_DVS].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WLV].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WST].nelem = plugin_options.NCROPTYPES;
@@ -327,6 +375,10 @@ crop_set_nc_var_info(unsigned int    varid,
     // Set the number of dimensions and dimids for each state variable
     switch(varid){
         case N_OUTVAR_TYPES + OUT_CROP_GROW:
+        case N_OUTVAR_TYPES + OUT_CROP_EVAP:
+        case N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE:
+        case N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP:
+        case N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG:
         case N_OUTVAR_TYPES + OUT_CROP_DVS:
         case N_OUTVAR_TYPES + OUT_CROP_WLV:
         case N_OUTVAR_TYPES + OUT_CROP_WST:
@@ -365,6 +417,10 @@ crop_set_nc_var_dimids(unsigned int    varid,
 {
     switch(varid){
         case N_OUTVAR_TYPES + OUT_CROP_GROW:
+        case N_OUTVAR_TYPES + OUT_CROP_EVAP:
+        case N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE:
+        case N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP:
+        case N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG:
         case N_OUTVAR_TYPES + OUT_CROP_DVS:
         case N_OUTVAR_TYPES + OUT_CROP_WLV:
         case N_OUTVAR_TYPES + OUT_CROP_WST:
@@ -410,6 +466,10 @@ crop_history(int           varid,
         (*agg_type) = AGG_TYPE_AVG;
         break;
     case  N_OUTVAR_TYPES + OUT_CROP_GROW:
+    case  N_OUTVAR_TYPES + OUT_CROP_EVAP:
+    case  N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE:
+    case  N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP:
+    case  N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG:
     case  N_OUTVAR_TYPES + OUT_CROP_DVS:
     case  N_OUTVAR_TYPES + OUT_CROP_WLV:
     case  N_OUTVAR_TYPES + OUT_CROP_WST:
@@ -439,14 +499,73 @@ crop_put_data(size_t iCell)
     extern SimUnit ***Grid;
     extern double ***out_data;
     extern soil_con_struct *soil_con;
+    extern all_vars_struct *all_vars;
+    extern veg_con_map_struct *veg_con_map;
+    extern dmy_struct *dmy;
+    extern size_t current;
     
     double area_fract;
+    double cc_fract;
     
     size_t iBand;
+    size_t iVeg;
+    size_t iLayer;
     size_t crop_class;
+    size_t veg_class;
     
     SimUnit *cgrid;
     
+    /* Store crop states */
+    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+        area_fract = soil_con[iCell].AreaFract[iBand];
+        cgrid = Grid[iCell][iBand];
+
+        while(cgrid){
+            crop_class = cgrid->met->crop_class;
+            
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] += cgrid->crp->N_st.Indx * area_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] += cgrid->crp->P_st.Indx * area_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] += cgrid->crp->NPK_Indx * area_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTRESS][crop_class] += cgrid->soil->WaterStress * area_fract * cgrid->growing;
+
+            cgrid = cgrid->next;
+        }
+    }
+    
+    /* Store VIC crop fluxes */
+    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+        area_fract = soil_con[iCell].AreaFract[iBand];
+        cgrid = Grid[iCell][iBand];
+
+        while(cgrid){
+            crop_class = cgrid->met->crop_class;
+            veg_class = crop_con_map[iCell].veg_class[crop_class];
+            iVeg = veg_con_map[iCell].vidx[veg_class];
+            cc_fract = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
+            
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE][crop_class] += 
+                        all_vars[iCell].cell[iVeg][iBand].layer[iLayer].esoil * 
+                        area_fract * cc_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG][crop_class] +=  
+                        all_vars[iCell].cell[iVeg][iBand].layer[iLayer].transp * 
+                        area_fract * cc_fract * cgrid->growing;
+            }
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP][crop_class] += 
+                    all_vars[iCell].veg_var[iVeg][iBand].canopyevap * 
+                    area_fract * cc_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP][crop_class] +=
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE][crop_class] +
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_TRANSP_VEG][crop_class] +
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP][crop_class];
+
+            cgrid = cgrid->next;
+        }
+    }
+    
+    /* Store crop fluxes */
     if(crop_run_flag()){
         for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
             area_fract = soil_con[iCell].AreaFract[iBand];
@@ -473,24 +592,6 @@ crop_put_data(size_t iCell)
                 
                 cgrid = cgrid->next;
             }
-        }
-    }
-    
-    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
-        area_fract = soil_con[iCell].AreaFract[iBand];
-        cgrid = Grid[iCell][iBand];
-
-        while(cgrid){
-            crop_class = cgrid->met->crop_class;
-
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] += cgrid->crp->N_st.Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] += cgrid->crp->P_st.Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] += cgrid->crp->NPK_Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTRESS][crop_class] += cgrid->soil->WaterStress * area_fract * cgrid->growing;
-
-            cgrid = cgrid->next;
         }
     }
 
