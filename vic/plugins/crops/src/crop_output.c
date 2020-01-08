@@ -457,15 +457,13 @@ crop_history(int           varid,
              unsigned int *agg_type)
 {
     switch (varid) {
+    case  N_OUTVAR_TYPES + OUT_CROP_GROW:
+    case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_LAI:
     case  N_OUTVAR_TYPES + OUT_CROP_NNI:
     case  N_OUTVAR_TYPES + OUT_CROP_PNI:
     case  N_OUTVAR_TYPES + OUT_CROP_KNI:
     case  N_OUTVAR_TYPES + OUT_CROP_NPKI:
-    case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
-        (*agg_type) = AGG_TYPE_AVG;
-        break;
-    case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_EVAP:
     case  N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE:
     case  N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP:
@@ -515,25 +513,6 @@ crop_put_data(size_t iCell)
     
     SimUnit *cgrid;
     
-    /* Store crop states */
-    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
-        area_fract = soil_con[iCell].AreaFract[iBand];
-        cgrid = Grid[iCell][iBand];
-
-        while(cgrid){
-            crop_class = cgrid->met->crop_class;
-            
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] += cgrid->crp->N_st.Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] += cgrid->crp->P_st.Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] += cgrid->crp->NPK_Indx * area_fract * cgrid->growing;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTRESS][crop_class] += cgrid->soil->WaterStress * area_fract * cgrid->growing;
-
-            cgrid = cgrid->next;
-        }
-    }
-    
     /* Store VIC crop fluxes */
     for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
         area_fract = soil_con[iCell].AreaFract[iBand];
@@ -565,7 +544,6 @@ crop_put_data(size_t iCell)
         }
     }
     
-    /* Store crop fluxes */
     if(crop_run_flag()){
         for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
             area_fract = soil_con[iCell].AreaFract[iBand];
@@ -574,6 +552,7 @@ crop_put_data(size_t iCell)
             while(cgrid){
                 crop_class = cgrid->met->crop_class;
 
+                /* Store crop fluxes */
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_GROW][crop_class] += cgrid->growing * area_fract;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] += cgrid->crp->rt.Development * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] += cgrid->crp->rt.leaves * area_fract * cgrid->growing;
@@ -589,6 +568,14 @@ crop_put_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] += cgrid->crp->N_rt.Demand * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] += cgrid->crp->P_rt.Demand * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] += cgrid->crp->K_rt.Demand * area_fract * cgrid->growing;
+                
+                /* Store crop states - divide through number of growing days for average */
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NNI][crop_class] += cgrid->crp->N_st.Indx * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PNI][crop_class] += cgrid->crp->P_st.Indx * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] += cgrid->crp->NPK_Indx * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTRESS][crop_class] += cgrid->soil->WaterStress * area_fract * cgrid->growing;
                 
                 cgrid = cgrid->next;
             }
