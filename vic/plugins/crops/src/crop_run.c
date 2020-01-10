@@ -90,6 +90,21 @@ crop_run_flag(void)
     }
 }
 
+bool
+crop_reset_flag(void)
+{
+    extern global_param_struct global_param;
+    extern dmy_struct *dmy;
+    extern size_t current;
+    
+    if (current == 0 ||
+            dmy[current].dayseconds == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void
 crop_run(size_t iCell)
 {
@@ -109,7 +124,7 @@ crop_run(size_t iCell)
     
     SimUnit *cgrid;
     
-    if(current == 0){
+    if(crop_reset_flag()){
         crop_reset_meteo(iCell);
     }
     crop_register_meteo(iCell);
@@ -158,7 +173,5 @@ crop_run(size_t iCell)
                 cgrid = cgrid->next;
             }
         }
-        
-        crop_reset_meteo(iCell);
     }
 }
