@@ -157,10 +157,9 @@ crop_run(size_t iCell)
                                 iCell);
                     }
                     if (veg_con[iCell][iVeg].Cv <= 0) {
-                        log_err("Vegetation %zu coverage is <= 0 [%.4f] but "
+                        log_err("Crop %zu vegetation %zu coverage is <= 0 [%.4f] but "
                                 "growing is true for cell %zu",
                                 crop_class,
-                                crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
                                 veg_class,
                                 veg_con[iCell][iVeg].Cv,
                                 iCell);

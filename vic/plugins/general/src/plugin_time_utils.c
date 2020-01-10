@@ -106,11 +106,51 @@ between_jday(double start,
 unsigned short int
 days_per_month(unsigned short int month,
                unsigned short int year,
-                unsigned short int calendar)
+               unsigned short int calendar)
 {
     unsigned short int days_per_month[MONTHS_PER_YEAR] = {31,28,31,30,31,30,31,31,30,31,30,31};
     
-    days_per_month[2] += leap_year(year, calendar);
+    days_per_month[1] += leap_year(year, calendar);
     
     return(days_per_month[month - 1]);
+}
+
+/******************************************************************************
+ * @brief  makes a dmy from day of year
+ *****************************************************************************/
+void
+dmy_doy(double             doy,
+        unsigned short int year,
+        unsigned short int calendar,
+        dmy_struct        *dmy)
+{
+    int day, second, nday, month;
+    double dayofyr;
+    size_t i;
+    
+    dayofyr = doy;
+    for (i = 0; i < MONTHS_PER_YEAR; i++) {
+        nday = days_per_month(i + 1, year, calendar);
+        
+        if (doy < (double)(nday + 1)) {
+            month = i + 1;
+            day = (int)doy;
+            second = (int)((doy - (double)day) * SEC_PER_DAY);
+            break;
+        } else {
+            doy -= (double)nday;
+        }
+    }
+    
+    nday = days_per_month(MONTHS_PER_YEAR, year, calendar);
+    if (doy > (double)(nday + 1)) {
+        log_err("Day of year [%.3f] is larger than number of days in year",
+                dayofyr);
+    }
+    
+    dmy->day = day;
+    dmy->day_in_year = (int)dayofyr;
+    dmy->dayseconds = second;
+    dmy->month = month;
+    dmy->year = year;
 }

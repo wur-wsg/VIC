@@ -21,11 +21,14 @@ wofost_run(SimUnit *Grid)
             InitializeNutrients(Grid);
             Grid->growing = 1;
         }  
+        
+        /* Update the number of days that the crop was cultivated */
+        Grid->crp->CultivateDay++;
     }
 
     if (Grid->crp->Sowing >= 1 && Grid->crp->Emergence == 1)
     {   
-        if (Grid->crp->st.Development <= (Grid->crp->prm.DevelopStageHarvest) && Grid->crp->GrowthDay < Grid->met->CycleLength) 
+        if (Grid->crp->st.Development <= (Grid->crp->prm.DevelopStageHarvest) && Grid->crp->CultivateDay < Grid->met->CycleLength) 
         {
             Astro(Grid);
             
@@ -44,7 +47,8 @@ wofost_run(SimUnit *Grid)
             IntegrationCrop(Grid);
             IntegrationNutrients(Grid);
 
-            /* Update the number of days that the crop has grown*/
+            /* Update the number of days that the crop has grown */
+            Grid->crp->CultivateDay++;
             Grid->crp->GrowthDay++;
 
         }

@@ -278,6 +278,7 @@ initialize_wofost_plant(Plant *crp)
 {
     crp->DaysOxygenStress = 0;
     crp->Emergence = 0;
+    crp->CultivateDay = 0;
     crp->GrowthDay = 0;
     crp->NPK_Indx = 0.;
     crp->NutrientStress = 0.;

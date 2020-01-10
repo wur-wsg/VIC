@@ -362,6 +362,7 @@ copy_wofost_plant(Plant *from, Plant *to)
 {
     to->DaysOxygenStress = from->DaysOxygenStress;
     to->Emergence = from->Emergence;
+    to->CultivateDay = from->CultivateDay;
     to->GrowthDay = from->GrowthDay;
     to->NPK_Indx = from->NPK_Indx;
     to->NutrientStress = from->NutrientStress;

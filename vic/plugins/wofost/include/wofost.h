@@ -302,6 +302,7 @@ typedef struct GREEN {
 typedef struct PLANT {
         int Emergence;
         int Sowing;
+        int CultivateDay;
         int GrowthDay;       
         float NPK_Indx;
         float NutrientStress;

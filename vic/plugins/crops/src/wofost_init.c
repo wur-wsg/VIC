@@ -142,7 +142,8 @@ wofost_set_data(void)
                         iGrid = iGrid->next;
                     }
                     
-                    dmy_julian_day(dvar[i], global_param.calendar, &(iGrid->start));
+                    // plant is set to a random non-leap year
+                    dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->start));
                 }
             }
         }
@@ -164,7 +165,8 @@ wofost_set_data(void)
                         iGrid = iGrid->next;
                     }
                     
-                    dmy_julian_day(dvar[i], global_param.calendar, &(iGrid->end));
+                    // harvest is set to a random non-leap year
+                    dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->end));
                 }
             }
         }
@@ -182,9 +184,9 @@ wofost_set_data(void)
                     }
                     
                     if(iGrid->start.day_in_year < iGrid->end.day_in_year){
-                        iGrid->met->CycleLength = (int)(iGrid->end.day_in_year - iGrid->start.day_in_year);
+                        iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
                     } else {
-                        iGrid->met->CycleLength = (int)(iGrid->start.day_in_year - iGrid->end.day_in_year);
+                        iGrid->met->CycleLength = iGrid->start.day_in_year - iGrid->end.day_in_year;
                     }
                 }
             }
