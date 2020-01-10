@@ -145,27 +145,24 @@ crop_run(size_t iCell)
                     cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
                 }
 
-                if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] > 0) {
+                wofost_run(cgrid);
+                
+                /* Check crop coverage */
+                if (cgrid->growing == 1) {
+                    if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] <= 0) {
+                        log_err("Crop %zu coverage is <= 0 [%.4f] but "
+                                "growing is true for cell %zu",
+                                crop_class,
+                                crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
+                                iCell);
+                    }
                     if (veg_con[iCell][iVeg].Cv <= 0) {
-                        log_err("Crop %zu coverage is > 0 [%.4f] but "
-                                "vegetation %zu coverage is <= 0 [%.4f] "
-                                "for cell %zu",
+                        log_err("Vegetation %zu coverage is <= 0 [%.4f] but "
+                                "growing is true for cell %zu",
                                 crop_class,
                                 crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
                                 veg_class,
                                 veg_con[iCell][iVeg].Cv,
-                                iCell);
-                    }
-                    
-                    wofost_run(cgrid);
-                } else {
-                    IfSowing(cgrid, &cgrid->start);
-                    
-                    if (cgrid->crp->Sowing == 1) {
-                        log_err("Crop %zu coverage is <= 0 [%.4f] but "
-                                "sowing is true for cell %zu",
-                                crop_class,
-                                crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
                                 iCell);
                     }
                 }
