@@ -186,7 +186,7 @@ wofost_set_data(void)
                     if(iGrid->start.day_in_year < iGrid->end.day_in_year){
                         iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
                     } else {
-                        iGrid->met->CycleLength = iGrid->start.day_in_year - iGrid->end.day_in_year;
+                        iGrid->met->CycleLength = DAYS_PER_YEAR - iGrid->end.day_in_year + iGrid->start.day_in_year;
                     }
                 }
             }
