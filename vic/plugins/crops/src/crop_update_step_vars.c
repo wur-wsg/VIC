@@ -19,7 +19,7 @@ crop_update_step_vars(size_t iCell)
     double tmp_min;
     double Cc;
     double height;
-    double lai_coverage;
+    double root_sum;
     
     size_t iBand;
     size_t iLayer;
@@ -85,11 +85,10 @@ crop_update_step_vars(size_t iCell)
             Cc = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
             tmp_min = min(cgrid->crp->st.Development, 1.0);
             height = cgrid->crp->prm.MaxHeight * tmp_min;
-            lai_coverage = min(cgrid->crp->st.LAI, 1.0);
 
             cveg_hist->fcanopy[NR] += Cc;
             cveg_hist->LAI[NR] += cgrid->crp->st.LAI * Cc;
-            cveg_hist->albedo[NR] += ((1 - lai_coverage) * param.ALBEDO_BARE_SOIL + lai_coverage * cgrid->crp->prm.Albedo) * Cc;
+            cveg_hist->albedo[NR] += cgrid->crp->prm.Albedo * Cc;
             cveg_hist->displacement[NR] += height * param.VEG_RATIO_DH_HEIGHT * Cc;
             cveg_hist->roughness[NR] += height * param.VEG_RATIO_RL_HEIGHT * Cc;
 
@@ -103,12 +102,10 @@ crop_update_step_vars(size_t iCell)
             cveg_lib->RGL += cgrid->crp->prm.RGL * Cc;
             
             if(cgrid->crp->st.RootDepth > csoil_con->depth[0]) {
-                cveg_con->root[0] = csoil_con->depth[0] / cgrid->crp->st.RootDepth;
-                cveg_con->root[1] = 1 - cveg_con->root[0];
-                cveg_con->root[0] = 0.66;
-                cveg_con->root[1] = 0.34;
+                cveg_con->root[0] = (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
+                cveg_con->root[1] = (1 - cveg_con->root[0]) * Cc;
             } else {
-                cveg_con->root[0] = 1;
+                cveg_con->root[0] = Cc;
             }
 
             cgrid = cgrid->next;
@@ -121,19 +118,46 @@ crop_update_step_vars(size_t iCell)
         
         if(veg_class != NODATA_VEG) {
             iVeg = veg_con_map[iCell].vidx[veg_class];
-            
+            cveg_lib = &(veg_lib[iCell][veg_class]);
+                
             if(iVeg != NODATA_VEG) {
                 cveg_hist = &(veg_hist[iCell][iVeg]);
-                    
-                cveg_hist->albedo[NR] += param.ALBEDO_BARE_SOIL * 
-                        (1 - cveg_hist->fcanopy[NR]);
                 
+                /* Adjust vegetation specific variables for partial crop coverage.
+                 * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
+                 * all other parameters are assumed to be vegetation specific. */
                 if (cveg_hist->fcanopy[NR] == 0) {
-                    cveg_hist->LAI[NR] = 0;
-                } else if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
-                    cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];
-                    cveg_hist->LAI[NR] = cveg_hist->fcanopy[NR];
+                    cveg_lib->wind_h = param.SOIL_WINDH;
+                    
+                    cveg_hist->displacement[NR] = csoil_con->rough;
+                    cveg_hist->roughness[NR] = csoil_con->rough;
+                } else {
+                    cveg_lib->rarc /= cveg_hist->fcanopy[NR];
+                    cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
+                    cveg_lib->wind_atten /= cveg_hist->fcanopy[NR];
+                    cveg_lib->wind_h /= cveg_hist->fcanopy[NR];
+                    cveg_lib->rmin /= cveg_hist->fcanopy[NR];
+                    cveg_lib->rad_atten /= cveg_hist->fcanopy[NR];
+                    cveg_lib->RGL /= cveg_hist->fcanopy[NR];
+                    
+                    //cveg_hist->LAI[NR]/= cveg_hist->fcanopy[NR];
+                    cveg_hist->displacement[NR] /= cveg_hist->fcanopy[NR];
+                    cveg_hist->roughness[NR] /= cveg_hist->fcanopy[NR];
+                    
+                    root_sum = 0.;
+                    for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                        root_sum += cveg_con->root[iLayer];
+                    }
+                    for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                        cveg_con->root[iLayer] /= root_sum;
+                    }
                 }
+                    
+                /* If crop area LAI < 1, adjust fcanopy for partial crop coverage */
+                if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
+                    cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];
+                }
+                cveg_hist->albedo[NR] += (1 - cveg_hist->fcanopy[NR]) * param.ALBEDO_BARE_SOIL;
 
                 if(cveg_hist->fcanopy[NR] < MIN_FCANOPY){
                     cveg_hist->fcanopy[NR] = MIN_FCANOPY;
