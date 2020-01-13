@@ -131,6 +131,9 @@ crop_update_step_vars(size_t iCell)
                     
                     cveg_hist->displacement[NR] = csoil_con->rough;
                     cveg_hist->roughness[NR] = csoil_con->rough;
+                    
+                    cveg_con->root[0] = 0.5;
+                    cveg_con->root[1] = 0.5;
                 } else {
                     cveg_lib->rarc /= cveg_hist->fcanopy[NR];
                     cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];

@@ -100,17 +100,20 @@ irr_put_data(size_t iCell)
         
         if(veg_index != NODATA_VEG){
             veg_fract = veg_con[iCell][veg_index].Cv;
+        
+            if(veg_fract > 0) {
                     
-            for(j = 0; j < options.SNOW_BAND; j++){
-                area_fract = soil_con[iCell].AreaFract[j];
-                
-                if(area_fract > 0){
-                    out_data[iCell][N_OUTVAR_TYPES +
-                                    OUT_REQUIREMENT][0] += irr_var[iCell][i][j].requirement *
-                            veg_fract * area_fract;
-                    out_data[iCell][N_OUTVAR_TYPES +
-                                    OUT_SHORTAGE][0] += irr_var[iCell][i][j].shortage *
-                            veg_fract * area_fract;
+                for(j = 0; j < options.SNOW_BAND; j++){
+                    area_fract = soil_con[iCell].AreaFract[j];
+
+                    if(area_fract > 0){
+                        out_data[iCell][N_OUTVAR_TYPES +
+                                        OUT_REQUIREMENT][0] += irr_var[iCell][i][j].requirement *
+                                veg_fract * area_fract;
+                        out_data[iCell][N_OUTVAR_TYPES +
+                                        OUT_SHORTAGE][0] += irr_var[iCell][i][j].shortage *
+                                veg_fract * area_fract;
+                    }
                 }
             }
         }

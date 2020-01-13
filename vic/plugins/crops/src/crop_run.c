@@ -93,7 +93,6 @@ crop_run_flag(void)
 bool
 crop_reset_flag(void)
 {
-    extern global_param_struct global_param;
     extern dmy_struct *dmy;
     extern size_t current;
     

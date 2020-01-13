@@ -137,6 +137,7 @@ void GetCropData(Plant *CROP, char *cropfile)
 
     CROP->Emergence = 0;
     CROP->TSumEmergence = 0.;
+    CROP->CultivateDay = 0.;
 
     /* Crop development has not started yet*/
     CROP->st.RootDepth = 0.;
