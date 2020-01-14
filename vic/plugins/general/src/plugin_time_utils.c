@@ -128,6 +128,10 @@ dmy_doy(double             doy,
     double dayofyr;
     size_t i;
     
+    if (doy < 1 || doy > DAYS_PER_YEAR + leap_year(year, calendar)) {
+        log_err("Please define doy in range (1 - %d)", DAYS_PER_YEAR + leap_year(year, calendar));
+    }
+    
     dayofyr = doy;
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         nday = days_per_month(i + 1, year, calendar);
@@ -140,12 +144,6 @@ dmy_doy(double             doy,
         } else {
             doy -= (double)nday;
         }
-    }
-    
-    nday = days_per_month(MONTHS_PER_YEAR, year, calendar);
-    if (doy > (double)(nday + 1)) {
-        log_err("Day of year [%.3f] is larger than number of days in year",
-                dayofyr);
     }
     
     dmy->day = day;
