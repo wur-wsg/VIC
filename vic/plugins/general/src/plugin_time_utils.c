@@ -128,7 +128,7 @@ dmy_doy(double             doy,
     double dayofyr;
     size_t i;
     
-    if (doy < 1 || doy > DAYS_PER_YEAR + leap_year(year, calendar)) {
+    if (doy < 1 || doy >= DAYS_PER_YEAR + leap_year(year, calendar) + 1) {
         log_err("Please define doy in range (1 - %d)", DAYS_PER_YEAR + leap_year(year, calendar));
     }
     
