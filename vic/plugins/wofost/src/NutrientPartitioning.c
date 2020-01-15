@@ -27,7 +27,8 @@ void NutrientPartioning(SimUnit *Grid)
     if (Grid->crp->st.Development < Grid->crp->prm.DevelopmentStageNLimit && Grid->soil->WaterStress > 0.01)
         NutrientLimit = 1.;
     
-    //N_Fix_rt= max(0.,Grid->crp->N_rt.Uptake * Grid->crp->prm.N_fixation / max(0.02, 1.-Grid->crp->prm.N_fixation));
+    //tmp_max = max(0.02, 1.-Grid->crp->prm.N_fixation);
+    //N_Fix_rt= max(0.,Grid->crp->N_rt.Uptake * Grid->crp->prm.N_fixation / tmp_max);
     tmp_max = max(0., Grid->crp->prm.N_fixation * Grid->crp->N_rt.Demand);
     N_Fix_rt = (tmp_max * NutrientLimit);
     

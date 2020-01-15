@@ -11,6 +11,9 @@
 float InstantAssimilation(SimUnit *Grid, float KDiffuse, float EFF, float AssimMax, float SinB, 
         float PARDiffuse, float PARDirect)
 {
+    extern float XGauss[];
+    extern float WGauss[];
+    
     int i;
     float AbsorbedRadiationDiffuse, AbsorbedRadiationTotal, AbsorbedRadiationDirect;
     float AbsorbedShadedLeaves, AbsorbedDirectLeaves;
@@ -71,6 +74,9 @@ float InstantAssimilation(SimUnit *Grid, float KDiffuse, float EFF, float AssimM
 /*-----------------------------------------------------------------------------*/
 float DailyTotalAssimilation(SimUnit *Grid)
 {
+    extern float XGauss[];
+    extern float WGauss[];
+    
     int i;
     float KDiffuse, EFF, Factor;
     float Hour, SinB, PAR, PARDiffuse, PARDirect, AssimMax; 

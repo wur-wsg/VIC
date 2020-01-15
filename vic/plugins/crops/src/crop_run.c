@@ -137,7 +137,7 @@ crop_run(size_t iCell)
                 veg_class = crop_con_map[iCell].veg_class[crop_class];
                 iVeg = veg_con_map[iCell].vidx[veg_class];
                 
-                cgrid->met->MeteoDay = dmy[current].day_in_year - 1;
+                cgrid->met->MeteoDay = dmy[current].day_in_year;
                 cgrid->met->MeteoYear = dmy[current].year;
 
                 if(cgrid->met->MeteoDay <= 0){

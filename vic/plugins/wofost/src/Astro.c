@@ -15,6 +15,7 @@ void Astro(SimUnit *Grid)
     float Declination;
     float SolarConstant;
     float AOB;
+    float AOB2;
     float DSinB;
     float FractionDiffuseRad;
     float tmp_min;
@@ -40,7 +41,10 @@ void Astro(SimUnit *Grid)
     Grid->met->Daylength = max(0, tmp_min);
     
     /* Photoactive day length */
-    tmp_min = min(24.,12.0*(1.+2.*asin((-sin(-4.0*RAD_PER_DEG)+Grid->met->SinLD)/Grid->met->CosLD)/CONST_PI));
+    AOB2   = (-sin(-4.0*RAD_PER_DEG)+Grid->met->SinLD)/Grid->met->CosLD;
+    tmp_min = min(1, AOB2);
+    AOB2   = max(-1, tmp_min);
+    tmp_min = min(24.,12.0*(1.+2.*asin(AOB2)/CONST_PI));
     Grid->met->PARDaylength = max(0, tmp_min);
     
     /* Integrals of sine of solar height */

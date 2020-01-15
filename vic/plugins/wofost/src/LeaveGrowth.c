@@ -14,6 +14,7 @@ void LeaveGrowth(SimUnit *Grid)
     float SpecLeafArea; 
     float Stress;
     float DTeff;
+    float tmp_min;
 
     Green *Leave = NULL;
     Green *LeaveProperties = NULL;
@@ -45,7 +46,8 @@ void LeaveGrowth(SimUnit *Grid)
         GrowthSourceLimited = Grid->crp->rt.leaves * SpecLeafArea;
 
         /* Sink-limited leaf area increase */
-        SpecLeafArea = min(GrowthExpLAI, GrowthSourceLimited)/Grid->crp->rt.leaves;
+        tmp_min = min(GrowthExpLAI, GrowthSourceLimited);
+        SpecLeafArea = tmp_min/Grid->crp->rt.leaves;
     }
     else
     {

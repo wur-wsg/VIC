@@ -11,6 +11,7 @@ float RespirationRef(SimUnit *Grid, float TotalAssimilation)
 {
     float respiration; 
     float TempRef = 25.;
+    float tmp_min;
 
     respiration  = Grid->crp->prm.RelRespiLeaves * Grid->crp->st.leaves;
     respiration  += Grid->crp->prm.RelRespiStorage * Grid->crp->st.storage;
@@ -20,5 +21,6 @@ float RespirationRef(SimUnit *Grid, float TotalAssimilation)
     respiration  *= pow(Grid->crp->prm.Q10, 0.1 * (Grid->met->Temp-TempRef));
     
     /* respiration can not exceed the assimilation */
-    return (min(respiration, TotalAssimilation));
+    tmp_min = min(respiration, TotalAssimilation);
+    return (tmp_min);
 }

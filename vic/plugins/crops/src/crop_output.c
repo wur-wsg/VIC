@@ -504,6 +504,7 @@ crop_put_data(size_t iCell)
     
     double area_fract;
     double cc_fract;
+    float tmp_develop;
     
     size_t iBand;
     size_t iVeg;
@@ -568,6 +569,33 @@ crop_put_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] += cgrid->crp->N_rt.Demand * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] += cgrid->crp->P_rt.Demand * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] += cgrid->crp->K_rt.Demand * area_fract * cgrid->growing;
+                
+                /* Add initial crop rates (GrowthDay starts at 1) */
+                if (cgrid->crp->GrowthDay == 2) {
+                    tmp_develop = cgrid->crp->st.Development - cgrid->crp->rt.Development;
+                    
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] += cgrid->crp->prm.InitialDVS * 
+                            area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] +=  
+                            cgrid->crp->prm.InitialDryWeight * 
+                            (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) * 
+                            Afgen(cgrid->crp->prm.Leaves, &tmp_develop) *
+                            area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WST][crop_class] += 
+                            cgrid->crp->prm.InitialDryWeight * 
+                            (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) * 
+                            Afgen(cgrid->crp->prm.Stems, &tmp_develop) *
+                            area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSO][crop_class] += 
+                            cgrid->crp->prm.InitialDryWeight * 
+                            (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) * 
+                            Afgen(cgrid->crp->prm.Storage, &tmp_develop) *
+                            area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WRT][crop_class] += 
+                            cgrid->crp->prm.InitialDryWeight * 
+                            Afgen(cgrid->crp->prm.Roots, &tmp_develop) * 
+                            area_fract * cgrid->growing;
+                }
                 
                 /* Store crop states - divide through number of growing days for average */
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_LAI][crop_class] += cgrid->crp->st.LAI * area_fract * cgrid->growing;
