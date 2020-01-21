@@ -35,7 +35,8 @@ get_heat_capacities(size_t iCell,
         size_t iBand, 
         double *snow_surf_capacity, 
         double *snow_pack_capacity, 
-        double **node_capacity)
+        double **node_capacity,
+        double *Cv)
 {
     extern parameters_struct param;
     extern option_struct options;
@@ -65,12 +66,21 @@ get_heat_capacities(size_t iCell,
             snow_surf_swq = snow_ice;
         }
         snow_pack_swq = snow_ice - snow_surf_swq;
-
-        snow_surf_capacity[iVeg] = CONST_VCPICE_WQ * snow_pack_swq;
-        snow_pack_capacity[iVeg] = CONST_VCPICE_WQ * snow_surf_swq;
         
-        for(iNode = 0; iNode < options.Nnode; iNode++){
-            node_capacity[iVeg][iNode] = energy[iVeg][iBand].Cs_node[iNode] * soil_con[iCell].dz_node[iNode];
+        if(Cv[iVeg] > 0) {
+            snow_surf_capacity[iVeg] = CONST_VCPICE_WQ * snow_surf_swq;
+            snow_pack_capacity[iVeg] = CONST_VCPICE_WQ * snow_pack_swq;
+
+            for(iNode = 0; iNode < options.Nnode; iNode++){
+                node_capacity[iVeg][iNode] = energy[iVeg][iBand].Cs_node[iNode] * soil_con[iCell].dz_node[iNode];
+            }
+        } else {
+            snow_surf_capacity[iVeg] = 0.;
+            snow_pack_capacity[iVeg] = 0.;
+
+            for(iNode = 0; iNode < options.Nnode; iNode++){
+                node_capacity[iVeg][iNode] = 0.;
+            }
         }
     }
 }
@@ -837,7 +847,7 @@ lu_apply(void)
                 
                 // Initialize energy
                 calculate_derived_water_states(iCell, iBand);
-                get_heat_capacities(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity);
+                get_heat_capacities(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity, Cv_old);
                 get_energy_terms(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity, orig_surf_tempEnergy, orig_pack_tempEnergy, orig_TEnergy);
                 
                 // Water
@@ -848,7 +858,7 @@ lu_apply(void)
                 distribute_carbon_balance_terms(iCell, iBand, Cv_change, Cv_old, Cv_new);
                 
                 // Energy
-                get_heat_capacities(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity);
+                get_heat_capacities(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity, Cv_new);
                 distribute_energy_balance_terms(iCell, iBand, Cv_change, Cv_old, Cv_new, snow_surf_capacity, snow_pack_capacity, node_capacity, orig_surf_tempEnergy, orig_pack_tempEnergy, orig_TEnergy);
                 calculate_derived_energy_states(iCell, iBand, snow_surf_capacity);
             }
