@@ -54,7 +54,7 @@ wofost_run(SimUnit *Grid)
         }
         else
         {
-            CleanHarvest(Grid);
+            Harvest(&(Grid->crp->LeaveProperties));
             Emergence = 0;
             Grid->growing = 0;
             Grid->crp->CultivateDay = 0;

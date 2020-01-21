@@ -336,7 +336,7 @@ calculate_derived_water_states(size_t iCell,
     extern option_struct options;
     extern veg_con_map_struct *veg_con_map;
     extern veg_con_struct **veg_con;
-    extern veg_lib_struct *veg_lib;
+    extern veg_lib_struct **veg_lib;
     extern soil_con_struct *soil_con;
     extern veg_con_struct **veg_con;
     extern all_vars_struct *all_vars;
@@ -431,7 +431,7 @@ calculate_derived_water_states(size_t iCell,
         snow[iVeg][iBand].depth = CONST_RHOFW * snow[iVeg][iBand].swq / snow[iVeg][iBand].density;
         snow[iVeg][iBand].snow = false;
         snow[iVeg][iBand].MELTING = false;
-        if (snow[iVeg][iBand].swq > 0 || (snow[iVeg][iBand].snow_canopy > 0. && veg_lib[veg_class].overstory)) {
+        if (snow[iVeg][iBand].swq > 0 || (snow[iVeg][iBand].snow_canopy > 0. && veg_lib[iCell][veg_class].overstory)) {
             snow[iVeg][iBand].snow = true;
         }
         if (snow[iVeg][iBand].swq > 0. && snow[iVeg][iBand].coldcontent >= 0 && 

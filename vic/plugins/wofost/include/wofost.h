@@ -474,7 +474,7 @@ void IfSowing(SimUnit *, dmy_struct*);
 /* Additional functions */
 void Astro(SimUnit *);
 void Clean(SimUnit *);
-void CleanHarvest(SimUnit *);
+void Harvest(Green **);
 
 /* Crop growth */
 void Partioning(SimUnit *);

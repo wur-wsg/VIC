@@ -82,6 +82,10 @@ lu_forcing(void)
                 if(vidx != NODATA_VEG){
                     lu_force[i].Cv[vidx] = dvar[i];
                     lu_force[i].veg_class[vidx] = j;
+                } else if (dvar[i] > 0) {
+                    log_err("Vegetation class %zu is not allocated, "
+                            "but Cv forcing > 0 [%.4f] for cell %zu",
+                            j, dvar[i], i);
                 }
             }
         }

@@ -403,6 +403,7 @@ initialize_wofost_grid(SimUnit *Grid)
 {
     Grid->emergence = 0;
     Grid->file = 0;
+    Grid->growing = 0;
     initialize_dmy(&Grid->start);
     initialize_dmy(&Grid->end);
     

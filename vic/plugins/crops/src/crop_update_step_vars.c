@@ -102,10 +102,10 @@ crop_update_step_vars(size_t iCell)
             cveg_lib->RGL += cgrid->crp->prm.RGL * Cc;
             
             if(cgrid->crp->st.RootDepth > csoil_con->depth[0]) {
-                cveg_con->root[0] = (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
-                cveg_con->root[1] = (1 - cveg_con->root[0]) * Cc;
+                cveg_con->root[0] += (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
+                cveg_con->root[1] += (1 - cveg_con->root[0]) * Cc;
             } else {
-                cveg_con->root[0] = Cc;
+                cveg_con->root[0] += Cc;
             }
 
             cgrid = cgrid->next;
