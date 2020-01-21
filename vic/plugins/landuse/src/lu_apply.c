@@ -167,7 +167,7 @@ distribute_water_balance_terms(size_t iCell,
     
     /* WATER-BALANCE */
     
-    // initialize
+    // get
     Wdew = 0.0;
     pack_water = 0.0;
     surf_water = 0.0;
@@ -179,9 +179,6 @@ distribute_water_balance_terms(size_t iCell,
             ice[iLayer][iFrost] = 0.0;
         }
     }
-    
-    // get
-    before_moist = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         if (Cv_change[iVeg] < 0) {
             Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change[iVeg];
@@ -196,7 +193,10 @@ distribute_water_balance_terms(size_t iCell,
                 }
             }
         }
+    }
         
+    before_moist = 0.0;
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         before_moist += veg_var[iVeg][iBand].Wdew * Cv_old[iVeg];
         before_moist += snow[iVeg][iBand].pack_water * Cv_old[iVeg];
         before_moist += snow[iVeg][iBand].surf_water * Cv_old[iVeg];
@@ -208,7 +208,6 @@ distribute_water_balance_terms(size_t iCell,
     }
     
     // set
-    after_moist = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         if (Cv_change[iVeg] > 0) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
@@ -226,7 +225,10 @@ distribute_water_balance_terms(size_t iCell,
                 }
             }
         }
+    }
         
+    after_moist = 0.0;
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         after_moist += veg_var[iVeg][iBand].Wdew * Cv_new[iVeg];
         after_moist += snow[iVeg][iBand].pack_water * Cv_new[iVeg];
         after_moist += snow[iVeg][iBand].surf_water * Cv_new[iVeg];
@@ -263,6 +265,8 @@ distribute_carbon_balance_terms(size_t iCell,
     double Cv_avail;
     double red_frac;
     double add_frac;
+    double before_carbon;
+    double after_carbon;
     
     // carbon-balance
     // veg_var
@@ -291,14 +295,12 @@ distribute_carbon_balance_terms(size_t iCell,
     
     /* CARBON-BALANCE */
     
-    // initialize
+    // get
     AnnualNPP = 0.0;
     AnnualNPPPrev = 0.0;
     CLitter = 0.0;
     CInter = 0.0;
     CSlow = 0.0;
-    
-    // get
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         if (Cv_change[iVeg] < 0) {
             AnnualNPP += veg_var[iVeg][iBand].AnnualNPP * -Cv_change[iVeg];
@@ -307,6 +309,15 @@ distribute_carbon_balance_terms(size_t iCell,
             CInter += cell[iVeg][iBand].CInter * -Cv_change[iVeg];
             CSlow += cell[iVeg][iBand].CSlow * -Cv_change[iVeg];
         }
+    }
+        
+    before_carbon = 0.0;
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
+        before_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_old[iVeg];
+        before_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_old[iVeg];
+        before_carbon += cell[iVeg][iBand].CLitter * Cv_old[iVeg];
+        before_carbon += cell[iVeg][iBand].CInter * Cv_old[iVeg];
+        before_carbon += cell[iVeg][iBand].CSlow * Cv_old[iVeg];
     }
     
     // set
@@ -321,6 +332,24 @@ distribute_carbon_balance_terms(size_t iCell,
             cell[iVeg][iBand].CInter = cell[iVeg][iBand].CInter * red_frac + CInter * add_frac;
             cell[iVeg][iBand].CSlow = cell[iVeg][iBand].CSlow * red_frac + CSlow * add_frac;
         }
+    }
+        
+    after_carbon = 0.0;
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
+        after_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_new[iVeg];
+        after_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_new[iVeg];
+        after_carbon += cell[iVeg][iBand].CLitter * Cv_new[iVeg];
+        after_carbon += cell[iVeg][iBand].CInter * Cv_new[iVeg];
+        after_carbon += cell[iVeg][iBand].CSlow * Cv_new[iVeg];
+    }
+    
+    // Check water balance
+    if(abs(before_carbon - after_carbon) > DBL_EPSILON){
+        log_err("\nCarbon balance error for cell %zu:\n"
+                "Initial carbon content [%.4f gC m-2]\tFinal water content [%.4f gC m-2]",
+                iCell,
+                before_carbon,
+                after_carbon);
     }
 }
 
@@ -543,15 +572,12 @@ distribute_energy_balance_terms(size_t iCell,
     
     /* ENERGY-BALANCE */
     
-    // initialize
+    // get
     pack_tempEnergy = 0.0;
     surf_tempEnergy = 0.0;
     for(iNode = 0; iNode < options.Nnode; iNode++){
         TEnergy[iNode] = 0.0;
     }
-    
-    // get
-    before_energy = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         if (Cv_change[iVeg] < 0) {
             surf_tempEnergy += orig_surf_tempEnergy[iVeg] * -Cv_change[iVeg];
@@ -560,7 +586,10 @@ distribute_energy_balance_terms(size_t iCell,
                 TEnergy[iNode] += orig_TEnergy[iVeg][iNode] * -Cv_change[iVeg];
             }
         }
-        
+    }
+    
+    before_energy = 0.0;
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         before_energy += orig_surf_tempEnergy[iVeg] * Cv_old[iVeg];
         before_energy += orig_pack_tempEnergy[iVeg] * Cv_old[iVeg];
         for(iNode = 0; iNode < options.Nnode; iNode++){
@@ -569,7 +598,6 @@ distribute_energy_balance_terms(size_t iCell,
     }
     
     // set
-    after_energy = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         if (Cv_change[iVeg] > 0) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
@@ -587,21 +615,49 @@ distribute_energy_balance_terms(size_t iCell,
                 }
             }
         }
-        
+    }
+    
+    after_energy = 0.0;
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         after_energy += snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg] * Cv_new[iVeg];
         after_energy += snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg] * Cv_new[iVeg];
         for(iNode = 0; iNode < options.Nnode; iNode++){
             after_energy += energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode] * Cv_new[iVeg];
         }
     }
-    
+        
     // Check energy balance
     if(abs(before_energy - after_energy) > DBL_EPSILON){
+        for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
+            fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
+                              "\t\tBefore\tAfter:\n"
+                              "Cv\t\t[%.4f]\t[%.4f]\n"
+                              "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
+                              "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n",
+                    iBand, iVeg,
+                    Cv_old[iVeg], Cv_new[iVeg],
+                    orig_surf_tempEnergy[iVeg], snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg],
+                    orig_pack_tempEnergy[iVeg], snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg]);
+            for(iNode = 0; iNode < options.Nnode; iNode++) {
+                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J]\t[%.4f J]\n",
+                        iNode,
+                        orig_TEnergy[iVeg][iNode], energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode]);
+            }
+            fprintf(LOG_DEST, "snow_surf_cap\t[%.4f J m-3 K-1]\n"
+                              "snow_pack_cap\t[%.4f J m-3 K-1]\n",
+                    snow_surf_capacity[iVeg],
+                    snow_pack_capacity[iVeg]);
+            for(iNode = 0; iNode < options.Nnode; iNode++) {
+                fprintf(LOG_DEST, "node_cap %zu\t[%.4f J m-3 K-1]\n",
+                        iNode,
+                        node_capacity[iVeg][iNode]);
+            }
+        }
         log_err("\nEnergy balance error for cell %zu:\n"
-                "Initial energy content [%.4f J]\tFinal energy content [%.4f J]",
+                "Initial energy content [%.4f J]\tFinal energy content [%.4f J]\n"
+                "",
                 iCell,
-                before_energy,
-                after_energy);
+                before_energy, after_energy);
     }
 }
 

@@ -331,6 +331,7 @@ initialize_location(location_struct *location)
     location->area = MISSING;
     location->frac = MISSING;
     location->nveg = MISSING_USI;
+    location->ncrop = MISSING_USI;
     location->global_idx = MISSING_USI;
     location->io_idx = MISSING_USI;
     location->local_idx = MISSING_USI;

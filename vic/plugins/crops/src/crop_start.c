@@ -2,7 +2,7 @@
 #include <plugin.h>
 
 /******************************************************************************
- * @brief    Read the number of vegetation type per grid cell from file
+ * @brief    Read the number of crop type per grid cell from file
  *****************************************************************************/
 void
 add_ncrop_to_global_domain(nameid_struct *nc_nameid,
