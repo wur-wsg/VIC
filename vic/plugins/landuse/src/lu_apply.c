@@ -613,12 +613,22 @@ distribute_energy_balance_terms(size_t iCell,
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
             
-            if (snow_surf_capacity[iVeg] > 0){
-                snow[iVeg][iBand].surf_temp = (orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac) / snow_surf_capacity[iVeg];
-            }
             if (snow_pack_capacity[iVeg] > 0){
                 snow[iVeg][iBand].pack_temp = (orig_pack_tempEnergy[iVeg] * red_frac + pack_tempEnergy * add_frac) / snow_pack_capacity[iVeg];
+            } else {
+                if(orig_pack_tempEnergy[iVeg] * red_frac + pack_tempEnergy * add_frac > 0) {
+                    surf_tempEnergy += orig_pack_tempEnergy[iVeg] * red_frac + pack_tempEnergy * add_frac;
+                }
             }
+            
+            if (snow_surf_capacity[iVeg] > 0){
+                snow[iVeg][iBand].surf_temp = (orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac) / snow_surf_capacity[iVeg];
+            } else {
+                if(orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac > 0) {
+                    TEnergy[0] += orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac;
+                }
+            }
+	    
             for(iNode = 0; iNode < options.Nnode; iNode++){
                 if(node_capacity[iVeg][iNode] > 0){
                     energy[iVeg][iBand].T[iNode] = (orig_TEnergy[iVeg][iNode] * red_frac + TEnergy[iNode] * add_frac) / node_capacity[iVeg][iNode];
@@ -641,7 +651,7 @@ distribute_energy_balance_terms(size_t iCell,
         for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
             fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
                               "\t\tBefore\tAfter:\n"
-                              "Cv\t\t[%.4f]\t[%.4f]\n"
+                              "Cv\t\t[%.8f]\t[%.8f]\n"
                               "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
                               "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n",
                     iBand, iVeg,
