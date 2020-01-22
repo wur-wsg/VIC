@@ -167,6 +167,17 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTRESS].description,
              MAXSTRING, "%s", "crop water stress");
     
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].varname, MAXSTRING,
+             "%s", "OUT_CROP_NSTRESS");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].long_name, MAXSTRING,
+             "%s", "nutrient_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].standard_name,
+             MAXSTRING, "%s", "crop_nutrient_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].units, MAXSTRING,
+             "%s", "-");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].description,
+             MAXSTRING, "%s", "crop nutrient stress");
+    
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].varname, MAXSTRING,
              "%s", "OUT_CROP_NPKI");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].long_name, MAXSTRING,
@@ -326,6 +337,7 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_KNI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_WSTRESS].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSOIL].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_PSOIL].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_KSOIL].nelem = plugin_options.NCROPTYPES;
@@ -390,6 +402,7 @@ crop_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_CROP_KNI:
         case N_OUTVAR_TYPES + OUT_CROP_NPKI:
         case N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
+        case N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
         case N_OUTVAR_TYPES + OUT_CROP_NSOIL:
         case N_OUTVAR_TYPES + OUT_CROP_PSOIL:
         case N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -432,6 +445,7 @@ crop_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_CROP_KNI:
         case N_OUTVAR_TYPES + OUT_CROP_NPKI:
         case N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
+        case N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
         case N_OUTVAR_TYPES + OUT_CROP_NSOIL:
         case N_OUTVAR_TYPES + OUT_CROP_PSOIL:
         case N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -459,6 +473,7 @@ crop_history(int           varid,
     switch (varid) {
     case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
+    case  N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_LAI:
     case  N_OUTVAR_TYPES + OUT_CROP_NNI:
     case  N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -604,6 +619,7 @@ crop_put_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KNI][crop_class] += cgrid->crp->K_st.Indx * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NPKI][crop_class] += cgrid->crp->NPK_Indx * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WSTRESS][crop_class] += cgrid->soil->WaterStress * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NSTRESS][crop_class] += cgrid->crp->NutrientStress * area_fract * cgrid->growing;
                 
                 cgrid = cgrid->next;
             }

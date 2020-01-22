@@ -67,7 +67,7 @@ get_heat_capacities(size_t iCell,
         }
         snow_pack_swq = snow_ice - snow_surf_swq;
         
-        if(Cv[iVeg] > 0) {
+        if(Cv[iVeg] > DBL_EPSILON) {
             snow_surf_capacity[iVeg] = CONST_VCPICE_WQ * snow_surf_swq;
             snow_pack_capacity[iVeg] = CONST_VCPICE_WQ * snow_pack_swq;
 
@@ -170,7 +170,7 @@ distribute_water_balance_terms(size_t iCell,
     // Get available area to redistribute
     Cv_avail = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > DBL_EPSILON) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -190,7 +190,7 @@ distribute_water_balance_terms(size_t iCell,
         }
     }
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < DBL_EPSILON) {
             Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change[iVeg];
             pack_water += snow[iVeg][iBand].pack_water * -Cv_change[iVeg];
             surf_water += snow[iVeg][iBand].surf_water * -Cv_change[iVeg];
@@ -219,7 +219,7 @@ distribute_water_balance_terms(size_t iCell,
     
     // set
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > DBL_EPSILON) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -298,7 +298,7 @@ distribute_carbon_balance_terms(size_t iCell,
     // Get available area to redistribute
     Cv_avail = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > DBL_EPSILON) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -312,7 +312,7 @@ distribute_carbon_balance_terms(size_t iCell,
     CInter = 0.0;
     CSlow = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < DBL_EPSILON) {
             AnnualNPP += veg_var[iVeg][iBand].AnnualNPP * -Cv_change[iVeg];
             AnnualNPPPrev += veg_var[iVeg][iBand].AnnualNPPPrev * -Cv_change[iVeg];
             CLitter += cell[iVeg][iBand].CLitter * -Cv_change[iVeg];
@@ -332,7 +332,7 @@ distribute_carbon_balance_terms(size_t iCell,
     
     // set
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > DBL_EPSILON) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -575,7 +575,7 @@ distribute_energy_balance_terms(size_t iCell,
     // Get available area to redistribute
     Cv_avail = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > DBL_EPSILON) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -589,7 +589,7 @@ distribute_energy_balance_terms(size_t iCell,
         TEnergy[iNode] = 0.0;
     }
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < DBL_EPSILON) {
             surf_tempEnergy += orig_surf_tempEnergy[iVeg] * -Cv_change[iVeg];
             pack_tempEnergy += orig_pack_tempEnergy[iVeg] * -Cv_change[iVeg];
             for(iNode = 0; iNode < options.Nnode; iNode++){
@@ -609,7 +609,7 @@ distribute_energy_balance_terms(size_t iCell,
     
     // set
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > DBL_EPSILON) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
             
