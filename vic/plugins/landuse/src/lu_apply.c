@@ -544,7 +544,10 @@ distribute_energy_balance_terms(size_t iCell,
         double **node_capacity,
         double *orig_surf_tempEnergy, 
         double *orig_pack_tempEnergy, 
-        double **orig_TEnergy)
+        double **orig_TEnergy,
+        double *new_surf_tempEnergy, 
+        double *new_pack_tempEnergy, 
+        double **new_TEnergy)
 {
     extern option_struct options;
     extern veg_con_map_struct *veg_con_map;
@@ -613,41 +616,53 @@ distribute_energy_balance_terms(size_t iCell,
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
             
-            if (snow_pack_capacity[iVeg] > 0){
-                snow[iVeg][iBand].pack_temp = (orig_pack_tempEnergy[iVeg] * red_frac + pack_tempEnergy * add_frac) / snow_pack_capacity[iVeg];
-            } else {
-                if(orig_pack_tempEnergy[iVeg] * red_frac + pack_tempEnergy * add_frac > 0) {
-                    surf_tempEnergy += pack_tempEnergy;
-                    orig_surf_tempEnergy[iVeg] += orig_pack_tempEnergy[iVeg];
-                }
-            }
-            
-            if (snow_surf_capacity[iVeg] > 0){
-                snow[iVeg][iBand].surf_temp = (orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac) / snow_surf_capacity[iVeg];
-            } else {
-                if(orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac > 0) {
-                    TEnergy[0] += surf_tempEnergy;
-                    orig_TEnergy[iVeg][0] += orig_surf_tempEnergy[iVeg];
-                }
-            }
-	    
+            new_pack_tempEnergy[iVeg] = orig_pack_tempEnergy[iVeg] * red_frac + pack_tempEnergy * add_frac;
+            new_surf_tempEnergy[iVeg] = orig_surf_tempEnergy[iVeg] * red_frac + surf_tempEnergy * add_frac;
             for(iNode = 0; iNode < options.Nnode; iNode++){
-                if(node_capacity[iVeg][iNode] > 0){
-                    energy[iVeg][iBand].T[iNode] = (orig_TEnergy[iVeg][iNode] * red_frac + TEnergy[iNode] * add_frac) / node_capacity[iVeg][iNode];
-                }
+                new_TEnergy[iVeg][iNode] = orig_TEnergy[iVeg][iNode] * red_frac + TEnergy[iNode] * add_frac;
+            }
+        } else {
+            new_pack_tempEnergy[iVeg] = orig_pack_tempEnergy[iVeg];
+            new_surf_tempEnergy[iVeg] = orig_surf_tempEnergy[iVeg];
+            for(iNode = 0; iNode < options.Nnode; iNode++){
+                new_TEnergy[iVeg][iNode] = orig_TEnergy[iVeg][iNode];
             }
         }
     }
     
     after_energy = 0.0;
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
-        after_energy += snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg] * Cv_new[iVeg];
-        after_energy += snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg] * Cv_new[iVeg];
+        after_energy += new_surf_tempEnergy[iVeg] * Cv_new[iVeg];
+        after_energy += new_pack_tempEnergy[iVeg] * Cv_new[iVeg];
         for(iNode = 0; iNode < options.Nnode; iNode++){
-            after_energy += energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode] * Cv_new[iVeg];
+            after_energy += new_TEnergy[iVeg][iNode] * Cv_new[iVeg];
         }
     }
-        
+    
+    for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
+        if (snow_pack_capacity[iVeg] > 0){
+            snow[iVeg][iBand].pack_temp = new_pack_tempEnergy[iVeg] / snow_pack_capacity[iVeg];
+        } else {
+            if(new_pack_tempEnergy[iVeg] > 0) {
+                new_surf_tempEnergy[iVeg] += new_pack_tempEnergy[iVeg];
+            }
+        }
+
+        if (snow_surf_capacity[iVeg] > 0){
+            snow[iVeg][iBand].surf_temp = new_surf_tempEnergy[iVeg] / snow_surf_capacity[iVeg];
+        } else {
+            if(new_surf_tempEnergy[iVeg] > 0) {
+                new_TEnergy[iVeg][0] += new_surf_tempEnergy[iVeg];
+            }
+        }
+
+        for(iNode = 0; iNode < options.Nnode; iNode++){
+            if (node_capacity[iVeg][iNode] > 0){
+                energy[iVeg][iBand].T[iNode] = new_TEnergy[iVeg][iNode] / node_capacity[iVeg][iNode];
+            }
+        }
+    }
+    
     // Check energy balance
     if(abs(before_energy - after_energy) > DBL_EPSILON){
         for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
@@ -655,21 +670,14 @@ distribute_energy_balance_terms(size_t iCell,
                               "\t\tBefore\tAfter:\n"
                               "Cv\t\t[%.8f]\t[%.8f]\n"
                               "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
-                              "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n"
-                              "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
                               "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n",
                     iBand, iVeg,
                     Cv_old[iVeg], Cv_new[iVeg],
-                    orig_surf_tempEnergy[iVeg], snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg],
-                    orig_pack_tempEnergy[iVeg], snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg],
-                    orig_surf_tempEnergy[iVeg] * Cv_old[iVeg], snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg] * Cv_new[iVeg],
-                    orig_pack_tempEnergy[iVeg] * Cv_old[iVeg], snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg] * Cv_new[iVeg]);
+                    orig_surf_tempEnergy[iVeg], new_surf_tempEnergy[iVeg],
+                    orig_pack_tempEnergy[iVeg], new_pack_tempEnergy[iVeg]);
             for(iNode = 0; iNode < options.Nnode; iNode++) {
-                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J]\t[%.4f J]\n"
-                                  "TEnergy %zu\t[%.4f J]\t[%.4f J]\n",
-                        iNode,
-                        orig_TEnergy[iVeg][iNode], energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode],
-                        orig_TEnergy[iVeg][iNode] * Cv_new[iVeg], energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode] * Cv_new[iVeg]);
+                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J]\t[%.4f J]\n",
+                        iNode, orig_TEnergy[iVeg][iNode], new_TEnergy[iVeg][iNode]);
             }
             fprintf(LOG_DEST, "snow_surf_cap\t[%.4f J m-3 K-1]\n"
                               "snow_pack_cap\t[%.4f J m-3 K-1]\n",
@@ -790,6 +798,9 @@ lu_apply(void)
     double *orig_surf_tempEnergy;
     double *orig_pack_tempEnergy;
     double **orig_TEnergy;
+    double *new_surf_tempEnergy;
+    double *new_pack_tempEnergy;
+    double **new_TEnergy;
     
     size_t iCell;
     size_t iVeg;
@@ -815,11 +826,19 @@ lu_apply(void)
     check_alloc_status(orig_pack_tempEnergy, "Memory allocation error");
     orig_TEnergy = malloc(options.NVEGTYPES * sizeof(*orig_TEnergy));
     check_alloc_status(orig_TEnergy, "Memory allocation error");
+    new_surf_tempEnergy = malloc(options.NVEGTYPES * sizeof(*new_surf_tempEnergy));
+    check_alloc_status(new_surf_tempEnergy, "Memory allocation error");
+    new_pack_tempEnergy = malloc(options.NVEGTYPES * sizeof(*new_pack_tempEnergy));
+    check_alloc_status(new_pack_tempEnergy, "Memory allocation error");
+    new_TEnergy = malloc(options.NVEGTYPES * sizeof(*new_TEnergy));
+    check_alloc_status(new_TEnergy, "Memory allocation error");
     for(iVeg = 0; iVeg < options.NVEGTYPES; iVeg++){
         node_capacity[iVeg] = malloc(options.Nnode * sizeof(*node_capacity[iVeg]));
         check_alloc_status(node_capacity[iVeg], "Memory allocation error");
         orig_TEnergy[iVeg] = malloc(options.Nnode * sizeof(*orig_TEnergy[iVeg]));
         check_alloc_status(orig_TEnergy[iVeg], "Memory allocation error");
+        new_TEnergy[iVeg] = malloc(options.Nnode * sizeof(*new_TEnergy[iVeg]));
+        check_alloc_status(new_TEnergy[iVeg], "Memory allocation error");
     }
     
     for (iCell = 0; iCell < local_domain.ncells_active; iCell++) {
@@ -865,19 +884,31 @@ lu_apply(void)
                 
                 // Initialize energy
                 calculate_derived_water_states(iCell, iBand);
-                get_heat_capacities(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity, Cv_old);
-                get_energy_terms(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity, orig_surf_tempEnergy, orig_pack_tempEnergy, orig_TEnergy);
+                get_heat_capacities(iCell, iBand, 
+                        snow_surf_capacity, snow_pack_capacity, node_capacity, 
+                        Cv_old);
+                get_energy_terms(iCell, iBand, 
+                        snow_surf_capacity, snow_pack_capacity, node_capacity, 
+                        orig_surf_tempEnergy, orig_pack_tempEnergy, orig_TEnergy);
                 
                 // Water
-                distribute_water_balance_terms(iCell, iBand, Cv_change, Cv_old, Cv_new);
+                distribute_water_balance_terms(iCell, iBand, 
+                        Cv_change, Cv_old, Cv_new);
                 calculate_derived_water_states(iCell, iBand);
                 
                 // Carbon
-                distribute_carbon_balance_terms(iCell, iBand, Cv_change, Cv_old, Cv_new);
+                distribute_carbon_balance_terms(iCell, iBand, 
+                        Cv_change, Cv_old, Cv_new);
                 
                 // Energy
-                get_heat_capacities(iCell, iBand, snow_surf_capacity, snow_pack_capacity, node_capacity, Cv_new);
-                distribute_energy_balance_terms(iCell, iBand, Cv_change, Cv_old, Cv_new, snow_surf_capacity, snow_pack_capacity, node_capacity, orig_surf_tempEnergy, orig_pack_tempEnergy, orig_TEnergy);
+                get_heat_capacities(iCell, iBand, 
+                        snow_surf_capacity, snow_pack_capacity, node_capacity, 
+                        Cv_new);
+                distribute_energy_balance_terms(iCell, iBand, 
+                        Cv_change, Cv_old, Cv_new, 
+                        snow_surf_capacity, snow_pack_capacity, node_capacity, 
+                        orig_surf_tempEnergy, orig_pack_tempEnergy, orig_TEnergy,
+                        new_surf_tempEnergy, new_pack_tempEnergy, new_TEnergy);
                 calculate_derived_energy_states(iCell, iBand, snow_surf_capacity);
             }
         }
