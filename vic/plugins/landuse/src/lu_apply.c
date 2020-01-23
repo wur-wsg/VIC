@@ -655,15 +655,21 @@ distribute_energy_balance_terms(size_t iCell,
                               "\t\tBefore\tAfter:\n"
                               "Cv\t\t[%.8f]\t[%.8f]\n"
                               "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
+                              "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n"
+                              "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
                               "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n",
                     iBand, iVeg,
                     Cv_old[iVeg], Cv_new[iVeg],
                     orig_surf_tempEnergy[iVeg], snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg],
-                    orig_pack_tempEnergy[iVeg], snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg]);
+                    orig_pack_tempEnergy[iVeg], snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg],
+                    orig_surf_tempEnergy[iVeg] * Cv_old[iVeg], snow[iVeg][iBand].surf_temp * snow_surf_capacity[iVeg] * Cv_new[iVeg],
+                    orig_pack_tempEnergy[iVeg] * Cv_old[iVeg], snow[iVeg][iBand].pack_temp * snow_pack_capacity[iVeg] * Cv_new[iVeg]);
             for(iNode = 0; iNode < options.Nnode; iNode++) {
-                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J]\t[%.4f J]\n",
+                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J]\t[%.4f J]\n"
+                                  "TEnergy %zu\t[%.4f J]\t[%.4f J]\n",
                         iNode,
-                        orig_TEnergy[iVeg][iNode], energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode]);
+                        orig_TEnergy[iVeg][iNode], energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode],
+                        orig_TEnergy[iVeg][iNode] * Cv_new[iVeg], energy[iVeg][iBand].T[iNode] * node_capacity[iVeg][iNode] * Cv_new[iVeg]);
             }
             fprintf(LOG_DEST, "snow_surf_cap\t[%.4f J m-3 K-1]\n"
                               "snow_pack_cap\t[%.4f J m-3 K-1]\n",
