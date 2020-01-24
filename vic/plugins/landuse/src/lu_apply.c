@@ -707,11 +707,11 @@ distribute_energy_balance_terms(size_t iCell,
         for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
             fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
                               "\t\tBefore\tAfter:\n"
-                              "Cv\t\t[%.8f]\t[%.8f]\n"
+                              "Cv\t\t[%.8f]\t[%.8f]\t[%.16f]\n"
                               "surf_tempEnergy\t[%.4f J m-2]\t[%.4f J m-2]\n"
                               "pack_tempEnergy\t[%.4f J m-2]\t[%.4f J m-2]\n",
                     iBand, iVeg,
-                    Cv_old[iVeg], Cv_new[iVeg],
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
                     orig_surf_tempEnergy[iVeg], new_surf_tempEnergy[iVeg],
                     orig_pack_tempEnergy[iVeg], new_pack_tempEnergy[iVeg]);
             for(iNode = 0; iNode < options.Nnode; iNode++) {
