@@ -251,6 +251,27 @@ distribute_water_balance_terms(size_t iCell,
     
     // Check water balance
     if(abs(before_moist - after_moist) > DBL_EPSILON){
+        for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
+            fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
+                              "\t\tAfter:\n"
+                              "Cv\t\t[%.8f]\t[%.8f]\n"
+                              "Wdew\t[%.4f mm]\n"
+                              "pack_water\t[%.4f mm]\n"
+                              "surf_water\t[%.4f mm]\n"
+                              "swq\t[%.4f mm]\n"
+                              "snow_canopy\t[%.4f mm]\n",
+                    iBand, iVeg,
+                    Cv_old[iVeg], Cv_new[iVeg],
+                    veg_var[iVeg][iBand].Wdew,
+                    snow[iVeg][iBand].pack_water,
+                    snow[iVeg][iBand].surf_water,
+                    snow[iVeg][iBand].swq,
+                    snow[iVeg][iBand].snow_canopy);
+            for(iLayer = 0; iLayer < options.Nlayer; iLayer++){
+                fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
+                        iLayer, cell[iVeg][iBand].layer[iLayer].moist);
+            }
+        }
         log_err("\nWater balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                 iCell,
@@ -669,14 +690,14 @@ distribute_energy_balance_terms(size_t iCell,
             fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
                               "\t\tBefore\tAfter:\n"
                               "Cv\t\t[%.8f]\t[%.8f]\n"
-                              "surf_tempEnergy\t[%.4f J]\t[%.4f J]\n"
-                              "pack_tempEnergy\t[%.4f J]\t[%.4f J]\n",
+                              "surf_tempEnergy\t[%.4f J m-2]\t[%.4f J m-2]\n"
+                              "pack_tempEnergy\t[%.4f J m-2]\t[%.4f J m-2]\n",
                     iBand, iVeg,
                     Cv_old[iVeg], Cv_new[iVeg],
                     orig_surf_tempEnergy[iVeg], new_surf_tempEnergy[iVeg],
                     orig_pack_tempEnergy[iVeg], new_pack_tempEnergy[iVeg]);
             for(iNode = 0; iNode < options.Nnode; iNode++) {
-                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J]\t[%.4f J]\n",
+                fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J m-2]\t[%.4f J m-2]\n",
                         iNode, orig_TEnergy[iVeg][iNode], new_TEnergy[iVeg][iNode]);
             }
             fprintf(LOG_DEST, "snow_surf_cap\t[%.4f J m-3 K-1]\n"
@@ -690,7 +711,7 @@ distribute_energy_balance_terms(size_t iCell,
             }
         }
         log_err("\nEnergy balance error for cell %zu:\n"
-                "Initial energy content [%.4f J]\tFinal energy content [%.4f J]\n"
+                "Initial energy content [%.4f J m-2]\tFinal energy content [%.4f J m-2]\n"
                 "",
                 iCell,
                 before_energy, after_energy);
