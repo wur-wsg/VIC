@@ -369,8 +369,8 @@ gather_put_nc_field_float_lake_only_2d(int     nc_id,
             map(sizeof(float), global_domain.nlakes_active, NULL,
                 mpi_lake_mapping_array, fvar_gathered, fvar);
             // set the global array
-            for (i = 0; i < local_domain.nlakes_active; i++) {
-                fvar_global[j * local_domain.nlakes_active + i] = fvar[i];
+            for (i = 0; i < global_domain.nlakes_active; i++) {
+                fvar_global[j * global_domain.nlakes_active + i] = fvar[i];
             }
         }
     }
