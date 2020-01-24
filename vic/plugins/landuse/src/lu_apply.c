@@ -272,7 +272,7 @@ distribute_water_balance_terms(size_t iCell,
                         iLayer, cell[iVeg][iBand].layer[iLayer].moist);
             }
         }
-        fprintf(LOG_DEST, "\t\tTotals:\n"
+        fprintf(LOG_DEST, "\n\t\tTotals:\n"
                           "Wdew\t[%.4f mm]\n"
                           "pack_water\t[%.4f mm]\n"
                           "surf_water\t[%.4f mm]\n"
@@ -285,7 +285,7 @@ distribute_water_balance_terms(size_t iCell,
                 snow_canopy);
         for(iLayer = 0; iLayer < options.Nlayer; iLayer++){
             fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
-                    iLayer, cell[iVeg][iBand].layer[iLayer].moist);
+                    iLayer, moist[iLayer]);
         }
         log_err("\nWater balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
@@ -724,6 +724,15 @@ distribute_energy_balance_terms(size_t iCell,
                         iNode,
                         node_capacity[iVeg][iNode]);
             }
+        }
+        fprintf(LOG_DEST, "\n\t\tTotals:\n"
+                          "surf_tempEnergy\t[%.4f J m-2]\n"
+                          "pack_tempEnergy\t[%.4f J m-2]\n",
+                surf_tempEnergy,
+                pack_tempEnergy);
+        for(iNode = 0; iNode < options.Nnode; iNode++) {
+            fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J m-2]\n",
+                    iNode, TEnergy[iNode]);
         }
         log_err("\nEnergy balance error for cell %zu:\n"
                 "Initial energy content [%.4f J m-2]\tFinal energy content [%.4f J m-2]\n"
