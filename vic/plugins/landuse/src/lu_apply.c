@@ -272,6 +272,21 @@ distribute_water_balance_terms(size_t iCell,
                         iLayer, cell[iVeg][iBand].layer[iLayer].moist);
             }
         }
+        fprintf(LOG_DEST, "\t\tTotals:\n"
+                          "Wdew\t[%.4f mm]\n"
+                          "pack_water\t[%.4f mm]\n"
+                          "surf_water\t[%.4f mm]\n"
+                          "swq\t[%.4f mm]\n"
+                          "snow_canopy\t[%.4f mm]\n",
+                Wdew,
+                pack_water,
+                surf_water,
+                swq,
+                snow_canopy);
+        for(iLayer = 0; iLayer < options.Nlayer; iLayer++){
+            fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
+                    iLayer, cell[iVeg][iBand].layer[iLayer].moist);
+        }
         log_err("\nWater balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                 iCell,
