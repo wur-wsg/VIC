@@ -254,14 +254,14 @@ distribute_water_balance_terms(size_t iCell,
         for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
             fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
                               "\t\tAfter:\n"
-                              "Cv\t\t[%.8f]\t[%.8f]\n"
+                              "Cv\t\t[%.8f]\t[%.8f]\t[%.16f]\n"
                               "Wdew\t[%.4f mm]\n"
                               "pack_water\t[%.4f mm]\n"
                               "surf_water\t[%.4f mm]\n"
                               "swq\t[%.4f mm]\n"
                               "snow_canopy\t[%.4f mm]\n",
                     iBand, iVeg,
-                    Cv_old[iVeg], Cv_new[iVeg],
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
                     veg_var[iVeg][iBand].Wdew,
                     snow[iVeg][iBand].pack_water,
                     snow[iVeg][iBand].surf_water,
