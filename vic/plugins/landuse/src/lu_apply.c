@@ -287,9 +287,6 @@ distribute_water_balance_terms(size_t iCell,
             fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
                     iLayer, moist[iLayer]);
         }
-        extern domain_struct local_domain;
-        fprintf(LOG_DEST, "lat %.4f lon %.4f\n",
-                local_domain.locations[iCell].latitude, local_domain.locations[iCell].longitude);
         log_err("\nWater balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                 iCell,
