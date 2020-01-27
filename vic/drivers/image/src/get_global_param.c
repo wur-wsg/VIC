@@ -52,7 +52,6 @@ get_global_param(FILE *gp)
     unsigned short int         lastday[MONTHS_PER_YEAR];
 
 
-    file_num = 0;
     /** Read through global control file to find parameters **/
 
     rewind(gp);
@@ -346,8 +345,7 @@ get_global_param(FILE *gp)
                Define forcing files
             *************************************/
             else if (strcasecmp("FORCE_TYPE", optstr) == 0) {
-                set_force_type(cmdstr, file_num);
-                file_num++;
+                set_force_type(cmdstr);
             }
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);

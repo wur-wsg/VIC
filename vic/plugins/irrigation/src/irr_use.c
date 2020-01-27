@@ -63,13 +63,16 @@ irr_set_demand(size_t iCell)
         cveg_con = &veg_con[iCell][cirr_con->veg_index];
         veg_fract = cveg_con->Cv;
         
-        for(j = 0; j < options.SNOW_BAND; j++){
-            cirr_var = &irr_var[iCell][i][j];
-            area_fract = csoil_con->AreaFract[j];
-            
-            if(area_fract > 0){
-                if(cirr_var->flag_req){
-                    demand += cirr_var->requirement * veg_fract * area_fract * cirr_con->irrigation_efficiency;
+        if(veg_fract > 0) {
+        
+            for(j = 0; j < options.SNOW_BAND; j++){
+                cirr_var = &irr_var[iCell][i][j];
+                area_fract = csoil_con->AreaFract[j];
+
+                if(area_fract > 0){
+                    if(cirr_var->flag_req){
+                        demand += cirr_var->requirement * veg_fract * area_fract * cirr_con->irrigation_efficiency;
+                    }
                 }
             }
         }
@@ -126,13 +129,16 @@ irr_get_withdrawn(size_t iCell)
         cveg_con = &veg_con[iCell][cirr_con->veg_index];
         veg_fract = cveg_con->Cv;
         
-        for(j = 0; j < options.SNOW_BAND; j++){
-            cirr_var = &irr_var[iCell][i][j];
-            area_fract = csoil_con->AreaFract[j];
-            
-            if(area_fract > 0){
-                if(cirr_var->flag_req){
-                    demand += cirr_var->requirement * veg_fract * area_fract * cirr_con->irrigation_efficiency;
+        if(veg_fract > 0) {
+        
+            for(j = 0; j < options.SNOW_BAND; j++){
+                cirr_var = &irr_var[iCell][i][j];
+                area_fract = csoil_con->AreaFract[j];
+
+                if(area_fract > 0){
+                    if(cirr_var->flag_req){
+                        demand += cirr_var->requirement * veg_fract * area_fract * cirr_con->irrigation_efficiency;
+                    }
                 }
             }
         }
@@ -156,23 +162,28 @@ irr_get_withdrawn(size_t iCell)
     // do leftover
     for(i = 0; i < irr_con_map[iCell].ni_active; i++){
         cirr_con = &irr_con[iCell][i];
+        cveg_con = &veg_con[iCell][cirr_con->veg_index];
+        veg_fract = cveg_con->Cv;
+        
+        if(veg_fract > 0) {
 
-        for(j = 0; j < options.SNOW_BAND; j++){
-            cirr_var = &irr_var[iCell][i][j];
-            ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
-            area_fract = csoil_con->AreaFract[j];
+            for(j = 0; j < options.SNOW_BAND; j++){
+                cirr_var = &irr_var[iCell][i][j];
+                ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
+                area_fract = csoil_con->AreaFract[j];
 
-            if(area_fract > 0){
-                max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                max_added = max_moist;
+                if(area_fract > 0){
+                    max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
+                    max_added = max_moist;
 
-                if(cirr_var->leftover > 0){
-                    if(cirr_var->leftover < max_added){
-                        ccell_var->layer[0].moist += cirr_var->leftover;
-                        cirr_var->leftover = 0.0;
-                    } else {
-                        ccell_var->layer[0].moist += max_added;
-                        cirr_var->leftover -= max_added;
+                    if(cirr_var->leftover > 0){
+                        if(cirr_var->leftover < max_added){
+                            ccell_var->layer[0].moist += cirr_var->leftover;
+                            cirr_var->leftover = 0.0;
+                        } else {
+                            ccell_var->layer[0].moist += max_added;
+                            cirr_var->leftover -= max_added;
+                        }
                     }
                 }
             }
@@ -188,24 +199,27 @@ irr_get_withdrawn(size_t iCell)
             cveg_con = &veg_con[iCell][cirr_con->veg_index];
             veg_fract = cveg_con->Cv;
 
-            for(j = 0; j < options.SNOW_BAND; j++){
-                cirr_var = &irr_var[iCell][i][j];
-                ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
-                area_fract = csoil_con->AreaFract[j];
+            if(veg_fract > 0) {
 
-                if(area_fract > 0){
-                    if(cirr_var->flag_req){
-                        max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                        max_added = max_moist;
-                        
-                        avail_irr = cirr_var->requirement * cirr_con->irrigation_efficiency * avail_frac;
-                        abs_demand += avail_irr * veg_fract * area_fract;
-                        if(avail_irr < max_added){
-                            ccell_var->layer[0].moist += avail_irr;
-                            avail_irr = 0.0;
-                        } else {
-                            ccell_var->layer[0].moist += max_added;
-                            cirr_var->leftover += avail_irr - max_added;
+                for(j = 0; j < options.SNOW_BAND; j++){
+                    cirr_var = &irr_var[iCell][i][j];
+                    ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
+                    area_fract = csoil_con->AreaFract[j];
+
+                    if(area_fract > 0){
+                        if(cirr_var->flag_req){
+                            max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
+                            max_added = max_moist;
+
+                            avail_irr = cirr_var->requirement * cirr_con->irrigation_efficiency * avail_frac;
+                            abs_demand += avail_irr * veg_fract * area_fract;
+                            if(avail_irr < max_added){
+                                ccell_var->layer[0].moist += avail_irr;
+                                avail_irr = 0.0;
+                            } else {
+                                ccell_var->layer[0].moist += max_added;
+                                cirr_var->leftover += avail_irr - max_added;
+                            }
                         }
                     }
                 }

@@ -80,11 +80,11 @@ between_jday(double start,
 unsigned short int
 days_per_month(unsigned short int month,
                unsigned short int year,
-                unsigned short int calendar)
+               unsigned short int calendar)
 {
     unsigned short int days_per_month[MONTHS_PER_YEAR] = {31,28,31,30,31,30,31,31,30,31,30,31};
     
-    days_per_month[2] += leap_year(year, calendar);
+    days_per_month[1] += leap_year(year, calendar);
     
     return(days_per_month[month - 1]);
 }

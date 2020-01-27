@@ -480,13 +480,13 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     force_type_struct TYPE[N_FORCING_TYPES];
-    double FORCE_DT[MAX_FORCE_FILES];    /**< forcing file time step */
-    size_t force_steps_per_day[MAX_FORCE_FILES];    /**< forcing file timesteps per day */
-    unsigned short int FORCE_ENDIAN[MAX_FORCE_FILES];  /**< endian-ness of input file, used for DAILY_BINARY format */
-    int FORCE_FORMAT[MAX_FORCE_FILES];            /**< ASCII or BINARY */
-    int FORCE_INDEX[MAX_FORCE_FILES];
-    int VAR_INDEX[N_FORCING_TYPES];
-    size_t N_FORCE_FILES;
+    double FORCE_DT[N_FORCING_TYPES];    /**< forcing file time step */
+    size_t force_steps_per_day[N_FORCING_TYPES];    /**< forcing file timesteps per day */
+    unsigned short int FORCE_ENDIAN[N_FORCING_TYPES];  /**< endian-ness of input file, used for
+                                            DAILY_BINARY format */
+    int FORCE_FORMAT[N_FORCING_TYPES];            /**< ASCII or BINARY */
+    int FORCE_INDEX[N_FORCING_TYPES];
+    size_t N_TYPES[N_FORCING_TYPES];
 } param_set_struct;
 
 /******************************************************************************
