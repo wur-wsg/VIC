@@ -489,7 +489,6 @@ calculate_use(size_t iCell,
         (*withdrawn_gw) += wu_var[iCell][iSector].withdrawn_gw;
         (*withdrawn_surf) += wu_var[iCell][iSector].withdrawn_surf;
         (*withdrawn_dam) += wu_var[iCell][iSector].withdrawn_dam;
-        (*returned) += wu_var[iCell][iSector].returned;
         
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
             iCell2 = wu_con[iCell].receiving[j];
@@ -501,6 +500,8 @@ calculate_use(size_t iCell,
             
             (*withdrawn_remote) += wu_var[iCell2][iSector2].withdrawn_remote;
         }
+        
+        (*returned) += wu_var[iCell][iSector].returned;
     }
 }
 
@@ -551,9 +552,15 @@ calculate_hydrology(size_t iCell,
                 }
 
                 all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist -=
-                        withdrawn_gw *
+                        withdrawn_gw / 
+                        (soil_con[iCell].AreaFract[iBand] *
+                        veg_con[iCell][iVeg].Cv) *
                         av_gw[iVeg][iBand] /
                         available_gw;
+                
+                if (all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist < 0) {
+                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist = 0.;
+                }
 
                 ice = 0;
                 for(iFrost = 0; iFrost < options.Nfrost; iFrost ++){
@@ -575,6 +582,7 @@ calculate_hydrology(size_t iCell,
                 MM_PER_M * 
                 local_domain.locations[iCell].area / 
                 global_param.dt;
+        
         if(rout_var[iCell].discharge < 0){
             rout_var[iCell].discharge = 0;
         }
@@ -591,6 +599,10 @@ calculate_hydrology(size_t iCell,
                             MM_PER_M * 
                             local_domain.locations[iCell].area / 
                             M3_PER_HM3;
+                    
+                    if (local_dam_var[iCell][iDam].storage < 0) {
+                        local_dam_var[iCell][iDam].storage = 0.;
+                    }
                 }
             }
         }
