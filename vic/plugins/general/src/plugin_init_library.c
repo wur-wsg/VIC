@@ -54,6 +54,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     }
     plugin_options->NIRRTYPES = 0;
     plugin_options->POTENTIAL_IRRIGATION = false;
+    plugin_options->WOFOST_PIRR = false;
     plugin_options->NCROPTYPES = 0;
 }
 

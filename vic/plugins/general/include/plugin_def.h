@@ -232,6 +232,7 @@ typedef struct {
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
+    bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */
 } plugin_option_struct;
 

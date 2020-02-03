@@ -36,6 +36,7 @@ crop_register_meteo(size_t iCell)
     extern global_param_struct global_param;
     extern soil_con_struct *soil_con;
     extern option_struct options;
+    extern plugin_option_struct plugin_options;
     extern force_data_struct *force;
     extern crop_force_struct *crop_force;
     extern all_vars_struct *all_vars;
@@ -61,8 +62,14 @@ crop_register_meteo(size_t iCell)
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
             cgrid->met->Radiation += force[iCell].shortwave[NR] * SEC_PER_DAY / 
                     global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
-            cgrid->soil->WaterStress += all_vars[iCell].cell[iVeg][iBand].water_stress / 
-                    global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
+            
+            if (plugin_options.WOFOST_PIRR) {
+                cgrid->soil->WaterStress += 1. / 
+                        global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
+            } else {
+                cgrid->soil->WaterStress += all_vars[iCell].cell[iVeg][iBand].water_stress / 
+                        global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
+            }
 
             cgrid->met->Tmin[0] = min(cgrid->met->Tmin[0], force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);
             cgrid->met->Tmax = max(cgrid->met->Tmax, force[iCell].air_temp[NR] + soil_con[iCell].Tfactor[iBand]);

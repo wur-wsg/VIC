@@ -25,6 +25,10 @@ crop_get_global_param(char *cmdstr)
     else if (strcasecmp("WOFOST_TEXT_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.wofost_text);
     }
+    else if (strcasecmp("WOFOST_POTENTIAL_IRRIGATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_PIRR = str_to_bool(flgstr);
+    }
     else {
         return false;
     }
