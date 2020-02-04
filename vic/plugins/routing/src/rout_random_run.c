@@ -67,6 +67,8 @@ rout_random_run()
     double                           *force_local;
 
     size_t                            iCell;
+    double                            in_runoff;
+    double                            in_baseflow;
     double                            inflow;
     double                            dt_inflow;
     double                            runoff;
@@ -165,9 +167,19 @@ rout_random_run()
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             iuh_local[i][j] = rout_con[i].inflow_uh[j];
         }
+        
+        in_runoff = out_data[i][OUT_RUNOFF][0];
+        in_baseflow = out_data[i][OUT_BASEFLOW][0];
+        if (in_baseflow > rout_var[i].nonrenew_deficit) {
+            rout_var[i].nonrenew_deficit = 0.;
+            in_baseflow -= rout_var[i].nonrenew_deficit;
+        } else {
+            rout_var[i].nonrenew_deficit -= in_baseflow;
+            in_baseflow = 0.;
+        }
+        
         run_local[i] =
-            (out_data[i][OUT_RUNOFF][0] +
-             out_data[i][OUT_BASEFLOW][0]) *
+            (in_runoff + in_baseflow) *
             local_domain.locations[i].area /
             (global_param.dt * MM_PER_M);
         for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {

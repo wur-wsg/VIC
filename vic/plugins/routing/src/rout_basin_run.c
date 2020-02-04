@@ -42,6 +42,8 @@ rout_basin_run(size_t iCell)
     extern rout_force_struct         *rout_force;
     extern double                  ***out_data;
 
+    double                            in_runoff;
+    double                            in_baseflow;
     double                            inflow;
     double                            dt_inflow;
     double                            runoff;
@@ -66,9 +68,18 @@ rout_basin_run(size_t iCell)
     }
 
     // Gather runoff from VIC
+    in_runoff = out_data[iCell][OUT_RUNOFF][0];
+    in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
+    if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
+        in_baseflow -= rout_var[iCell].nonrenew_deficit;
+        rout_var[iCell].nonrenew_deficit = 0.;
+    } else {
+        rout_var[iCell].nonrenew_deficit -= in_baseflow;
+        in_baseflow = 0.;
+    }
+    
     runoff =
-        (out_data[iCell][OUT_RUNOFF][0] +
-         out_data[iCell][OUT_BASEFLOW][0]) *
+        (in_runoff + in_baseflow) *
         local_domain.locations[iCell].area /
         (global_param.dt * MM_PER_M);
 

@@ -57,6 +57,7 @@ reset_wu(size_t iCell)
         wu_var[iCell][iSector].withdrawn_gw = 0.0;
         wu_var[iCell][iSector].withdrawn_dam = 0.0;
         wu_var[iCell][iSector].withdrawn_remote = 0.0;
+        wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
         wu_var[iCell][iSector].consumed = 0.0;
         wu_var[iCell][iSector].returned = 0.0;
     }
@@ -287,15 +288,6 @@ calculate_division(size_t iCell,
             }
         }
         
-//        // groundwater
-//        if(demand_gw > 0){
-//            wu_var[iCell][iSector].available_gw = available_gw *
-//                    wu_var[iCell][iSector].demand_gw / 
-//                    demand_gw;
-//        } else {
-//            wu_var[iCell][iSector].available_gw = 0.0;
-//        }
-        
         // surface water & dam
         available_surf_tot = available_surf_tmp + available_dam_tmp;
         if(available_surf_tot > 0 && demand_surf > 0) {
@@ -317,20 +309,6 @@ calculate_division(size_t iCell,
             }
         }
         
-//        // surface water & dam
-//        if(demand_surf > 0){
-//            wu_var[iCell][iSector].available_surf = available_surf *
-//                    wu_var[iCell][iSector].demand_surf / 
-//                    demand_surf;
-//            
-//            wu_var[iCell][iSector].available_dam = available_dam *
-//                    wu_var[iCell][iSector].demand_surf / 
-//                    demand_surf;
-//        } else {
-//            wu_var[iCell][iSector].available_surf = 0.0;
-//            wu_var[iCell][iSector].available_dam = 0.0;
-//        }
-        
         // remote
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
             iCell2 = wu_con[iCell].receiving[j];
@@ -349,16 +327,6 @@ calculate_division(size_t iCell,
                     available_remote_tmp -= wu_var[iCell2][iSector2].demand_surf;
                 }
             }
-//            if(demand_remote > 0){
-//                wu_var[iCell2][iSector2].available_remote = 
-//                        available_remote *
-//                        (wu_var[iCell2][iSector2].demand_surf - 
-//                        wu_var[iCell2][iSector2].withdrawn_surf - 
-//                        wu_var[iCell2][iSector2].withdrawn_dam) / 
-//                        demand_remote;    
-//            } else {
-//                wu_var[iCell2][iSector2].available_remote = 0.0;
-//            }
         }
     }
 }
@@ -372,6 +340,7 @@ calculate_use(size_t iCell,
         double *withdrawn_surf, 
         double *withdrawn_dam, 
         double *withdrawn_remote,
+        double *withdrawn_nonrenew,
         double *returned)
 {
     extern plugin_option_struct plugin_options;
@@ -484,11 +453,25 @@ calculate_use(size_t iCell,
                     wu_var[iCell2][iSector2].withdrawn_remote * 
                     wu_force[iCell2][iSector2].consumption_frac;
         }
+        
+        // non-renewable
+        if(plugin_options.NONRENEW_WITH) {
+            wu_var[iCell][iSector].withdrawn_nonrenew = 
+                    wu_var[iCell][iSector].demand_gw - wu_var[iCell][iSector].withdrawn_gw;
+
+            wu_var[iCell][iSector].returned += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew * 
+                    (1 - wu_force[iCell][iSector].consumption_frac);
+            wu_var[iCell][iSector].consumed += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew * 
+                    wu_force[iCell][iSector].consumption_frac;
+        }
 
         
         (*withdrawn_gw) += wu_var[iCell][iSector].withdrawn_gw;
         (*withdrawn_surf) += wu_var[iCell][iSector].withdrawn_surf;
         (*withdrawn_dam) += wu_var[iCell][iSector].withdrawn_dam;
+        (*withdrawn_nonrenew) += wu_var[iCell][iSector].withdrawn_nonrenew;
         
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
             iCell2 = wu_con[iCell].receiving[j];
@@ -518,6 +501,7 @@ calculate_hydrology(size_t iCell,
         double withdrawn_surf, 
         double withdrawn_dam, 
         double withdrawn_remote,
+        double withdrawn_nonrenew,
         double returned)
 {
     extern domain_struct  local_domain;
@@ -607,6 +591,14 @@ calculate_hydrology(size_t iCell,
             }
         }
     }
+    
+    if(withdrawn_nonrenew > 0) {
+        rout_var[iCell].nonrenew_deficit += withdrawn_nonrenew;
+        
+        if(rout_var[iCell].nonrenew_deficit < 0){
+            rout_var[iCell].nonrenew_deficit = 0;
+        }
+    }
 }
 
 /******************************************
@@ -624,7 +616,8 @@ check_water_use_balance(size_t iCell,
         double withdrawn_gw, 
         double withdrawn_surf, 
         double withdrawn_dam, 
-        double withdrawn_remote)
+        double withdrawn_remote,
+        double withdrawn_nonrenew)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct **wu_var;
@@ -643,15 +636,17 @@ check_water_use_balance(size_t iCell,
             continue;
         }
                 
-        if(wu_var[iCell][iSector].withdrawn_gw - wu_var[iCell][iSector].available_gw > WU_BALANCE_ERROR_THRESH ||
+        if (wu_var[iCell][iSector].withdrawn_gw - wu_var[iCell][iSector].available_gw > WU_BALANCE_ERROR_THRESH ||
                 wu_var[iCell][iSector].withdrawn_gw - wu_var[iCell][iSector].demand_gw > WU_BALANCE_ERROR_THRESH ||
                 wu_var[iCell][iSector].withdrawn_surf - wu_var[iCell][iSector].available_surf > WU_BALANCE_ERROR_THRESH ||
                 wu_var[iCell][iSector].withdrawn_dam - wu_var[iCell][iSector].available_dam > WU_BALANCE_ERROR_THRESH ||
-                wu_var[iCell][iSector].withdrawn_surf + wu_var[iCell][iSector].withdrawn_dam - wu_var[iCell][iSector].demand_surf > WU_BALANCE_ERROR_THRESH){
+                wu_var[iCell][iSector].withdrawn_surf + wu_var[iCell][iSector].withdrawn_dam - wu_var[iCell][iSector].demand_surf > WU_BALANCE_ERROR_THRESH ||
+                wu_var[iCell][iSector].withdrawn_gw + wu_var[iCell][iSector].withdrawn_nonrenew - wu_var[iCell][iSector].demand_gw > WU_BALANCE_ERROR_THRESH) {
             log_err("Water-use water balance error for sector %zu:\n"
                     "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                     "surface-water:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                    "dam:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n",
+                    "dam:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
+                    "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [Inf]\n",
                     i,
                     wu_var[iCell][iSector].withdrawn_gw, 
                     wu_var[iCell][iSector].demand_gw, 
@@ -661,7 +656,9 @@ check_water_use_balance(size_t iCell,
                     wu_var[iCell][iSector].available_surf,
                     wu_var[iCell][iSector].withdrawn_dam,
                     wu_var[iCell][iSector].demand_surf,
-                    wu_var[iCell][iSector].available_dam);
+                    wu_var[iCell][iSector].available_dam,
+                    wu_var[iCell][iSector].withdrawn_nonrenew,
+                    wu_var[iCell][iSector].demand_gw - wu_var[iCell][iSector].available_gw);
         }
         
         
@@ -701,13 +698,15 @@ check_water_use_balance(size_t iCell,
             withdrawn_surf - available_surf  > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_dam - available_dam  > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_remote - available_remote  > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
+            withdrawn_remote - demand_remote > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_surf + withdrawn_dam - demand_surf > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
-            withdrawn_remote - demand_remote > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES){ 
+            withdrawn_gw + withdrawn_nonrenew - demand_gw > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES){ 
         log_err("Water-use water balance error for cell %zu:\n"
                 "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                 "surface-water:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
                 "dam:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                "remote:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n",
+                "remote:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
+                "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [Inf]\n",
                 iCell,
                 withdrawn_gw, 
                 demand_gw, 
@@ -720,7 +719,9 @@ check_water_use_balance(size_t iCell,
                 available_dam,
                 withdrawn_remote, 
                 demand_remote, 
-                available_remote);
+                available_remote,
+                withdrawn_nonrenew, 
+                demand_gw - available_gw);
     }
 }
 
@@ -746,6 +747,7 @@ wu_run(size_t iCell)
     double withdrawn_surf;
     double withdrawn_dam;
     double withdrawn_remote;
+    double withdrawn_nonrenew;
     double returned;
     
     size_t iVeg;
@@ -785,6 +787,7 @@ wu_run(size_t iCell)
     withdrawn_surf = 0;
     withdrawn_dam = 0;
     withdrawn_remote = 0;
+    withdrawn_nonrenew = 0;
     returned = 0;
     
     reset_wu(iCell);
@@ -792,32 +795,45 @@ wu_run(size_t iCell)
     /******************************************
      Demand
     ******************************************/
-    calculate_demand(iCell, &demand_gw, &demand_surf, &demand_remote);
+    calculate_demand(iCell, 
+                    &demand_gw, &demand_surf, &demand_remote);
     
     /******************************************
      Availability
     ******************************************/
-    calculate_availability(iCell, &available_gw, &available_surf, &available_dam, &available_remote, av_gw, av_dam, demand_surf, demand_remote);
+    calculate_availability(iCell, 
+                          &available_gw, &available_surf, &available_dam, &available_remote, av_gw, av_dam, 
+                           demand_surf, demand_remote);
     
     /******************************************
      Devide
     ******************************************/ 
-    calculate_division(iCell, available_gw, available_surf, available_dam, available_remote, demand_gw, demand_surf, demand_remote);
+    calculate_division(iCell, 
+                       available_gw, available_surf, available_dam, available_remote, 
+                       demand_gw, demand_surf, demand_remote);
     
     /******************************************
      Withdrawals & Consumption
     ******************************************/ 
-    calculate_use(iCell, &withdrawn_gw, &withdrawn_surf, &withdrawn_dam, &withdrawn_remote, &returned);
+    calculate_use(iCell, 
+                 &withdrawn_gw, &withdrawn_surf, &withdrawn_dam, &withdrawn_remote, &withdrawn_nonrenew, 
+                 &returned);
     
     /******************************************
      Return
     ******************************************/
-    calculate_hydrology(iCell, available_gw, available_dam, av_gw, av_dam, withdrawn_gw, withdrawn_surf, withdrawn_dam, withdrawn_remote, returned);
+    calculate_hydrology(iCell, 
+                        available_gw, available_dam, av_gw, av_dam, 
+                        withdrawn_gw, withdrawn_surf, withdrawn_dam, withdrawn_remote, withdrawn_nonrenew,
+                        returned);
     
     /******************************************
      Check balance
     ******************************************/
-    check_water_use_balance(iCell, available_gw, available_surf, available_dam, available_remote, demand_gw, demand_surf, demand_remote, withdrawn_gw, withdrawn_surf, withdrawn_dam, withdrawn_remote);
+    check_water_use_balance(iCell, 
+                            available_gw, available_surf, available_dam, available_remote, 
+                            demand_gw, demand_surf, demand_remote, 
+                            withdrawn_gw, withdrawn_surf, withdrawn_dam, withdrawn_remote, withdrawn_nonrenew);
         
     /******************************************
      Free

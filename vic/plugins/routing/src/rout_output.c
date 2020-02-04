@@ -57,8 +57,20 @@ rout_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].description,
              MAXSTRING, "%s", "moisture storage in stream flow");
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].varname, MAXSTRING,
+             "%s", "OUT_NONREN_DEFICIT");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].long_name,
+             MAXSTRING, "%s", "non_renewable_deficit");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].standard_name,
+             MAXSTRING, "%s", "non_renewable_deficit");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].units, MAXSTRING,
+             "%s", "mm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].description,
+             MAXSTRING, "%s", "non-renewable deficit");
+
     out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].nelem = 1;
+    out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].nelem = 1;
 }
 
 /******************************************
@@ -70,6 +82,7 @@ rout_history(int           varid,
 {
     switch (varid) {
     case  N_OUTVAR_TYPES + OUT_STREAM_MOIST:
+    case  N_OUTVAR_TYPES + OUT_NONREN_DEFICIT:
         (*agg_type) = AGG_TYPE_END;
         break;
     case  N_OUTVAR_TYPES + OUT_DISCHARGE:
@@ -94,6 +107,8 @@ rout_put_data(size_t iCell)
                                            global_param.dt /
                                            local_domain.locations[iCell].area *
                                            MM_PER_M;
+    out_data[iCell][N_OUTVAR_TYPES +
+                    OUT_NONREN_DEFICIT][0] = rout_var[iCell].nonrenew_deficit;
     out_data[iCell][N_OUTVAR_TYPES +
                     OUT_DISCHARGE][0] = rout_var[iCell].discharge;
 }
