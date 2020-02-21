@@ -52,21 +52,19 @@ rout_basin_run(size_t iCell)
     double                            prev_stream;
 
     size_t                            i;
+    size_t                            j;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
-
-    // Gather inflow from upstream cells
-    inflow = 0;
-    for (i = 0; i < rout_con[iCell].Nupstream; i++) {
-        inflow += rout_var[rout_con[iCell].upstream[i]].discharge;
+    
+    /* Shift and clear previous discharge data */
+    for (i = 0; i < rout_steps_per_dt; i++) {
+        rout_var[iCell].dt_discharge[0] = 0.0;
+        cshift(rout_var[iCell].dt_discharge,
+               plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
     }
-
-    // Gather inflow from forcing
-    if (plugin_options.FORCE_ROUTING) {
-        inflow += rout_force[iCell].discharge;
-    }
-
+    
+    /* RUNOFF*/
     // Gather runoff from VIC
     in_runoff = out_data[iCell][OUT_RUNOFF][0];
     in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
@@ -82,24 +80,36 @@ rout_basin_run(size_t iCell)
         (in_runoff + in_baseflow) *
         local_domain.locations[iCell].area /
         (global_param.dt * MM_PER_M);
-
-    // Calculate delta-time inflow & runoff (equal contribution)
-    dt_inflow = inflow / rout_steps_per_dt;
-    dt_runoff = runoff / rout_steps_per_dt;
-
-    // Shift and clear previous discharge data
+    
+    // Convolute current inflow & runoff
     for (i = 0; i < rout_steps_per_dt; i++) {
-        rout_var[iCell].dt_discharge[0] = 0.0;
-        cshift(rout_var[iCell].dt_discharge,
-               plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
+
+        // Calculate delta-time runoff (equal contribution)
+        dt_runoff = runoff / rout_steps_per_dt;
+        
+        convolute(dt_runoff, rout_con[iCell].runoff_uh,
+                  rout_var[iCell].dt_discharge,
+                  plugin_options.UH_LENGTH, i);
+    }
+
+    /* INFLOW*/
+    // Gather inflow from forcing
+    inflow = 0;
+    if (plugin_options.FORCE_ROUTING) {
+        inflow += rout_force[iCell].discharge;
     }
 
     // Convolute current inflow & runoff
     for (i = 0; i < rout_steps_per_dt; i++) {
+        
+        // Calculate delta-time inflow (equal contribution)
+        dt_inflow = inflow / rout_steps_per_dt;
+        
+        for (j = 0; j < rout_con[iCell].Nupstream; j++) {
+            dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
+        }
+            
         convolute(dt_inflow, rout_con[iCell].inflow_uh,
-                  rout_var[iCell].dt_discharge,
-                  plugin_options.UH_LENGTH, i);
-        convolute(dt_runoff, rout_con[iCell].runoff_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
     }
