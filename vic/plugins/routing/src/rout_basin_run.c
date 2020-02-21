@@ -61,7 +61,7 @@ rout_basin_run(size_t iCell)
     for (i = 0; i < rout_steps_per_dt; i++) {
         rout_var[iCell].dt_discharge[0] = 0.0;
         cshift(rout_var[iCell].dt_discharge,
-               plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
+               plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
     }
     
     /* RUNOFF*/
@@ -118,7 +118,7 @@ rout_basin_run(size_t iCell)
     rout_var[iCell].discharge = 0.0;
     prev_stream = rout_var[iCell].stream;
     rout_var[iCell].stream = 0.0;
-    for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt; i++) {
+    for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; i++) {
         if (i < rout_steps_per_dt) {
             rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
         }
