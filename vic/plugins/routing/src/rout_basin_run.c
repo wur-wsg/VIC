@@ -45,6 +45,7 @@ rout_basin_run(size_t iCell)
     double                            in_runoff;
     double                            in_baseflow;
     double                            inflow;
+    double                            inflow_wb;
     double                            dt_inflow;
     double                            runoff;
     double                            dt_runoff;
@@ -94,12 +95,13 @@ rout_basin_run(size_t iCell)
 
     /* INFLOW*/
     // Gather inflow from forcing
-    inflow = 0;
+    inflow = 0.;
     if (plugin_options.FORCE_ROUTING) {
         inflow += rout_force[iCell].discharge;
     }
 
     // Convolute current inflow & runoff
+    inflow_wb = 0.;
     for (i = 0; i < rout_steps_per_dt; i++) {
         
         // Calculate delta-time inflow (equal contribution)
@@ -108,10 +110,11 @@ rout_basin_run(size_t iCell)
         for (j = 0; j < rout_con[iCell].Nupstream; j++) {
             dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
         }
-            
+        
         convolute(dt_inflow, rout_con[iCell].inflow_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
+        inflow_wb += dt_inflow;
     }
 
     // Aggregate current timestep discharge & stream moisture
