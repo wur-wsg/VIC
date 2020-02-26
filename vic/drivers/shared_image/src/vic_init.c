@@ -272,7 +272,6 @@ vic_init(void)
                     else {
                         veg_lib[i][j].fcanopy[k] = MIN_FCANOPY;
                     }
-                    veg_lib[i][j].fcanopy[k] = 1.0;
                 }
             }
         }
