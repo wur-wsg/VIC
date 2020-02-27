@@ -256,10 +256,6 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.TFALLBACK = str_to_bool(flgstr);
             }
-            else if (strcasecmp("MATRIC", optstr) == 0) {
-                sscanf(cmdstr, "%*s %s", flgstr);
-                options.MATRIC = str_to_bool(flgstr);
-            }
             else if (strcasecmp("SHARE_LAYER_MOIST", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.SHARE_LAYER_MOIST = str_to_bool(flgstr);

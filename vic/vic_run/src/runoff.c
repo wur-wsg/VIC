@@ -42,7 +42,6 @@ runoff(cell_data_struct  *cell,
 {
     extern option_struct       options;
     extern global_param_struct global_param;
-    extern parameters_struct   param;
 
     size_t                     lindex;
     size_t                     time_step;
@@ -83,10 +82,6 @@ runoff(cell_data_struct  *cell,
     layer_data_struct         *layer;
     layer_data_struct          tmp_layer;
     unsigned short             runoff_steps_per_dt;
-
-    double                     matric[MAX_LAYERS];
-    double                     matric_expt[MAX_LAYERS];
-    double                     avg_matric;
 
     /** Set Residual Moisture **/
     for (lindex = 0; lindex < options.Nlayer; lindex++) {
@@ -169,11 +164,6 @@ runoff(cell_data_struct  *cell,
 
             /** Set Layer Maximum Moisture Content **/
             max_moist[lindex] = soil_con->max_moist[lindex];
-
-            if (options.MATRIC) {
-                /** Set Matric Potential Exponent (Burdine model 1953) **/
-                matric_expt[lindex] = (soil_con->expt[lindex] - 3.0) / 2.0;
-            }
         }
 
         /******************************************************
@@ -203,27 +193,6 @@ runoff(cell_data_struct  *cell,
             inflow = dt_inflow;
 
             /*************************************
-               Compute Matric potential
-            *************************************/
-            if (options.MATRIC) {
-                // Set matric potential (based on moisture content and soil texture)
-                for (lindex = 0; lindex < options.Nlayer; lindex++) {
-                    tmp_liq = liq[lindex] - evap[lindex][fidx];
-                    if (tmp_liq > resid_moist[lindex]) {
-                        /** Brooks & Corey relation for matric potential **/
-                        matric[lindex] = soil_con->bubble[lindex] *
-                                         pow((tmp_liq - resid_moist[lindex]) /
-                                             (max_moist[lindex] -
-                                              resid_moist[lindex]),
-                                             -matric_expt[lindex]);
-                    }
-                    else {
-                        matric[lindex] = param.HUGE_RESIST;
-                    }
-                }
-            }
-
-            /*************************************
                Compute Drainage between Sublayers
             *************************************/
 
@@ -233,29 +202,6 @@ runoff(cell_data_struct  *cell,
                 if ((tmp_liq = liq[lindex] - evap[lindex][fidx]) <
                     resid_moist[lindex]) {
                     tmp_liq = resid_moist[lindex];
-                }
-
-                if (liq[lindex] > resid_moist[lindex]) {
-                    if (options.MATRIC) {
-                        if (lindex < options.Nlayer - 1) {
-                            avg_matric = pow(10, (soil_con->depth[lindex + 1] *
-                                                  log10(fabs(matric[lindex])) +
-                                                  soil_con->depth[lindex] *
-                                                  log10(fabs(
-                                                            matric[lindex +
-                                                                   1]))) /
-                                             (soil_con->depth[lindex] +
-                                              soil_con->depth[lindex + 1]));
-
-                            tmp_liq = resid_moist[lindex] +
-                                      (max_moist[lindex] -
-                                       resid_moist[lindex]) *
-                                      pow(
-                                (avg_matric /
-                                 soil_con->bubble[lindex]), -1 /
-                                matric_expt[lindex]);
-                        }
-                    }
                 }
 
                 if (tmp_liq > resid_moist[lindex]) {
