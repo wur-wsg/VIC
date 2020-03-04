@@ -108,8 +108,8 @@ canopy_evap(layer_data_struct *layer,
         f = min(1.0, ((tmp_Wdew + ppt) / canopyevap));
     }
     else if (canopyevap > 0.0) {
-        /** If sub-daily time step, evap can not exceed current storage **/
-        f = min(1.0, ((tmp_Wdew) / canopyevap));
+        /** If sub-daily time step, evap can include current precipitation **/
+        f = min(1.0, ((tmp_Wdew + ppt) / canopyevap));
     }
     else {
         f = 1.0;
