@@ -248,9 +248,9 @@ root_brent(double LowerBound,
     }
     if ((fa * fb) >= 0) {
         /* if we get here, the lower and upper bounds did not bracket the root */
-        debug("lower and upper bounds %f and %f failed to "
-              "bracket the root. Driver info: %s.",
-              a, b, vic_run_ref_str);
+        log_warn("lower and upper bounds %f and %f failed to "
+                 "bracket the root. Driver info: %s.",
+                 a, b, vic_run_ref_str);
         va_end(ap);
         return(ERROR);
     }
@@ -341,8 +341,8 @@ root_brent(double LowerBound,
         }
     }
     /* If we get here, there were too many iterations */
-    debug("too many iterations. Driver info: %s.",
-          vic_run_ref_str);
+    log_warn("too many iterations. Driver info: %s.",
+             vic_run_ref_str);
     va_end(ap);
     return(ERROR);
 }

@@ -76,18 +76,14 @@ rout_basin_run(size_t iCell)
         rout_var[iCell].nonrenew_deficit -= in_baseflow;
         in_baseflow = 0.;
     }
-    
     runoff =
         (in_runoff + in_baseflow) *
         local_domain.locations[iCell].area /
         (global_param.dt * MM_PER_M);
-    
+    // Calculate delta-time runoff (equal contribution)
+    dt_runoff = runoff / rout_steps_per_dt;
     // Convolute current runoff
     for (i = 0; i < rout_steps_per_dt; i++) {
-
-        // Calculate delta-time runoff (equal contribution)
-        dt_runoff = runoff / rout_steps_per_dt;
-        
         convolute(dt_runoff, rout_con[iCell].runoff_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
@@ -95,17 +91,15 @@ rout_basin_run(size_t iCell)
 
     /* INFLOW*/
     // Gather inflow from forcing
-    inflow = 0.;
+    inflow = 0.0;
     if (plugin_options.FORCE_ROUTING) {
         inflow += rout_force[iCell].discharge;
     }
-
+    // Calculate delta-time inflow (equal contribution)
+    dt_inflow = inflow / rout_steps_per_dt;
     // Convolute current inflow
     inflow_wb = 0.;
     for (i = 0; i < rout_steps_per_dt; i++) {
-        
-        // Calculate delta-time inflow (equal contribution)
-        dt_inflow = inflow / rout_steps_per_dt;
         
         for (j = 0; j < rout_con[iCell].Nupstream; j++) {
             dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
@@ -116,7 +110,7 @@ rout_basin_run(size_t iCell)
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
     }
-
+    
     // Aggregate current timestep discharge & stream moisture
     rout_var[iCell].discharge = 0.0;
     prev_stream = rout_var[iCell].stream;
