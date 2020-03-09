@@ -34,6 +34,7 @@ void
 wu_forcing(void)
 {
     extern domain_struct local_domain;
+    extern global_param_struct     global_param;
     extern plugin_global_param_struct plugin_global_param;
     extern domain_struct global_domain;
     extern plugin_filenames_struct plugin_filenames;
@@ -99,7 +100,8 @@ wu_forcing(void)
                     iSector = wu_con_map[i].sidx[k];
 
                     if(iSector != NODATA_WU){
-                        wu_force[i][iSector].demand = dvar[i];
+                        wu_force[i][iSector].demand = dvar[i] *
+                                (global_param.dt / plugin_global_param.force_dt[FORCING_EFR_BASEFLOW]);
                     }
                 }
             }
