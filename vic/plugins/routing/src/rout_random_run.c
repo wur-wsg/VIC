@@ -238,11 +238,12 @@ rout_random_run()
             if (plugin_options.FORCE_ROUTING) {
                 inflow += force_global[iCell];
             }
-            // Calculate delta-time inflow (equal contribution)
-            dt_inflow = inflow / rout_steps_per_dt;
             // Convolute current inflow
             inflow_wb = 0.;
             for (j = 0; j < rout_steps_per_dt; j++) {
+
+            	// Calculate delta-time inflow (equal contribution)
+            	dt_inflow = inflow / rout_steps_per_dt;
 
                 for (k = 0; k < nup_global[iCell]; k++) {
                     dt_inflow += dt_dis_global[up_global[iCell][k]][j];
@@ -274,9 +275,9 @@ rout_random_run()
                 log_err(
                     "Discharge water balance error [%.4f]. "
                     "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                    prev_stream + (inflow + runoff) -
+                    prev_stream + (inflow_wb + runoff) -
                     (dis_global[iCell] + stream_global[iCell]),
-                    (inflow + runoff),
+                    (inflow_wb + runoff),
                     dis_global[iCell],
                     prev_stream,
                     stream_global[iCell]);
