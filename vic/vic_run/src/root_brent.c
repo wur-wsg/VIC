@@ -104,9 +104,9 @@ root_brent(double LowerBound,
 
     // If Function returns values of ERROR for both bounds, give up
     if (fa == ERROR && fb == ERROR) {
-        log_warn("lower and upper bounds %f and %f "
-                 "failed to bracket the root because the given function was "
-                 "not defined at either point.", a, b);
+        //log_warn("lower and upper bounds %f and %f "
+        //         "failed to bracket the root because the given function was "
+        //         "not defined at either point.", a, b);
         va_end(ap);
         return(ERROR);
     }
