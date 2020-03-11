@@ -278,7 +278,7 @@ calculate_division(size_t iCell,
         }
         
         // groundwater
-        if(available_gw_tmp > 0 && demand_gw > 0){
+        if(demand_gw > 0){
             if(wu_var[iCell][iSector].demand_gw >= available_gw_tmp){
                 wu_var[iCell][iSector].available_gw = available_gw_tmp;
                 available_gw_tmp = 0.0;
@@ -290,7 +290,7 @@ calculate_division(size_t iCell,
         
         // surface water & dam
         available_surf_tot = available_surf_tmp + available_dam_tmp;
-        if(available_surf_tot > 0 && demand_surf > 0) {
+        if(demand_surf > 0) {
             if(wu_var[iCell][iSector].demand_surf >= available_surf_tmp + available_dam_tmp){
                 wu_var[iCell][iSector].available_surf = available_surf_tmp;
                 wu_var[iCell][iSector].available_dam = available_dam_tmp;
@@ -301,7 +301,7 @@ calculate_division(size_t iCell,
                         (available_surf_tmp / available_surf_tot);
                 wu_var[iCell][iSector].available_dam = wu_var[iCell][iSector].demand_surf *
                         (available_dam_tmp / available_surf_tot);
-                
+
                 available_surf_tmp -= wu_var[iCell][iSector].demand_surf *
                         (available_surf_tmp / available_surf_tot);
                 available_dam_tmp -= wu_var[iCell][iSector].demand_surf *
@@ -318,7 +318,7 @@ calculate_division(size_t iCell,
                 continue;
             }
             
-            if (available_remote_tmp > 0 && demand_remote > 0){
+            if (demand_remote > 0){
                 if(wu_var[iCell2][iSector2].demand_surf >= available_remote_tmp){
                     wu_var[iCell2][iSector2].available_remote = available_remote_tmp;
                     available_remote_tmp = 0.0;
@@ -515,12 +515,18 @@ calculate_hydrology(size_t iCell,
     extern dam_var_struct **local_dam_var;
     
     double ice;
+    double prev_discharge;
     
+    size_t rout_steps_per_dt;
+    size_t iStep;
     size_t iVeg;
     size_t iBand;
     size_t iFrost;
     size_t iLayer;
     size_t iDam;
+    
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
     
     // groundwater
     if(withdrawn_gw > 0){
@@ -561,6 +567,7 @@ calculate_hydrology(size_t iCell,
 
     // surface
     if(withdrawn_surf > 0){
+        prev_discharge = rout_var[iCell].discharge;
         rout_var[iCell].discharge -= 
                 (withdrawn_surf + withdrawn_remote - returned) / 
                 MM_PER_M * 
@@ -569,6 +576,16 @@ calculate_hydrology(size_t iCell,
         
         if(rout_var[iCell].discharge < 0){
             rout_var[iCell].discharge = 0;
+        }
+        
+        for(iStep = 0; iStep < rout_steps_per_dt; iStep++) {
+            if (prev_discharge > 0) {
+                rout_var[iCell].dt_discharge[iStep] *= 
+                        rout_var[iCell].discharge / prev_discharge;
+            } else {
+                rout_var[iCell].dt_discharge[iStep] = 
+                        rout_var[iCell].discharge / rout_steps_per_dt;
+            }
         }
     }
 

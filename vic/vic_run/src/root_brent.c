@@ -104,9 +104,9 @@ root_brent(double LowerBound,
 
     // If Function returns values of ERROR for both bounds, give up
     if (fa == ERROR && fb == ERROR) {
-        //log_warn("lower and upper bounds %f and %f "
-        //         "failed to bracket the root because the given function was "
-        //         "not defined at either point.", a, b);
+        log_warn("lower and upper bounds %f and %f "
+                 "failed to bracket the root because the given function was "
+                 "not defined at either point.", a, b);
         va_end(ap);
         return(ERROR);
     }
@@ -248,9 +248,9 @@ root_brent(double LowerBound,
     }
     if ((fa * fb) >= 0) {
         /* if we get here, the lower and upper bounds did not bracket the root */
-        //log_warn("lower and upper bounds %f and %f failed to "
-        //         "bracket the root. Driver info: %s.",
-        //         a, b, vic_run_ref_str);
+        log_warn("lower and upper bounds %f and %f failed to "
+                 "bracket the root. Driver info: %s.",
+                 a, b, vic_run_ref_str);
         va_end(ap);
         return(ERROR);
     }

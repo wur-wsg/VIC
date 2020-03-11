@@ -141,8 +141,7 @@ irr_run_requirement(size_t iCell)
                         if(cirr_con->paddy && cirr_var->requirement > 0){
                             cirr_var->flag_req = true;
                         }
-                        else if (cirr_var->requirement > 
-                                (total_wcr / plugin_param.Wfc_fract) - total_wcr){
+                        else if (cirr_var->requirement > 0){
                             cirr_var->flag_req = true;
                         }
                     }

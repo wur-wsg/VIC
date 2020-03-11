@@ -130,7 +130,6 @@ void
 efr_forcing(void)
 {
     extern domain_struct           local_domain;
-    extern global_param_struct     global_param;
     extern plugin_global_param_struct     plugin_global_param;
     extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
@@ -178,8 +177,7 @@ efr_forcing(void)
                                         d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
-                efr_force[i].baseflow = dvar[i] *
-                        (global_param.dt / plugin_global_param.force_dt[FORCING_EFR_BASEFLOW]);
+                efr_force[i].baseflow = dvar[i];
             }
         }
     }
