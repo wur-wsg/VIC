@@ -497,8 +497,6 @@ print_option(option_struct *option)
             option->SPATIAL_SNOW ? "true" : "false");
     fprintf(LOG_DEST, "\tTFALLBACK            : %s\n",
             option->TFALLBACK ? "true" : "false");
-    fprintf(LOG_DEST, "\tMATRIC               : %s\n",
-            option->MATRIC ? "true" : "false");
     fprintf(LOG_DEST, "\tBASEFLOW             : %d\n", option->BASEFLOW);
     fprintf(LOG_DEST, "\tGRID_DECIMAL         : %d\n", option->GRID_DECIMAL);
     fprintf(LOG_DEST, "\tVEGLIB_PHOTO         : %s\n",

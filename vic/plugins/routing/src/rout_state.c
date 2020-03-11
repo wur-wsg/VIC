@@ -205,7 +205,7 @@ rout_store(nc_file_struct *state_file)
     d3start[2] = 0;
 
     nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DISCHARGE_DT]);
-    for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
+    for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
         d3start[0] = j;
         for (i = 0; i < local_domain.ncells_active; i++) {
             dvar[i] = (double) rout_var[i].dt_discharge[j];

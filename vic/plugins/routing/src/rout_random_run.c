@@ -67,7 +67,10 @@ rout_random_run()
     double                           *force_local;
 
     size_t                            iCell;
+    double                            in_runoff;
+    double                            in_baseflow;
     double                            inflow;
+    double                            inflow_wb;
     double                            dt_inflow;
     double                            runoff;
     double                            dt_runoff;
@@ -76,6 +79,7 @@ rout_random_run()
 
     size_t                            i;
     size_t                            j;
+    size_t                            k;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
@@ -165,9 +169,19 @@ rout_random_run()
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             iuh_local[i][j] = rout_con[i].inflow_uh[j];
         }
+        
+        in_runoff = out_data[i][OUT_RUNOFF][0];
+        in_baseflow = out_data[i][OUT_BASEFLOW][0];
+        if (in_baseflow > rout_var[i].nonrenew_deficit) {
+            rout_var[i].nonrenew_deficit = 0.;
+            in_baseflow -= rout_var[i].nonrenew_deficit;
+        } else {
+            rout_var[i].nonrenew_deficit -= in_baseflow;
+            in_baseflow = 0.;
+        }
+        
         run_local[i] =
-            (out_data[i][OUT_RUNOFF][0] +
-             out_data[i][OUT_BASEFLOW][0]) *
+            (in_runoff + in_baseflow) *
             local_domain.locations[i].area /
             (global_param.dt * MM_PER_M);
         for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
@@ -200,36 +214,44 @@ rout_random_run()
         for (i = 0; i < global_domain.ncells_active; i++) {
             iCell = routing_order[i];
 
-            // Gather inflow from upstream cells
-            inflow = 0;
-            for (j = 0; j < nup_global[iCell]; j++) {
-                inflow += dis_global[up_global[iCell][j]];
-            }
-
-            // Gather inflow from forcing
-            if (plugin_options.FORCE_ROUTING) {
-                inflow += force_global[iCell];
-            }
-
-            // Gather runoff from VIC
-            runoff = run_global[iCell];
-
-            // Calculate delta-time inflow & runoff (equal contribution)
-            dt_inflow = inflow / rout_steps_per_dt;
-            dt_runoff = runoff / rout_steps_per_dt;
-
-            // Shift and clear previous discharge data
+    	    /* Shift and clear previous discharge data */
             for (j = 0; j < rout_steps_per_dt; j++) {
                 dt_dis_global[iCell][0] = 0.0;
                 cshift(dt_dis_global[iCell],
-                       plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
+                       plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
             }
 
-            // Convolute current inflow & runoff
+    	    /* RUNOFF*/
+            // Gather runoff from VIC
+            runoff = run_global[iCell];
+            // Calculate delta-time runoff (equal contribution)
+            dt_runoff = runoff / rout_steps_per_dt;
+            // Convolute current runoff
             for (j = 0; j < rout_steps_per_dt; j++) {
-                convolute(dt_inflow, iuh_global[iCell], dt_dis_global[iCell],
-                          plugin_options.UH_LENGTH, j);
                 convolute(dt_runoff, ruh_global[iCell], dt_dis_global[iCell],
+                          plugin_options.UH_LENGTH, j);
+            }
+
+    	    /* INFLOW*/
+            // Gather inflow from VIC
+            inflow = 0.0;
+            if (plugin_options.FORCE_ROUTING) {
+                inflow += force_global[iCell];
+            }
+            // Convolute current inflow
+            inflow_wb = 0.;
+            for (j = 0; j < rout_steps_per_dt; j++) {
+
+            	// Calculate delta-time inflow (equal contribution)
+            	dt_inflow = inflow / rout_steps_per_dt;
+
+                for (k = 0; k < nup_global[iCell]; k++) {
+                    dt_inflow += dt_dis_global[up_global[iCell][k]][j];
+                }
+		
+                inflow_wb += dt_inflow;
+                convolute(dt_inflow, iuh_global[iCell], 
+                          dt_dis_global[iCell],
                           plugin_options.UH_LENGTH, j);
             }
 
@@ -237,8 +259,7 @@ rout_random_run()
             dis_global[iCell] = 0.0;
             prev_stream = stream_global[iCell];
             stream_global[iCell] = 0.0;
-            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt;
-                 j++) {
+            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
                 if (j < rout_steps_per_dt) {
                     dis_global[iCell] += dt_dis_global[iCell][j];
                 }
@@ -248,15 +269,15 @@ rout_random_run()
             }
 
             // Check water balance
-            if (abs(prev_stream + (inflow + runoff) -
+            if (abs(prev_stream + (inflow_wb + runoff) -
                     (dis_global[iCell] + stream_global[iCell])) >
                 DBL_EPSILON) {
                 log_err(
                     "Discharge water balance error [%.4f]. "
                     "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                    prev_stream + (inflow + runoff) -
+                    prev_stream + (inflow_wb + runoff) -
                     (dis_global[iCell] + stream_global[iCell]),
-                    (inflow + runoff),
+                    (inflow_wb + runoff),
                     dis_global[iCell],
                     prev_stream,
                     stream_global[iCell]);

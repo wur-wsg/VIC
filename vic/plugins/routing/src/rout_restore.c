@@ -92,7 +92,7 @@ rout_restore(void)
     d3count[2] = global_domain.n_nx;
 
     // total soil moisture
-    for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
+    for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
         d3start[0] = j;
         get_scatter_nc_field_double(&(filenames.init_state),
                                     state_metadata[N_STATE_VARS +

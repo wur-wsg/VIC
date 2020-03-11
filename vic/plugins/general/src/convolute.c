@@ -39,6 +39,6 @@ convolute(double  quantity,
     size_t i;
 
     for (i = 0; i < length; i++) {
-        output[offset + i] += quantity * function[i];
+        output[offset + i + 1] += quantity * function[i];
     }
 }

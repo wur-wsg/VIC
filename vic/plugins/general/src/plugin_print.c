@@ -84,6 +84,8 @@ plugin_print_options(plugin_option_struct *op)
             op->FORCE_LANDUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
             op->POTENTIAL_IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tNONRENEW_WITH        : %s\n",
+            op->NONRENEW_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",
             op->WOFOST_PIRR ? "true" : "false");
 

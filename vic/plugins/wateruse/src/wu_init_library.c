@@ -55,6 +55,7 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->withdrawn_surf = 0.0;
     wu_var->withdrawn_dam = 0.0;
     wu_var->withdrawn_remote = 0.0;
+    wu_var->withdrawn_nonrenew = 0.0;
     wu_var->returned = 0.0;
     wu_var->consumed = 0.0;
 }

@@ -76,6 +76,7 @@ typedef struct {
     double withdrawn_surf;          /**< withdrawn surface water resources [mm] */
     double withdrawn_dam;           /**< withdrawn dam reservoir resources [mm] */
     double withdrawn_remote;        /**< withdrawn remote resources [mm] */
+    double withdrawn_nonrenew;      /**< withdrawn non-renewable resources [mm] */
     double returned;                /**< returned water resources [mm] */
     double consumed;                /**< consumed water resources [mm] */
 } wu_var_struct;

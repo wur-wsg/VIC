@@ -60,6 +60,7 @@ enum {
     // routing
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
+    OUT_NONREN_DEFICIT,                 /**< non-renewable storage deficit [mm] */
     // land-use
     OUT_CV,                             /**< vegetation coverage fraction [-] */
     // efr
@@ -99,6 +100,7 @@ enum {
     OUT_WI_SURF_SECT,                   /**< withdrawn surface water resources per sector [mm] */
     OUT_WI_DAM_SECT,                    /**< withdrawn dam reservoir resources per sector [mm] */
     OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector [mm] */
+    OUT_WI_NREN_SECT,                   /**< withdrawn non-renewable resources per sector [mm] */
     OUT_AV_GW,                          /**< available groundwater resources [mm] */
     OUT_AV_SURF,                        /**< available surface water resources [mm] */
     OUT_AV_DAM,                         /**< available dam reservoir resources [mm] */
@@ -110,6 +112,7 @@ enum {
     OUT_WI_SURF,                        /**< withdrawn surface water resources [mm] */
     OUT_WI_DAM,                         /**< withdrawn dam reservoir resources [mm] */
     OUT_WI_REM,                         /**< withdrawn remote resources [mm] */
+    OUT_WI_NREN,                        /**< withdrawn non-renewable resources [mm] */
     OUT_AVAILABLE,                      /**< available water resources [mm] */
     OUT_DEMAND,                         /**< demand for water resources [mm] */
     OUT_WITHDRAWN,                      /**< withdrawn water resources [mm] */
@@ -232,6 +235,7 @@ typedef struct {
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
+    bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
     bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */
 } plugin_option_struct;

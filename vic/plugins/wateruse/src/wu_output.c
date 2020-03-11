@@ -102,6 +102,12 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM_SECT].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM_SECT].description, "withdrawn from remote cell for sector");
 
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].varname, "OUT_WI_NREN_SECT");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].long_name, "withdrawn_non_renewable_sector");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].standard_name, "withdrawn_non_renewable_sector");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].units, "mm");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].description, "withdrawn from non-renewable source for sector");
+
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_GW].varname, "OUT_AV_GW");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_GW].long_name, "available_groundwater");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_GW].standard_name, "available_groundwater");
@@ -168,6 +174,12 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM].description, "withdrawn from remote cell");
 
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].varname, "OUT_WI_NREN");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].long_name, "withdrawn_non_renewable");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].standard_name, "withdrawn_non_renewable");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].units, "mm");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].description, "withdrawn from non-renewable source");
+
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WITHDRAWN].varname, "OUT_WITHDRAWN");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WITHDRAWN].long_name, "withdrawn");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WITHDRAWN].standard_name, "withdrawn");
@@ -203,6 +215,7 @@ wu_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES + OUT_WI_SURF_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_REM_SECT].nelem = plugin_options.NWUTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].nelem = plugin_options.NWUTYPES;
 
     out_metadata[N_OUTVAR_TYPES + OUT_AV_GW].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_SURF].nelem = 1;
@@ -215,6 +228,7 @@ wu_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES + OUT_WI_SURF].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_REM].nelem = 1;
+    out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].nelem = 1;
     
     out_metadata[N_OUTVAR_TYPES + OUT_AVAILABLE].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_DEMAND].nelem = 1;
@@ -270,6 +284,7 @@ wu_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_WI_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_WI_DAM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_REM_SECT:
+        case N_OUTVAR_TYPES + OUT_WI_NREN_SECT:
         nc_var->nc_dims = 4;
         nc_var->nc_counts[1] = nc_hist_file->wu_size;
         nc_var->nc_counts[2] = nc_hist_file->nj_size;
@@ -286,6 +301,7 @@ wu_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_WI_SURF:
         case N_OUTVAR_TYPES + OUT_WI_DAM:
         case N_OUTVAR_TYPES + OUT_WI_REM:
+        case N_OUTVAR_TYPES + OUT_WI_NREN:
         case N_OUTVAR_TYPES + OUT_AVAILABLE:
         case N_OUTVAR_TYPES + OUT_DEMAND:
         case N_OUTVAR_TYPES + OUT_WITHDRAWN:
@@ -317,6 +333,7 @@ wu_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_WI_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_WI_DAM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_REM_SECT:
+        case N_OUTVAR_TYPES + OUT_WI_NREN_SECT:
         nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
         nc_var->nc_dimids[1] = nc_hist_file->wu_dimid;
         nc_var->nc_dimids[2] = nc_hist_file->nj_dimid;
@@ -333,6 +350,7 @@ wu_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_WI_SURF:
         case N_OUTVAR_TYPES + OUT_WI_DAM:
         case N_OUTVAR_TYPES + OUT_WI_REM:
+        case N_OUTVAR_TYPES + OUT_WI_NREN:
         case N_OUTVAR_TYPES + OUT_AVAILABLE:
         case N_OUTVAR_TYPES + OUT_DEMAND:
         case N_OUTVAR_TYPES + OUT_WITHDRAWN:
@@ -362,6 +380,7 @@ wu_history(unsigned int varid, unsigned int *agg_type)
         case N_OUTVAR_TYPES + OUT_WI_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_WI_DAM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_REM_SECT:
+        case N_OUTVAR_TYPES + OUT_WI_NREN_SECT:
         case N_OUTVAR_TYPES + OUT_AV_GW:
         case N_OUTVAR_TYPES + OUT_AV_SURF:
         case N_OUTVAR_TYPES + OUT_AV_DAM:
@@ -373,6 +392,7 @@ wu_history(unsigned int varid, unsigned int *agg_type)
         case N_OUTVAR_TYPES + OUT_WI_SURF:
         case N_OUTVAR_TYPES + OUT_WI_DAM:
         case N_OUTVAR_TYPES + OUT_WI_REM:
+        case N_OUTVAR_TYPES + OUT_WI_NREN:
         case N_OUTVAR_TYPES + OUT_AVAILABLE:
         case N_OUTVAR_TYPES + OUT_DEMAND:
         case N_OUTVAR_TYPES + OUT_WITHDRAWN:
@@ -410,6 +430,7 @@ wu_put_data(size_t cur_cell)
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] = wu_var[cur_cell][iSector].withdrawn_surf;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i] = wu_var[cur_cell][iSector].withdrawn_dam;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] = wu_var[cur_cell][iSector].withdrawn_remote;
+            out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i] = wu_var[cur_cell][iSector].withdrawn_nonrenew;
             
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_AV_GW][0] += wu_var[cur_cell][iSector].available_gw;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_AV_SURF][0] += wu_var[cur_cell][iSector].available_surf;
@@ -422,6 +443,7 @@ wu_put_data(size_t cur_cell)
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_SURF][0] += wu_var[cur_cell][iSector].withdrawn_surf;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_DAM][0] += wu_var[cur_cell][iSector].withdrawn_dam;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_REM][0] += wu_var[cur_cell][iSector].withdrawn_remote;
+            out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_NREN][0] += wu_var[cur_cell][iSector].withdrawn_nonrenew;
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_RETURNED][0] += wu_var[cur_cell][iSector].returned;
         }
     }
@@ -438,5 +460,6 @@ wu_put_data(size_t cur_cell)
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_GW][0] +
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
             out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_DAM][0] +
-            out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_REM][0];
+            out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_REM][0] +
+            out_data[cur_cell][N_OUTVAR_TYPES + OUT_WI_NREN][0];
 }

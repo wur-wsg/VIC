@@ -359,8 +359,6 @@ vic_run(force_data_struct   *force,
                     /* Convert LAI back to global */
                     veg_var->LAI *= veg_var->fcanopy;
                     veg_var->Wdmax *= veg_var->fcanopy;
-                    veg_var->Wdew *= veg_var->fcanopy;
-                    snow->snow_canopy *= veg_var->fcanopy;
                 } /** End non-zero area band **/
             } /** End Loop Through Elevation Bands **/
         } /** end non-zero area veg tile **/

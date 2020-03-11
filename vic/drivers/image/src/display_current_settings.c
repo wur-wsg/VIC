@@ -225,12 +225,6 @@ display_current_settings(int mode)
     else {
         fprintf(LOG_DEST, "TFALLBACK\t\tFALSE\n");
     }
-    if (options.MATRIC) {
-        fprintf(LOG_DEST, "MATRIC\t\tTRUE\n");
-    }
-    else {
-        fprintf(LOG_DEST, "MATRIC\t\tFALSE\n");
-    }
     fprintf(LOG_DEST, "WIND_H\t\t\t%f\n", global_param.wind_h);
     fprintf(LOG_DEST, "NODES\t\t\t%zu\n", options.Nnode);
     if (options.CARBON) {

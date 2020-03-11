@@ -80,6 +80,7 @@ local_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCell
     extern double ***out_data;
     
     dam_operate(dam_con, dam_var);
+    
     out_data[iCell][OUT_RUNOFF][0] *= 1 - dam_con->inflow_frac;
     out_data[iCell][OUT_RUNOFF][0] += dam_var->release * M3_PER_HM3 * 
             MM_PER_M / local_domain.locations[iCell].area;
@@ -92,12 +93,33 @@ void
 global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCell)
 {
     extern global_param_struct global_param;
+    extern plugin_global_param_struct plugin_global_param;
     extern rout_var_struct *rout_var;
     
+    double prev_discharge;
+    
+    size_t rout_steps_per_dt;
+    size_t i;
+    
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
+    
     dam_operate(dam_con, dam_var);
+    
+    prev_discharge = rout_var[iCell].discharge;
     rout_var[iCell].discharge *= 1 - dam_con->inflow_frac;
     rout_var[iCell].discharge += dam_var->release * M3_PER_HM3 / 
             global_param.dt;
+    
+    for(i = 0; i < rout_steps_per_dt; i++) {
+        if (prev_discharge > 0) {
+            rout_var[iCell].dt_discharge[i] *= 
+                    rout_var[iCell].discharge / prev_discharge;
+        } else {
+            rout_var[iCell].dt_discharge[i] = 
+                    rout_var[iCell].discharge / rout_steps_per_dt;
+        }
+    }
 }
 
 /******************************************
