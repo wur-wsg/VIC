@@ -38,7 +38,9 @@ rout_set_uh(void)
     extern domain_struct           global_domain;
     extern domain_struct           local_domain;
     extern rout_con_struct        *rout_con;
-
+    
+    char                           locstr[MAXSTRING];
+    double                         uh_sum;
     double                        *dvar = NULL;
 
     size_t                         i;
@@ -70,6 +72,40 @@ rout_set_uh(void)
                                     "uh_runoff", d3start, d3count, dvar);
         for (i = 0; i < local_domain.ncells_active; i++) {
             rout_con[i].runoff_uh[j] = dvar[i];
+        }
+    }
+    
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        sprint_location(locstr, &(local_domain.locations[i]));
+        
+        uh_sum = 0.0;
+        for (j = 0; j < plugin_options.UH_LENGTH; j++) {
+            uh_sum += rout_con[i].inflow_uh[j];
+        }
+        
+        for (j = 0; j < plugin_options.UH_LENGTH; j++) {
+            rout_con[i].inflow_uh[j] /= uh_sum;
+        }
+        if (!assert_close_double(uh_sum, 1., 0., AREA_SUM_ERROR_THRESH)) {
+            sprint_location(locstr, &(local_domain.locations[i]));
+            log_warn("Sum of inflow unit hydrograph !=  1.0 (%.16f) at grid "
+                     "cell %zd. Adjusting fractions ...\n%s", uh_sum, i,
+                     locstr);
+        }
+        
+        uh_sum = 0.0;
+        for (j = 0; j < plugin_options.UH_LENGTH; j++) {
+            uh_sum += rout_con[i].runoff_uh[j];
+        }
+        
+        for (j = 0; j < plugin_options.UH_LENGTH; j++) {
+            rout_con[i].runoff_uh[j] /= uh_sum;
+        }
+        if (!assert_close_double(uh_sum, 1., 0., AREA_SUM_ERROR_THRESH)) {
+            sprint_location(locstr, &(local_domain.locations[i]));
+            log_warn("Sum of runoff unit hydrograph !=  1.0 (%.16f) at grid "
+                     "cell %zd. Adjusting fractions ...\n%s", uh_sum, i,
+                     locstr);
         }
     }
 

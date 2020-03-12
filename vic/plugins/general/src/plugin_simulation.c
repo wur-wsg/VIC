@@ -108,10 +108,47 @@ plugin_run(void)
 }
 
 /******************************************
+* @brief    Store plugin error
+******************************************/
+void
+plugin_store_error(size_t iCell)
+{
+    extern global_param_struct global_param;
+    extern domain_struct        local_domain;
+    extern plugin_save_data_struct *plugin_save_data;
+    extern double           ***out_data;
+    
+    double inflow;
+    double outflow;
+    double storage;
+    
+    inflow = out_data[iCell][OUT_RUNOFF][0] + out_data[iCell][OUT_BASEFLOW][0];
+    inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0] * 
+            global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+    
+    outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] * 
+            global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+    
+    storage = out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] - 
+            out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
+    storage += (out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_STORAGE][0] +
+               out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_STORAGE][0]) * 
+            M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+        
+    out_data[iCell][N_OUTVAR_TYPES + OUT_ROUTING_ERROR][0] = \
+            calc_water_balance_error(inflow, 
+                                     outflow, 
+                                     storage, 
+                                     plugin_save_data[iCell].total_moist_storage);
+    
+    plugin_save_data[iCell].total_moist_storage = storage;
+}
+
+/******************************************
 * @brief    Write plugins
 ******************************************/
 void
-plugin_put_data()
+plugin_put_data(void)
 {
     extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
@@ -136,6 +173,8 @@ plugin_put_data()
         if (plugin_options.IRRIGATION) {
             irr_put_data(i);
         }
+        
+        plugin_store_error(i);
     }
 }
 

@@ -47,9 +47,17 @@ typedef struct {
 } plugin_filenames_struct;
 
 /******************************************************************************
+ * @brief   Plugin save data
+ *****************************************************************************/
+typedef struct {
+    double total_moist_storage;     /**< total moisture storage [mm] */
+} plugin_save_data_struct;
+
+/******************************************************************************
  * @brief   Public structures
  *****************************************************************************/
 plugin_filenames_struct plugin_filenames;
+plugin_save_data_struct *plugin_save_data;
 
 /******************************************************************************
  * @brief   Functions

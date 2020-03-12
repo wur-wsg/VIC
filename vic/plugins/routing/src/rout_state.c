@@ -63,7 +63,7 @@ rout_set_nc_state_file_info(nc_file_struct *nc_state_file)
                         global_param.model_steps_per_day;
 
     nc_state_file->rdt_dimid = MISSING;
-    nc_state_file->rdt_size = plugin_options.UH_LENGTH + rout_steps_per_dt;
+    nc_state_file->rdt_size = plugin_options.UH_LENGTH + rout_steps_per_dt + 1;
 }
 
 /******************************************

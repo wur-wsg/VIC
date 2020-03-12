@@ -54,6 +54,7 @@ rout_random_run()
     double                          **dt_dis_global;
     double                           *dis_global;
     double                           *stream_global;
+    double                           *inflow_global;
     double                           *force_global;
 
     size_t                           *nup_local;
@@ -64,13 +65,13 @@ rout_random_run()
     double                          **dt_dis_local;
     double                           *dis_local;
     double                           *stream_local;
+    double                           *inflow_local;
     double                           *force_local;
 
     size_t                            iCell;
     double                            in_runoff;
     double                            in_baseflow;
     double                            inflow;
-    double                            inflow_wb;
     double                            dt_inflow;
     double                            runoff;
     double                            dt_runoff;
@@ -103,6 +104,10 @@ rout_random_run()
     stream_global =
         malloc(global_domain.ncells_active * sizeof(*stream_global));
     check_alloc_status(stream_global, "Memory allocation error");
+    inflow_global =
+        malloc(global_domain.ncells_active * sizeof(*inflow_global));
+    check_alloc_status(inflow_global, "Memory allocation error");
+    
 
     for (i = 0; i < global_domain.ncells_active; i++) {
         up_global[i] = malloc(MAX_UPSTREAM * sizeof(*up_global[i]));
@@ -114,7 +119,7 @@ rout_random_run()
             malloc(plugin_options.UH_LENGTH * sizeof(*iuh_global[i]));
         check_alloc_status(iuh_global[i], "Memory allocation error");
         dt_dis_global[i] = malloc(
-            (plugin_options.UH_LENGTH + rout_steps_per_dt) *
+            (plugin_options.UH_LENGTH + rout_steps_per_dt + 1) *
             sizeof(*dt_dis_global[i]));
         check_alloc_status(dt_dis_global[i], "Memory allocation error");
     }
@@ -135,6 +140,8 @@ rout_random_run()
     check_alloc_status(dis_local, "Memory allocation error");
     stream_local = malloc(local_domain.ncells_active * sizeof(*stream_local));
     check_alloc_status(stream_local, "Memory allocation error");
+    inflow_local = malloc(local_domain.ncells_active * sizeof(*inflow_local));
+    check_alloc_status(inflow_local, "Memory allocation error");
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         up_local[i] = malloc(MAX_UPSTREAM * sizeof(*up_local[i]));
@@ -144,7 +151,7 @@ rout_random_run()
         iuh_local[i] = malloc(plugin_options.UH_LENGTH * sizeof(*iuh_local[i]));
         check_alloc_status(iuh_local[i], "Memory allocation error");
         dt_dis_local[i] = malloc(
-            (plugin_options.UH_LENGTH + rout_steps_per_dt) *
+            (plugin_options.UH_LENGTH + rout_steps_per_dt + 1) *
             sizeof(*dt_dis_local[i]));
         check_alloc_status(dt_dis_local[i], "Memory allocation error");
     }
@@ -184,12 +191,13 @@ rout_random_run()
             (in_runoff + in_baseflow) *
             local_domain.locations[i].area /
             (global_param.dt * MM_PER_M);
-        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
+        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
             dt_dis_local[i][j] = rout_var[i].dt_discharge[j];
         }
 
         dis_local[i] = rout_var[i].discharge;
         stream_local[i] = rout_var[i].stream;
+        inflow_local[i] = rout_var[i].inflow;
         if (plugin_options.FORCE_ROUTING) {
             force_local[i] = rout_force[i].discharge;
         }
@@ -202,9 +210,10 @@ rout_random_run()
     gather_double_2d(iuh_global, iuh_local, plugin_options.UH_LENGTH);
     gather_double(run_global, run_local);
     gather_double_2d(dt_dis_global, dt_dis_local,
-                     plugin_options.UH_LENGTH + rout_steps_per_dt);
+                     plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
     gather_double(dis_global, dis_local);
     gather_double(stream_global, stream_local);
+    gather_double(inflow_global, inflow_local);
     if (plugin_options.FORCE_ROUTING) {
         gather_double(force_global, force_local);
     }
@@ -239,7 +248,7 @@ rout_random_run()
                 inflow += force_global[iCell];
             }
             // Convolute current inflow
-            inflow_wb = 0.;
+            inflow_global[iCell] = 0.;
             for (j = 0; j < rout_steps_per_dt; j++) {
 
             	// Calculate delta-time inflow (equal contribution)
@@ -249,7 +258,7 @@ rout_random_run()
                     dt_inflow += dt_dis_global[up_global[iCell][k]][j];
                 }
 		
-                inflow_wb += dt_inflow;
+                inflow_global[iCell] += dt_inflow;
                 convolute(dt_inflow, iuh_global[iCell], 
                           dt_dis_global[iCell],
                           plugin_options.UH_LENGTH, j);
@@ -269,15 +278,15 @@ rout_random_run()
             }
 
             // Check water balance
-            if (abs(prev_stream + (inflow_wb + runoff) -
+            if (abs(prev_stream + (inflow_global[iCell] + runoff) -
                     (dis_global[iCell] + stream_global[iCell])) >
                 DBL_EPSILON) {
                 log_err(
                     "Discharge water balance error [%.4f]. "
                     "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                    prev_stream + (inflow_wb + runoff) -
+                    prev_stream + (inflow_global[iCell] + runoff) -
                     (dis_global[iCell] + stream_global[iCell]),
-                    (inflow_wb + runoff),
+                    (inflow_global[iCell] + runoff),
                     dis_global[iCell],
                     prev_stream,
                     stream_global[iCell]);
@@ -287,17 +296,19 @@ rout_random_run()
 
     // Scatter discharge
     scatter_double_2d(dt_dis_global, dt_dis_local,
-                      plugin_options.UH_LENGTH + rout_steps_per_dt);
+                      plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
     scatter_double(stream_global, stream_local);
+    scatter_double(inflow_global, inflow_local);
     scatter_double(dis_global, dis_local);
 
     // Set discharge
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
+        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
             rout_var[i].dt_discharge[j] = dt_dis_local[i][j];
         }
         rout_var[i].discharge = dis_local[i];
         rout_var[i].stream = stream_local[i];
+        rout_var[i].inflow = inflow_local[i];
     }
 
     // Free
@@ -315,6 +326,7 @@ rout_random_run()
     free(dt_dis_global);
     free(dis_global);
     free(stream_global);
+    free(inflow_global);
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         free(up_local[i]);
@@ -330,6 +342,7 @@ rout_random_run()
     free(dt_dis_local);
     free(dis_local);
     free(stream_local);
+    free(inflow_local);
 
     if (plugin_options.FORCE_ROUTING) {
         free(force_global);
