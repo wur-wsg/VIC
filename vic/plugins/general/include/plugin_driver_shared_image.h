@@ -72,6 +72,7 @@ void plugin_set_nc_var_info(unsigned int varid, unsigned short int dtype,
 void plugin_set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,
                               nc_var_struct  *nc_var);
 void plugin_get_default_outvar_aggtype(unsigned int varid, unsigned int *);
+void plugin_store_error(size_t);
 void plugin_put_data(void);
 
 // states
