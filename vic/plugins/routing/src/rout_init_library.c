@@ -52,6 +52,7 @@ initialize_rout_var(rout_var_struct *rout_var)
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
 
+    rout_var->inflow = 0.0;
     rout_var->stream = 0.0;
     rout_var->discharge = 0.0;
     rout_var->nonrenew_deficit = 0.0;

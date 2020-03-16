@@ -50,6 +50,19 @@ plugin_set_output_met_data_info(void)
         out_metadata[v].nelem = 1;
     }
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].varname, MAXSTRING,
+             "%s", "OUT_ROUTING_ERROR");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].long_name,
+             MAXSTRING, "%s", "non_renewable_deficit");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].standard_name,
+             MAXSTRING, "%s", "non_renewable_deficit");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].units, MAXSTRING,
+             "%s", "mm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].description,
+             MAXSTRING, "%s", "non-renewable deficit");
+    
+    out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].nelem = 1;
+
     if (plugin_options.ROUTING) {
         rout_set_output_met_data_info();
     }
@@ -198,6 +211,12 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
 {
     extern plugin_option_struct plugin_options;
 
+    switch (varid) {
+    case  N_OUTVAR_TYPES + OUT_ROUTING_ERROR:
+        (*agg_type) = AGG_TYPE_SUM;
+        break;
+    }
+    
     if (plugin_options.ROUTING) {
         rout_history(varid, agg_type);
     }

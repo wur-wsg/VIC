@@ -45,7 +45,6 @@ rout_basin_run(size_t iCell)
     double                            in_runoff;
     double                            in_baseflow;
     double                            inflow;
-    double                            inflow_wb;
     double                            dt_inflow;
     double                            runoff;
     double                            dt_runoff;
@@ -96,7 +95,7 @@ rout_basin_run(size_t iCell)
         inflow += rout_force[iCell].discharge;
     }
     // Convolute current inflow
-    inflow_wb = 0.;
+    rout_var[iCell].inflow = 0.;
     for (i = 0; i < rout_steps_per_dt; i++) {
         
         // Calculate delta-time inflow (equal contribution)
@@ -106,7 +105,7 @@ rout_basin_run(size_t iCell)
             dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
         }
         
-        inflow_wb += dt_inflow;
+        rout_var[iCell].inflow += dt_inflow;
         convolute(dt_inflow, rout_con[iCell].inflow_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
@@ -126,14 +125,14 @@ rout_basin_run(size_t iCell)
     }
 
     // Check water balance
-    if (abs(prev_stream + (inflow_wb + runoff) -
+    if (abs(prev_stream + (rout_var[iCell].inflow + runoff) -
             (rout_var[iCell].discharge + rout_var[iCell].stream)) >
         DBL_EPSILON) {
         log_err("Discharge water balance error [%.4f]. "
                 "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                prev_stream + (inflow_wb + runoff) -
+                prev_stream + (rout_var[iCell].inflow + runoff) -
                 (rout_var[iCell].discharge + rout_var[iCell].stream),
-                (inflow_wb + runoff),
+                (rout_var[iCell].inflow + runoff),
                 rout_var[iCell].discharge,
                 prev_stream,
                 rout_var[iCell].stream);

@@ -142,7 +142,7 @@ plugin_run(void)
 * @brief    Write plugins
 ******************************************/
 void
-plugin_put_data()
+plugin_put_data(void)
 {
     extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
@@ -173,6 +173,8 @@ plugin_put_data()
         if (plugin_options.WOFOST) {
             crop_put_data(i);
         }
+        
+        plugin_store_error(i);
     }
 }
 

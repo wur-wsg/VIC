@@ -47,7 +47,7 @@ rout_check_init_state_file(void)
                             global_param.model_steps_per_day;
 
         dimlen = get_nc_dimension(&(filenames.init_state), "routing_dt");
-        if (dimlen != plugin_options.UH_LENGTH + rout_steps_per_dt) {
+        if (dimlen != plugin_options.UH_LENGTH + rout_steps_per_dt + 1) {
             log_err("Rout delta time in state file does not "
                     "match parameter file");
         }
@@ -117,6 +117,7 @@ rout_compute_derived_state_vars(void)
     extern plugin_global_param_struct plugin_global_param;
     extern plugin_option_struct       plugin_options;
     extern rout_var_struct           *rout_var;
+    extern plugin_save_data_struct   *plugin_save_data;
 
     size_t                            i;
     size_t                            j;
@@ -129,7 +130,7 @@ rout_compute_derived_state_vars(void)
     for (i = 0; i < local_domain.ncells_active; i++) {
         rout_var[i].discharge = 0.0;
         rout_var[i].stream = 0.0;
-        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt; j++) {
+        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
             if (j < rout_steps_per_dt) {
                 rout_var[i].discharge += rout_var[i].dt_discharge[j];
             }
@@ -137,5 +138,8 @@ rout_compute_derived_state_vars(void)
                 rout_var[i].stream += rout_var[i].dt_discharge[j];
             }
         }
+        
+        plugin_save_data[i].total_moist_storage += rout_var[i].stream;
+        plugin_save_data[i].total_moist_storage += rout_var[i].nonrenew_deficit;
     }
 }
