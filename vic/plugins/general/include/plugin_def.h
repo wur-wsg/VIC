@@ -121,6 +121,9 @@ enum {
     // irrigation
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
+    OUT_RECEIVED,                       /**< irrigation water received [mm] */
+    OUT_LEFTOVER,                       /**< irrigation water leftover [mm] */
+    OUT_APPLIED,                        /**< irrigation water applied [mm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_OUTVAR_TYPES               /**< used as a loop counter*/

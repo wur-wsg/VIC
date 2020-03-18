@@ -57,8 +57,44 @@ irr_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_REQUIREMENT].description,
              MAXSTRING, "%s", "average irrigation requirement");
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].varname, MAXSTRING,
+             "%s", "OUT_RECEIVED");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].long_name,
+             MAXSTRING, "%s", "irrigation_received");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].standard_name,
+             MAXSTRING, "%s", "irrigation received");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].units, MAXSTRING,
+             "%s", "mm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].description,
+             MAXSTRING, "%s", "total irrigation water received");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].varname, MAXSTRING,
+             "%s", "OUT_LEFTOVER");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].long_name,
+             MAXSTRING, "%s", "irrigation_leftover");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].standard_name,
+             MAXSTRING, "%s", "irrigation leftover");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].units, MAXSTRING,
+             "%s", "mm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].description,
+             MAXSTRING, "%s", "average irrigation leftover water");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].varname, MAXSTRING,
+             "%s", "OUT_APPLIED");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].long_name,
+             MAXSTRING, "%s", "irrigation_applied");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].standard_name,
+             MAXSTRING, "%s", "irrigation applied");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].units, MAXSTRING,
+             "%s", "mm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].description,
+             MAXSTRING, "%s", "total irrigation water applied");
+
     out_metadata[N_OUTVAR_TYPES + OUT_SHORTAGE].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_REQUIREMENT].nelem = 1;
+    out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].nelem = 1;
+    out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].nelem = 1;
+    out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].nelem = 1;
 }
 
 /******************************************
@@ -72,6 +108,13 @@ irr_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_REQUIREMENT:
     case  N_OUTVAR_TYPES + OUT_SHORTAGE:
         (*agg_type) = AGG_TYPE_AVG;
+        break;
+    case N_OUTVAR_TYPES + OUT_RECEIVED:
+    case N_OUTVAR_TYPES + OUT_APPLIED:
+        (*agg_type) = AGG_TYPE_SUM;
+        break;
+    case  N_OUTVAR_TYPES + OUT_LEFTOVER:
+        (*agg_type) = AGG_TYPE_END;
         break;
     }
 }
@@ -112,6 +155,15 @@ irr_put_data(size_t iCell)
                                 veg_fract * area_fract;
                         out_data[iCell][N_OUTVAR_TYPES +
                                         OUT_SHORTAGE][0] += irr_var[iCell][i][j].shortage *
+                                veg_fract * area_fract;
+                        out_data[iCell][N_OUTVAR_TYPES +
+                                        OUT_RECEIVED][0] += irr_var[iCell][i][j].received *
+                                veg_fract * area_fract;
+                        out_data[iCell][N_OUTVAR_TYPES +
+                                        OUT_LEFTOVER][0] += irr_var[iCell][i][j].leftover *
+                                veg_fract * area_fract;
+                        out_data[iCell][N_OUTVAR_TYPES +
+                                        OUT_APPLIED][0] += irr_var[iCell][i][j].applied *
                                 veg_fract * area_fract;
                     }
                 }
