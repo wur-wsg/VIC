@@ -268,6 +268,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_C_BOOL;
     // bool NONRENEW_WITH;
     offsets[i] = offsetof(plugin_option_struct, NONRENEW_WITH);
+    mpi_types[i++] = MPI_C_BOOL;
     // bool WOFOST_PIRR;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_PIRR);
     mpi_types[i++] = MPI_C_BOOL;
