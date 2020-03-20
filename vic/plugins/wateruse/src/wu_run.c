@@ -260,6 +260,8 @@ calculate_division(size_t iCell,
     double available_remote_tmp;
     double available_surf_tot;
     
+    double frac;
+    
     size_t i;
     size_t j;
     int iSector;
@@ -283,7 +285,9 @@ calculate_division(size_t iCell,
                 wu_var[iCell][iSector].available_gw = available_gw_tmp;
                 available_gw_tmp = 0.0;
             } else {
-                wu_var[iCell][iSector].available_gw = wu_var[iCell][iSector].demand_gw;
+                frac = max(available_gw / demand_gw, 1.0);
+                
+                wu_var[iCell][iSector].available_gw = wu_var[iCell][iSector].demand_gw * frac;
                 available_gw_tmp -= wu_var[iCell][iSector].demand_gw;
             }
         }
@@ -297,10 +301,12 @@ calculate_division(size_t iCell,
                 available_surf_tmp = 0.0;
                 available_dam_tmp = 0.0;
             } else {
+                frac = max((available_surf + available_dam) / demand_surf, 1.0);
+                
                 wu_var[iCell][iSector].available_surf = wu_var[iCell][iSector].demand_surf *
-                        (available_surf_tmp / available_surf_tot);
+                        (available_surf_tmp / available_surf_tot) * frac;
                 wu_var[iCell][iSector].available_dam = wu_var[iCell][iSector].demand_surf *
-                        (available_dam_tmp / available_surf_tot);
+                        (available_dam_tmp / available_surf_tot) * frac;
 
                 available_surf_tmp -= wu_var[iCell][iSector].demand_surf *
                         (available_surf_tmp / available_surf_tot);
@@ -323,7 +329,9 @@ calculate_division(size_t iCell,
                     wu_var[iCell2][iSector2].available_remote = available_remote_tmp;
                     available_remote_tmp = 0.0;
                 } else {
-                    wu_var[iCell2][iSector2].available_remote = wu_var[iCell2][iSector2].demand_remote;
+                    frac = max(available_remote / demand_remote, 1.0);
+                
+                    wu_var[iCell2][iSector2].available_remote = wu_var[iCell2][iSector2].demand_remote * frac;
                     available_remote_tmp -= wu_var[iCell2][iSector2].demand_remote;
                 }
             }
@@ -660,7 +668,7 @@ check_water_use_balance(size_t iCell,
             log_err("Water-use water balance error for sector %zu:\n"
                     "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                     "surface-water:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                    "dam:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
+                    "dam:\t\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
                     "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [Inf]\n",
                     i,
                     wu_var[iCell][iSector].withdrawn_gw, 
@@ -690,8 +698,8 @@ check_water_use_balance(size_t iCell,
                 log_err("Water-use water balance error for remote %zu:\n"
                     "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                     "surface-water:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                    "dam:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                    "remote:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n",
+                    "dam:\t\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
+                    "remote:\t\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n",
                     i,
                     wu_var[iCell2][iSector2].withdrawn_gw, 
                     wu_var[iCell2][iSector2].demand_gw, 
@@ -717,11 +725,11 @@ check_water_use_balance(size_t iCell,
             withdrawn_surf + withdrawn_dam - demand_surf > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_gw + withdrawn_nonrenew - demand_gw > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES){ 
         log_err("Water-use water balance error for cell %zu:\n"
-                "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
+                "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\t\t\tavailable [%.4f]\n"
                 "surface-water:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                "dam:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
-                "remote:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
-                "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [Inf]\n",
+                "dam:\t\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
+                "remote:\t\twithdrawn [%.4f]\tdemand [%.4f]\t\t\tavailable [%.4f]\n"
+                "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\t\t\tavailable [Inf]\n",
                 iCell,
                 withdrawn_gw, 
                 demand_gw, 
