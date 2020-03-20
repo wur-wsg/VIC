@@ -123,6 +123,9 @@ enum {
     // irrigation
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
+    OUT_RECEIVED,                       /**< irrigation water received [mm] */
+    OUT_LEFTOVER,                       /**< irrigation water leftover [mm] */
+    OUT_APPLIED,                        /**< irrigation water applied [mm] */
     // crop
     OUT_CROP_GROW,                      /**< crop growing flag [-] */
     OUT_CROP_EVAP,                      /**< crop total net evaporation [mm] */

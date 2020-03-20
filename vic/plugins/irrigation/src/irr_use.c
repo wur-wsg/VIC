@@ -102,10 +102,13 @@ irr_get_withdrawn(size_t iCell)
     extern wu_con_map_struct *wu_con_map;
     
     double demand;
-    double abs_demand;
     double available;
+    double received;
+    double applied;
+    double leftover;
+    double prev_leftover;
+    
     double avail_frac;
-    double avail_irr;
     double area_fract;
     double veg_fract;
     double max_moist;
@@ -121,6 +124,16 @@ irr_get_withdrawn(size_t iCell)
     veg_con_struct *cveg_con;
     cell_data_struct *ccell_var;
         
+    // initialize
+    for(i = 0; i < irr_con_map[iCell].ni_active; i++){
+        for(j = 0; j < options.SNOW_BAND; j++){
+            cirr_var = &irr_var[iCell][i][j];
+            
+            cirr_var->received = 0.0;
+            cirr_var->applied = 0.0;
+        }
+    }
+    
     // get demand
     demand = 0.0;
     csoil_con = &soil_con[iCell];
@@ -159,12 +172,16 @@ irr_get_withdrawn(size_t iCell)
         avail_frac = 0;
     }
     
-    // do leftover
+    // do irrigation
+    received = 0.0;
+    applied = 0.0;
+    leftover = 0.0;
+    prev_leftover = 0.0;
     for(i = 0; i < irr_con_map[iCell].ni_active; i++){
         cirr_con = &irr_con[iCell][i];
         cveg_con = &veg_con[iCell][cirr_con->veg_index];
         veg_fract = cveg_con->Cv;
-        
+
         if(veg_fract > 0) {
 
             for(j = 0; j < options.SNOW_BAND; j++){
@@ -175,63 +192,52 @@ irr_get_withdrawn(size_t iCell)
                 if(area_fract > 0){
                     max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
                     max_added = max_moist;
-
+                    
+                    // leftover
                     if(cirr_var->leftover > 0){
                         if(cirr_var->leftover < max_added){
-                            ccell_var->layer[0].moist += cirr_var->leftover;
-                            cirr_var->leftover = 0.0;
+                            cirr_var->applied += cirr_var->leftover;
                         } else {
-                            ccell_var->layer[0].moist += max_added;
-                            cirr_var->leftover -= max_added;
+                            cirr_var->applied = max_added;
                         }
                     }
+                    
+                    // received
+                    if(cirr_var->flag_req && avail_frac > 0){
+                        cirr_var->received = cirr_var->requirement * cirr_con->irrigation_efficiency * avail_frac;
+
+                        if(cirr_var->received + cirr_var->applied < max_added){
+                            cirr_var->applied += cirr_var->received;
+                        } else {
+                            cirr_var->applied = max_added;
+                        }
+                    }
+                    
+                    prev_leftover += cirr_var->leftover * veg_fract * area_fract;
+                    
+                    // apply
+                    ccell_var->layer[0].moist += cirr_var->applied;
+                    cirr_var->leftover += cirr_var->received - cirr_var->applied;
+                    
+                    received += cirr_var->received * veg_fract * area_fract;
+                    applied += cirr_var->applied * veg_fract * area_fract;
+                    leftover += cirr_var->leftover * veg_fract * area_fract;
                 }
             }
         }
     }
     
-    // do irrigation
-    if(avail_frac > 0){
-        
-        abs_demand = 0.0;
-        for(i = 0; i < irr_con_map[iCell].ni_active; i++){
-            cirr_con = &irr_con[iCell][i];
-            cveg_con = &veg_con[iCell][cirr_con->veg_index];
-            veg_fract = cveg_con->Cv;
-
-            if(veg_fract > 0) {
-
-                for(j = 0; j < options.SNOW_BAND; j++){
-                    cirr_var = &irr_var[iCell][i][j];
-                    ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
-                    area_fract = csoil_con->AreaFract[j];
-
-                    if(area_fract > 0){
-                        if(cirr_var->flag_req){
-                            max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                            max_added = max_moist;
-
-                            avail_irr = cirr_var->requirement * cirr_con->irrigation_efficiency * avail_frac;
-                            abs_demand += avail_irr * veg_fract * area_fract;
-                            if(avail_irr < max_added){
-                                ccell_var->layer[0].moist += avail_irr;
-                                avail_irr = 0.0;
-                            } else {
-                                ccell_var->layer[0].moist += max_added;
-                                cirr_var->leftover += avail_irr - max_added;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        if(abs_demand - demand > WU_BALANCE_ERROR_THRESH){
-            log_err("Irrigation water balance error for cell %zu: "
-                    "demand is %.10f mm but %.10f mm is added to the soil",
-                    iCell,
-                    demand,
-                    abs_demand);
-        }
+    // Check water balance
+    if(received - demand > WU_BALANCE_ERROR_THRESH ||
+       applied - received + (leftover - prev_leftover) > WU_BALANCE_ERROR_THRESH ||
+       available - applied - (leftover - prev_leftover) > WU_BALANCE_ERROR_THRESH) {
+        log_err("Irrigation water balance error for cell %zu: "
+                "demand is %.10f mm; %.10f is available; %.10f mm is received; %10f mm is applied and %10f mm is leftover",
+                iCell,
+                demand,
+                available,
+                received,
+                applied,
+                leftover - prev_leftover);
     }
 }     

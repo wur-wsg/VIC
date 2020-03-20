@@ -51,6 +51,7 @@ plugin_store_error(size_t iCell)
     outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] * 
             global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN][0];
     
     /* NOTE: local dams are not included in the routing error, since they modify runoff*/
@@ -69,4 +70,6 @@ plugin_store_error(size_t iCell)
     
     save_data[iCell].total_soil_moist -= out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0];
     save_data[iCell].total_moist_storage -= out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0];
+    save_data[iCell].total_soil_moist += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
+    save_data[iCell].total_moist_storage += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
 }
