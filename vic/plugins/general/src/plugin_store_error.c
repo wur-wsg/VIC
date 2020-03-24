@@ -51,6 +51,7 @@ plugin_store_error(size_t iCell)
     outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] * 
             global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_COMP][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN][0];
     

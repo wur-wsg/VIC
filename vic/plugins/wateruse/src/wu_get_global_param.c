@@ -48,6 +48,14 @@ wu_get_global_param(char *cmdstr)
     else if (strcasecmp("WATERUSE_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.wateruse.nc_filename);
     }
+    else if (strcasecmp("COMPENSATION_WITHDRAWAL", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.COMP_WITH = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("REMOTE_WITHDRAWAL", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.REMOTE_WITH = str_to_bool(flgstr);
+    }
     else if (strcasecmp("NONRENEWABLE_WITHDRAWAL", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.NONRENEW_WITH = str_to_bool(flgstr);

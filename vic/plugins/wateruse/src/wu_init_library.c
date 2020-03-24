@@ -47,13 +47,16 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->available_gw = 0.0;
     wu_var->available_surf = 0.0;
     wu_var->available_dam = 0.0;
+    wu_var->available_comp = 0.0;
     wu_var->available_remote = 0.0;
     wu_var->demand_gw = 0.0;
     wu_var->demand_surf = 0.0;
+    wu_var->demand_comp = 0.0;
     wu_var->demand_remote = 0.0;
     wu_var->withdrawn_gw = 0.0;
     wu_var->withdrawn_surf = 0.0;
     wu_var->withdrawn_dam = 0.0;
+    wu_var->withdrawn_comp = 0.0;
     wu_var->withdrawn_remote = 0.0;
     wu_var->withdrawn_nonrenew = 0.0;
     wu_var->returned = 0.0;

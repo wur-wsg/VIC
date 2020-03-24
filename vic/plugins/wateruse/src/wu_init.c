@@ -138,7 +138,9 @@ wu_init(void)
                         plugin_filenames.wateruse.nc_filename);
     }
     
-    wu_set_receiving();
+    if (plugin_options.REMOTE_WITH) {
+        wu_set_receiving();
+    }
 
     // close parameter file
     if (mpi_rank == VIC_MPI_ROOT) {
