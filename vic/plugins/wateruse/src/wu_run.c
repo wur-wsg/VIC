@@ -521,7 +521,7 @@ calculate_use(size_t iCell,
         // non-renewable
         if(plugin_options.NONRENEW_WITH) {
             wu_var[iCell][iSector].withdrawn_nonrenew = 
-                    wu_var[iCell][iSector].demand_gw - wu_var[iCell][iSector].withdrawn_gw;
+                    wu_var[iCell][iSector].demand_gw - wu_var[iCell][iSector].withdrawn_gw - wu_var[iCell][iSector].withdrawn_comp;
 
             wu_var[iCell][iSector].returned += 
                     wu_var[iCell][iSector].withdrawn_nonrenew * 
@@ -634,10 +634,6 @@ calculate_hydrology(size_t iCell,
     // surface
     if(withdrawn_surf + withdrawn_remote + withdrawn_comp - returned != 0.) {
         prev_discharge = rout_var[iCell].discharge;
-        if(withdrawn_comp > 0){
-            log_info("test");
-        }
-        
         rout_var[iCell].discharge -= 
                 (withdrawn_surf + withdrawn_remote + withdrawn_comp - returned) / 
                 MM_PER_M * 
