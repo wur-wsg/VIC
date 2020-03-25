@@ -211,6 +211,10 @@ calculate_availability(size_t iCell,
         (*available_surf) += rout_var[iCell].dt_discharge[iStep] * global_param.dt / 
                 local_domain.locations[iCell].area * MM_PER_M;
     }
+    if((*available_surf) != (*available_surf)) {
+        log_err("test");
+    }
+    
     if (plugin_options.EFR) {
         frac = min(efr_force[iCell].discharge / rout_var[iCell].discharge, 1.0);
         (*available_surf) *= (1 - frac);
@@ -250,6 +254,9 @@ calculate_availability(size_t iCell,
         }
         (*available_surf) -= (*available_comp);
     }
+    if((*available_comp) != (*available_comp)) {
+        log_err("test");
+    }
         
     // remote
     // for remote cells the leftover surface water after withdrawals is available
@@ -264,6 +271,9 @@ calculate_availability(size_t iCell,
         (*available_remote) = 0;
     }
     (*available_surf) -= (*available_remote);
+    if((*available_remote) !=  (*available_remote)) {
+        log_err("test");
+    }
 }
 
 /******************************************
@@ -580,10 +590,11 @@ calculate_hydrology(size_t iCell,
         double withdrawn_nonrenew,
         double returned)
 {
+    extern plugin_global_param_struct plugin_global_param;
+    extern global_param_struct global_param;
     extern domain_struct  local_domain;
     extern all_vars_struct     *all_vars;
     extern option_struct options;
-    extern global_param_struct global_param;
     extern soil_con_struct     *soil_con;
     extern veg_con_map_struct     *veg_con_map;
     extern veg_con_struct **veg_con;

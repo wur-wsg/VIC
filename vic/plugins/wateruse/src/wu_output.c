@@ -533,6 +533,9 @@ wu_put_data(size_t iCell)
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_COMP][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM][0];
+    if (out_data[iCell][N_OUTVAR_TYPES + OUT_AVAILABLE][0] != out_data[iCell][N_OUTVAR_TYPES + OUT_AVAILABLE][0]) {
+        log_err("test");
+    }
     out_data[iCell][N_OUTVAR_TYPES + OUT_DEMAND][0] = 
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF][0] +
