@@ -664,9 +664,19 @@ calculate_hydrology(size_t iCell,
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
         for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+            if(available_discharge_tmp > 0) {
             rout_var[iCell].dt_discharge[iStep] -= 
                     withdrawn_discharge_tmp * 
                     (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
+            } else {
+                rout_var[iCell].dt_discharge[iStep] -= 
+                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
+            }
+            if (rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]) {
+                log_info("available_discharge_tmp %.3f", available_discharge_tmp);
+                log_err("test");
+            }
+            
             if (iStep < rout_steps_per_dt) {
                 rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
             }
