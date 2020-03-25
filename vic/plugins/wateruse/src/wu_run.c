@@ -140,6 +140,8 @@ calculate_availability(size_t iCell,
         double demand_surf,
         double demand_remote)
 {
+    extern plugin_global_param_struct plugin_global_param;
+    extern global_param_struct global_param;
     extern domain_struct  local_domain;
     extern all_vars_struct     *all_vars;
     extern option_struct options;
@@ -152,12 +154,18 @@ calculate_availability(size_t iCell,
     
     double resid_moist;
     double ice;
+    double frac;
     
+    size_t rout_steps_per_dt;
+    size_t iStep;
     size_t iVeg;
     size_t iBand;
     size_t iFrost;
     size_t iLayer;
     size_t iDam;
+    
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
     
     // groundwater
     iLayer = options.Nlayer - 1;
@@ -199,11 +207,13 @@ calculate_availability(size_t iCell,
     }
     
     // surface water
-    (*available_surf) = rout_var[iCell].discharge * global_param.dt / 
-            local_domain.locations[iCell].area * MM_PER_M;
+    for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        (*available_surf) += rout_var[iCell].dt_discharge[iStep] * global_param.dt / 
+                local_domain.locations[iCell].area * MM_PER_M;
+    }
     if (plugin_options.EFR) {
-        (*available_surf) -= efr_force[iCell].discharge * global_param.dt / 
-            local_domain.locations[iCell].area * MM_PER_M;
+        frac = min(efr_force[iCell].discharge / rout_var[iCell].discharge, 1.0);
+        (*available_surf) *= (1 - frac);
     }
     if((*available_surf) < 0){
         (*available_surf) = 0;
@@ -581,7 +591,8 @@ calculate_hydrology(size_t iCell,
     extern dam_var_struct **local_dam_var;
     
     double ice;
-    double prev_discharge;
+    double withdrawn_discharge_tmp;
+    double available_discharge_tmp;
     
     size_t rout_steps_per_dt;
     size_t iStep;
@@ -633,24 +644,23 @@ calculate_hydrology(size_t iCell,
 
     // surface
     if(withdrawn_surf + withdrawn_remote + withdrawn_comp - returned != 0.) {
-        prev_discharge = rout_var[iCell].discharge;
-        rout_var[iCell].discharge -= 
-                (withdrawn_surf + withdrawn_remote + withdrawn_comp - returned) / 
-                MM_PER_M * 
-                local_domain.locations[iCell].area / 
-                global_param.dt;
-
-        if(rout_var[iCell].discharge < 0){
-            rout_var[iCell].discharge = 0;
+        available_discharge_tmp = 0.;
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+            available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
         }
-
-        for(iStep = 0; iStep < rout_steps_per_dt; iStep++) {
-            if (prev_discharge > 0) {
-                rout_var[iCell].dt_discharge[iStep] *= 
-                        rout_var[iCell].discharge / prev_discharge;
-            } else {
-                rout_var[iCell].dt_discharge[iStep] = 
-                        rout_var[iCell].discharge / rout_steps_per_dt;
+        
+        withdrawn_discharge_tmp = withdrawn_surf + withdrawn_remote + withdrawn_comp - returned;
+        rout_var[iCell].discharge = 0.;
+        rout_var[iCell].stream = 0.;
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+            rout_var[iCell].dt_discharge[iStep] -= 
+                    withdrawn_discharge_tmp * 
+                    (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
+            if (iStep < rout_steps_per_dt) {
+                rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+            }
+            else {
+                rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
         }
     }
