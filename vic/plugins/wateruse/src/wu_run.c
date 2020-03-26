@@ -211,10 +211,6 @@ calculate_availability(size_t iCell,
         (*available_surf) += rout_var[iCell].dt_discharge[iStep] * global_param.dt / 
                 local_domain.locations[iCell].area * MM_PER_M;
     }
-    if((*available_surf) != (*available_surf)) {
-        log_err("test");
-    }
-    
     if (plugin_options.EFR) {
         frac = min(efr_force[iCell].discharge / rout_var[iCell].discharge, 1.0);
         (*available_surf) *= (1 - frac);
@@ -254,9 +250,6 @@ calculate_availability(size_t iCell,
         }
         (*available_surf) -= (*available_comp);
     }
-    if((*available_comp) != (*available_comp)) {
-        log_err("test");
-    }
         
     // remote
     // for remote cells the leftover surface water after withdrawals is available
@@ -271,9 +264,6 @@ calculate_availability(size_t iCell,
         (*available_remote) = 0;
     }
     (*available_surf) -= (*available_remote);
-    if((*available_remote) !=  (*available_remote)) {
-        log_err("test");
-    }
 }
 
 /******************************************
@@ -665,16 +655,15 @@ calculate_hydrology(size_t iCell,
         rout_var[iCell].stream = 0.;
         for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
             if(available_discharge_tmp > 0) {
-            rout_var[iCell].dt_discharge[iStep] -= 
-                    withdrawn_discharge_tmp * 
-                    (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
+                rout_var[iCell].dt_discharge[iStep] -= 
+                        withdrawn_discharge_tmp * 
+                        (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
             } else {
                 rout_var[iCell].dt_discharge[iStep] -= 
                     withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
             }
-            if (rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]) {
-                log_info("available_discharge_tmp %.3f", available_discharge_tmp);
-                log_err("test");
+            if (rout_var[iCell].dt_discharge[iStep] < 0) {
+                rout_var[iCell].dt_discharge[iStep] = 0.;
             }
             
             if (iStep < rout_steps_per_dt) {
