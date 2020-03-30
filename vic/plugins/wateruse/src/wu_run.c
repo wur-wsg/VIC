@@ -532,6 +532,9 @@ calculate_use(size_t iCell,
         if(plugin_options.NONRENEW_WITH) {
             wu_var[iCell][iSector].withdrawn_nonrenew = 
                     wu_var[iCell][iSector].demand_gw - wu_var[iCell][iSector].withdrawn_gw - wu_var[iCell][iSector].withdrawn_comp;
+            if(wu_var[iCell][iSector].withdrawn_nonrenew > wu_con[iCell].pumping_capacity) {
+                wu_var[iCell][iSector].withdrawn_nonrenew = wu_con[iCell].pumping_capacity;
+            }
 
             wu_var[iCell][iSector].returned += 
                     wu_var[iCell][iSector].withdrawn_nonrenew * 
