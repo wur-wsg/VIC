@@ -90,9 +90,15 @@ wu_validate_global_param(void)
     }
     
     // Forcing
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_PUMPING_CAP], MISSING_S) == 0) {
+        log_err("WATERUSE = TRUE but pumping capacity is missing");
+    }
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_DEMAND], MISSING_S) != 0 &&
             strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_GROUNDWATER], MISSING_S) != 0 &&
             strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_CONSUMPTION], MISSING_S) != 0) {
+        if(plugin_options.IRRIGATION){
+            log_err("WATERUSE = TRUE and IRRIGATION = TRUE but forcing file provided");
+        }
         plugin_options.WU_INPUT[WU_IRRIGATION] = WU_FROM_FILE;
     }
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_DEMAND], MISSING_S) != 0 &&

@@ -33,6 +33,7 @@
 void
 wu_set_info(void)
 {
+    extern global_param_struct global_param;
     extern domain_struct local_domain;
     extern domain_struct global_domain;
     extern plugin_filenames_struct plugin_filenames;
@@ -57,7 +58,7 @@ wu_set_info(void)
             "pumping_capacity", d2start, d2count, dvar);
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        wu_con[i].pumping_capacity = dvar[i];
+        wu_con[i].pumping_capacity = dvar[i] / global_param.model_steps_per_day;
     }
     
     free(dvar);

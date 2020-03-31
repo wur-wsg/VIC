@@ -145,6 +145,7 @@ enum {
     FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
     FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
     // water-use
+    FORCING_PUMPING_CAP,                /**< pumping capacity [mm day-1] */
     FORCING_IRR_DEMAND,                 /**< irrigation demand [mm] */
     FORCING_IRR_GROUNDWATER,            /**< irrigation groundwater fraction [-] */
     FORCING_IRR_CONSUMPTION,            /**< irrigation consumption fraction [-] */
