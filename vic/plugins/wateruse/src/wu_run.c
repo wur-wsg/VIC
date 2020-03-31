@@ -534,14 +534,24 @@ calculate_use(size_t iCell,
                     wu_var[iCell][iSector].demand_gw - 
                     wu_var[iCell][iSector].withdrawn_gw - 
                     wu_var[iCell][iSector].withdrawn_comp;
-            if((*withdrawn_nonrenew) + wu_var[iCell][iSector].withdrawn_nonrenew > 
-                    wu_force[iCell][iSector].pumping_capacity) {
-                wu_var[iCell][iSector].withdrawn_nonrenew = 
-                        wu_force[iCell][iSector].pumping_capacity - 
-                        (*withdrawn_nonrenew);
-                if(wu_var[iCell][iSector].withdrawn_nonrenew < 0) {
-                    wu_var[iCell][iSector].withdrawn_nonrenew = 0;
+            
+            if(plugin_options.FORCE_PUMP_CAP) {
+                if((*withdrawn_nonrenew) + wu_var[iCell][iSector].withdrawn_nonrenew > 
+                        wu_force[iCell][iSector].pumping_capacity) {
+                    wu_var[iCell][iSector].withdrawn_nonrenew = 
+                            wu_force[iCell][iSector].pumping_capacity - 
+                            (*withdrawn_nonrenew);
                 }
+            } else {
+                if((*withdrawn_nonrenew) + wu_var[iCell][iSector].withdrawn_nonrenew > 
+                        wu_con[iCell].pumping_capacity) {
+                    wu_var[iCell][iSector].withdrawn_nonrenew = 
+                            wu_con[iCell].pumping_capacity - 
+                            (*withdrawn_nonrenew);
+                }
+            }
+            if(wu_var[iCell][iSector].withdrawn_nonrenew < 0) {
+                wu_var[iCell][iSector].withdrawn_nonrenew = 0;
             }
 
             wu_var[iCell][iSector].returned += 

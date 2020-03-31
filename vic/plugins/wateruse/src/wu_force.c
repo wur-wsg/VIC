@@ -62,19 +62,21 @@ wu_forcing(void)
     d3count[2] = global_domain.n_nx;
 
     // Get forcing data
-    d3start[0] = plugin_global_param.forceskip[FORCING_PUMPING_CAP] +
-                 plugin_global_param.forceoffset[FORCING_PUMPING_CAP];
+    if(plugin_options.FORCE_PUMP_CAP) {
+        d3start[0] = plugin_global_param.forceskip[FORCING_PUMPING_CAP] +
+                     plugin_global_param.forceoffset[FORCING_PUMPING_CAP];
 
-    if (plugin_global_param.forcerun[FORCING_PUMPING_CAP]) {
-        get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_PUMPING_CAP]), 
-            plugin_filenames.f_varname[FORCING_PUMPING_CAP], d3start, d3count, dvar);
+        if (plugin_global_param.forcerun[FORCING_PUMPING_CAP]) {
+            get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_PUMPING_CAP]), 
+                plugin_filenames.f_varname[FORCING_PUMPING_CAP], d3start, d3count, dvar);
 
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            for(k = 0; k < plugin_options.NWUTYPES; k++){
-                iSector = wu_con_map[i].sidx[k];
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                for(k = 0; k < plugin_options.NWUTYPES; k++){
+                    iSector = wu_con_map[i].sidx[k];
 
-                if(iSector != NODATA_WU){
-                    wu_force[i][iSector].pumping_capacity = dvar[i];
+                    if(iSector != NODATA_WU){
+                        wu_force[i][iSector].pumping_capacity = dvar[i];
+                    }
                 }
             }
         }
