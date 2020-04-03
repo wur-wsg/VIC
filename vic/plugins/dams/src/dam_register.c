@@ -127,7 +127,7 @@ dam_register_operation(dam_con_struct *dam_con, dam_var_struct *dam_var)
     for(i = 0; i < MONTHS_PER_YEAR; i++){
         steps_per_month[i] = 
                 days_per_month(i + 1, dmy[current].year, global_param.calendar) * 
-                SEC_PER_DAY;
+                global_param.model_steps_per_day;
     }
     
     // Setup arrays
