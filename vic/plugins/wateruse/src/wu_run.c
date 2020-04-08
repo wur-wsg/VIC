@@ -671,7 +671,9 @@ calculate_hydrology(size_t iCell,
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
         }
         
-        withdrawn_discharge_tmp = withdrawn_surf + withdrawn_remote + withdrawn_comp - returned;
+        withdrawn_discharge_tmp = 
+		(withdrawn_surf + withdrawn_remote + withdrawn_comp - returned) /
+                MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
         for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
