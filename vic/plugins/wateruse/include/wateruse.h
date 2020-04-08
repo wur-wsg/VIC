@@ -57,6 +57,7 @@ typedef struct {
  * @brief   Water-use Constants
  *****************************************************************************/
 typedef struct {
+    double pumping_capacity;        /**< pumping capacity [mm day-1] */
     size_t nreceiving;              /**< number of receiving cells */
     size_t *receiving;              /**< receiving cell id */
 } wu_con_struct;
@@ -68,13 +69,16 @@ typedef struct {
     double available_gw;            /**< available groundwater resources [mm] */
     double available_surf;          /**< available surface water resources [mm] */
     double available_dam;           /**< available dam reservoir resources [mm] */
+    double available_comp;        /**< available compensation resources [mm] */
     double available_remote;        /**< available remote resources [mm] */
     double demand_gw;               /**< demand for groundwater resources [mm] */
     double demand_surf;             /**< demand for surface water resources [mm] */
+    double demand_comp;             /**< demand for compensation resources [mm] */
     double demand_remote;           /**< demand for remote resources [mm] */
     double withdrawn_gw;            /**< withdrawn groundwater resources [mm] */
     double withdrawn_surf;          /**< withdrawn surface water resources [mm] */
     double withdrawn_dam;           /**< withdrawn dam reservoir resources [mm] */
+    double withdrawn_comp;          /**< withdrawn compensation resources [mm] */
     double withdrawn_remote;        /**< withdrawn remote resources [mm] */
     double withdrawn_nonrenew;      /**< withdrawn non-renewable resources [mm] */
     double returned;                /**< returned water resources [mm] */
@@ -85,6 +89,7 @@ typedef struct {
  * @brief   Water-use Forcing
  *****************************************************************************/
 typedef struct {
+    double pumping_capacity;       /**< pumping capacity [mm day-1] */
     double demand;                 /**< water demand [mm] */
     double consumption_frac;       /**< water groundwater fraction [-] */
     double groundwater_frac;       /**< water consumption fraction [-] */

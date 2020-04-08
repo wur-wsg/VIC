@@ -48,6 +48,18 @@ wu_get_global_param(char *cmdstr)
     else if (strcasecmp("WATERUSE_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.wateruse.nc_filename);
     }
+    else if (strcasecmp("FORCE_PUMPING_CAPACITY", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.FORCE_PUMP_CAP = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("COMPENSATION_WITHDRAWAL", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.COMP_WITH = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("REMOTE_WITHDRAWAL", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.REMOTE_WITH = str_to_bool(flgstr);
+    }
     else if (strcasecmp("NONRENEWABLE_WITHDRAWAL", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.NONRENEW_WITH = str_to_bool(flgstr);
@@ -82,9 +94,17 @@ wu_validate_global_param(void)
     }
     
     // Forcing
+    if(plugin_options.FORCE_PUMP_CAP) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_PUMPING_CAP], MISSING_S) == 0) {
+            log_err("FORCE_PUMP_CAP = TRUE but file is missing");
+        }
+    }
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_DEMAND], MISSING_S) != 0 &&
             strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_GROUNDWATER], MISSING_S) != 0 &&
             strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_CONSUMPTION], MISSING_S) != 0) {
+        if(plugin_options.IRRIGATION){
+            log_err("WATERUSE = TRUE and IRRIGATION = TRUE but forcing file provided");
+        }
         plugin_options.WU_INPUT[WU_IRRIGATION] = WU_FROM_FILE;
     }
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_DEMAND], MISSING_S) != 0 &&

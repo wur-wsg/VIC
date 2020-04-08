@@ -120,6 +120,7 @@ irr_set_info(void)
     extern domain_struct global_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern irr_con_map_struct  *irr_con_map;
+    extern irr_con_struct  **irr_con;
     
     double *dvar;
     

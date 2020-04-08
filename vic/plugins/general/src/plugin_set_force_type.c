@@ -68,6 +68,9 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("EFR_BASEFLOW", nctype) == 0) {
         type = FORCING_EFR_BASEFLOW;
     }
+    else if (strcasecmp("PUMPING_CAP", nctype) == 0) {
+        type = FORCING_PUMPING_CAP;
+    }
     else if (strcasecmp("IRR_DEMAND", nctype) == 0) {
         type = FORCING_IRR_DEMAND;
     }

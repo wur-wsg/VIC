@@ -33,6 +33,7 @@
 void
 initialize_wu_force(wu_force_struct *wu_force)
 {
+    wu_force->pumping_capacity = 0.0;
     wu_force->consumption_frac = 0.0;
     wu_force->groundwater_frac = 0.0;
     wu_force->demand = 0.0;
@@ -47,13 +48,16 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->available_gw = 0.0;
     wu_var->available_surf = 0.0;
     wu_var->available_dam = 0.0;
+    wu_var->available_comp = 0.0;
     wu_var->available_remote = 0.0;
     wu_var->demand_gw = 0.0;
     wu_var->demand_surf = 0.0;
+    wu_var->demand_comp = 0.0;
     wu_var->demand_remote = 0.0;
     wu_var->withdrawn_gw = 0.0;
     wu_var->withdrawn_surf = 0.0;
     wu_var->withdrawn_dam = 0.0;
+    wu_var->withdrawn_comp = 0.0;
     wu_var->withdrawn_remote = 0.0;
     wu_var->withdrawn_nonrenew = 0.0;
     wu_var->returned = 0.0;
@@ -68,6 +72,7 @@ initialize_wu_con(wu_con_struct *wu_con)
 {
     size_t               i;
     
+    wu_con->pumping_capacity = 0.0;
     for(i = 0; i < wu_con->nreceiving; i++){
         wu_con->receiving[i] = MISSING_USI;
     }

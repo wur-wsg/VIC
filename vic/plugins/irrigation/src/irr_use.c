@@ -43,6 +43,7 @@ irr_set_demand(size_t iCell)
     extern wu_force_struct **wu_force;
     
     double demand;
+    double paddy_demand;
     double area_fract;
     double veg_fract;
     
@@ -57,6 +58,7 @@ irr_set_demand(size_t iCell)
     
     // get demand
     demand = 0.0;
+    paddy_demand = 0.0;
     csoil_con = &soil_con[iCell];
     for(i = 0; i < irr_con_map[iCell].ni_active; i++){
         cirr_con = &irr_con[iCell][i];
@@ -72,6 +74,9 @@ irr_set_demand(size_t iCell)
                 if(area_fract > 0){
                     if(cirr_var->flag_req){
                         demand += cirr_var->requirement * veg_fract * area_fract * cirr_con->irrigation_efficiency;
+                        if(cirr_con->paddy) {
+                            paddy_demand += cirr_var->requirement * veg_fract * area_fract * cirr_con->irrigation_efficiency;
+                        }
                     }
                 }
             }
@@ -83,6 +88,9 @@ irr_set_demand(size_t iCell)
         wu_force[iCell][iSector].demand = demand;
         wu_force[iCell][iSector].consumption_frac = 1.0;
         wu_force[iCell][iSector].groundwater_frac = irr_con[iCell][0].groundwater_fraction;
+        if(paddy_demand > 0) {
+            wu_force[iCell][iSector].groundwater_frac = irr_con[iCell][0].groundwater_fraction * (1 - paddy_demand / demand);
+        }
     }
 }
 
