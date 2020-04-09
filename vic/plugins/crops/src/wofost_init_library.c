@@ -360,7 +360,7 @@ initialize_wofost_vic(Meteo *vic)
     vic->Longitude = 0.;
     vic->MeteoDay = 0;
     vic->MeteoYear = 0;
-    vic->CycleLength = 0;
+    vic->CycleLength = 300;
     for(i = 0; i < DAYS_PER_WEEK; i++) {
         vic->Tmin[i] = 0.;
     }

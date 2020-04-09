@@ -14,7 +14,7 @@ wofost_set_data_text(char *list)
     int Emergence;
     char line[MAXSTRING];
     char path[MAXSTRING];
-    char cf[MAXSTRING], mf[MAXSTRING];
+    char cf[MAXSTRING], mf[MAXSTRING], start[MAXSTRING];
         
     size_t i;
     size_t k;
@@ -50,7 +50,7 @@ wofost_set_data_text(char *list)
 
         initialize_wofost_grid(tmpGrid);
     
-        sscanf(line, "%s %s %s %d", path, cf, mf, &Emergence);
+        sscanf(line, "%s %s %s %s %d", path, cf, mf, start, &Emergence);
 
         if(k >= plugin_options.NCROPTYPES) {
             log_err("Crops in wofost text (%zu) file are more than "
@@ -58,7 +58,7 @@ wofost_set_data_text(char *list)
                     k, plugin_options.NCROPTYPES);
         }
 
-        GetSimInput(path, cf, mf, Emergence, k, tmpGrid);
+        GetSimInput(path, cf, mf, start, Emergence, k, tmpGrid);
         tmpGrid->met->crop_class = k;
     
         for(i = 0; i < local_domain.ncells_active; i++) {
@@ -125,113 +125,116 @@ wofost_set_data(void)
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
     
-    
-    // Set plant day
-    for(j = 0; j < plugin_options.NCROPTYPES; j++){
-        d3start[0] = j;
-                        
-        get_scatter_nc_field_double(&plugin_filenames.crop,
-                                 "plant_day", d3start, d3count, dvar);
-
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
-                    }
-                    
-                    // plant is set to a random non-leap year
-                    dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->start));
-                }
-            }
-        }
-    }
-    
-    // Set harvest day
-    for(j = 0; j < plugin_options.NCROPTYPES; j++){
-        d3start[0] = j;
-                        
-        get_scatter_nc_field_double(&plugin_filenames.crop,
-                                 "harvest_day", d3start, d3count, dvar);
-
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
-                    }
-                    
-                    // harvest is set to a random non-leap year
-                    dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->end));
-                }
-            }
-        }
-    }
-    
-    // Set cycle length
-    for (i = 0; i < local_domain.ncells_active; i++) {
+    if (plugin_options.WOFOST_DIST_SEASON) {
+        // Set plant day
         for(j = 0; j < plugin_options.NCROPTYPES; j++){
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "plant_day", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        // plant is set to a random non-leap year
+                        dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->start));
                     }
-                    
-                    if(iGrid->start.day_in_year < iGrid->end.day_in_year){
-                        iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
-                    } else {
-                        iGrid->met->CycleLength = DAYS_PER_YEAR - iGrid->start.day_in_year + iGrid->end.day_in_year;
+                }
+            }
+        }
+
+        // Set harvest day
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "harvest_day", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        // harvest is set to a random non-leap year
+                        dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->end));
+                    }
+                }
+            }
+        }
+
+        // Set cycle length
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        if(iGrid->start.day_in_year < iGrid->end.day_in_year){
+                            iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
+                        } else {
+                            iGrid->met->CycleLength = DAYS_PER_YEAR - iGrid->start.day_in_year + iGrid->end.day_in_year;
+                        }
                     }
                 }
             }
         }
     }
     
-    // Set TSUM1
-    for(j = 0; j < plugin_options.NCROPTYPES; j++){
-        d3start[0] = j;
-                        
-        get_scatter_nc_field_double(&plugin_filenames.crop,
-                                 "TSUM1", d3start, d3count, dvar);
+    if (plugin_options.WOFOST_DIST_TSUM) {
+        // Set TSUM1
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
 
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "TSUM1", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->crp->prm.TempSum1 = dvar[i];
                     }
-                    
-                    iGrid->crp->prm.TempSum1 = dvar[i];
                 }
             }
         }
-    }
-    
-    // Set TSUM2
-    for(j = 0; j < plugin_options.NCROPTYPES; j++){
-        d3start[0] = j;
-                        
-        get_scatter_nc_field_double(&plugin_filenames.crop,
-                                 "TSUM2", d3start, d3count, dvar);
 
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            iCrop = crop_con_map[i].cidx[j];
-            if (iCrop != NODATA_VEG) {
-                for (k = 0; k < options.SNOW_BAND; k++) {
-                    iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
-                        iGrid = iGrid->next;
+        // Set TSUM2
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "TSUM2", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->crp->prm.TempSum2 = dvar[i];
                     }
-                    
-                    iGrid->crp->prm.TempSum2 = dvar[i];
                 }
             }
         }

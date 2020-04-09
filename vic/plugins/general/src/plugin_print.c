@@ -92,6 +92,10 @@ plugin_print_options(plugin_option_struct *op)
             op->REMOTE_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tNONRENEW_WITH        : %s\n",
             op->NONRENEW_WITH ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_DIST_SEASON   : %s\n",
+            op->WOFOST_DIST_SEASON ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_DIST_TSUM     : %s\n",
+            op->WOFOST_DIST_TSUM ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",
             op->WOFOST_PIRR ? "true" : "false");
 

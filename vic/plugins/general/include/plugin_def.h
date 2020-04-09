@@ -253,6 +253,8 @@ typedef struct {
     bool REMOTE_WITH;                   /**< remote water abstractions flag */
     bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
     bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
+    bool WOFOST_DIST_SEASON;            /**< distributed seasons for wofost module flag */
+    bool WOFOST_DIST_TSUM;              /**< distributed tsums for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */
 } plugin_option_struct;
 

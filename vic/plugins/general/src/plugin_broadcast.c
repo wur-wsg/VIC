@@ -199,7 +199,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 23;
+    nitems = 25;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -280,6 +280,12 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_C_BOOL;
     // bool WOFOST_PIRR;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_PIRR);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_DIST_SEASON;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_SEASON);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_DIST_TSUM;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_TSUM);
     mpi_types[i++] = MPI_C_BOOL;
     // short unsigned int NCROPTYPES;
     offsets[i] = offsetof(plugin_option_struct, NCROPTYPES);

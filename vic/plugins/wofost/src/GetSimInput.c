@@ -11,6 +11,7 @@
 void GetSimInput(char *path,
         char *cf, 
         char *mf,
+        char *start,
         int Emergence, 
         int count,
         SimUnit *Grid)
@@ -31,6 +32,7 @@ void GetSimInput(char *path,
     GetManagement(Grid->mng, management);
 
     Grid->file  = count;            // number of elements in Grid carousel
+    strpdmy(start, "%m-%d", &Grid->start);
     Grid->emergence = Emergence;      // Start the simulations at emergence (1) or at sowing (0)                
     Grid->crp->Sowing = 0;
     Grid->crp->Emergence = 0;         // Crop emergence has not yet occurred

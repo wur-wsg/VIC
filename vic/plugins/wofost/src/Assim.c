@@ -117,7 +117,6 @@ float DailyTotalAssimilation(SimUnit *Grid)
 /*-----------------------------------------------------------------------------*/
 float Correct(SimUnit *Grid, float Assimilation)
 {
-    int PreviousDay;
     int Counter;
     int number = DAYS_PER_WEEK;
     float TminLowAvg = 0.;
@@ -129,10 +128,9 @@ float Correct(SimUnit *Grid, float Assimilation)
     }
     
     Counter = 0;
-    PreviousDay = 0;
-    while (PreviousDay >= 0 && Counter < number)
+    while (Counter < number)
     {
-      TminLowAvg += Grid->met->Tmin[PreviousDay++]; 
+      TminLowAvg += Grid->met->Tmin[Counter]; 
       Counter++;
     }
 

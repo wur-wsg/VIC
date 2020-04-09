@@ -29,6 +29,14 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_PIRR = str_to_bool(flgstr);
     }
+    else if (strcasecmp("WOFOST_DIST_SEASON", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_DIST_SEASON = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("WOFOST_DIST_TSUM", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_DIST_TSUM = str_to_bool(flgstr);
+    }
     else {
         return false;
     }
