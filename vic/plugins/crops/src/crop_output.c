@@ -35,6 +35,17 @@ crop_set_output_met_data_info(void)
 {
     extern metadata_struct out_metadata[];
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].varname, MAXSTRING,
+             "%s", "OUT_CROP_CULTIVATE");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].long_name, MAXSTRING,
+             "%s", "cultivation_days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].standard_name,
+             MAXSTRING, "%s", "crop_cultivation_days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].units, MAXSTRING,
+             "%s", "days");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].description,
+             MAXSTRING, "%s", "crop cultivation days");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].varname, MAXSTRING,
              "%s", "OUT_CROP_GROW");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].long_name, MAXSTRING,
@@ -321,6 +332,7 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_KDEM].description,
              MAXSTRING, "%s", "crop potassium demand");
 
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE].nelem = plugin_options.NCROPTYPES;
@@ -386,6 +398,7 @@ crop_set_nc_var_info(unsigned int    varid,
     
     // Set the number of dimensions and dimids for each state variable
     switch(varid){
+        case N_OUTVAR_TYPES + OUT_CROP_CULTIVATE:
         case N_OUTVAR_TYPES + OUT_CROP_GROW:
         case N_OUTVAR_TYPES + OUT_CROP_EVAP:
         case N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE:
@@ -429,6 +442,7 @@ crop_set_nc_var_dimids(unsigned int    varid,
                        nc_var_struct  *nc_var)
 {
     switch(varid){
+        case N_OUTVAR_TYPES + OUT_CROP_CULTIVATE:
         case N_OUTVAR_TYPES + OUT_CROP_GROW:
         case N_OUTVAR_TYPES + OUT_CROP_EVAP:
         case N_OUTVAR_TYPES + OUT_CROP_EVAP_BARE:
@@ -471,6 +485,7 @@ crop_history(int           varid,
              unsigned int *agg_type)
 {
     switch (varid) {
+    case N_OUTVAR_TYPES + OUT_CROP_CULTIVATE:
     case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
@@ -569,6 +584,7 @@ crop_put_data(size_t iCell)
                 crop_class = cgrid->met->crop_class;
 
                 /* Store crop fluxes */
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_CULTIVATE][crop_class] += cgrid->cultivating * area_fract;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_GROW][crop_class] += cgrid->growing * area_fract;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_DVS][crop_class] += cgrid->crp->rt.Development * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_WLV][crop_class] += cgrid->crp->rt.leaves * area_fract * cgrid->growing;

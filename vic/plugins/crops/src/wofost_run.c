@@ -14,6 +14,7 @@ wofost_run(SimUnit *Grid)
     /* If sowing gas occurred than determine the emergence */
     if (Grid->crp->Sowing >= 1 && Grid->crp->Emergence == 0)
     {
+        Grid->cultivating = 1;
         if (EmergenceCrop(Grid, Emergence))
         {                 
             /* Initialize: set state variables */
@@ -56,6 +57,7 @@ wofost_run(SimUnit *Grid)
         {
             Harvest(&(Grid->crp->LeaveProperties));
             Emergence = 0;
+            Grid->cultivating = 0;
             Grid->growing = 0;
             Grid->crp->CultivateDay = 0;
             Grid->crp->TSumEmergence = 0;

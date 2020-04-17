@@ -93,23 +93,31 @@ crop_update_step_vars(size_t iCell)
             cveg_hist->roughness[NR] += height * param.VEG_RATIO_RL_HEIGHT * Cc;
 
             tmp_min = min(cgrid->crp->st.Development, 1.0);
-            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
             cveg_lib->trunk_ratio += cgrid->crp->prm.TrunkRatio * Cc;
             cveg_lib->wind_atten += cgrid->crp->prm.WindAttenuation * Cc;
             cveg_lib->wind_h += (cgrid->crp->prm.MaxHeight + 1) * Cc;
-            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * Cc;
             cveg_lib->rad_atten += cgrid->crp->prm.RadiationAttenuation * Cc;
             cveg_lib->RGL += cgrid->crp->prm.RGL * Cc;
             
+            //cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
+            //cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * Cc;
+            cveg_lib->rarc += 25 * tmp_min * Cc;
+            cveg_lib->rmin += 120 * Cc;
+            
             if(cgrid->crp->st.RootDepth > csoil_con->depth[0]) {
-                cveg_con->root[0] += (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
-                cveg_con->root[1] += (1 - cveg_con->root[0]) * Cc;
+                //cveg_con->root[0] += (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
+                //cveg_con->root[1] += (1 - cveg_con->root[0]) * Cc;
             } else {
-                cveg_con->root[0] += Cc;
+                //cveg_con->root[0] += Cc;
             }
+            cveg_con->root[0] += 0.5 * Cc;
+            cveg_con->root[1] += 0.5 * Cc;
 
             cgrid = cgrid->next;
         }
+        
+        //cveg_lib->rarc = cveg_lib->rarc * 2;
+        //cveg_lib->rmin = cveg_lib->rmin * 2;
     }
     
     // Transform VIC variables

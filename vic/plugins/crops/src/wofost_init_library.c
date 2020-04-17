@@ -351,32 +351,33 @@ initialize_wofost_soil(Soil *soil)
 }
 
 void
-initialize_wofost_vic(Meteo *vic)
+initialize_wofost_vic(Meteo *met)
 {
     size_t i;
     
-    vic->crop_class = MISSING_USI;
-    vic->Latitude = 0.;
-    vic->Longitude = 0.;
-    vic->MeteoDay = 0;
-    vic->MeteoYear = 0;
-    vic->CycleLength = 300;
+    met->crop_class = MISSING_USI;
+    met->Latitude = 0.;
+    met->Longitude = 0.;
+    met->MeteoDay = 0;
+    met->MeteoYear = 0;
+    met->CycleLength = 300;
     for(i = 0; i < DAYS_PER_WEEK; i++) {
-        vic->Tmin[i] = 0.;
+        met->Tmin[i] = 0.;
     }
-    vic->Tmax = 0.;
-    vic->Temp = 0.;
-    vic->DayTemp = 0.;
-    vic->Radiation = 0.;
-    vic->CO2 = 0.;
-    vic->AtmosphTransm = 0.;
-    vic->AngotRadiation = 0.;
-    vic->Daylength = 0.;
-    vic->PARDaylength = 0.;
-    vic->SinLD = 0.;
-    vic->CosLD = 0.;
-    vic->DiffRadPP = 0.;
-    vic->DSinBE = 0.;
+    met->Tmax = 0.;
+    met->Temp = 0.;
+    met->DayTemp = 0.;
+    met->Radiation = 0.;
+    met->CO2 = 0.;
+    met->PotEvaptrans = 0.;
+    met->AtmosphTransm = 0.;
+    met->AngotRadiation = 0.;
+    met->Daylength = 0.;
+    met->PARDaylength = 0.;
+    met->SinLD = 0.;
+    met->CosLD = 0.;
+    met->DiffRadPP = 0.;
+    met->DSinBE = 0.;
 }
 
 void
@@ -403,6 +404,7 @@ initialize_wofost_grid(SimUnit *Grid)
 {
     Grid->emergence = 0;
     Grid->file = 0;
+    Grid->cultivating = 0;
     Grid->growing = 0;
     initialize_dmy(&Grid->start);
     initialize_dmy(&Grid->end);

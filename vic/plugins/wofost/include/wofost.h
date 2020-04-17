@@ -415,6 +415,7 @@ typedef struct METEO {
     float DayTemp;
     float Radiation;
     float CO2;
+    float PotEvaptrans;
 
     /* Derived */
     float AtmosphTransm;
@@ -439,6 +440,7 @@ typedef struct SIMUNIT {
         dmy_struct start;
         dmy_struct end;
         struct SIMUNIT *next;
+        int cultivating;
         int growing;
         } SimUnit;
         
@@ -467,6 +469,7 @@ float Afgen(TABLE *, float *);
 float List(TABLE_D *);
 float limit(float a, float b, float c);
 float insw(float x1, float x2, float x3);
+float sweaf(float, float);
 void GetSimInput(char *, char *, char *, char*, int, int, SimUnit *);
 void IfSowing(SimUnit *, dmy_struct*);
 

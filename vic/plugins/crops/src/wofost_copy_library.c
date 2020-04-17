@@ -453,6 +453,7 @@ copy_wofost_vic(Meteo *from, Meteo *to)
     to->DayTemp = from->DayTemp;
     to->Radiation = from->Radiation;
     to->CO2 = from->CO2;
+    to->PotEvaptrans = from->PotEvaptrans;
     to->AtmosphTransm = from->AtmosphTransm;
     to->AngotRadiation = from->AngotRadiation;
     to->Daylength = from->Daylength;
@@ -485,6 +486,8 @@ copy_wofost_management(Management *from, Management *to)
 void
 copy_wofost_grid(SimUnit *from, SimUnit *to)
 {
+    to->cultivating = from->cultivating;
+    to->growing = from->growing;
     to->emergence = from->emergence;
     to->file = from->file;
     copy_dmy(&from->start, &to->start);
