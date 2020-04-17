@@ -23,7 +23,6 @@ crop_reset_meteo(size_t iCell)
             cgrid->met->DayTemp = 0.0;
             cgrid->met->Radiation = 0.0;
             cgrid->met->CO2 = 0.0;
-            cgrid->met->PotEvaptrans = 0.0;
 
             cgrid = cgrid->next;
         }
@@ -90,11 +89,7 @@ crop_reset_soil(size_t iCell)
         cgrid = Grid[iCell][iBand];
         
         while(cgrid){
-            cshift(cgrid->met->Tmin, 1, DAYS_PER_WEEK, 1, -1);
-
-            cgrid->soil->ct.MoistureFC = 0.0;
-            cgrid->soil->ct.MoistureWP = 0.0;
-            cgrid->soil->st.RootZoneMoisture = 0.0;
+            cgrid->soil->WaterStress = 0.0;
 
             cgrid = cgrid->next;
         }
@@ -105,7 +100,6 @@ void
 crop_register_soil(size_t iCell)
 {
     extern global_param_struct global_param;
-    extern soil_con_struct *soil_con;
     extern option_struct options;
     extern all_vars_struct *all_vars;
     extern veg_con_map_struct *veg_con_map;
@@ -115,7 +109,6 @@ crop_register_soil(size_t iCell)
     size_t veg_class;
     size_t iVeg;
     
-    cell_data_struct *ccell_data;
     SimUnit *cgrid;
 
     for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
@@ -125,15 +118,15 @@ crop_register_soil(size_t iCell)
             crop_class = cgrid->met->crop_class;
             veg_class = crop_con_map[iCell].veg_class[crop_class];
             iVeg = veg_con_map[iCell].vidx[veg_class];
-            ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
             
-            cgrid->soil->ct.MoistureWP += soil_con[iCell].Wpwp[0] + soil_con[iCell].Wpwp[1] * 
-                    (plugin_global_param.wofost_steps_per_day / global_param.atmos_steps_per_day);
-            cgrid->soil->ct.MoistureFC += (soil_con[iCell].Wcr[0] + soil_con[iCell].Wcr[1]) / 0.7 * 
-                    (plugin_global_param.wofost_steps_per_day / global_param.atmos_steps_per_day);
-            cgrid->soil->st.RootZoneMoisture += ccell_data->rootmoist * 
-                    (plugin_global_param.wofost_steps_per_day / global_param.atmos_steps_per_day);
-            
+            if (plugin_options.WOFOST_PIRR) {
+                cgrid->soil->WaterStress += 1. / 
+                        global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
+            } else {
+                cgrid->soil->WaterStress += all_vars[iCell].cell[iVeg][iBand].water_stress / 
+                        global_param.atmos_steps_per_day / plugin_global_param.wofost_steps_per_day;
+            }
+
             cgrid = cgrid->next;
         }
     }
@@ -210,16 +203,6 @@ crop_run(size_t iCell)
                 if(cgrid->met->MeteoDay <= 0){
                     cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
                 }
-                
-                cgrid->soil->st.CriticalSoilMoisture = 
-                        (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans)) *
-                        (cgrid->soil->ct.MoistureFC - cgrid->soil->ct.MoistureWP) + 
-                        cgrid->soil->ct.MoistureWP;
-                float CriticalSoilMoisturet = cgrid->soil->ct.MoistureFC * 0.7;
-                cgrid->soil->WaterStress = 
-                        limit(0.,1.,
-                        (cgrid->soil->st.RootZoneMoisture - cgrid->soil->ct.MoistureWP) /
-                        (cgrid->soil->st.CriticalSoilMoisture - cgrid->soil->ct.MoistureWP));
 
                 wofost_run(cgrid);
                 

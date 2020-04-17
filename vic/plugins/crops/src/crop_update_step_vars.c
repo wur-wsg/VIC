@@ -104,6 +104,14 @@ crop_update_step_vars(size_t iCell)
             cveg_lib->rad_atten += cgrid->crp->prm.RadiationAttenuation * Cc;
             cveg_lib->RGL += cgrid->crp->prm.RGL * Cc;
             
+            float Wcr_FRAC = (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans));
+            ccell_data->layer[0].Wcr = csoil_con->Wpwp[0] + 
+                    (csoil_con->Wcr[0] / 0.7 - csoil_con->Wpwp[0]) * 
+                    Wcr_FRAC;
+            ccell_data->layer[1].Wcr = csoil_con->Wpwp[1] + 
+                    (csoil_con->Wcr[1] / 0.7 - csoil_con->Wpwp[1]) * 
+                    Wcr_FRAC;
+            
             ccell_data->layer[0].Wcr = csoil_con->Wcr[0];
             ccell_data->layer[1].Wcr = csoil_con->Wcr[1];
             
