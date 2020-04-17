@@ -186,8 +186,6 @@ crop_run(size_t iCell)
     size_t veg_class;
     size_t iVeg;
     
-    float CriticalSoilMoisture;
-    
     SimUnit *cgrid;
     
     if(crop_reset_flag()){
@@ -213,7 +211,7 @@ crop_run(size_t iCell)
                     cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
                 }
                 
-                CriticalSoilMoisture = 
+                cgrid->soil->st.CriticalSoilMoisture = 
                         (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans)) *
                         (cgrid->soil->ct.MoistureFC - cgrid->soil->ct.MoistureWP) + 
                         cgrid->soil->ct.MoistureWP;
@@ -221,7 +219,7 @@ crop_run(size_t iCell)
                 cgrid->soil->WaterStress = 
                         limit(0.,1.,
                         (cgrid->soil->st.RootZoneMoisture - cgrid->soil->ct.MoistureWP) /
-                        (CriticalSoilMoisture - cgrid->soil->ct.MoistureWP));
+                        (cgrid->soil->st.CriticalSoilMoisture - cgrid->soil->ct.MoistureWP));
 
                 wofost_run(cgrid);
                 

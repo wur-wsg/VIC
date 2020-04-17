@@ -8,6 +8,7 @@ crop_update_step_vars(size_t iCell)
     extern parameters_struct param;
     extern veg_con_map_struct  *veg_con_map;
     extern crop_con_map_struct *crop_con_map;
+    extern all_vars_struct *all_vars;
     extern veg_lib_struct **veg_lib;
     extern veg_con_struct **veg_con;
     extern veg_hist_struct **veg_hist;
@@ -32,6 +33,7 @@ crop_update_step_vars(size_t iCell)
     veg_hist_struct *cveg_hist;
     veg_con_struct *cveg_con;
     soil_con_struct *csoil_con;
+    cell_data_struct *ccell_data;
     
     csoil_con = &(soil_con[iCell]);
     
@@ -81,6 +83,7 @@ crop_update_step_vars(size_t iCell)
             cveg_lib = &(veg_lib[iCell][veg_class]);
             cveg_con = &(veg_con[iCell][iVeg]);
             cveg_hist = &(veg_hist[iCell][iVeg]);
+            ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
             
             Cc = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
             tmp_min = min(cgrid->crp->st.Development, 1.0);
@@ -93,31 +96,26 @@ crop_update_step_vars(size_t iCell)
             cveg_hist->roughness[NR] += height * param.VEG_RATIO_RL_HEIGHT * Cc;
 
             tmp_min = min(cgrid->crp->st.Development, 1.0);
+            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
             cveg_lib->trunk_ratio += cgrid->crp->prm.TrunkRatio * Cc;
             cveg_lib->wind_atten += cgrid->crp->prm.WindAttenuation * Cc;
             cveg_lib->wind_h += (cgrid->crp->prm.MaxHeight + 1) * Cc;
+            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * Cc;
             cveg_lib->rad_atten += cgrid->crp->prm.RadiationAttenuation * Cc;
             cveg_lib->RGL += cgrid->crp->prm.RGL * Cc;
             
-            //cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
-            //cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * Cc;
-            cveg_lib->rarc += 25 * tmp_min * Cc;
-            cveg_lib->rmin += 120 * Cc;
+            ccell_data->layer[0].Wcr = csoil_con->Wcr[0];
+            ccell_data->layer[1].Wcr = csoil_con->Wcr[1];
             
             if(cgrid->crp->st.RootDepth > csoil_con->depth[0]) {
-                //cveg_con->root[0] += (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
-                //cveg_con->root[1] += (1 - cveg_con->root[0]) * Cc;
+                cveg_con->root[0] += (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
+                cveg_con->root[1] += (1 - cveg_con->root[0]) * Cc;
             } else {
-                //cveg_con->root[0] += Cc;
+                cveg_con->root[0] += Cc;
             }
-            cveg_con->root[0] += 0.5 * Cc;
-            cveg_con->root[1] += 0.5 * Cc;
 
             cgrid = cgrid->next;
         }
-        
-        //cveg_lib->rarc = cveg_lib->rarc * 2;
-        //cveg_lib->rmin = cveg_lib->rmin * 2;
     }
     
     // Transform VIC variables

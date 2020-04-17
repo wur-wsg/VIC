@@ -339,10 +339,17 @@ func_surf_energy_bal(double  Ts,
     snow_flux = (double *) va_arg(ap, double *);
     store_error = (double *) va_arg(ap, double *);
 
+    /* Transform variables */
+    double Wcr_array[MAX_LAYERS];
+    size_t lindex;
+    for (lindex = 0; lindex < options.Nlayer; lindex++) {
+        Wcr_array[lindex] = layer[lindex].Wcr;
+    }
+    
     /* take additional variables from soil_con structure */
     b_infilt = soil_con->b_infilt;
     Wmax = soil_con->max_moist;
-    Wcr = soil_con->Wcr;
+    Wcr = &(Wcr_array[0]);
     Wpwp = soil_con->Wpwp;
     depth = soil_con->depth;
     resid_moist = soil_con->resid_moist;

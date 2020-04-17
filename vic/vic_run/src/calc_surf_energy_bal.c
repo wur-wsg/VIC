@@ -151,6 +151,13 @@ calc_surf_energy_bal(double             Le,
     double                   TmpNetShortSnow;
     double                   old_swq, old_depth;
 
+    /* Transform variables */
+    double                   Wcr_array[MAX_LAYERS];
+    size_t                   lidex;
+    for (lidex = 0; lidex < options.Nlayer; lidex++) {
+        Wcr_array[lidex] = layer[lidex].Wcr;
+    }
+    
     /**************************************************
        Set All Variables For Use
     **************************************************/
@@ -350,7 +357,7 @@ calc_surf_energy_bal(double             Le,
                                                    expt, ice0, kappa1, kappa2,
                                                    soil_con->max_infil,
                                                    max_moist,
-                                                   moist, soil_con->Wcr,
+                                                   moist, &(Wcr_array[0]),
                                                    soil_con->Wpwp,
                                                    soil_con->depth,
                                                    soil_con->resid_moist, root,
@@ -473,7 +480,7 @@ calc_surf_energy_bal(double             Le,
                                                        kappa2,
                                                        soil_con->max_infil,
                                                        max_moist,
-                                                       moist, soil_con->Wcr,
+                                                       moist, &(Wcr_array[0]),
                                                        soil_con->Wpwp,
                                                        soil_con->depth,
                                                        soil_con->resid_moist,

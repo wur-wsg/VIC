@@ -178,6 +178,7 @@ typedef struct STATES {
         float MoistureLOW;
         float Percolation;
         float Rain;
+        float CriticalSoilMoisture;
         float RootZoneMoisture;
         float Runoff;
         float SurfaceStorage;

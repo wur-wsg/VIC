@@ -768,7 +768,11 @@ typedef struct {
     double Cs;              /**< average volumetric heat capacity of the
                                current layer (J/m^3/K) */
     double T;               /**< temperature of the unfrozen sublayer (C) */
-    double Ksat;            /**< saturated hydraulic  conductivity (mm/day) */
+    double Wcr;             /**< critical moisture level for soil
+                                         layer, evaporation is no longer
+                                         affected moisture stress in the
+                                         soil (mm) */
+    double Ksat;            /**< saturated hydraulic conductivity (mm/day) */
     double ice[MAX_FROST_AREAS]; /**< ice content of the frozen sublayer (mm) */
     double kappa;           /**< average thermal conductivity of the current
                                layer (W/m/K) */

@@ -133,8 +133,8 @@ enum {
     OUT_LEFTOVER,                       /**< irrigation water leftover [mm] */
     OUT_APPLIED,                        /**< irrigation water applied [mm] */
     // crop
-    OUT_CROP_CULTIVATE,                      /**< crop growing days [day] */
-    OUT_CROP_GROW,                      /**< crop cultivate days [day] */
+    OUT_CROP_CULTIVATE,                 /**< crop cultivate days [day] */
+    OUT_CROP_GROW,                      /**< crop growing days [day] */
     OUT_CROP_EVAP,                      /**< crop total net evaporation [mm] */
     OUT_CROP_EVAP_BARE,                 /**< crop net evaporation from bare soil [mm] */
     OUT_CROP_EVAP_CANOP,                /**< crop net evaporation from canopy interception [mm] */

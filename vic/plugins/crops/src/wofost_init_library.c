@@ -47,6 +47,7 @@ initialize_wofost_states(States *st)
     st->MoistureLOW = 0.;
     st->Percolation = 0.;
     st->Rain = 0.;
+    st->CriticalSoilMoisture = 0.;
     st->RootZoneMoisture = 0.;
     st->Runoff = 0.;
     st->SurfaceStorage = 0.;

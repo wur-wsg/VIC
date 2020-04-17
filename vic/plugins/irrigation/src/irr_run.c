@@ -110,7 +110,7 @@ irr_run_requirement(size_t iCell)
 
                             if(cveg_con->root[k] > 0.){
                                 total_moist += moist[k];
-                                total_wcr += csoil_con->Wcr[k];
+                                total_wcr += ccell_var->layer[k].Wcr;
                             }
                         }
 
@@ -224,7 +224,7 @@ irr_run_shortage(size_t iCell)
 
                             if(cveg_con->root[k] > 0.){
                                 total_moist += moist[k];
-                                total_wcr += csoil_con->Wcr[k];
+                                total_wcr += ccell_var->layer[k].Wcr;
                             }
                         }
 

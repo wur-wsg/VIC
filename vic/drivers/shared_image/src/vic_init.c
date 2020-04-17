@@ -1582,6 +1582,8 @@ vic_init(void)
                 for (m = 0; m < options.Nlayer; m++) {
                     all_vars[i].cell[j][k].layer[m].Ksat =
                             soil_con[i].Ksat[m];
+                    all_vars[i].cell[j][k].layer[m].Wcr =
+                            soil_con[i].Wcr[m];
                 }
             }
         }

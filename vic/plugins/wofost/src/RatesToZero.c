@@ -118,6 +118,5 @@ void RatesToZero(SimUnit *Grid)
     Grid->soil->rt.RootZoneMoisture  = 0.;
     Grid->soil->rt.Runoff            = 0.;
     Grid->soil->rt.WaterRootExt      = 0.;
-    Grid->soil->rt.RootZoneMoisture  = 0.;
 }
 
