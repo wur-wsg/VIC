@@ -47,7 +47,6 @@ initialize_wofost_states(States *st)
     st->MoistureLOW = 0.;
     st->Percolation = 0.;
     st->Rain = 0.;
-    st->CriticalSoilMoisture = 0.;
     st->RootZoneMoisture = 0.;
     st->Runoff = 0.;
     st->SurfaceStorage = 0.;
@@ -361,7 +360,7 @@ initialize_wofost_vic(Meteo *met)
     met->Longitude = 0.;
     met->MeteoDay = 0;
     met->MeteoYear = 0;
-    met->CycleLength = 300;
+    met->CycleLength = 0;
     for(i = 0; i < DAYS_PER_WEEK; i++) {
         met->Tmin[i] = 0.;
     }

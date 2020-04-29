@@ -23,6 +23,7 @@ crop_reset_meteo(size_t iCell)
             cgrid->met->DayTemp = 0.0;
             cgrid->met->Radiation = 0.0;
             cgrid->met->CO2 = 0.0;
+            cgrid->met->PotEvaptrans = 0.0;
 
             cgrid = cgrid->next;
         }

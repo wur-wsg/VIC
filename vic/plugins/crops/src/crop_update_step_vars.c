@@ -19,8 +19,11 @@ crop_update_step_vars(size_t iCell)
     
     double tmp_min;
     double Cc;
+    double area_fract;
     double height;
     double root_sum;
+    double Wcr_FRAC;
+    double Wfc;
     
     size_t iBand;
     size_t iLayer;
@@ -61,6 +64,14 @@ crop_update_step_vars(size_t iCell)
                 for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                     cveg_con->root[iLayer] = 0.;
                 }
+                
+                for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+                    ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+                    
+                    for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                        ccell_data->layer[iLayer].Wcr = 0.;
+                    }
+                }
                     
                 cveg_hist->fcanopy[NR] = 0.;
                 cveg_hist->LAI[NR] = 0.;
@@ -86,40 +97,52 @@ crop_update_step_vars(size_t iCell)
             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
             
             Cc = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
+            area_fract = Cc * csoil_con->AreaFract[iBand];
+            
             tmp_min = min(cgrid->crp->st.Development, 1.0);
             height = cgrid->crp->prm.MaxHeight * tmp_min;
 
-            cveg_hist->fcanopy[NR] += Cc;
-            cveg_hist->LAI[NR] += cgrid->crp->st.LAI * Cc;
-            cveg_hist->albedo[NR] += cgrid->crp->prm.Albedo * Cc;
-            cveg_hist->displacement[NR] += height * param.VEG_RATIO_DH_HEIGHT * Cc;
-            cveg_hist->roughness[NR] += height * param.VEG_RATIO_RL_HEIGHT * Cc;
+            cveg_hist->fcanopy[NR] += area_fract;
+            cveg_hist->LAI[NR] += cgrid->crp->st.LAI * area_fract;
+            cveg_hist->albedo[NR] += cgrid->crp->prm.Albedo * area_fract;
+            cveg_hist->displacement[NR] += height * param.VEG_RATIO_DH_HEIGHT * area_fract;
+            cveg_hist->roughness[NR] += height * param.VEG_RATIO_RL_HEIGHT * area_fract;
 
-            tmp_min = min(cgrid->crp->st.Development, 1.0);
-            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min * Cc;
-            cveg_lib->trunk_ratio += cgrid->crp->prm.TrunkRatio * Cc;
-            cveg_lib->wind_atten += cgrid->crp->prm.WindAttenuation * Cc;
-            cveg_lib->wind_h += (cgrid->crp->prm.MaxHeight + 1) * Cc;
-            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * Cc;
-            cveg_lib->rad_atten += cgrid->crp->prm.RadiationAttenuation * Cc;
-            cveg_lib->RGL += cgrid->crp->prm.RGL * Cc;
+            cveg_lib->trunk_ratio += cgrid->crp->prm.TrunkRatio * area_fract;
+            cveg_lib->wind_atten += cgrid->crp->prm.WindAttenuation * area_fract;
+            cveg_lib->wind_h += (cgrid->crp->prm.MaxHeight + 1) * area_fract;
+            cveg_lib->rad_atten += cgrid->crp->prm.RadiationAttenuation * area_fract;
+            cveg_lib->RGL += cgrid->crp->prm.RGL * area_fract;
             
-            float Wcr_FRAC = (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans));
-            ccell_data->layer[0].Wcr = csoil_con->Wpwp[0] + 
-                    (csoil_con->Wcr[0] / 0.7 - csoil_con->Wpwp[0]) * 
-                    Wcr_FRAC;
-            ccell_data->layer[1].Wcr = csoil_con->Wpwp[1] + 
-                    (csoil_con->Wcr[1] / 0.7 - csoil_con->Wpwp[1]) * 
-                    Wcr_FRAC;
-            
-            ccell_data->layer[0].Wcr = csoil_con->Wcr[0];
-            ccell_data->layer[1].Wcr = csoil_con->Wcr[1];
-            
-            if(cgrid->crp->st.RootDepth > csoil_con->depth[0]) {
-                cveg_con->root[0] += (csoil_con->depth[0] / cgrid->crp->st.RootDepth) * Cc;
-                cveg_con->root[1] += (1 - cveg_con->root[0]) * Cc;
+            if(true) {
+                cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance / 
+                        cgrid->crp->prm.CorrectionTransp * tmp_min * area_fract;
+                cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance /
+                        cgrid->crp->prm.CorrectionTransp * area_fract;
             } else {
-                cveg_con->root[0] += Cc;
+                cveg_lib->rarc += 25 / 
+                        cgrid->crp->prm.CorrectionTransp * tmp_min * area_fract;
+                cveg_lib->rmin += 120 /
+                        cgrid->crp->prm.CorrectionTransp * area_fract;
+            }
+            
+            Wcr_FRAC = (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans));
+            for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                Wfc = (csoil_con->Wcr[iLayer] - csoil_con->Wpwp[iLayer]) / 0.7 + csoil_con->Wpwp[iLayer];
+                ccell_data->layer[iLayer].Wcr += csoil_con->Wpwp[iLayer] + 
+                        (Wfc - csoil_con->Wpwp[iLayer]) *  Wcr_FRAC * Cc;
+            }
+            
+            if(true) {
+                if(cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
+                    cveg_con->root[0] += (csoil_con->depth[0] * CM_PER_M / cgrid->crp->st.RootDepth) * area_fract;
+                    cveg_con->root[1] += (1 - cveg_con->root[0]) * area_fract;
+                } else {
+                    cveg_con->root[0] += area_fract;
+                }
+            } else {
+                cveg_con->root[0] += 0.5 * area_fract;
+                cveg_con->root[1] += 0.5 * area_fract;
             }
 
             cgrid = cgrid->next;
@@ -136,6 +159,8 @@ crop_update_step_vars(size_t iCell)
                 
             if(iVeg != NODATA_VEG) {
                 cveg_hist = &(veg_hist[iCell][iVeg]);
+                cveg_con = &(veg_con[iCell][iVeg]);
+                ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
                 
                 /* Adjust vegetation specific variables for partial crop coverage.
                  * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
@@ -148,6 +173,8 @@ crop_update_step_vars(size_t iCell)
                     
                     cveg_con->root[0] = 0.5;
                     cveg_con->root[1] = 0.5;
+                    ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
+                    ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
                 } else {
                     cveg_lib->rarc /= cveg_hist->fcanopy[NR];
                     cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
@@ -160,6 +187,9 @@ crop_update_step_vars(size_t iCell)
                     //cveg_hist->LAI[NR]/= cveg_hist->fcanopy[NR];
                     cveg_hist->displacement[NR] /= cveg_hist->fcanopy[NR];
                     cveg_hist->roughness[NR] /= cveg_hist->fcanopy[NR];
+                    
+                    ccell_data->layer[0].Wcr /= cveg_hist->fcanopy[NR];
+                    ccell_data->layer[1].Wcr /= cveg_hist->fcanopy[NR];
                     
                     root_sum = 0.;
                     for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
@@ -174,9 +204,21 @@ crop_update_step_vars(size_t iCell)
                 if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
                     cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];
                 }
-                cveg_hist->albedo[NR] += (1 - cveg_hist->fcanopy[NR]) * param.ALBEDO_BARE_SOIL;
+                cveg_hist->albedo[NR] = 
+                        cveg_hist->fcanopy[NR] * cveg_hist->albedo[NR] + 
+                        (1 - cveg_hist->fcanopy[NR]) * param.ALBEDO_BARE_SOIL;
 
-                if(cveg_hist->fcanopy[NR] < MIN_FCANOPY){
+                if(cveg_hist->fcanopy[NR] < 0){
+                    if(-cveg_hist->fcanopy[NR] > AREA_SUM_ERROR_THRESH){
+                        log_err("fcanopy cannot be < 0");
+                    }
+                    cveg_hist->fcanopy[NR] = 0.0;
+                } else if(cveg_hist->fcanopy[NR] > 1){
+                    if(cveg_hist->fcanopy[NR] - 1 > AREA_SUM_ERROR_THRESH){
+                        log_err("fcanopy cannot be > 1");
+                    }
+                    cveg_hist->fcanopy[NR] = 1.0;
+                } else if(cveg_hist->fcanopy[NR] < MIN_FCANOPY){
                     cveg_hist->fcanopy[NR] = MIN_FCANOPY;
                 }
             }

@@ -99,7 +99,6 @@ copy_wofost_states(States *from, States *to)
     to->MoistureLOW = from->MoistureLOW;
     to->Percolation = from->Percolation;
     to->Rain = from->Rain;
-    to->CriticalSoilMoisture = from->CriticalSoilMoisture;
     to->RootZoneMoisture = from->RootZoneMoisture;
     to->Runoff = from->Runoff;
     to->SurfaceStorage = from->SurfaceStorage;

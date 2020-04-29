@@ -331,6 +331,17 @@ crop_set_output_met_data_info(void)
              "%s", "kg ha-1");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_KDEM].description,
              MAXSTRING, "%s", "crop potassium demand");
+    
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH].varname, MAXSTRING,
+             "%s", "OUT_CROP_ROOTDEPTH");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH].long_name, MAXSTRING,
+             "%s", "root_depth");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH].standard_name,
+             MAXSTRING, "%s", "crop_root_depth");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH].units, MAXSTRING,
+             "%s", "cm");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH].description,
+             MAXSTRING, "%s", "crop root depth");
 
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_GROW].nelem = plugin_options.NCROPTYPES;
@@ -359,6 +370,7 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_NDEM].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_PDEM].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_CROP_KDEM].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH].nelem = plugin_options.NCROPTYPES;
 }
 
 /******************************************
@@ -425,6 +437,7 @@ crop_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_CROP_NDEM:
         case N_OUTVAR_TYPES + OUT_CROP_PDEM:
         case N_OUTVAR_TYPES + OUT_CROP_KDEM:
+        case N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH:
         nc_var->nc_dims = 4;
         nc_var->nc_counts[1] = nc_hist_file->crop_size;
         nc_var->nc_counts[2] = nc_hist_file->nj_size;
@@ -469,6 +482,7 @@ crop_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_CROP_NDEM:
         case N_OUTVAR_TYPES + OUT_CROP_PDEM:
         case N_OUTVAR_TYPES + OUT_CROP_KDEM:
+        case N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH:
         nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
         nc_var->nc_dimids[1] = nc_hist_file->crop_dimid;
         nc_var->nc_dimids[2] = nc_hist_file->nj_dimid;
@@ -512,6 +526,7 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_NDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_PDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_KDEM:
+    case  N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH:
         (*agg_type) = AGG_TYPE_SUM;
         break;
     }
@@ -600,6 +615,7 @@ crop_put_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NDEM][crop_class] += cgrid->crp->N_rt.Demand * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PDEM][crop_class] += cgrid->crp->P_rt.Demand * area_fract * cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KDEM][crop_class] += cgrid->crp->K_rt.Demand * area_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH][crop_class] += cgrid->crp->rt.RootDepth * area_fract * cgrid->growing;
                 
                 /* Add initial crop rates (GrowthDay starts at 1) */
                 if (cgrid->crp->GrowthDay == 2) {

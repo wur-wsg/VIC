@@ -45,8 +45,6 @@ void InitializeCrop(SimUnit *Grid)
     float FractionShoots; 
     float InitialShootWeight;
     float LAIEmergence;
-    
-    float tmp_min;
    
     /* Initialize the crop states */
     Grid->crp->st.Development = Grid->crp->prm.InitialDVS;
@@ -62,8 +60,7 @@ void InitializeCrop(SimUnit *Grid)
     Grid->crp->st.storage   = InitialShootWeight * Afgen(Grid->crp->prm.Storage, &(Grid->crp->st.Development));
 
     /* Adapt the maximum rooting depth */
-    tmp_min = min(Grid->crp->prm.MaxRootingDepth, Grid->ste->SoilLimRootDepth);
-    Grid->crp->prm.MaxRootingDepth = max(Grid->crp->prm.InitRootingDepth, tmp_min);
+    Grid->crp->prm.MaxRootingDepth = max(Grid->crp->prm.InitRootingDepth, Grid->crp->prm.MaxRootingDepth);
     
     /* Calculate the LAI at emergence */
     LAIEmergence  = Grid->crp->st.leaves * Afgen(Grid->crp->prm.SpecificLeaveArea, &(Grid->crp->st.Development)); 

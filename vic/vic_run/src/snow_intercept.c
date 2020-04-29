@@ -131,7 +131,7 @@ snow_intercept(double             Dt,
     for (lidex = 0; lidex < options.Nlayer; lidex++) {
         Wcr_array[lidex] = layer[lidex].Wcr;
     }
-    
+
     AirDens = force->density[hidx];
     EactAir = force->vp[hidx];
     Press = force->pressure[hidx];

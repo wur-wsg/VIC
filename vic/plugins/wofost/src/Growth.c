@@ -46,7 +46,7 @@ void Growth(SimUnit *Grid, float NewPlantMaterial)
     
     /* No Root growth if no assimilates are partitioned to the roots or if */
     /* the crop has no airducts and the roots are close to the groundwater */
-    if (Grid->crp->fac_ro <= 0.0 || (!Grid->crp->prm.Airducts && Grid->ste->GroundwaterDepth - Grid->crp->st.RootDepth < 10.))
+    if (Grid->crp->fac_ro <= 0.0)
         Grid->crp->rt.RootDepth = 0.;
     else
         Grid->crp->rt.RootDepth = min(Grid->crp->prm.MaxRootingDepth - Grid->crp->st.RootDepth,

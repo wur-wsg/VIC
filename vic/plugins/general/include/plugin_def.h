@@ -160,6 +160,7 @@ enum {
     OUT_CROP_NDEM,                      /**< crop nitrogen demand [kg ha-1] */
     OUT_CROP_PDEM,                      /**< crop phosporous demand [kg ha-1] */
     OUT_CROP_KDEM,                      /**< crop potassium demand [kg ha-1] */
+    OUT_CROP_ROOTDEPTH,                 /**< crop root depth [cm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_OUTVAR_TYPES               /**< used as a loop counter*/
