@@ -821,7 +821,7 @@ surface_fluxes(bool                 overstory,
                 store_canopyevap += soil_veg_var.canopyevap;
                 snow_veg_var.Wdew = soil_veg_var.Wdew;
             }
-            step_Wdew = soil_veg_var.Wdew;
+            step_Wdew = soil_veg_var.Wdew / veg_var->fcanopy;
             if (options.CARBON) {
                 store_gc += 1 / soil_veg_var.rc;
                 for (cidx = 0; cidx < options.Ncanopy; cidx++) {
