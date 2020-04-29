@@ -157,24 +157,39 @@ crop_update_step_vars(size_t iCell)
             iVeg = veg_con_map[iCell].vidx[veg_class];
             cveg_lib = &(veg_lib[iCell][veg_class]);
                 
+            /* Adjust vegetation specific variables for partial crop coverage.
+             * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
+             * all other parameters are assumed to be vegetation specific. */
             if(iVeg != NODATA_VEG) {
                 cveg_hist = &(veg_hist[iCell][iVeg]);
                 cveg_con = &(veg_con[iCell][iVeg]);
-                ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
                 
-                /* Adjust vegetation specific variables for partial crop coverage.
-                 * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
-                 * all other parameters are assumed to be vegetation specific. */
+                for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+                    ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+                    
+                    if (cveg_hist->fcanopy[NR] == 0) {
+                        ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
+                        ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
+                    } else {
+                        ccell_data->layer[0].Wcr /= cveg_hist->fcanopy[NR];
+                        ccell_data->layer[1].Wcr /= cveg_hist->fcanopy[NR];
+                    }
+                }
+                
                 if (cveg_hist->fcanopy[NR] == 0) {
+                    cveg_lib->rarc = param.SOIL_RARC;
+                    cveg_lib->trunk_ratio = 0.0;
+                    cveg_lib->wind_atten = 0.5;
                     cveg_lib->wind_h = param.SOIL_WINDH;
+                    cveg_lib->rmin = 0.0;
+                    cveg_lib->rad_atten = 0.5;
+                    cveg_lib->RGL = 100;
                     
                     cveg_hist->displacement[NR] = csoil_con->rough;
                     cveg_hist->roughness[NR] = csoil_con->rough;
                     
                     cveg_con->root[0] = 0.5;
                     cveg_con->root[1] = 0.5;
-                    ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
-                    ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
                 } else {
                     cveg_lib->rarc /= cveg_hist->fcanopy[NR];
                     cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
@@ -184,12 +199,8 @@ crop_update_step_vars(size_t iCell)
                     cveg_lib->rad_atten /= cveg_hist->fcanopy[NR];
                     cveg_lib->RGL /= cveg_hist->fcanopy[NR];
                     
-                    //cveg_hist->LAI[NR]/= cveg_hist->fcanopy[NR];
                     cveg_hist->displacement[NR] /= cveg_hist->fcanopy[NR];
                     cveg_hist->roughness[NR] /= cveg_hist->fcanopy[NR];
-                    
-                    ccell_data->layer[0].Wcr /= cveg_hist->fcanopy[NR];
-                    ccell_data->layer[1].Wcr /= cveg_hist->fcanopy[NR];
                     
                     root_sum = 0.;
                     for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
