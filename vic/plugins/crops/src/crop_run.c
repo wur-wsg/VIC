@@ -168,17 +168,21 @@ crop_run(size_t iCell)
 {
     extern global_param_struct global_param;
     extern option_struct options;
+    extern plugin_option_struct plugin_options;
     extern crop_con_map_struct *crop_con_map;
+    extern crop_con_struct **crop_con;
     extern veg_con_map_struct *veg_con_map;
     extern veg_con_struct **veg_con;
     extern SimUnit ***Grid;
     extern dmy_struct *dmy;
     extern size_t current;
     
+    size_t iTime;
     size_t iBand;
     size_t crop_class;
     size_t veg_class;
     size_t iVeg;
+    size_t iCrop;
     
     SimUnit *cgrid;
     
@@ -192,7 +196,8 @@ crop_run(size_t iCell)
     if(crop_run_flag()){
         for(iBand = 0; iBand < options.SNOW_BAND; iBand ++) {
             cgrid = Grid[iCell][iBand];
-
+            
+            iCrop = 0;
             while(cgrid){
                 crop_class = cgrid->met->crop_class;
                 veg_class = crop_con_map[iCell].veg_class[crop_class];
@@ -203,6 +208,18 @@ crop_run(size_t iCell)
 
                 if(cgrid->met->MeteoDay <= 0){
                     cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
+                }
+                
+                if(plugin_options.WOFOST_DIST_FERT && cgrid->growing == 1){
+                    for (iTime = 0; iTime < plugin_options.NFERTTIMES; iTime ++) {
+                        if(cgrid->crp->st.Development >= crop_con[iCell][iCrop].DVS_point[iTime] &&
+                                cgrid->crp->st.Development_prev <= crop_con[iCell][iCrop].DVS_point[iTime] &&
+                                cgrid->crp->rt.Development != 0.){
+                            cgrid->ste->st_N_tot += crop_con[iCell][iCrop].N_amount[iTime];
+                            cgrid->ste->st_P_tot += crop_con[iCell][iCrop].P_amount[iTime];
+                            cgrid->ste->st_K_tot += crop_con[iCell][iCrop].K_amount[iTime];
+                        }
+                    }
                 }
 
                 wofost_run(cgrid);
@@ -227,6 +244,7 @@ crop_run(size_t iCell)
                 }
 
                 cgrid = cgrid->next;
+                iCrop++;
             }
         }
     }

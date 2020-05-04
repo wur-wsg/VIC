@@ -29,9 +29,9 @@ void NutritionINDX(SimUnit *Grid)
     {
         /* N,P,K concentration in total vegetative living per */
         /* kg above-ground biomass  (kg N,P,K kg-1 DM)        */
-        N_Veg  = (Grid->crp->N_st.leaves + Grid->crp->N_st.stems)/VegetativeMass;
-        P_Veg  = (Grid->crp->P_st.leaves + Grid->crp->P_st.stems)/VegetativeMass;
-        K_Veg  = (Grid->crp->K_st.leaves + Grid->crp->K_st.stems)/VegetativeMass;
+        N_Veg  = (Grid->crp->N_st.leaves + Grid->crp->N_st.stems + Grid->crp->N_rt.Uptake_lv + Grid->crp->N_rt.Uptake_st)/VegetativeMass;
+        P_Veg  = (Grid->crp->P_st.leaves + Grid->crp->P_st.stems + Grid->crp->P_rt.Uptake_lv + Grid->crp->P_rt.Uptake_st)/VegetativeMass;
+        K_Veg  = (Grid->crp->K_st.leaves + Grid->crp->K_st.stems + Grid->crp->K_rt.Uptake_lv + Grid->crp->K_rt.Uptake_st)/VegetativeMass;
 
         /* Residual N,P,K concentration in total vegetative living */
         /* above-ground biomass  (kg N,P,K kg-1 DM)                */
@@ -72,9 +72,11 @@ void NutritionINDX(SimUnit *Grid)
         Grid->crp->K_st.Indx = tiny;
     }
 
-   //Grid->crp->N_st.Indx = 1.0;
-   //Grid->crp->P_st.Indx = 1.0;
-   //Grid->crp->K_st.Indx = 1.0;
+    if (plugin_options.WOFOST_PFERT) {
+        Grid->crp->N_st.Indx = 1.0;
+        Grid->crp->P_st.Indx = 1.0;
+        Grid->crp->K_st.Indx = 1.0;
+    }
    
    
     Grid->crp->NPK_Indx = (Grid->crp->N_st.Indx < Grid->crp->P_st.Indx) ? Grid->crp->N_st.Indx : Grid->crp->P_st.Indx;

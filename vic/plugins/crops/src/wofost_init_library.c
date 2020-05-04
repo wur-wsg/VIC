@@ -94,6 +94,7 @@ void
 initialize_wofost_growth_states(growth_states *st)
 {
     st->Development = 0.;
+    st->Development_prev = 0.;
     st->LAI = 0.;
     st->LAIExp = 0.;
     st->RootDepth = 0.;

@@ -274,6 +274,7 @@ typedef struct GROWTH_STATES {
         float LAIExp;
         float storage;
         float Development;
+        float Development_prev;
         float RootDepth;
         float RootDepth_prev;
         float vernalization;

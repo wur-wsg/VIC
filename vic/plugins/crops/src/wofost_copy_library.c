@@ -172,6 +172,7 @@ void
 copy_wofost_growth_states(growth_states *from, growth_states *to)
 {
     to->Development = from->Development;
+    to->Development_prev = from->Development_prev;
     to->LAI = from->LAI;
     to->LAIExp = from->LAIExp;
     to->RootDepth = from->RootDepth;

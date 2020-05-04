@@ -8,6 +8,7 @@
 /* -------------------------------------------------------------------------*/
 void NutrientPartioning(SimUnit *Grid)
 {     
+    extern plugin_option_struct plugin_options;
     extern plugin_global_param_struct plugin_global_param;
     
     float NutrientLimit;
@@ -42,6 +43,12 @@ void NutrientPartioning(SimUnit *Grid)
     tmp_min = min(Grid->crp->K_rt.Demand, (Grid->ste->st_K_tot + Grid->ste->rt_K_mins));
     tmp_max = max(0.,tmp_min);
     Grid->crp->K_rt.Uptake = tmp_max * NutrientLimit/plugin_global_param.wofost_steps_per_day;
+    
+    if(plugin_options.WOFOST_PFERT){
+        Grid->crp->N_rt.Uptake = Grid->crp->N_rt.Demand;
+        Grid->crp->P_rt.Uptake = Grid->crp->P_rt.Demand;
+        Grid->crp->K_rt.Uptake = Grid->crp->K_rt.Demand;
+    }
 
     /* N uptake per crop organ kg ha-1 d-1*/
     if (Grid->crp->N_rt.Demand > tiny)

@@ -13,10 +13,18 @@ typedef struct {
 } crop_con_map_struct;
 
 typedef struct {
+    double *DVS_point;
+    double *N_amount;
+    double *P_amount;
+    double *K_amount;
+} crop_con_struct;
+
+typedef struct {
     double CO2;
 } crop_force_struct;
 
 crop_con_map_struct *crop_con_map;
+crop_con_struct **crop_con;
 crop_force_struct *crop_force;
 
 bool crop_get_global_param(char *);
@@ -25,6 +33,7 @@ bool crop_get_parameters(char *);
 void crop_validate_parameters(void);
 void crop_start(void);
 void crop_alloc(void);
+void crop_initialize_local_structures(void);
 void wofost_alloc(void);
 void wofost_initialize_local_structures(void);
 void initialize_wofost_grid(SimUnit *);

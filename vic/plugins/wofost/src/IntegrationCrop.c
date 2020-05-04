@@ -22,6 +22,7 @@ void IntegrationCrop(SimUnit *Grid)
     Grid->crp->st.RootDepth += Grid->crp->rt.RootDepth;
     
     /* Calculate the developmentstage */
+    Grid->crp->st.Development_prev = Grid->crp->st.Development;
     if (Grid->crp->st.Development < 1.)
     {
         Grid->crp->st.Development += Grid->crp->rt.Development;

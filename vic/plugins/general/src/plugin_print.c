@@ -96,8 +96,12 @@ plugin_print_options(plugin_option_struct *op)
             op->WOFOST_DIST_SEASON ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_DIST_TSUM     : %s\n",
             op->WOFOST_DIST_TSUM ? "true" : "false");
+    fprintf(LOG_DEST, "\tDIST_FERT            : %s\n",
+            op->WOFOST_DIST_FERT ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",
             op->WOFOST_PIRR ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_PFERT         : %s\n",
+            op->WOFOST_PFERT ? "true" : "false");
 
     fprintf(LOG_DEST, "\tUH_LENGTH            : %d\n",
             op->UH_LENGTH);
@@ -113,6 +117,8 @@ plugin_print_options(plugin_option_struct *op)
             op->NIRRTYPES);
     fprintf(LOG_DEST, "\tNCROPTYPES           : %d\n",
             op->NCROPTYPES);
+    fprintf(LOG_DEST, "\tNFERTTIMES           : %d\n",
+            op->NFERTTIMES);
 }
 
 /******************************************

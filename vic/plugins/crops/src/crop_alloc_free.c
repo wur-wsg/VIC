@@ -7,10 +7,14 @@ crop_alloc(void)
     extern domain_struct              local_domain;
     extern plugin_option_struct       plugin_options;
     extern crop_con_map_struct       *crop_con_map;
+    extern crop_con_struct       **crop_con;
     extern crop_force_struct    *crop_force;
 
     size_t                            i;
     size_t                            j;
+
+    crop_con = malloc(local_domain.ncells_active * sizeof(*crop_con));
+    check_alloc_status(crop_con, "Memory allocation error")
 
     crop_con_map = malloc(local_domain.ncells_active * sizeof(*crop_con_map));
     check_alloc_status(crop_con_map, "Memory allocation error");
@@ -36,10 +40,28 @@ crop_alloc(void)
         }
 
         crop_con_map[i].nc_active = (size_t) local_domain.locations[i].ncrop;
+        
+        crop_con[i] = malloc(crop_con_map[i].nc_active * sizeof(*crop_con[i]));
+        check_alloc_status(crop_con[i], "Memory allocation error");
+        
+        for (j = 0; j < crop_con_map[i].nc_active; j++){
+            crop_con[i][j].DVS_point = malloc(plugin_options.NFERTTIMES * sizeof(*crop_con[i][j].DVS_point));
+            check_alloc_status(crop_con[i][j].DVS_point, "Memory allocation error");
+            
+            crop_con[i][j].N_amount = malloc(plugin_options.NFERTTIMES * sizeof(*crop_con[i][j].N_amount));
+            check_alloc_status(crop_con[i][j].N_amount, "Memory allocation error");
+            
+            crop_con[i][j].P_amount = malloc(plugin_options.NFERTTIMES * sizeof(*crop_con[i][j].P_amount));
+            check_alloc_status(crop_con[i][j].P_amount, "Memory allocation error");
+            
+            crop_con[i][j].K_amount = malloc(plugin_options.NFERTTIMES * sizeof(*crop_con[i][j].K_amount));
+            check_alloc_status(crop_con[i][j].K_amount, "Memory allocation error");
+        }
     }
     
     wofost_alloc();
 
+    crop_initialize_local_structures();
     wofost_initialize_local_structures();
 }
 
@@ -48,6 +70,8 @@ crop_finalize(void)
 {
     extern domain_struct        local_domain;
     extern crop_con_map_struct       *crop_con_map;
+    extern crop_con_struct       **crop_con;
+    extern crop_force_struct    *crop_force;
 
     size_t                      i;
     size_t                      j;
@@ -58,11 +82,19 @@ crop_finalize(void)
         for(j = 0; j < crop_con_map[i].nc_types; j++){
             free(crop_con_map[i].Cc[j]);
         }
+        for(j = 0; j < crop_con_map[i].nc_active; j++){
+            free(crop_con[i][j].DVS_point);
+            free(crop_con[i][j].N_amount);
+            free(crop_con[i][j].P_amount);
+            free(crop_con[i][j].K_amount);
+        }
 
         free(crop_con_map[i].cidx);
         free(crop_con_map[i].veg_class);
         free(crop_con_map[i].Cc);
+        free(crop_con[i]);
     }
     free(crop_con_map);
+    free(crop_con);
     free(crop_force);
 }

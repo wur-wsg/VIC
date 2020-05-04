@@ -50,6 +50,11 @@ crop_start(void)
         
     plugin_options.NCROPTYPES = get_nc_dimension(&(plugin_filenames.crop),
                                                 "crop_class");
+    if (plugin_options.WOFOST_DIST_FERT) {
+        plugin_options.NFERTTIMES = get_nc_dimension(&(plugin_filenames.crop),
+                                                "fertilizer_times");
+    }
+    
     compare_ncdomain_with_global_domain(&plugin_filenames.crop);
 
     status = nc_close(plugin_filenames.crop.nc_id);
