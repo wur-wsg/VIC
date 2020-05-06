@@ -169,6 +169,7 @@ crop_run(size_t iCell)
     extern global_param_struct global_param;
     extern option_struct options;
     extern plugin_option_struct plugin_options;
+    extern soil_con_struct *soil_con;
     extern crop_con_map_struct *crop_con_map;
     extern crop_con_struct **crop_con;
     extern veg_con_map_struct *veg_con_map;
@@ -197,54 +198,61 @@ crop_run(size_t iCell)
         for(iBand = 0; iBand < options.SNOW_BAND; iBand ++) {
             cgrid = Grid[iCell][iBand];
             
-            iCrop = 0;
-            while(cgrid){
-                crop_class = cgrid->met->crop_class;
-                veg_class = crop_con_map[iCell].veg_class[crop_class];
-                iVeg = veg_con_map[iCell].vidx[veg_class];
-                
-                cgrid->met->MeteoDay = dmy[current].day_in_year;
-                cgrid->met->MeteoYear = dmy[current].year;
+            if (soil_con[iCell].AreaFract[iBand] > 0) {
+                iCrop = 0;
+                while(cgrid){
+                    crop_class = cgrid->met->crop_class;
+                    veg_class = crop_con_map[iCell].veg_class[crop_class];
+                    iVeg = veg_con_map[iCell].vidx[veg_class];
 
-                if(cgrid->met->MeteoDay <= 0){
-                    cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
-                }
-                
-                if(plugin_options.WOFOST_DIST_FERT && cgrid->growing == 1){
-                    for (iTime = 0; iTime < plugin_options.NFERTTIMES; iTime ++) {
-                        if(cgrid->crp->st.Development >= crop_con[iCell][iCrop].DVS_point[iTime] &&
-                                cgrid->crp->st.Development_prev <= crop_con[iCell][iCrop].DVS_point[iTime] &&
-                                cgrid->crp->rt.Development != 0.){
-                            cgrid->ste->st_N_tot += crop_con[iCell][iCrop].N_amount[iTime];
-                            cgrid->ste->st_P_tot += crop_con[iCell][iCrop].P_amount[iTime];
-                            cgrid->ste->st_K_tot += crop_con[iCell][iCrop].K_amount[iTime];
+                    cgrid->met->MeteoDay = dmy[current].day_in_year;
+                    cgrid->met->MeteoYear = dmy[current].year;
+
+                    if(cgrid->met->MeteoDay <= 0){
+                        cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
+                    }
+
+                    cgrid->mng->N_external = 0.;
+                    cgrid->mng->P_external = 0.;
+                    cgrid->mng->K_external = 0.;
+                    if(plugin_options.WOFOST_DIST_FERT){
+                        for (iTime = 0; iTime < plugin_options.NFERTTIMES; iTime ++) {
+                            if(cgrid->crp->st.Development >= crop_con[iCell][iCrop].DVS_point[iTime] &&
+                               cgrid->crp->st.Development_prev <= crop_con[iCell][iCrop].DVS_point[iTime] &&
+                               cgrid->crp->rt.Development != 0.){
+
+                                /* Add external fertilization to WOFOST */
+                                cgrid->mng->N_external += crop_con[iCell][iCrop].N_amount[iTime];
+                                cgrid->mng->P_external += crop_con[iCell][iCrop].P_amount[iTime];
+                                cgrid->mng->K_external += crop_con[iCell][iCrop].K_amount[iTime];
+                            }
                         }
                     }
-                }
 
-                wofost_run(cgrid);
-                
-                /* Check crop coverage */
-                if (cgrid->growing == 1) {
-                    if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] <= 0) {
-                        log_err("Crop %zu coverage is <= 0 [%.4f] but "
-                                "growing is true for cell %zu",
-                                crop_class,
-                                crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
-                                iCell);
-                    }
-                    if (veg_con[iCell][iVeg].Cv <= 0) {
-                        log_err("Crop %zu vegetation %zu coverage is <= 0 [%.4f] but "
-                                "growing is true for cell %zu",
-                                crop_class,
-                                veg_class,
-                                veg_con[iCell][iVeg].Cv,
-                                iCell);
-                    }
-                }
+                    wofost_run(cgrid);
 
-                cgrid = cgrid->next;
-                iCrop++;
+                    /* Check crop coverage */
+                    if (cgrid->growing == 1) {
+                        if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] <= 0) {
+                            log_err("Crop %zu coverage is <= 0 [%.4f] but "
+                                    "growing is true for cell %zu",
+                                    crop_class,
+                                    crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
+                                    iCell);
+                        }
+                        if (veg_con[iCell][iVeg].Cv <= 0) {
+                            log_err("Crop %zu vegetation %zu coverage is <= 0 [%.4f] but "
+                                    "growing is true for cell %zu",
+                                    crop_class,
+                                    veg_class,
+                                    veg_con[iCell][iVeg].Cv,
+                                    iCell);
+                        }
+                    }
+
+                    cgrid = cgrid->next;
+                    iCrop++;
+                }
             }
         }
     }

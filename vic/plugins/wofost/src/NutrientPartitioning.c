@@ -34,21 +34,26 @@ void NutrientPartioning(SimUnit *Grid)
     N_Fix_rt = (tmp_max * NutrientLimit);
     
     /* Nutrient uptake cannot be larger than the availability and is larger or equal to zero */
-    tmp_min = min(Grid->crp->N_rt.Demand - N_Fix_rt, (Grid->ste->st_N_tot + Grid->ste->rt_N_mins));
+    tmp_min = min(Grid->crp->N_rt.Demand - N_Fix_rt, (Grid->ste->st_N_tot + Grid->ste->rt_N_tot));
+    if(plugin_options.WOFOST_PFERT){
+        tmp_min = Grid->crp->N_rt.Demand - N_Fix_rt;
+    }
     tmp_max = max(0.,tmp_min);
     Grid->crp->N_rt.Uptake = tmp_max * NutrientLimit/plugin_global_param.wofost_steps_per_day;
-    tmp_min = min(Grid->crp->P_rt.Demand, (Grid->ste->st_P_tot + Grid->ste->rt_P_mins));
+
+    tmp_min = min(Grid->crp->P_rt.Demand, (Grid->ste->st_P_tot + Grid->ste->rt_P_tot));
+    if(plugin_options.WOFOST_PFERT){
+        tmp_min = Grid->crp->P_rt.Demand;
+    }
     tmp_max = max(0.,tmp_min);
     Grid->crp->P_rt.Uptake = tmp_max * NutrientLimit/plugin_global_param.wofost_steps_per_day;
-    tmp_min = min(Grid->crp->K_rt.Demand, (Grid->ste->st_K_tot + Grid->ste->rt_K_mins));
+
+    tmp_min = min(Grid->crp->K_rt.Demand, (Grid->ste->st_K_tot + Grid->ste->rt_K_tot));
+    if(plugin_options.WOFOST_PFERT){
+        tmp_min = Grid->crp->K_rt.Demand;
+    }
     tmp_max = max(0.,tmp_min);
     Grid->crp->K_rt.Uptake = tmp_max * NutrientLimit/plugin_global_param.wofost_steps_per_day;
-    
-    if(plugin_options.WOFOST_PFERT){
-        Grid->crp->N_rt.Uptake = Grid->crp->N_rt.Demand;
-        Grid->crp->P_rt.Uptake = Grid->crp->P_rt.Demand;
-        Grid->crp->K_rt.Uptake = Grid->crp->K_rt.Demand;
-    }
 
     /* N uptake per crop organ kg ha-1 d-1*/
     if (Grid->crp->N_rt.Demand > tiny)

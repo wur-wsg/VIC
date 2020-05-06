@@ -72,11 +72,9 @@ void NutritionINDX(SimUnit *Grid)
         Grid->crp->K_st.Indx = tiny;
     }
 
-    if (plugin_options.WOFOST_PFERT) {
-        Grid->crp->N_st.Indx = 1.0;
-        Grid->crp->P_st.Indx = 1.0;
-        Grid->crp->K_st.Indx = 1.0;
-    }
+   //Grid->crp->N_st.Indx = 1.0;
+   //Grid->crp->P_st.Indx = 1.0;
+   //Grid->crp->K_st.Indx = 1.0;
    
    
     Grid->crp->NPK_Indx = (Grid->crp->N_st.Indx < Grid->crp->P_st.Indx) ? Grid->crp->N_st.Indx : Grid->crp->P_st.Indx;

@@ -35,8 +35,8 @@ void SoilNutrientRates(SimUnit *Grid)
     
     /* Change in total inorganic NPK in soil as function of fertilizer input, */
     /* soil NPK mineralization and crop uptake                                */
-    Grid->ste->rt_N_tot = (N_fert / plugin_global_param.wofost_steps_per_day) - Grid->crp->N_rt.Uptake + Grid->ste->rt_N_mins;
-    Grid->ste->rt_P_tot = (P_fert / plugin_global_param.wofost_steps_per_day) - Grid->crp->P_rt.Uptake + Grid->ste->rt_P_mins;
-    Grid->ste->rt_K_tot = (K_fert / plugin_global_param.wofost_steps_per_day) - Grid->crp->K_rt.Uptake + Grid->ste->rt_K_mins;
+    Grid->ste->rt_N_tot = (N_fert / plugin_global_param.wofost_steps_per_day) - Grid->crp->N_rt.Uptake + Grid->ste->rt_N_mins + Grid->mng->N_external;
+    Grid->ste->rt_P_tot = (P_fert / plugin_global_param.wofost_steps_per_day) - Grid->crp->P_rt.Uptake + Grid->ste->rt_P_mins + Grid->mng->P_external;
+    Grid->ste->rt_K_tot = (K_fert / plugin_global_param.wofost_steps_per_day) - Grid->crp->K_rt.Uptake + Grid->ste->rt_K_mins + Grid->mng->K_external;
 
 }

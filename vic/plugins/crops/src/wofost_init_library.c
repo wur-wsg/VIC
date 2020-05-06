@@ -393,6 +393,9 @@ initialize_wofost_management(Management *mng)
     mng->N_Uptake_frac = 0.;
     mng->P_Uptake_frac = 0.;
     mng->K_Uptake_frac = 0.;
+    mng->N_external = 0.;
+    mng->P_external = 0.;
+    mng->K_external = 0.;
     
     mng->N_Fert_table = NULL;
     mng->P_Fert_table = NULL;

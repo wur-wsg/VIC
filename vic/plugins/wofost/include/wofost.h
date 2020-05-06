@@ -398,6 +398,9 @@ typedef struct MANAGEMENT {
         float N_Uptake_frac;
         float P_Uptake_frac;
         float K_Uptake_frac;
+        float N_external;
+        float P_external;
+        float K_external;
         } Management;
 
 typedef struct METEO {
