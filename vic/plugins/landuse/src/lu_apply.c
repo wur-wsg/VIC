@@ -134,6 +134,7 @@ distribute_water_balance_terms(size_t iCell,
         double *Cv_new)
 {
     extern option_struct options;
+    extern soil_con_struct *soil_con;
     extern veg_con_map_struct *veg_con_map;
     extern all_vars_struct *all_vars;
     
@@ -142,6 +143,7 @@ distribute_water_balance_terms(size_t iCell,
     double add_frac;
     double before_moist;
     double after_moist;
+    double inflow;
     
     // water-balance
     // veg_var
@@ -189,6 +191,7 @@ distribute_water_balance_terms(size_t iCell,
             ice[iLayer][iFrost] = 0.0;
         }
     }
+    
     for(iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
         if (Cv_change[iVeg] < 0) {
             Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change[iVeg];
@@ -233,6 +236,30 @@ distribute_water_balance_terms(size_t iCell,
                 for(iFrost = 0; iFrost < options.Nfrost; iFrost++){
                     cell[iVeg][iBand].layer[iLayer].ice[iFrost] = cell[iVeg][iBand].layer[iLayer].ice[iFrost] * red_frac + ice[iLayer][iFrost] * add_frac;
                 }
+            }
+            
+            if(iVeg == veg_con_map[iCell].nv_active - 1){
+                // Remove intercepted canopy water/snow for bare soil
+                snow[iVeg][iBand].swq += snow[iVeg][iBand].snow_canopy;
+                snow[iVeg][iBand].snow_canopy = 0.;
+                
+                inflow = veg_var[iVeg][iBand].Wdew;
+                for(iLayer = 0; iLayer < options.Nlayer; iLayer++){
+                    cell[iVeg][iBand].layer[iLayer].moist += inflow;
+                    if(cell[iVeg][iBand].layer[iLayer].moist > soil_con[iCell].max_moist[iLayer]) {
+                        inflow = cell[iVeg][iBand].layer[iLayer].moist - soil_con[iCell].max_moist[iLayer];
+                    } else {
+                        inflow = 0.;
+                        break;
+                    }
+                }
+                if(inflow != 0.){
+                    log_warn("Could not redistribute (part of) "
+                            "intercepted canopy water [%.4f] since soil is full",
+                            inflow);
+                }
+                
+                veg_var[iVeg][iBand].Wdew = 0.;
             }
         }
     }
@@ -967,10 +994,14 @@ lu_apply(void)
     free(snow_pack_capacity);
     free(orig_surf_tempEnergy);
     free(orig_pack_tempEnergy);
+    free(new_surf_tempEnergy);
+    free(new_pack_tempEnergy);
     for(iVeg = 0; iVeg < options.NVEGTYPES; iVeg++){
         free(node_capacity[iVeg]);
         free(orig_TEnergy[iVeg]);
+        free(new_TEnergy[iVeg]);
     }
     free(node_capacity);
     free(orig_TEnergy);
+    free(new_TEnergy);
 }

@@ -354,11 +354,15 @@ transpiration(layer_data_struct *layer,
 
         /** Assign excess transpiration to wetter layer **/
         if (spare_transp > 0.0) {
-            for (i = 0; i < options.Nlayer; i++) {
-                if (avail_moist[i] >= Wcr[i]) {
-                    layertransp[i] += (double) root[i] *
-                                      spare_transp / root_sum;
+            if(root_sum > 0) {
+                for (i = 0; i < options.Nlayer; i++) {
+                    if (avail_moist[i] >= Wcr[i]) {
+                        layertransp[i] += (double) root[i] *
+                                          spare_transp / root_sum;
+                    }
                 }
+            } else {
+                transp -= spare_transp;
             }
         }
     }
