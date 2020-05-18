@@ -546,12 +546,9 @@ calculate_derived_water_states(size_t iCell,
             // Different from VIC melting flag calculation to remove date dependency
             snow[iVeg][iBand].MELTING = true;
         }
-        if(snow[iVeg][iBand].swq > 0){
-            if(snow[iVeg][iBand].last_snow == 0){
+        if(snow[iVeg][iBand].swq > 0.){
+            if(snow[iVeg][iBand].last_snow == 0 || snow[iVeg][iBand].density <= 0.){
                 snow[iVeg][iBand].density = new_snow_density(force->air_temp[NR] + soil_con->Tfactor[iBand]);
-            }
-            if(snow[iVeg][iBand].density <= 0.){
-                log_err("STILL");
             }
             snow[iVeg][iBand].depth = CONST_RHOFW * snow[iVeg][iBand].swq / snow[iVeg][iBand].density;
         }
