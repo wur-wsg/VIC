@@ -436,12 +436,14 @@ calculate_derived_water_states(size_t iCell,
     extern dmy_struct *dmy;
     extern size_t current;
     extern option_struct options;
+    extern force_data_struct *force;
     extern veg_con_map_struct *veg_con_map;
     extern veg_con_struct **veg_con;
     extern veg_lib_struct **veg_lib;
     extern soil_con_struct *soil_con;
     extern veg_con_struct **veg_con;
     extern all_vars_struct *all_vars;
+    extern size_t NR;
     
     double runoff;
     double moist[MAX_LAYERS];
@@ -530,7 +532,6 @@ calculate_derived_water_states(size_t iCell,
         // snow[iVeg][iBand].tmp_int_storage;
         
         // depth & snow & MELTING
-        snow[iVeg][iBand].depth = CONST_RHOFW * snow[iVeg][iBand].swq / snow[iVeg][iBand].density;
         snow[iVeg][iBand].snow = false;
         snow[iVeg][iBand].MELTING = false;
         if (snow[iVeg][iBand].swq > 0 || (snow[iVeg][iBand].snow_canopy > 0. && veg_lib[iCell][veg_class].overstory)) {
@@ -544,6 +545,15 @@ calculate_derived_water_states(size_t iCell,
                 )) {
             // Different from VIC melting flag calculation to remove date dependency
             snow[iVeg][iBand].MELTING = true;
+        }
+        if(snow[iVeg][iBand].swq > 0){
+            if(snow[iVeg][iBand].last_snow == 0){
+                snow[iVeg][iBand].density = new_snow_density(force->air_temp[NR] + soil_con->Tfactor[iBand]);
+            }
+            if(snow[iVeg][iBand].density <= 0.){
+                log_err("STILL");
+            }
+            snow[iVeg][iBand].depth = CONST_RHOFW * snow[iVeg][iBand].swq / snow[iVeg][iBand].density;
         }
         
         /* ENERGY_BALANCE_STRUCT */
