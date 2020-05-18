@@ -135,7 +135,9 @@ distribute_water_balance_terms(size_t iCell,
 {
     extern option_struct options;
     extern soil_con_struct *soil_con;
+    extern veg_lib_struct **veg_lib;
     extern veg_con_map_struct *veg_con_map;
+    extern veg_con_struct **veg_con;
     extern all_vars_struct *all_vars;
     
     double Cv_avail;
@@ -164,6 +166,7 @@ distribute_water_balance_terms(size_t iCell,
     size_t iVeg;
     size_t iLayer;
     size_t iFrost;
+    size_t veg_class;
     
     veg_var = all_vars[iCell].veg_var;
     cell = all_vars[iCell].cell;
@@ -238,11 +241,15 @@ distribute_water_balance_terms(size_t iCell,
                 }
             }
             
-            if(iVeg == veg_con_map[iCell].nv_active - 1){
-                // Remove intercepted canopy water/snow for bare soil
+            veg_class = veg_con[iCell][iVeg].veg_class;
+            if(!veg_lib[iCell][veg_class].overstory || veg_var[iVeg][iBand].LAI <= 0.){
+                // Remove intercepted canopy snow for vegetation without overstory or leaves
                 snow[iVeg][iBand].swq += snow[iVeg][iBand].snow_canopy;
                 snow[iVeg][iBand].snow_canopy = 0.;
-                
+            }
+
+            if(veg_var[iVeg][iBand].LAI <= 0.){
+                // Remove intercepted canopy water for vegetation without leaves
                 inflow = veg_var[iVeg][iBand].Wdew;
                 for(iLayer = 0; iLayer < options.Nlayer; iLayer++){
                     cell[iVeg][iBand].layer[iLayer].moist += inflow;
@@ -258,7 +265,6 @@ distribute_water_balance_terms(size_t iCell,
                             "intercepted canopy water [%.4f] since soil is full",
                             inflow);
                 }
-                
                 veg_var[iVeg][iBand].Wdew = 0.;
             }
         }
