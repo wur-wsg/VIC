@@ -41,43 +41,46 @@ crop_update_step_vars(size_t iCell)
     csoil_con = &(soil_con[iCell]);
     
     // Clear VIC variables
-    for(crop_class = 0; crop_class < plugin_options.NCROPTYPES; crop_class++) {
-        veg_class = crop_con_map[iCell].veg_class[crop_class];
+    for(veg_class = 0; veg_class < (int)options.NVEGTYPES; veg_class++) {
+        iVeg = veg_con_map[iCell].vidx[veg_class];
+        cveg_lib = &(veg_lib[iCell][veg_class]);
         
-        if(veg_class != NODATA_VEG) {
-            iVeg = veg_con_map[iCell].vidx[veg_class];
-            cveg_lib = &(veg_lib[iCell][veg_class]);
+        if(iVeg != NODATA_VEG) {
+            cveg_con = &(veg_con[iCell][iVeg]);
+            cveg_hist = &(veg_hist[iCell][iVeg]);
             
-            cveg_lib->overstory = false;
-            cveg_lib->trunk_ratio = 0.;
-            cveg_lib->wind_atten = 0.;
-            cveg_lib->wind_h = 0.;
-            cveg_lib->rmin = 0.;
-            cveg_lib->rarc = 0.;
-            cveg_lib->rad_atten = 0.;
-            cveg_lib->RGL = 0.;
+            for(crop_class = 0; crop_class < plugin_options.NCROPTYPES; crop_class++) {
+                if (crop_con_map[iCell].veg_class[crop_class] == veg_class) {
+                    
+                    cveg_lib->overstory = false;
+                    cveg_lib->trunk_ratio = 0.;
+                    cveg_lib->wind_atten = 0.;
+                    cveg_lib->wind_h = 0.;
+                    cveg_lib->rmin = 0.;
+                    cveg_lib->rarc = 0.;
+                    cveg_lib->rad_atten = 0.;
+                    cveg_lib->RGL = 0.;
 
-            if(iVeg != NODATA_VEG) {
-                cveg_con = &(veg_con[iCell][iVeg]);
-                cveg_hist = &(veg_hist[iCell][iVeg]);
-            
-                for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                    cveg_con->root[iLayer] = 0.;
-                }
-                
-                for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
-                    ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
-                    
                     for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                        ccell_data->layer[iLayer].Wcr = 0.;
+                        cveg_con->root[iLayer] = 0.;
                     }
-                }
+
+                    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+                        ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+
+                        for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                            ccell_data->layer[iLayer].Wcr = 0.;
+                        }
+                    }
+
+                    cveg_hist->fcanopy[NR] = 0.;
+                    cveg_hist->LAI[NR] = 0.;
+                    cveg_hist->albedo[NR] = 0.;
+                    cveg_hist->displacement[NR] = 0.;
+                    cveg_hist->roughness[NR] = 0.;
                     
-                cveg_hist->fcanopy[NR] = 0.;
-                cveg_hist->LAI[NR] = 0.;
-                cveg_hist->albedo[NR] = 0.;
-                cveg_hist->displacement[NR] = 0.;
-                cveg_hist->roughness[NR] = 0.;
+                    break;
+                }
             }
         }
     }
@@ -144,93 +147,101 @@ crop_update_step_vars(size_t iCell)
                 cveg_con->root[0] += 0.5 * area_fract;
                 cveg_con->root[1] += 0.5 * area_fract;
             }
-
+            
             cgrid = cgrid->next;
         }
     }
     
     // Transform VIC variables
-    for(crop_class = 0; crop_class < plugin_options.NCROPTYPES; crop_class++) {
-        veg_class = crop_con_map[iCell].veg_class[crop_class];
+    for(veg_class = 0; veg_class < (int)options.NVEGTYPES; veg_class++) {
+        iVeg = veg_con_map[iCell].vidx[veg_class];
+        cveg_lib = &(veg_lib[iCell][veg_class]);
         
-        if(veg_class != NODATA_VEG) {
-            iVeg = veg_con_map[iCell].vidx[veg_class];
-            cveg_lib = &(veg_lib[iCell][veg_class]);
+        if(iVeg != NODATA_VEG) {
+            cveg_con = &(veg_con[iCell][iVeg]);
+            cveg_hist = &(veg_hist[iCell][iVeg]);
+            
+            for(crop_class = 0; crop_class < plugin_options.NCROPTYPES; crop_class++) {
+                if (crop_con_map[iCell].veg_class[crop_class] == veg_class) {
                 
-            /* Adjust vegetation specific variables for partial crop coverage.
-             * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
-             * all other parameters are assumed to be vegetation specific. */
-            if(iVeg != NODATA_VEG) {
-                cveg_hist = &(veg_hist[iCell][iVeg]);
-                cveg_con = &(veg_con[iCell][iVeg]);
-                
-                for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
-                    ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+                    /* Adjust vegetation specific variables for partial crop coverage.
+                     * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
+                     * all other parameters are assumed to be vegetation specific. */
                     
-                    if (cveg_hist->fcanopy[NR] == 0) {
-                        ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
-                        ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
-                    } else {
-                        ccell_data->layer[0].Wcr /= cveg_hist->fcanopy[NR];
-                        ccell_data->layer[1].Wcr /= cveg_hist->fcanopy[NR];
-                    }
-                }
-                
-                if (cveg_hist->fcanopy[NR] == 0) {
-                    cveg_lib->rarc = param.SOIL_RARC;
-                    cveg_lib->trunk_ratio = 0.0;
-                    cveg_lib->wind_atten = 0.5;
-                    cveg_lib->wind_h = param.SOIL_WINDH;
-                    cveg_lib->rmin = 0.0;
-                    cveg_lib->rad_atten = 0.5;
-                    cveg_lib->RGL = 100;
-                    
-                    cveg_hist->displacement[NR] = csoil_con->rough;
-                    cveg_hist->roughness[NR] = csoil_con->rough;
-                    
-                    cveg_con->root[0] = 0.5;
-                    cveg_con->root[1] = 0.5;
-                } else {
-                    cveg_lib->rarc /= cveg_hist->fcanopy[NR];
-                    cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
-                    cveg_lib->wind_atten /= cveg_hist->fcanopy[NR];
-                    cveg_lib->wind_h /= cveg_hist->fcanopy[NR];
-                    cveg_lib->rmin /= cveg_hist->fcanopy[NR];
-                    cveg_lib->rad_atten /= cveg_hist->fcanopy[NR];
-                    cveg_lib->RGL /= cveg_hist->fcanopy[NR];
-                    
-                    cveg_hist->displacement[NR] /= cveg_hist->fcanopy[NR];
-                    cveg_hist->roughness[NR] /= cveg_hist->fcanopy[NR];
-                    
-                    root_sum = 0.;
-                    for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                        root_sum += cveg_con->root[iLayer];
-                    }
-                    for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                        cveg_con->root[iLayer] /= root_sum;
-                    }
-                }
-                    
-                /* If crop area LAI < 1, adjust fcanopy for partial crop coverage */
-                if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
-                    cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];
-                }
-                cveg_hist->albedo[NR] = 
-                        cveg_hist->fcanopy[NR] * cveg_hist->albedo[NR] + 
-                        (1 - cveg_hist->fcanopy[NR]) * param.ALBEDO_BARE_SOIL;
+                    for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
+                        ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
 
-                if(cveg_hist->fcanopy[NR] < 0){
-                    if(-cveg_hist->fcanopy[NR] > AREA_SUM_ERROR_THRESH){
-                        log_err("fcanopy cannot be < 0");
+                        if (cveg_hist->fcanopy[NR] == 0) {
+                            ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
+                            ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
+                        } else {
+                            ccell_data->layer[0].Wcr /= cveg_hist->fcanopy[NR];
+                            ccell_data->layer[1].Wcr /= cveg_hist->fcanopy[NR];
+                        }
                     }
-                    cveg_hist->fcanopy[NR] = 0.0;
-                } else if(cveg_hist->fcanopy[NR] > 1){
-                    if(cveg_hist->fcanopy[NR] - 1 > AREA_SUM_ERROR_THRESH){
-                        log_err("fcanopy cannot be > 1");
+
+                    if (cveg_hist->fcanopy[NR] == 0) {
+                        cveg_lib->rarc = param.SOIL_RARC;
+                        cveg_lib->trunk_ratio = 0.0;
+                        cveg_lib->wind_atten = 0.5;
+                        cveg_lib->wind_h = param.SOIL_WINDH;
+                        cveg_lib->rmin = 0.0;
+                        cveg_lib->rad_atten = 0.5;
+                        cveg_lib->RGL = 100;
+
+                        cveg_hist->displacement[NR] = csoil_con->rough;
+                        cveg_hist->roughness[NR] = csoil_con->rough;
+
+                        cveg_con->root[0] = 0.5;
+                        cveg_con->root[1] = 0.5;
+                    } else {
+                        cveg_lib->rarc /= cveg_hist->fcanopy[NR];
+                        cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
+                        cveg_lib->wind_atten /= cveg_hist->fcanopy[NR];
+                        cveg_lib->wind_h /= cveg_hist->fcanopy[NR];
+                        cveg_lib->rmin /= cveg_hist->fcanopy[NR];
+                        cveg_lib->rad_atten /= cveg_hist->fcanopy[NR];
+                        cveg_lib->RGL /= cveg_hist->fcanopy[NR];
+
+                        cveg_hist->displacement[NR] /= cveg_hist->fcanopy[NR];
+                        cveg_hist->roughness[NR] /= cveg_hist->fcanopy[NR];
+
+                        root_sum = 0.;
+                        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                            root_sum += cveg_con->root[iLayer];
+                        }
+                        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                            cveg_con->root[iLayer] /= root_sum;
+                        }
                     }
-                    cveg_hist->fcanopy[NR] = 1.0;
-                } else if(cveg_hist->fcanopy[NR] < MIN_FCANOPY){
-                    cveg_hist->fcanopy[NR] = MIN_FCANOPY;
+
+                    if(cveg_lib->wind_h > 100){
+                        log_warn("ERR");
+                    }
+
+                    /* If crop area LAI < 1, adjust fcanopy for partial crop coverage */
+                    if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
+                        cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];
+                    }
+                    cveg_hist->albedo[NR] = 
+                            cveg_hist->fcanopy[NR] * cveg_hist->albedo[NR] + 
+                            (1 - cveg_hist->fcanopy[NR]) * param.ALBEDO_BARE_SOIL;
+
+                    if(cveg_hist->fcanopy[NR] < 0){
+                        if(-cveg_hist->fcanopy[NR] > AREA_SUM_ERROR_THRESH){
+                            log_err("fcanopy cannot be < 0");
+                        }
+                        cveg_hist->fcanopy[NR] = 0.0;
+                    } else if(cveg_hist->fcanopy[NR] > 1){
+                        if(cveg_hist->fcanopy[NR] - 1 > AREA_SUM_ERROR_THRESH){
+                            log_err("fcanopy cannot be > 1");
+                        }
+                        cveg_hist->fcanopy[NR] = 1.0;
+                    } else if(cveg_hist->fcanopy[NR] < MIN_FCANOPY){
+                        cveg_hist->fcanopy[NR] = MIN_FCANOPY;
+                    }
+
+                    break;
                 }
             }
         }

@@ -124,6 +124,7 @@ void wu_set_nc_var_dimids(unsigned int, nc_file_struct *, nc_var_struct *);
 void wu_history(unsigned int, unsigned int *);
 void wu_put_data(size_t);
 
+void wu_update_step_vars(size_t);
 void wu_forcing(void);
 void wu_run(size_t);
 

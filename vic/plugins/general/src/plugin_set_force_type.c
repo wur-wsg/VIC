@@ -119,6 +119,18 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("CO2", nctype) == 0) {
         type = FORCING_CO2;
     }
+    else if (strcasecmp("FERT_DVS", nctype) == 0) {
+        type = FORCING_FERT_DVS;
+    }
+    else if (strcasecmp("FERT_N", nctype) == 0) {
+        type = FORCING_FERT_N;
+    }
+    else if (strcasecmp("FERT_P", nctype) == 0) {
+        type = FORCING_FERT_P;
+    }
+    else if (strcasecmp("FERT_K", nctype) == 0) {
+        type = FORCING_FERT_K;
+    }
     /** Undefined variable type **/
     else {
         log_err("Undefined forcing variable type %s in forcing file.",
@@ -133,6 +145,9 @@ plugin_set_force_type(char *cmdstr)
     }
     else if (strcasecmp("MONTH", ncfreq) == 0) {
         freq = FORCE_MONTH;
+    }
+    else if (strcasecmp("YEAR", ncfreq) == 0) {
+        freq = FORCE_YEAR;
     }
     /** Undefined variable frequency **/
     else {

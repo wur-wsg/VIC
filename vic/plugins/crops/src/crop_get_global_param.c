@@ -45,6 +45,10 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_DIST_FERT = str_to_bool(flgstr);
     }
+    else if (strcasecmp("WOFOST_FORCE_FERTILIZER", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_FORCE_FERT = str_to_bool(flgstr);
+    }
     else {
         return false;
     }
@@ -84,7 +88,24 @@ crop_validate_global_param(void)
     }
      // Forcing
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_CO2], MISSING_S) == 0) {
-        log_err("WOFOST = TRUE but forcing file is missing");
+        log_err("WOFOST = TRUE but CO2 forcing file is missing");
+    }
+    if (plugin_options.WOFOST_FORCE_FERT) {
+        if (plugin_options.WOFOST_DIST_FERT){
+            log_err("WOFOST_FORCE_FERT = TRUE but WOFOST_DIST_FERT = FALSE");
+        }
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_DVS], MISSING_S) == 0) {
+            log_err("WOFOST_FORCE_FERT = TRUE but DVS forcing file is missing");
+        }
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_N], MISSING_S) == 0) {
+            log_err("WOFOST_FORCE_FERT = TRUE but N forcing file is missing");
+        }
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_P], MISSING_S) == 0) {
+            log_err("WOFOST_FORCE_FERT = TRUE but P forcing file is missing");
+        }
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_K], MISSING_S) == 0) {
+            log_err("WOFOST_FORCE_FERT = TRUE but K forcing file is missing");
+        }
     }
 }
 

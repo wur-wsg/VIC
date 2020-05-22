@@ -217,6 +217,11 @@ plugin_start_forcing(void)
                         plugin_global_param.forceoffset[f] += 1;
                     }
                 }
+                else if (plugin_global_param.forcefreq[f] == FORCE_YEAR) {
+                    if (dmy[current].year != dmy[current - 1].year) {
+                        plugin_global_param.forceoffset[f] += 1;
+                    }
+                }
             }
         
             // Update the run flag
@@ -231,6 +236,11 @@ plugin_start_forcing(void)
             }
             else if (plugin_global_param.forcefreq[f] == FORCE_MONTH) {
                 if (dmy[current].month != dmy[current - 1].month) {
+                    plugin_global_param.forcerun[f] = true;
+                }
+            }
+            else if (plugin_global_param.forcefreq[f] == FORCE_YEAR) {
+                if (dmy[current].year != dmy[current - 1].year) {
                     plugin_global_param.forcerun[f] = true;
                 }
             }

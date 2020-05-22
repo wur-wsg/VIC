@@ -44,6 +44,18 @@ crop_alloc(void)
         crop_con[i] = malloc(crop_con_map[i].nc_active * sizeof(*crop_con[i]));
         check_alloc_status(crop_con[i], "Memory allocation error");
         
+        crop_force[i].DVS_point = malloc(crop_con_map[i].nc_active * sizeof(*crop_force[i].DVS_point));
+        check_alloc_status(crop_force[i].DVS_point, "Memory allocation error");
+        
+        crop_force[i].N_amount = malloc(crop_con_map[i].nc_active * sizeof(*crop_force[i].N_amount));
+        check_alloc_status(crop_force[i].N_amount, "Memory allocation error");
+        
+        crop_force[i].P_amount = malloc(crop_con_map[i].nc_active * sizeof(*crop_force[i].P_amount));
+        check_alloc_status(crop_force[i].P_amount, "Memory allocation error");
+        
+        crop_force[i].K_amount = malloc(crop_con_map[i].nc_active * sizeof(*crop_force[i].K_amount));
+        check_alloc_status(crop_force[i].K_amount, "Memory allocation error");
+        
         for (j = 0; j < crop_con_map[i].nc_active; j++){
             crop_con[i][j].DVS_point = malloc(plugin_options.NFERTTIMES * sizeof(*crop_con[i][j].DVS_point));
             check_alloc_status(crop_con[i][j].DVS_point, "Memory allocation error");
@@ -56,6 +68,18 @@ crop_alloc(void)
             
             crop_con[i][j].K_amount = malloc(plugin_options.NFERTTIMES * sizeof(*crop_con[i][j].K_amount));
             check_alloc_status(crop_con[i][j].K_amount, "Memory allocation error");
+        
+            crop_force[i].DVS_point[j] = malloc(plugin_options.NFERTTIMES * sizeof(*crop_force[i].DVS_point[j]));
+            check_alloc_status(crop_force[i].DVS_point[j], "Memory allocation error");
+
+            crop_force[i].N_amount[j] = malloc(plugin_options.NFERTTIMES * sizeof(*crop_force[i].N_amount[j]));
+            check_alloc_status(crop_force[i].N_amount[j], "Memory allocation error");
+
+            crop_force[i].P_amount[j] = malloc(plugin_options.NFERTTIMES * sizeof(*crop_force[i].P_amount[j]));
+            check_alloc_status(crop_force[i].P_amount[j], "Memory allocation error");
+
+            crop_force[i].K_amount[j] = malloc(plugin_options.NFERTTIMES * sizeof(*crop_force[i].K_amount[j]));
+            check_alloc_status(crop_force[i].K_amount[j], "Memory allocation error");
         }
     }
     
@@ -87,12 +111,20 @@ crop_finalize(void)
             free(crop_con[i][j].N_amount);
             free(crop_con[i][j].P_amount);
             free(crop_con[i][j].K_amount);
+            free(crop_force[i].DVS_point[j]);
+            free(crop_force[i].N_amount[j]);
+            free(crop_force[i].P_amount[j]);
+            free(crop_force[i].K_amount[j]);
         }
 
         free(crop_con_map[i].cidx);
         free(crop_con_map[i].veg_class);
         free(crop_con_map[i].Cc);
         free(crop_con[i]);
+        free(crop_force[i].DVS_point);
+        free(crop_force[i].N_amount);
+        free(crop_force[i].P_amount);
+        free(crop_force[i].K_amount);
     }
     free(crop_con_map);
     free(crop_con);

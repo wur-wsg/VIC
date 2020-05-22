@@ -6,6 +6,7 @@ crop_forcing(void)
 {
     extern domain_struct              local_domain;
     extern plugin_global_param_struct plugin_global_param;
+    extern plugin_option_struct       plugin_options;
     extern domain_struct              global_domain;
     extern plugin_filenames_struct    plugin_filenames;
     extern crop_force_struct         *crop_force;
@@ -14,19 +15,34 @@ crop_forcing(void)
 
     size_t                            d3count[3];
     size_t                            d3start[3];
+    size_t                            d5count[5];
+    size_t                            d5start[5];
 
     size_t                            i;
+    size_t                            j;
+    size_t                            k;
 
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
 
+    d3start[0] = 0;
     d3start[1] = 0;
     d3start[2] = 0;
     d3count[0] = 1;
     d3count[1] = global_domain.n_ny;
     d3count[2] = global_domain.n_nx;
+    d5start[0] = 0;
+    d5start[1] = 0;
+    d5start[2] = 0;
+    d5start[3] = 0;
+    d5start[4] = 0;
+    d5count[0] = 1;
+    d5count[1] = 1;
+    d5count[2] = 1;
+    d5count[3] = global_domain.n_ny;
+    d5count[4] = global_domain.n_nx;
 
-    // Get forcing data
+    // Get CO2 forcing data
     d3start[0] = plugin_global_param.forceskip[FORCING_CO2] +
                  plugin_global_param.forceoffset[FORCING_CO2];
 
@@ -36,6 +52,82 @@ crop_forcing(void)
 
         for (i = 0; i < local_domain.ncells_active; i++) {
             crop_force[i].CO2 = dvar[i];
+        }
+    }
+    
+    // Get fertilizer forcing data
+    if (plugin_options.WOFOST_FORCE_FERT) {
+
+        // Get DVS_point
+        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_DVS] +
+                     plugin_global_param.forceoffset[FORCING_FERT_DVS];
+        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+            d5start[1] = k;
+            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                d5start[2] = j;
+                if (plugin_global_param.forcerun[FORCING_CO2]) {
+                    get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_DVS]),
+                                                plugin_filenames.f_varname[FORCING_FERT_DVS], d5start, d5count, dvar);
+
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        crop_force[i].DVS_point[j][k] = dvar[i];
+                    }
+                }
+            }
+        }
+        
+        // Get N_amount
+        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_N] +
+                     plugin_global_param.forceoffset[FORCING_FERT_N];
+        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+            d5start[1] = k;
+            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                d5start[2] = j;
+                if (plugin_global_param.forcerun[FORCING_CO2]) {
+                    get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_N]),
+                                                plugin_filenames.f_varname[FORCING_FERT_N], d5start, d5count, dvar);
+
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        crop_force[i].N_amount[j][k] = dvar[i];
+                    }
+                }
+            }
+        }
+        
+        // Get P_amount
+        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_P] +
+                     plugin_global_param.forceoffset[FORCING_FERT_P];
+        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+            d5start[1] = k;
+            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                d5start[2] = j;
+                if (plugin_global_param.forcerun[FORCING_CO2]) {
+                    get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_P]),
+                                                plugin_filenames.f_varname[FORCING_FERT_P], d5start, d5count, dvar);
+
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        crop_force[i].P_amount[j][k] = dvar[i];
+                    }
+                }
+            }
+        }
+        
+        // Get K_amount
+        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_K] +
+                     plugin_global_param.forceoffset[FORCING_FERT_K];
+        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+            d5start[1] = k;
+            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                d5start[2] = j;
+                if (plugin_global_param.forcerun[FORCING_CO2]) {
+                    get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_K]),
+                                                plugin_filenames.f_varname[FORCING_FERT_K], d5start, d5count, dvar);
+
+                    for (i = 0; i < local_domain.ncells_active; i++) {
+                        crop_force[i].K_amount[j][k] = dvar[i];
+                    }
+                }
+            }
         }
     }
 

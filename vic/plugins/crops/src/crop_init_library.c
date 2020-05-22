@@ -49,9 +49,22 @@ initialize_crop_con(crop_con_struct *crop_con)
 * @brief   Initialize the irrigation constants
 ******************************************/
 void
-initialize_crop_force(crop_force_struct *crop_force)
+initialize_crop_force(crop_force_struct *crop_force, size_t ncrops)
 {
+    extern plugin_option_struct plugin_options;
+    
+    size_t iCrop;
+    size_t iFert;
+    
     crop_force->CO2 = 0.;
+    for(iCrop = 0; iCrop < ncrops; iCrop++){
+        for(iFert = 0; iFert < plugin_options.NFERTTIMES; iFert++){
+            crop_force->DVS_point[iCrop][iFert] = 0.;
+            crop_force->N_amount[iCrop][iFert] = 0.;
+            crop_force->P_amount[iCrop][iFert] = 0.;
+            crop_force->K_amount[iCrop][iFert] = 0.;
+        }
+    }
 }
 
 /******************************************
@@ -69,7 +82,7 @@ crop_initialize_local_structures(void)
     size_t                      j;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        initialize_crop_force(&crop_force[i]);
+        initialize_crop_force(&crop_force[i], crop_con_map[i].nc_active);
         for(j = 0; j < crop_con_map[i].nc_active; j++){
             initialize_crop_con(&crop_con[i][j]);
         }

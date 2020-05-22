@@ -21,6 +21,10 @@ typedef struct {
 
 typedef struct {
     double CO2;
+    double **DVS_point;
+    double **N_amount;
+    double **P_amount;
+    double **K_amount;
 } crop_force_struct;
 
 crop_con_map_struct *crop_con_map;
@@ -53,6 +57,7 @@ void crop_set_nc_var_dimids(unsigned int, nc_file_struct *, nc_var_struct *);
 void crop_history(int varid, unsigned int *);
 
 void crop_update_step_vars(size_t);
+void wofost_update_step_vars(size_t);
 void crop_forcing(void);
 bool crop_run_flag(void);
 bool crop_reset_flag(void);
