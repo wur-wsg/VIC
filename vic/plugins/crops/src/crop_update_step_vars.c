@@ -215,10 +215,6 @@ crop_update_step_vars(size_t iCell)
                         }
                     }
 
-                    if(cveg_lib->wind_h > 100){
-                        log_warn("ERR");
-                    }
-
                     /* If crop area LAI < 1, adjust fcanopy for partial crop coverage */
                     if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
                         cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR];

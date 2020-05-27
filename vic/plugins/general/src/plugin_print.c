@@ -98,6 +98,10 @@ plugin_print_options(plugin_option_struct *op)
             op->WOFOST_DIST_TSUM ? "true" : "false");
     fprintf(LOG_DEST, "\tDIST_FERT            : %s\n",
             op->WOFOST_DIST_FERT ? "true" : "false");
+    fprintf(LOG_DEST, "\tDIST_MIN             : %s\n",
+            op->WOFOST_DIST_MIN ? "true" : "false");
+    fprintf(LOG_DEST, "\tCONTINUE             : %s\n",
+            op->WOFOST_CONTINUE ? "true" : "false");
     fprintf(LOG_DEST, "\tFOREC_FERT           : %s\n",
             op->WOFOST_FORCE_FERT ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",

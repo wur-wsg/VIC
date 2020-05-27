@@ -182,27 +182,6 @@ wofost_set_data(void)
                 }
             }
         }
-
-        // Set cycle length
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
-                            iGrid = iGrid->next;
-                        }
-
-                        if(iGrid->start.day_in_year < iGrid->end.day_in_year){
-                            iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
-                        } else {
-                            iGrid->met->CycleLength = DAYS_PER_YEAR - iGrid->start.day_in_year + iGrid->end.day_in_year;
-                        }
-                    }
-                }
-            }
-        }
     }
     
     if (plugin_options.WOFOST_DIST_TSUM) {
@@ -325,6 +304,166 @@ wofost_set_data(void)
         }
     }
     
+    if (plugin_options.WOFOST_DIST_MIN) {
+        // Set N_Mins
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "N_mins", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->mng->N_Mins = dvar[i];
+                    }
+                }
+            }
+        }
+
+        // Set NRecoveryFrac
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "N_recovery", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->mng->NRecoveryFrac = dvar[i];
+                    }
+                }
+            }
+        }
+        
+        // Set P_Mins
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "P_mins", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->mng->P_Mins = dvar[i];
+                    }
+                }
+            }
+        }
+
+        // Set PRecoveryFrac
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "P_recovery", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->mng->PRecoveryFrac = dvar[i];
+                    }
+                }
+            }
+        }
+        
+        // Set K_Mins
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "K_mins", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->mng->K_Mins = dvar[i];
+                    }
+                }
+            }
+        }
+
+        // Set KRecoveryFrac
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            d3start[0] = j;
+
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                     "K_recovery", d3start, d3count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCrop = crop_con_map[i].cidx[j];
+                if (iCrop != NODATA_VEG) {
+                    for (k = 0; k < options.SNOW_BAND; k++) {
+                        iGrid = Grid[i][k];
+                        for(l = 0; l < (size_t)iCrop; l++){
+                            iGrid = iGrid->next;
+                        }
+
+                        iGrid->mng->KRecoveryFrac = dvar[i];
+                    }
+                }
+            }
+        }
+    }
+
+    // Set cycle length
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            iCrop = crop_con_map[i].cidx[j];
+            if (iCrop != NODATA_VEG) {
+                for (k = 0; k < options.SNOW_BAND; k++) {
+                    iGrid = Grid[i][k];
+                    for(l = 0; l < (size_t)iCrop; l++){
+                        iGrid = iGrid->next;
+                    }
+                    
+                    if (!plugin_options.WOFOST_CONTINUE) {
+                        if(iGrid->start.day_in_year < iGrid->end.day_in_year){
+                            iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
+                        } else {
+                            iGrid->met->CycleLength = DAYS_PER_YEAR - iGrid->start.day_in_year + iGrid->end.day_in_year;
+                        }
+                    } else {
+                        /* Restrict cycle length to about a year to avoid double-sowing */
+                        iGrid->met->CycleLength = DAYS_PER_YEAR - 10;
+                    }
+                }
+            }
+        }
+    }
+    
     free(dvar);
 }
 
@@ -348,9 +487,34 @@ wofost_check_data(void)
                 if (iGrid->crp->prm.TempSum1 <= 0) {
                     log_err("TempSum1 [%.2f] should be in range [0, inf)",
                             iGrid->crp->prm.TempSum1);
-                } else if (iGrid->crp->prm.TempSum2 <= 0) {
+                }
+                if (iGrid->crp->prm.TempSum2 <= 0) {
                     log_err("TempSum2 [%.2f] should be in range [0, inf)",
                             iGrid->crp->prm.TempSum2);
+                }
+                if (iGrid->mng->N_Mins < 0) {
+                    log_err("N_Mins [%.2f] should be in range (0, inf)",
+                            iGrid->mng->N_Mins);
+                }
+                if (iGrid->mng->P_Mins < 0) {
+                    log_err("P_Mins [%.2f] should be in range (0, inf)",
+                            iGrid->mng->P_Mins);
+                }
+                if (iGrid->mng->K_Mins < 0) {
+                    log_err("K_Mins [%.2f] should be in range (0, inf)",
+                            iGrid->mng->K_Mins);
+                }
+                if (iGrid->mng->NRecoveryFrac < 0 || iGrid->mng->NRecoveryFrac > 1) {
+                    log_err("NRecoveryFrac [%.2f] should be in range (0, 1)",
+                            iGrid->mng->NRecoveryFrac);
+                }
+                if (iGrid->mng->PRecoveryFrac < 0 || iGrid->mng->PRecoveryFrac > 1) {
+                    log_err("PRecoveryFrac [%.2f] should be in range (0, 1)",
+                            iGrid->mng->PRecoveryFrac);
+                }
+                if (iGrid->mng->KRecoveryFrac < 0 || iGrid->mng->KRecoveryFrac > 1) {
+                    log_err("KRecoveryFrac [%.2f] should be in range (0, 1)",
+                            iGrid->mng->KRecoveryFrac);
                 }
                 
                 iGrid = iGrid->next;

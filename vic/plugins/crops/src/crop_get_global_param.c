@@ -45,6 +45,14 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_DIST_FERT = str_to_bool(flgstr);
     }
+    else if (strcasecmp("WOFOST_DIST_MINERALIZATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_DIST_MIN = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("WOFOST_CONTINUE", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_CONTINUE = str_to_bool(flgstr);
+    }
     else if (strcasecmp("WOFOST_FORCE_FERTILIZER", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_FORCE_FERT = str_to_bool(flgstr);
