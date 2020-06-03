@@ -99,7 +99,7 @@ crop_validate_global_param(void)
         log_err("WOFOST = TRUE but CO2 forcing file is missing");
     }
     if (plugin_options.WOFOST_FORCE_FERT) {
-        if (plugin_options.WOFOST_DIST_FERT){
+        if (!plugin_options.WOFOST_DIST_FERT){
             log_err("WOFOST_FORCE_FERT = TRUE but WOFOST_DIST_FERT = FALSE");
         }
         if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_DVS], MISSING_S) == 0) {
