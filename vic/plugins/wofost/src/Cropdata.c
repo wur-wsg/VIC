@@ -11,7 +11,7 @@ void GetCropData(Plant *CROP, char *cropfile)
     extern char *CropParam[];
     extern char *CropParam2[];
     
-    TABLE *Table[NR_TABLES_CRP], *start;
+    TABLE *Table[NR_TABLES_CRP], *start, *head;
 
     char line[MAXSTRING];
     int i, c, count;
@@ -107,6 +107,15 @@ void GetCropData(Plant *CROP, char *cropfile)
     if (CROP->prm.IdentifyAnthesis < 2)
     {
        CROP->prm.VernalizationRate    = NULL;
+       
+       /* Remember to remove table (since it will not be removed at cleanup) */
+       while(Table[0])
+       {
+           head = Table[0];
+           Table[0] = Table[0]->next;
+           free(head);
+       }
+       free(Table[0]);
     }
     else
     {

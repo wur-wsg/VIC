@@ -9,6 +9,7 @@ crop_forcing(void)
     extern plugin_option_struct       plugin_options;
     extern domain_struct              global_domain;
     extern plugin_filenames_struct    plugin_filenames;
+    extern crop_con_map_struct       *crop_con_map;
     extern crop_force_struct         *crop_force;
 
     double                           *dvar;
@@ -21,6 +22,7 @@ crop_forcing(void)
     size_t                            i;
     size_t                            j;
     size_t                            k;
+    int                               iCrop;
 
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
@@ -70,7 +72,10 @@ crop_forcing(void)
                                                 plugin_filenames.f_varname[FORCING_FERT_DVS], d5start, d5count, dvar);
 
                     for (i = 0; i < local_domain.ncells_active; i++) {
-                        crop_force[i].DVS_point[j][k] = dvar[i];
+                        iCrop = crop_con_map[i].cidx[j];
+                        if (iCrop != NODATA_VEG) {
+                            crop_force[i].DVS_point[iCrop][k] = dvar[i];
+                        }
                     }
                 }
             }
@@ -88,7 +93,10 @@ crop_forcing(void)
                                                 plugin_filenames.f_varname[FORCING_FERT_N], d5start, d5count, dvar);
 
                     for (i = 0; i < local_domain.ncells_active; i++) {
-                        crop_force[i].N_amount[j][k] = dvar[i];
+                        iCrop = crop_con_map[i].cidx[j];
+                        if (iCrop != NODATA_VEG) {
+                            crop_force[i].N_amount[iCrop][k] = dvar[i];
+                        }
                     }
                 }
             }
@@ -106,7 +114,10 @@ crop_forcing(void)
                                                 plugin_filenames.f_varname[FORCING_FERT_P], d5start, d5count, dvar);
 
                     for (i = 0; i < local_domain.ncells_active; i++) {
-                        crop_force[i].P_amount[j][k] = dvar[i];
+                        iCrop = crop_con_map[i].cidx[j];
+                        if (iCrop != NODATA_VEG) {
+                            crop_force[i].P_amount[iCrop][k] = dvar[i];
+                        }
                     }
                 }
             }
@@ -124,7 +135,10 @@ crop_forcing(void)
                                                 plugin_filenames.f_varname[FORCING_FERT_K], d5start, d5count, dvar);
 
                     for (i = 0; i < local_domain.ncells_active; i++) {
-                        crop_force[i].K_amount[j][k] = dvar[i];
+                        iCrop = crop_con_map[i].cidx[j];
+                        if (iCrop != NODATA_VEG) {
+                            crop_force[i].K_amount[iCrop][k] = dvar[i];
+                        }
                     }
                 }
             }
