@@ -45,10 +45,9 @@ crop_forcing(void)
     d5count[4] = global_domain.n_nx;
 
     // Get CO2 forcing data
-    d3start[0] = plugin_global_param.forceskip[FORCING_CO2] +
-                 plugin_global_param.forceoffset[FORCING_CO2];
-
     if (plugin_global_param.forcerun[FORCING_CO2]) {
+        d3start[0] = plugin_global_param.forceskip[FORCING_CO2] +
+                     plugin_global_param.forceoffset[FORCING_CO2];
         get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_CO2]),
                                     plugin_filenames.f_varname[FORCING_CO2], d3start, d3count, dvar);
 
@@ -61,13 +60,13 @@ crop_forcing(void)
     if (plugin_options.WOFOST_FORCE_FERT) {
 
         // Get DVS_point
-        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_DVS] +
-                     plugin_global_param.forceoffset[FORCING_FERT_DVS];
-        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
-            d5start[1] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                d5start[2] = j;
-                if (plugin_global_param.forcerun[FORCING_CO2]) {
+        if (plugin_global_param.forcerun[FORCING_FERT_DVS]) {
+            d5start[0] = plugin_global_param.forceskip[FORCING_FERT_DVS] +
+                         plugin_global_param.forceoffset[FORCING_FERT_DVS];
+            for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+                d5start[1] = k;
+                for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                    d5start[2] = j;
                     get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_DVS]),
                                                 plugin_filenames.f_varname[FORCING_FERT_DVS], d5start, d5count, dvar);
 
@@ -82,13 +81,13 @@ crop_forcing(void)
         }
         
         // Get N_amount
-        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_N] +
-                     plugin_global_param.forceoffset[FORCING_FERT_N];
-        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
-            d5start[1] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                d5start[2] = j;
-                if (plugin_global_param.forcerun[FORCING_CO2]) {
+        if (plugin_global_param.forcerun[FORCING_FERT_N]) {
+            d5start[0] = plugin_global_param.forceskip[FORCING_FERT_N] +
+                         plugin_global_param.forceoffset[FORCING_FERT_N];
+            for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+                d5start[1] = k;
+                for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                    d5start[2] = j;
                     get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_N]),
                                                 plugin_filenames.f_varname[FORCING_FERT_N], d5start, d5count, dvar);
 
@@ -103,13 +102,13 @@ crop_forcing(void)
         }
         
         // Get P_amount
-        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_P] +
-                     plugin_global_param.forceoffset[FORCING_FERT_P];
-        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
-            d5start[1] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                d5start[2] = j;
-                if (plugin_global_param.forcerun[FORCING_CO2]) {
+        if (plugin_global_param.forcerun[FORCING_FERT_P]) {
+            d5start[0] = plugin_global_param.forceskip[FORCING_FERT_P] +
+                         plugin_global_param.forceoffset[FORCING_FERT_P];
+            for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+                d5start[1] = k;
+                for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                    d5start[2] = j;
                     get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_P]),
                                                 plugin_filenames.f_varname[FORCING_FERT_P], d5start, d5count, dvar);
 
@@ -124,13 +123,13 @@ crop_forcing(void)
         }
         
         // Get K_amount
-        d5start[0] = plugin_global_param.forceskip[FORCING_FERT_K] +
-                     plugin_global_param.forceoffset[FORCING_FERT_K];
-        for (k = 0; k < plugin_options.NFERTTIMES; k++) {
-            d5start[1] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
-                d5start[2] = j;
-                if (plugin_global_param.forcerun[FORCING_CO2]) {
+        if (plugin_global_param.forcerun[FORCING_FERT_K]) {
+            d5start[0] = plugin_global_param.forceskip[FORCING_FERT_K] +
+                         plugin_global_param.forceoffset[FORCING_FERT_K];
+            for (k = 0; k < plugin_options.NFERTTIMES; k++) {
+                d5start[1] = k;
+                for(j = 0; j < plugin_options.NCROPTYPES; j++){
+                    d5start[2] = j;
                     get_scatter_nc_field_double(&(plugin_filenames.forcing[FORCING_FERT_K]),
                                                 plugin_filenames.f_varname[FORCING_FERT_K], d5start, d5count, dvar);
 
