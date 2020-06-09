@@ -101,6 +101,7 @@ crop_update_step_vars(size_t iCell)
             
             Cc = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
             area_fract = Cc * csoil_con->AreaFract[iBand];
+            area_fract *= cgrid->crp->prm.Fcanopy;
             
             tmp_min = min(cgrid->crp->st.Development, 1.0);
             height = cgrid->crp->prm.MaxHeight * tmp_min;
@@ -117,17 +118,10 @@ crop_update_step_vars(size_t iCell)
             cveg_lib->rad_atten += cgrid->crp->prm.RadiationAttenuation * area_fract;
             cveg_lib->RGL += cgrid->crp->prm.RGL * area_fract;
             
-            if(true) {
-                cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance / 
-                        cgrid->crp->prm.CorrectionTransp * tmp_min * area_fract;
-                cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance /
-                        cgrid->crp->prm.CorrectionTransp * area_fract;
-            } else {
-                cveg_lib->rarc += 25 / 
-                        cgrid->crp->prm.CorrectionTransp * tmp_min * area_fract;
-                cveg_lib->rmin += 120 /
-                        cgrid->crp->prm.CorrectionTransp * area_fract;
-            }
+            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance / 
+                    cgrid->crp->prm.CorrectionTransp * tmp_min * area_fract;
+            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance /
+                    cgrid->crp->prm.CorrectionTransp * area_fract;
             
             Wcr_FRAC = (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans));
             for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
@@ -136,16 +130,11 @@ crop_update_step_vars(size_t iCell)
                         (Wfc - csoil_con->Wpwp[iLayer]) *  Wcr_FRAC * Cc;
             }
             
-            if(true) {
-                if(cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
-                    cveg_con->root[0] += (csoil_con->depth[0] * CM_PER_M / cgrid->crp->st.RootDepth) * area_fract;
-                    cveg_con->root[1] += (1 - cveg_con->root[0]) * area_fract;
-                } else {
-                    cveg_con->root[0] += area_fract;
-                }
+            if(cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
+                cveg_con->root[0] += (csoil_con->depth[0] * CM_PER_M / cgrid->crp->st.RootDepth) * area_fract;
+                cveg_con->root[1] += (1 - cveg_con->root[0]) * area_fract;
             } else {
-                cveg_con->root[0] += 0.5 * area_fract;
-                cveg_con->root[1] += 0.5 * area_fract;
+                cveg_con->root[0] += area_fract;
             }
             
             cgrid = cgrid->next;
@@ -171,7 +160,7 @@ crop_update_step_vars(size_t iCell)
                     for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
                         ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
 
-                        if (cveg_hist->fcanopy[NR] == 0) {
+                        if (cveg_hist->fcanopy[NR] == 0 || cveg_hist->LAI[NR] == 0) {
                             ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
                             ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
                         } else {
@@ -180,7 +169,7 @@ crop_update_step_vars(size_t iCell)
                         }
                     }
 
-                    if (cveg_hist->fcanopy[NR] == 0) {
+                    if (cveg_hist->fcanopy[NR] == 0 || cveg_hist->LAI[NR] == 0) {
                         cveg_lib->rarc = param.SOIL_RARC;
                         cveg_lib->trunk_ratio = 0.0;
                         cveg_lib->wind_atten = 0.5;

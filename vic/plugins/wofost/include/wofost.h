@@ -3,7 +3,7 @@
 #ifndef WOFOST_H
 #define WOFOST_H
 
-#define NR_VARIABLES_CRP	74
+#define NR_VARIABLES_CRP	75
 #define NR_TABLES_CRP   	22
 #define NR_VARIABLES_SITE       12
 #define NR_TABLES_SITE          1
@@ -110,6 +110,7 @@ typedef struct PARAMETERS {
         float Albedo;
         float MinStomatalResistance;
         float MaxArchitecturalResistance;
+        float Fcanopy;
 
         /** Maintenance Respiration **/
         float Q10;

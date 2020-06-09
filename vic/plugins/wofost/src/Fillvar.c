@@ -115,6 +115,7 @@ void FillCropVariables(Plant *CROP, float *Variable)
     CROP->prm.Albedo                     = Variable[71];
     CROP->prm.MinStomatalResistance      = Variable[72];
     CROP->prm.MaxArchitecturalResistance = Variable[73];
+    CROP->prm.Fcanopy                    = Variable[74];
 
     for (i=0;i<=NR_VARIABLES_CRP;i++) 
     {

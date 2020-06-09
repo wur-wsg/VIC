@@ -356,6 +356,7 @@ copy_wofost_parameters(Parameters *from, Parameters *to)
     to->Albedo                     = from->Albedo;
     to->MinStomatalResistance      = from->MinStomatalResistance;
     to->MaxArchitecturalResistance = from->MaxArchitecturalResistance;
+    to->Fcanopy = from->Fcanopy;
 }
 
 void
