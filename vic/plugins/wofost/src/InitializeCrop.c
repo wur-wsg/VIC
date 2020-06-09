@@ -30,6 +30,9 @@ int EmergenceCrop(SimUnit *Grid, int Emergence)
             }
 
 	}
+    else {
+        Grid->crp->Sowing = 2;
+    }
     return Emergence;
 }
     

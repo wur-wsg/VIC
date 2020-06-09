@@ -232,25 +232,24 @@ crop_run(size_t iCell)
                     wofost_run(cgrid);
 
                     /* Check crop coverage */
-                    if (cgrid->growing == 1) {
-                        if(!plugin_options.WOFOST_CONTINUE || cgrid->crp->Sowing == 1) {
-                            /* Check if crop is growing when land-use is zero (when not continuing),
-                               or when sowing when land-use is zero (mismatch with sowing date and land-use) */
-                            if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] <= 0) {
-                                log_err("Crop %zu coverage is <= 0 [%.4f] but "
-                                        "growing is true for cell %zu",
-                                        crop_class,
-                                        crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
-                                        iCell);
-                            }
-                            if (veg_con[iCell][iVeg].Cv <= 0) {
-                                log_err("Crop %zu vegetation %zu coverage is <= 0 [%.4f] but "
-                                        "growing is true for cell %zu",
-                                        crop_class,
-                                        veg_class,
-                                        veg_con[iCell][iVeg].Cv,
-                                        iCell);
-                            }
+                    if ((cgrid->growing == 1 && !plugin_options.WOFOST_CONTINUE) || 
+                            cgrid->crp->Sowing == 1) {
+                        /* Check if crop is growing when land-use is zero (when not continuing),
+                           or when sowing when land-use is zero (mismatch with sowing date and land-use) */
+                        if (crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1] <= 0) {
+                            log_err("Crop %zu coverage is <= 0 [%.4f] but "
+                                    "growing is true for cell %zu",
+                                    crop_class,
+                                    crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1],
+                                    iCell);
+                        }
+                        if (veg_con[iCell][iVeg].Cv <= 0) {
+                            log_err("Crop %zu vegetation %zu coverage is <= 0 [%.4f] but "
+                                    "growing is true for cell %zu",
+                                    crop_class,
+                                    veg_class,
+                                    veg_con[iCell][iVeg].Cv,
+                                    iCell);
                         }
                     }
 
