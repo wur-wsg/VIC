@@ -764,7 +764,10 @@ check_water_use_balance(size_t iCell,
                 wu_var[iCell][iSector].withdrawn_dam - wu_var[iCell][iSector].available_dam > WU_BALANCE_ERROR_THRESH ||
                 wu_var[iCell][iSector].withdrawn_comp - wu_var[iCell][iSector].available_comp > WU_BALANCE_ERROR_THRESH ||
                 wu_var[iCell][iSector].withdrawn_surf + wu_var[iCell][iSector].withdrawn_dam - wu_var[iCell][iSector].demand_surf > WU_BALANCE_ERROR_THRESH ||
-                wu_var[iCell][iSector].withdrawn_gw + wu_var[iCell][iSector].withdrawn_nonrenew + wu_var[iCell][iSector].withdrawn_comp - wu_var[iCell][iSector].demand_gw > WU_BALANCE_ERROR_THRESH) {
+                wu_var[iCell][iSector].withdrawn_gw + wu_var[iCell][iSector].withdrawn_comp - wu_var[iCell][iSector].demand_gw > WU_BALANCE_ERROR_THRESH ||
+                wu_var[iCell][iSector].withdrawn_surf + wu_var[iCell][iSector].withdrawn_dam - wu_var[iCell][iSector].demand_surf +
+                wu_var[iCell][iSector].withdrawn_gw + wu_var[iCell][iSector].withdrawn_comp  - wu_var[iCell][iSector].demand_gw +
+                wu_var[iCell][iSector].withdrawn_nonrenew > WU_BALANCE_ERROR_THRESH) {
             log_err("Water-use water balance error for sector %zu:\n"
                     "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                     "surface-water:\twithdrawn [%.4f]\tdemand (s + d) [%.4f]\tavailable [%.4f]\n"
@@ -826,7 +829,10 @@ check_water_use_balance(size_t iCell,
             withdrawn_comp - available_comp  > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_remote - available_remote  > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_surf + withdrawn_dam - demand_surf > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
-            withdrawn_gw + withdrawn_nonrenew + withdrawn_comp - demand_gw > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
+            withdrawn_gw + withdrawn_comp - demand_gw > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
+            withdrawn_surf + withdrawn_dam - demand_surf +
+            withdrawn_gw + withdrawn_comp - demand_gw +
+            withdrawn_nonrenew > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
             withdrawn_remote - demand_remote > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES){ 
         log_err("Water-use water balance error for cell %zu:\n"
                 "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\t\t\tavailable [%.4f]\n"
