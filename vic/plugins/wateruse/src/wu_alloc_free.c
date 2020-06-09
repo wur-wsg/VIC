@@ -134,13 +134,7 @@ wu_alloc(void)
         check_alloc_status(wu_con_map[i].sidx, "Memory allocation error");
     }
     
-    if (plugin_options.REMOTE_WITH) {
-        wu_set_nsectors();
-    } else {
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            wu_con[i].nreceiving = 0;
-        }
-    }
+    wu_set_nsectors();
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         wu_force[i] = malloc(wu_con_map[i].ns_active * sizeof(*wu_force[i]));
@@ -149,7 +143,13 @@ wu_alloc(void)
         check_alloc_status(wu_var[i], "Memory allocation error");
     }
     
-    wu_set_nreceiving();
+    if (plugin_options.REMOTE_WITH) {
+        wu_set_nreceiving();
+    } else {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            wu_con[i].nreceiving = 0;
+        }
+    }
     
     for (i = 0; i < local_domain.ncells_active; i++) {
         wu_con[i].receiving = malloc(wu_con[i].nreceiving * sizeof(*wu_con[i].receiving));

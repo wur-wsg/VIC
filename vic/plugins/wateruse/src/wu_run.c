@@ -118,7 +118,11 @@ calculate_demand(size_t iCell,
             wu_var[iCell2][iSector2].demand_remote = 
                     wu_var[iCell2][iSector2].demand_surf - 
                     wu_var[iCell2][iSector2].withdrawn_surf - 
-                    wu_var[iCell2][iSector2].withdrawn_dam; 
+                    wu_var[iCell2][iSector2].withdrawn_dam -
+                    wu_var[iCell2][iSector2].withdrawn_nonrenew;
+            if (wu_var[iCell2][iSector2].demand_remote < 0) {
+                wu_var[iCell2][iSector2].demand_remote = 0.;
+            }
             (*demand_remote) += wu_var[iCell2][iSector2].demand_remote;       
         }
     }
