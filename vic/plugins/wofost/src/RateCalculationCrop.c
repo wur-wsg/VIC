@@ -15,6 +15,9 @@ void RateCalculationCrop(SimUnit *Grid)
     float GrossAssimilation;
     float GrossGrowth;
     float Stress;
+    
+    /* Development rate calculation */
+    DevelopmentRate(Grid);
 
     /* Assimilation */
     GrossAssimilation = DailyTotalAssimilation(Grid);
@@ -37,8 +40,5 @@ void RateCalculationCrop(SimUnit *Grid)
     NutrientLoss(Grid);
     
     CropNutrientRates(Grid);
-    
-    /* Development rate calculation */
-    DevelopmentRate(Grid);
     
 }

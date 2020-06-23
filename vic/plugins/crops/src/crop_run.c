@@ -211,22 +211,35 @@ crop_run(size_t iCell)
                     if(cgrid->met->MeteoDay <= 0){
                         cgrid->met->MeteoDay += DAYS_PER_YEAR + leap_year(cgrid->met->MeteoYear - 1, global_param.calendar);
                     }
+                    
+                    /* Determine if the sowing already has occurred */
+                    IfSowing(cgrid, &cgrid->start);
 
                     cgrid->mng->N_external = 0.;
                     cgrid->mng->P_external = 0.;
                     cgrid->mng->K_external = 0.;
                     if(plugin_options.WOFOST_DIST_FERT){
                         for (iTime = 0; iTime < plugin_options.NFERTTIMES; iTime ++) {
-                            if(cgrid->crp->st.Development >= crop_con[iCell][iCrop].DVS_point[iTime] &&
-                               cgrid->crp->st.Development_prev <= crop_con[iCell][iCrop].DVS_point[iTime] &&
-                               cgrid->crp->rt.Development != 0.){
+                            if(crop_con[iCell][iCrop].DVS_point[iTime] <= cgrid->crp->prm.InitialDVS &&
+                               cgrid->crp->Sowing == 1) {
+                                /* If DVS_point smaller or equal to DVS_init, fertilize at sowing */
 
                                 /* Add external fertilization to WOFOST */
                                 cgrid->mng->N_external += crop_con[iCell][iCrop].N_amount[iTime];
                                 cgrid->mng->P_external += crop_con[iCell][iCrop].P_amount[iTime];
                                 cgrid->mng->K_external += crop_con[iCell][iCrop].K_amount[iTime];
-                            }
-                        }
+                                
+                            } else if(cgrid->crp->st.Development >= crop_con[iCell][iCrop].DVS_point[iTime] &&
+                                cgrid->crp->st.Development_prev <= crop_con[iCell][iCrop].DVS_point[iTime] &&
+                                cgrid->crp->rt.Development != 0.){
+                                 /* Else fertilize day after threshold is reached */
+
+                                 /* Add external fertilization to WOFOST */
+                                 cgrid->mng->N_external += crop_con[iCell][iCrop].N_amount[iTime];
+                                 cgrid->mng->P_external += crop_con[iCell][iCrop].P_amount[iTime];
+                                 cgrid->mng->K_external += crop_con[iCell][iCrop].K_amount[iTime];
+                             }
+                         }
                     }
 
                     wofost_run(cgrid);
