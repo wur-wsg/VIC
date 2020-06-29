@@ -31,18 +31,19 @@
 * @brief   Initialize the environmental requirement forcing
 ******************************************/
 void
-initialize_efr_force(efr_force_struct *efr_force, veg_con_map_struct *veg_con_map)
+initialize_efr_force(efr_force_struct   *efr_force,
+                     veg_con_map_struct *veg_con_map)
 {
     extern option_struct options;
 
-    size_t        i;
-    size_t        j;
+    size_t               i;
+    size_t               j;
 
     efr_force->discharge = 0.0;
     efr_force->baseflow = 0.0;
-    
+
     for (i = 0; i < veg_con_map->nv_active; i++) {
-        for(j = 0; j < options.SNOW_BAND; j++){
+        for (j = 0; j < options.SNOW_BAND; j++) {
             efr_force->moist[i][j] = 0.0;
         }
     }
@@ -54,12 +55,12 @@ initialize_efr_force(efr_force_struct *efr_force, veg_con_map_struct *veg_con_ma
 void
 efr_initialize_local_structures(void)
 {
-    extern domain_struct        local_domain;
+    extern domain_struct       local_domain;
     extern efr_force_struct   *efr_force;
     extern veg_con_map_struct *veg_con_map;
 
-    size_t                      i;
-    
+    size_t                     i;
+
     for (i = 0; i < local_domain.ncells_active; i++) {
         initialize_efr_force(&(efr_force[i]), &(veg_con_map[i]));
     }

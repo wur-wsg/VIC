@@ -56,7 +56,7 @@ typedef struct {
 /******************************************************************************
  * @brief   Public structures
  *****************************************************************************/
-plugin_filenames_struct plugin_filenames;
+plugin_filenames_struct  plugin_filenames;
 plugin_save_data_struct *plugin_save_data;
 
 /******************************************************************************

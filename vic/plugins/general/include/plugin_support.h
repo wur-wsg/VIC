@@ -40,7 +40,8 @@ void int_swap(size_t, size_t, int *);
 void double_swap(size_t, size_t, double *);
 double between_dmy(dmy_struct, dmy_struct, dmy_struct);
 double between_jday(double, double, double);
-unsigned short int days_per_month(unsigned short int, unsigned short int, unsigned short int);
+unsigned short int days_per_month(unsigned short int, unsigned short int,
+                                  unsigned short int);
 double array_average(double *, size_t, size_t, size_t, size_t);
 
 #endif /* PLUGIN_SUPPORT_H */

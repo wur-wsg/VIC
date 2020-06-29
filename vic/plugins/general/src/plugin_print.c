@@ -73,7 +73,7 @@ plugin_print_options(plugin_option_struct *op)
             op->WATERUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tIRRIGATION           : %s\n",
             op->IRRIGATION ? "true" : "false");
-    
+
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",
             op->FORCE_ROUTING ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",

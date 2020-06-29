@@ -1576,12 +1576,12 @@ vic_init(void)
                             &(all_vars[i].cell[tmp_lake_idx][0]), false);
         }
         initialize_energy(all_vars[i].energy, nveg);
-        
+
         for (j = 0; j <= nveg; j++) {
             for (k = 0; k < options.SNOW_BAND; k++) {
                 for (m = 0; m < options.Nlayer; m++) {
                     all_vars[i].cell[j][k].layer[m].Ksat =
-                            soil_con[i].Ksat[m];
+                        soil_con[i].Ksat[m];
                 }
             }
         }

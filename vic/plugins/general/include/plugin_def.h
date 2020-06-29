@@ -68,7 +68,7 @@ enum {
     OUT_EFR_DISCHARGE,                  /**< environmental river discharge [m3 s-1] */
     OUT_EFR_BASEFLOW,                   /**< environmental baseflow [mm] */
     OUT_EFR_MOIST,                      /**< environmental third-layer soil-moisture [mm] */
-    //dams
+    // dams
     OUT_LDAM_INFLOW,                    /**< local dam inflow [hm3] */
     OUT_LDAM_DEMAND,                    /**< local dam water demand [hm3] */
     OUT_LDAM_EFR,                       /**< local dam environmental requirements [hm3] */

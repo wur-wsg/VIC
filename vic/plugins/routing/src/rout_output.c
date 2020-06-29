@@ -35,7 +35,8 @@ rout_set_output_met_data_info(void)
 {
     extern metadata_struct out_metadata[];
 
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_INFLOW].varname, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_INFLOW].varname,
+             MAXSTRING,
              "%s", "OUT_STREAM_INFLOW");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_INFLOW].long_name,
              MAXSTRING, "%s", "stream_inflow");
@@ -68,7 +69,8 @@ rout_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].description,
              MAXSTRING, "%s", "moisture storage in stream flow");
 
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].varname, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].varname,
+             MAXSTRING,
              "%s", "OUT_NONREN_DEFICIT");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].long_name,
              MAXSTRING, "%s", "non_renewable_deficit");

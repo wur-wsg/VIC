@@ -99,9 +99,9 @@ typedef struct {
  * @brief   Public structures
  *****************************************************************************/
 wu_con_map_struct *wu_con_map;
-wu_con_struct *wu_con;
-wu_force_struct **wu_force;
-wu_var_struct **wu_var;
+wu_con_struct     *wu_con;
+wu_force_struct  **wu_force;
+wu_var_struct    **wu_var;
 
 /******************************************************************************
  * @brief   Functions
@@ -131,4 +131,3 @@ void wu_run(size_t);
 void wu_finalize(void);
 
 #endif /* WATERUSE_H */
-

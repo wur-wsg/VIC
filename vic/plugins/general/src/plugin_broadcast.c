@@ -309,7 +309,7 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
         blocklengths[i] = 1;
     }
     i = 0;
-    
+
     // double DAM_ALPHA;
     offsets[i] = offsetof(plugin_parameters_struct, DAM_ALPHA);
     mpi_types[i++] = MPI_DOUBLE;

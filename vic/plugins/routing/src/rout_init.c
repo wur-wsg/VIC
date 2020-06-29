@@ -38,7 +38,7 @@ rout_set_uh(void)
     extern domain_struct           global_domain;
     extern domain_struct           local_domain;
     extern rout_con_struct        *rout_con;
-    
+
     char                           locstr[MAXSTRING];
     double                         uh_sum;
     double                        *dvar = NULL;
@@ -74,15 +74,15 @@ rout_set_uh(void)
             rout_con[i].runoff_uh[j] = dvar[i];
         }
     }
-    
+
     for (i = 0; i < local_domain.ncells_active; i++) {
         sprint_location(locstr, &(local_domain.locations[i]));
-        
+
         uh_sum = 0.0;
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             uh_sum += rout_con[i].inflow_uh[j];
         }
-        
+
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             rout_con[i].inflow_uh[j] /= uh_sum;
         }
@@ -92,12 +92,12 @@ rout_set_uh(void)
                      "cell %zd. Adjusting fractions ...\n%s", uh_sum, i,
                      locstr);
         }
-        
+
         uh_sum = 0.0;
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             uh_sum += rout_con[i].runoff_uh[j];
         }
-        
+
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             rout_con[i].runoff_uh[j] /= uh_sum;
         }

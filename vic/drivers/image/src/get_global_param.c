@@ -761,12 +761,11 @@ get_global_param(FILE *gp)
                 "for NRECS.", global_param.nrecs);
     }
     for (file_num = 0; file_num < N_FORCING_TYPES; file_num++) {
-
         // Validate forcing files and variables
         if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
-	    if (file_num == AIR_TEMP || file_num == LWDOWN || file_num == PREC ||
-                file_num == PRESSURE || file_num == VP || file_num == SWDOWN ||
-                file_num == WIND) {
+            if (file_num == AIR_TEMP || file_num == LWDOWN ||
+                file_num == PREC || file_num == PRESSURE || file_num == VP ||
+                file_num == SWDOWN || file_num == WIND) {
                 log_err("No forcing file has been defined.  Make sure that the global "
                         "file defines forcing files for each variable.");
             }
@@ -881,9 +880,9 @@ get_global_param(FILE *gp)
     // Set the statename here temporarily to compare with INIT_STATE name
     if (options.SAVE_STATE) {
         status = snprintf(flgstr2, sizeof(flgstr2), "%s.%04i%02i%02i_%05u.nc",
-                 filenames.statefile, global_param.stateyear,
-                 global_param.statemonth, global_param.stateday,
-                 global_param.statesec);
+                          filenames.statefile, global_param.stateyear,
+                          global_param.statemonth, global_param.stateday,
+                          global_param.statesec);
         if (status >= MAXSTRING) {
             log_warn("State file name %s was too large [%d] "
                      "and is truncated to size [%d]",

@@ -56,14 +56,14 @@ rout_basin_run(size_t iCell)
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
-    
+
     /* Shift and clear previous discharge data */
     for (i = 0; i < rout_steps_per_dt; i++) {
         rout_var[iCell].dt_discharge[0] = 0.0;
         cshift(rout_var[iCell].dt_discharge,
                plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
     }
-    
+
     /* RUNOFF*/
     // Gather runoff from VIC
     in_runoff = out_data[iCell][OUT_RUNOFF][0];
@@ -71,7 +71,8 @@ rout_basin_run(size_t iCell)
     if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
         in_baseflow -= rout_var[iCell].nonrenew_deficit;
         rout_var[iCell].nonrenew_deficit = 0.;
-    } else {
+    }
+    else {
         rout_var[iCell].nonrenew_deficit -= in_baseflow;
         in_baseflow = 0.;
     }
@@ -97,14 +98,13 @@ rout_basin_run(size_t iCell)
     // Convolute current inflow
     rout_var[iCell].inflow = 0.;
     for (i = 0; i < rout_steps_per_dt; i++) {
-        
         // Calculate delta-time inflow (equal contribution)
         dt_inflow = inflow / rout_steps_per_dt;
-        
+
         for (j = 0; j < rout_con[iCell].Nupstream; j++) {
             dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
         }
-        
+
         rout_var[iCell].inflow += dt_inflow;
         convolute(dt_inflow, rout_con[iCell].inflow_uh,
                   rout_var[iCell].dt_discharge,

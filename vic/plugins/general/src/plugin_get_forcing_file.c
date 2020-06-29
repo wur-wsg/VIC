@@ -48,24 +48,26 @@ plugin_get_forcing_file_info(short unsigned int type)
     dmy_struct                        nc_origin_dmy;
     dmy_struct                        nc_start_dmy;
     size_t                            days_per_year;
-    int status;
-    int dim_id;
-    size_t dim_len;
-    
+    int                               status;
+    int                               dim_id;
+    size_t                            dim_len;
+
     // read time length from netcdf file
-    status = nc_inq_dimid(plugin_filenames.forcing[type].nc_id, "time", &dim_id);
+    status =
+        nc_inq_dimid(plugin_filenames.forcing[type].nc_id, "time", &dim_id);
     check_nc_status(status, "Error getting dimension id for %s in %s",
                     "time", plugin_filenames.forcing[type].nc_filename);
-    
-    status = nc_inq_dimlen(plugin_filenames.forcing[type].nc_id, dim_id, &dim_len);
+
+    status = nc_inq_dimlen(plugin_filenames.forcing[type].nc_id, dim_id,
+                           &dim_len);
     check_nc_status(status, "Error getting dimension length for %s in %s",
                     "time", plugin_filenames.forcing[type].nc_filename);
-    
-    if(dim_len == 1){
+
+    if (dim_len == 1) {
         count = 1;
     }
-    
-    
+
+
     // read time info from netcdf file
     get_nc_field_double(&plugin_filenames.forcing[type], "time", &start, &count,
                         nc_times);
@@ -114,7 +116,7 @@ plugin_get_forcing_file_info(short unsigned int type)
     }
 
     // calculate timestep in forcing file
-    if (dim_len == 1){
+    if (dim_len == 1) {
         plugin_global_param.force_steps_per_year[type] =
             (size_t) 1;
     }

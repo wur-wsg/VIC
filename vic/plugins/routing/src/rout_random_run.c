@@ -107,7 +107,7 @@ rout_random_run()
     inflow_global =
         malloc(global_domain.ncells_active * sizeof(*inflow_global));
     check_alloc_status(inflow_global, "Memory allocation error");
-    
+
 
     for (i = 0; i < global_domain.ncells_active; i++) {
         up_global[i] = malloc(MAX_UPSTREAM * sizeof(*up_global[i]));
@@ -176,17 +176,18 @@ rout_random_run()
         for (j = 0; j < plugin_options.UH_LENGTH; j++) {
             iuh_local[i][j] = rout_con[i].inflow_uh[j];
         }
-        
+
         in_runoff = out_data[i][OUT_RUNOFF][0];
         in_baseflow = out_data[i][OUT_BASEFLOW][0];
         if (in_baseflow > rout_var[i].nonrenew_deficit) {
             rout_var[i].nonrenew_deficit = 0.;
             in_baseflow -= rout_var[i].nonrenew_deficit;
-        } else {
+        }
+        else {
             rout_var[i].nonrenew_deficit -= in_baseflow;
             in_baseflow = 0.;
         }
-        
+
         run_local[i] =
             (in_runoff + in_baseflow) *
             local_domain.locations[i].area /
@@ -223,14 +224,15 @@ rout_random_run()
         for (i = 0; i < global_domain.ncells_active; i++) {
             iCell = routing_order[i];
 
-    	    /* Shift and clear previous discharge data */
+            /* Shift and clear previous discharge data */
             for (j = 0; j < rout_steps_per_dt; j++) {
                 dt_dis_global[iCell][0] = 0.0;
                 cshift(dt_dis_global[iCell],
-                       plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
+                       plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0,
+                       1);
             }
 
-    	    /* RUNOFF*/
+            /* RUNOFF*/
             // Gather runoff from VIC
             runoff = run_global[iCell];
             // Calculate delta-time runoff (equal contribution)
@@ -241,7 +243,7 @@ rout_random_run()
                           plugin_options.UH_LENGTH, j);
             }
 
-    	    /* INFLOW*/
+            /* INFLOW*/
             // Gather inflow from VIC
             inflow = 0.0;
             if (plugin_options.FORCE_ROUTING) {
@@ -250,16 +252,15 @@ rout_random_run()
             // Convolute current inflow
             inflow_global[iCell] = 0.;
             for (j = 0; j < rout_steps_per_dt; j++) {
-
-            	// Calculate delta-time inflow (equal contribution)
-            	dt_inflow = inflow / rout_steps_per_dt;
+                // Calculate delta-time inflow (equal contribution)
+                dt_inflow = inflow / rout_steps_per_dt;
 
                 for (k = 0; k < nup_global[iCell]; k++) {
                     dt_inflow += dt_dis_global[up_global[iCell][k]][j];
                 }
-		
+
                 inflow_global[iCell] += dt_inflow;
-                convolute(dt_inflow, iuh_global[iCell], 
+                convolute(dt_inflow, iuh_global[iCell],
                           dt_dis_global[iCell],
                           plugin_options.UH_LENGTH, j);
             }
@@ -268,7 +269,9 @@ rout_random_run()
             dis_global[iCell] = 0.0;
             prev_stream = stream_global[iCell];
             stream_global[iCell] = 0.0;
-            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
+            for (j = 0;
+                 j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1;
+                 j++) {
                 if (j < rout_steps_per_dt) {
                     dis_global[iCell] += dt_dis_global[iCell][j];
                 }

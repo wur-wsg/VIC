@@ -102,7 +102,7 @@ irr_set_output_met_data_info(void)
 ******************************************/
 void
 irr_history(int           varid,
-             unsigned int *agg_type)
+            unsigned int *agg_type)
 {
     switch (varid) {
     case  N_OUTVAR_TYPES + OUT_REQUIREMENT:
@@ -125,46 +125,55 @@ irr_history(int           varid,
 void
 irr_put_data(size_t iCell)
 {
-    extern option_struct options;
-    extern irr_var_struct  ***irr_var;
-    extern irr_con_map_struct   *irr_con_map;
-    extern soil_con_struct   *soil_con;
-    extern veg_con_struct   **veg_con;
+    extern option_struct       options;
+    extern irr_var_struct   ***irr_var;
+    extern irr_con_map_struct *irr_con_map;
+    extern soil_con_struct    *soil_con;
+    extern veg_con_struct    **veg_con;
     extern double           ***out_data;
 
-    size_t i;
-    size_t j;
-    double veg_fract;
-    double area_fract;
-    int veg_index;
-    
-    for(i = 0; i < irr_con_map[iCell].ni_active; i++){
+    size_t                     i;
+    size_t                     j;
+    double                     veg_fract;
+    double                     area_fract;
+    int                        veg_index;
+
+    for (i = 0; i < irr_con_map[iCell].ni_active; i++) {
         veg_index = irr_con_map[iCell].vidx[i];
-        
-        if(veg_index != NODATA_VEG){
+
+        if (veg_index != NODATA_VEG) {
             veg_fract = veg_con[iCell][veg_index].Cv;
-        
-            if(veg_fract > 0) {
-                    
-                for(j = 0; j < options.SNOW_BAND; j++){
+
+            if (veg_fract > 0) {
+                for (j = 0; j < options.SNOW_BAND; j++) {
                     area_fract = soil_con[iCell].AreaFract[j];
 
-                    if(area_fract > 0){
+                    if (area_fract > 0) {
                         out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_REQUIREMENT][0] += irr_var[iCell][i][j].requirement *
-                                veg_fract * area_fract;
+                                        OUT_REQUIREMENT][0] +=
+                            irr_var[iCell][i][j].requirement *
+                            veg_fract *
+                            area_fract;
                         out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_SHORTAGE][0] += irr_var[iCell][i][j].shortage *
-                                veg_fract * area_fract;
+                                        OUT_SHORTAGE][0] +=
+                            irr_var[iCell][i][j].shortage *
+                            veg_fract *
+                            area_fract;
                         out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_RECEIVED][0] += irr_var[iCell][i][j].received *
-                                veg_fract * area_fract;
+                                        OUT_RECEIVED][0] +=
+                            irr_var[iCell][i][j].received *
+                            veg_fract *
+                            area_fract;
                         out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_LEFTOVER][0] += irr_var[iCell][i][j].leftover *
-                                veg_fract * area_fract;
+                                        OUT_LEFTOVER][0] +=
+                            irr_var[iCell][i][j].leftover *
+                            veg_fract *
+                            area_fract;
                         out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_APPLIED][0] += irr_var[iCell][i][j].applied *
-                                veg_fract * area_fract;
+                                        OUT_APPLIED][0] +=
+                            irr_var[iCell][i][j].applied *
+                            veg_fract *
+                            area_fract;
                     }
                 }
             }
