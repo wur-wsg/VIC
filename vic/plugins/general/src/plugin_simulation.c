@@ -66,10 +66,6 @@ plugin_update_step_vars(void)
         if (plugin_options.WATERUSE) {
             wu_update_step_vars(i);
         }
-        if (plugin_options.WOFOST) {
-            crop_update_step_vars(i);
-            wofost_update_step_vars(i);
-        }
     }
 }
 
