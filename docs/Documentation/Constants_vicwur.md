@@ -14,4 +14,4 @@ The table below lists the constants available for manipulation via the `CONSTANT
 | DAM_BETA | Dam correction exponent | - | 0.6 |
 | DAM_GAMMA | Dam correction period | days | 5 |
 | Ksat_expt | Paddy irrigation saturated conductivity exponent | - | 0.33 |
-| Wfc_fract | Field capacity as fraction of critical moisture content | fraction | 0.8 |
+| Wfc_fract | Upper irrigation limit | fraction of critical moisture content | 0.99 |
