@@ -48,6 +48,31 @@ plugin_force(void)
     plugin_end_forcing();
 }
 
+
+/******************************************
+* @brief    Update plugin step vars
+******************************************/
+void
+plugin_update_step_vars(void)
+{
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
+
+    size_t                      i;
+    
+    // If running with OpenMP, run this for loop using multiple threads
+    #pragma omp parallel for default(shared) private(i)
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        if (plugin_options.WATERUSE) {
+            wu_update_step_vars(i);
+        }
+        if (plugin_options.WOFOST) {
+            crop_update_step_vars(i);
+            wofost_update_step_vars(i);
+        }
+    }
+}
+
 /******************************************
 * @brief    Run plugins
 ******************************************/

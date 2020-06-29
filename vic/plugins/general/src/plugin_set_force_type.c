@@ -128,6 +128,9 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("MONTH", ncfreq) == 0) {
         freq = FORCE_MONTH;
     }
+    else if (strcasecmp("YEAR", ncfreq) == 0) {
+        freq = FORCE_YEAR;
+    }
     /** Undefined variable frequency **/
     else {
         log_err("Undefined forcing variable frequency %s in forcing file.",

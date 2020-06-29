@@ -174,6 +174,7 @@ enum
     FORCE_STEP,                         /**< model step forcing frequency */
     FORCE_DAY,                          /**< daily forcing frequency */
     FORCE_MONTH,                        /**< monthly forcing frequency */
+    FORCE_YEAR,                         /**< yearly forcing frequency */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCE_FREQS                /**< Number of force frequencies */
@@ -298,6 +299,7 @@ void plugin_get_forcing_file_info(short unsigned int);
 void plugin_get_forcing_file_skip(short unsigned int);
 void plugin_start_forcing(void);
 void plugin_end_forcing(void);
+void plugin_update_step_vars(void);
 void plugin_run(void);
 
 #endif /* PLUGIN_H */
