@@ -131,6 +131,39 @@ crop_set_mapping(void)
 }
 
 void
+crop_set_tfactor(void)
+{
+    extern domain_struct local_domain;
+    extern domain_struct global_domain;
+    extern plugin_filenames_struct plugin_filenames;
+    extern soil_con_struct *soil_con;
+    double *dvar;
+    
+    size_t i;
+    
+    size_t  d2count[2];
+    size_t  d2start[2];
+    
+    d2start[0] = 0;
+    d2start[1] = 0;
+    d2count[0] = global_domain.n_ny;
+    d2count[1] = global_domain.n_nx;
+    
+    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+    check_alloc_status(dvar, "Memory allocation error.");
+    
+    // Set t factor                   
+    get_scatter_nc_field_double(&plugin_filenames.crop,
+                             "Tfactor", d2start, d2count, dvar);
+
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        soil_con[i].Tfactor[0] = dvar[i];
+    }
+    
+    free(dvar);
+}
+
+void
 crop_init(void)
 {
     extern plugin_filenames_struct plugin_filenames;
@@ -147,6 +180,7 @@ crop_init(void)
     }
     
     crop_set_mapping();
+    crop_set_tfactor();
     wofost_set_data_text(plugin_filenames.wofost_text);
     wofost_set_data();
     wofost_check_data();

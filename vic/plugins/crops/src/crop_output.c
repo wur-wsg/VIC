@@ -657,5 +657,4 @@ crop_put_data(size_t iCell)
             }
         }
     }
-
 }
