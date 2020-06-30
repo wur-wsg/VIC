@@ -73,11 +73,19 @@ plugin_print_options(plugin_option_struct *op)
             op->WATERUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tIRRIGATION           : %s\n",
             op->IRRIGATION ? "true" : "false");
-    
+
     fprintf(LOG_DEST, "\tFORCE_ROUTING        : %s\n",
             op->FORCE_ROUTING ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
             op->POTENTIAL_IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tFORCE_PUMP_CAP            : %s\n",
+            op->FORCE_PUMP_CAP ? "true" : "false");
+    fprintf(LOG_DEST, "\tCOMP_WITH            : %s\n",
+            op->COMP_WITH ? "true" : "false");
+    fprintf(LOG_DEST, "\tREMOTE_WITH          : %s\n",
+            op->REMOTE_WITH ? "true" : "false");
+    fprintf(LOG_DEST, "\tNONRENEW_WITH        : %s\n",
+            op->NONRENEW_WITH ? "true" : "false");
 
     fprintf(LOG_DEST, "\tUH_LENGTH            : %d\n",
             op->UH_LENGTH);

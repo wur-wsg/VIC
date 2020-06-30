@@ -42,6 +42,8 @@ rout_basin_run(size_t iCell)
     extern rout_force_struct         *rout_force;
     extern double                  ***out_data;
 
+    double                            in_runoff;
+    double                            in_baseflow;
     double                            inflow;
     double                            dt_inflow;
     double                            runoff;
@@ -50,45 +52,61 @@ rout_basin_run(size_t iCell)
     double                            prev_stream;
 
     size_t                            i;
+    size_t                            j;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
 
-    // Gather inflow from upstream cells
-    inflow = 0;
-    for (i = 0; i < rout_con[iCell].Nupstream; i++) {
-        inflow += rout_var[rout_con[iCell].upstream[i]].discharge;
-    }
-
-    // Gather inflow from forcing
-    if (plugin_options.FORCE_ROUTING) {
-        inflow += rout_force[iCell].discharge;
-    }
-
-    // Gather runoff from VIC
-    runoff =
-        (out_data[iCell][OUT_RUNOFF][0] +
-         out_data[iCell][OUT_BASEFLOW][0]) *
-        local_domain.locations[iCell].area /
-        (global_param.dt * MM_PER_M);
-
-    // Calculate delta-time inflow & runoff (equal contribution)
-    dt_inflow = inflow / rout_steps_per_dt;
-    dt_runoff = runoff / rout_steps_per_dt;
-
-    // Shift and clear previous discharge data
+    /* Shift and clear previous discharge data */
     for (i = 0; i < rout_steps_per_dt; i++) {
         rout_var[iCell].dt_discharge[0] = 0.0;
         cshift(rout_var[iCell].dt_discharge,
-               plugin_options.UH_LENGTH + rout_steps_per_dt, 1, 0, 1);
+               plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
     }
 
-    // Convolute current inflow & runoff
+    /* RUNOFF*/
+    // Gather runoff from VIC
+    in_runoff = out_data[iCell][OUT_RUNOFF][0];
+    in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
+    if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
+        in_baseflow -= rout_var[iCell].nonrenew_deficit;
+        rout_var[iCell].nonrenew_deficit = 0.;
+    }
+    else {
+        rout_var[iCell].nonrenew_deficit -= in_baseflow;
+        in_baseflow = 0.;
+    }
+    runoff =
+        (in_runoff + in_baseflow) *
+        local_domain.locations[iCell].area /
+        (global_param.dt * MM_PER_M);
+    // Calculate delta-time runoff (equal contribution)
+    dt_runoff = runoff / rout_steps_per_dt;
+    // Convolute current runoff
     for (i = 0; i < rout_steps_per_dt; i++) {
-        convolute(dt_inflow, rout_con[iCell].inflow_uh,
+        convolute(dt_runoff, rout_con[iCell].runoff_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
-        convolute(dt_runoff, rout_con[iCell].runoff_uh,
+    }
+
+    /* INFLOW*/
+    // Gather inflow from forcing
+    inflow = 0.0;
+    if (plugin_options.FORCE_ROUTING) {
+        inflow += rout_force[iCell].discharge;
+    }
+    // Convolute current inflow
+    rout_var[iCell].inflow = 0.;
+    for (i = 0; i < rout_steps_per_dt; i++) {
+        // Calculate delta-time inflow (equal contribution)
+        dt_inflow = inflow / rout_steps_per_dt;
+
+        for (j = 0; j < rout_con[iCell].Nupstream; j++) {
+            dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
+        }
+
+        rout_var[iCell].inflow += dt_inflow;
+        convolute(dt_inflow, rout_con[iCell].inflow_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
     }
@@ -97,7 +115,7 @@ rout_basin_run(size_t iCell)
     rout_var[iCell].discharge = 0.0;
     prev_stream = rout_var[iCell].stream;
     rout_var[iCell].stream = 0.0;
-    for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt; i++) {
+    for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; i++) {
         if (i < rout_steps_per_dt) {
             rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
         }
@@ -107,14 +125,14 @@ rout_basin_run(size_t iCell)
     }
 
     // Check water balance
-    if (abs(prev_stream + (inflow + runoff) -
+    if (abs(prev_stream + (rout_var[iCell].inflow + runoff) -
             (rout_var[iCell].discharge + rout_var[iCell].stream)) >
         DBL_EPSILON) {
         log_err("Discharge water balance error [%.4f]. "
                 "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                prev_stream + (inflow + runoff) -
+                prev_stream + (rout_var[iCell].inflow + runoff) -
                 (rout_var[iCell].discharge + rout_var[iCell].stream),
-                (inflow + runoff),
+                (rout_var[iCell].inflow + runoff),
                 rout_var[iCell].discharge,
                 prev_stream,
                 rout_var[iCell].stream);

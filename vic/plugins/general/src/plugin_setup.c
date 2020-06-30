@@ -39,7 +39,7 @@ plugin_get_global_param(char cmdstr[MAXSTRING])
     }
     else if (efr_get_global_param(cmdstr)) {
     }
-    else if(dam_get_global_param(cmdstr)){
+    else if (dam_get_global_param(cmdstr)) {
     }
     else if (wu_get_global_param(cmdstr)) {
     }
@@ -84,14 +84,14 @@ plugin_validate_global_param(void)
 bool
 plugin_get_parameters(char cmdstr[MAXSTRING])
 {
-    if(dam_get_parameters(cmdstr)){
+    if (dam_get_parameters(cmdstr)) {
     }
     else if (irr_get_parameters(cmdstr)) {
-    } 
+    }
     else {
         return false;
     }
-    
+
     return true;
 }
 
@@ -101,9 +101,9 @@ plugin_get_parameters(char cmdstr[MAXSTRING])
 void
 plugin_validate_parameters(void)
 {
-    extern plugin_option_struct    plugin_options;
-    
-    if(plugin_options.DAMS) {
+    extern plugin_option_struct plugin_options;
+
+    if (plugin_options.DAMS) {
         dam_validate_parameters();
     }
     if (plugin_options.IRRIGATION) {
@@ -140,7 +140,13 @@ plugin_start(void)
 void
 plugin_alloc(void)
 {
-    extern plugin_option_struct plugin_options;
+    extern plugin_option_struct     plugin_options;
+    extern domain_struct            local_domain;
+    extern plugin_save_data_struct *plugin_save_data;
+
+    plugin_save_data =
+        malloc(local_domain.ncells_active * sizeof(*plugin_save_data));
+    check_alloc_status(plugin_save_data, "Memory allocation error");
 
     if (plugin_options.ROUTING) {
         rout_alloc();
@@ -188,8 +194,8 @@ plugin_init(void)
 void
 plugin_generate_default_state(void)
 {
-    extern plugin_option_struct    plugin_options;
- 
+    extern plugin_option_struct plugin_options;
+
     if (plugin_options.DAMS) {
         dam_generate_default_state();
     }
@@ -230,10 +236,21 @@ plugin_restore(void)
 void
 plugin_compute_derived_state_vars(void)
 {
-    extern plugin_option_struct plugin_options;
+    extern plugin_option_struct     plugin_options;
+    extern domain_struct            local_domain;
+    extern plugin_save_data_struct *plugin_save_data;
+
+    size_t                          i;
+
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        plugin_save_data[i].total_moist_storage = 0.0;
+    }
 
     if (plugin_options.ROUTING) {
         rout_compute_derived_state_vars();
+    }
+    if (plugin_options.DAMS) {
+        dam_compute_derived_state_vars();
     }
 }
 
@@ -243,11 +260,12 @@ plugin_compute_derived_state_vars(void)
 void
 plugin_finalize(void)
 {
-    extern plugin_option_struct plugin_options;
-    extern MPI_Datatype         plugin_mpi_global_struct_type;
-    extern MPI_Datatype         plugin_mpi_filenames_struct_type;
-    extern MPI_Datatype         plugin_mpi_option_struct_type;
-    extern MPI_Datatype         plugin_mpi_param_struct_type;
+    extern plugin_option_struct     plugin_options;
+    extern MPI_Datatype             plugin_mpi_global_struct_type;
+    extern MPI_Datatype             plugin_mpi_filenames_struct_type;
+    extern MPI_Datatype             plugin_mpi_option_struct_type;
+    extern MPI_Datatype             plugin_mpi_param_struct_type;
+    extern plugin_save_data_struct *plugin_save_data;
 
     MPI_Type_free(&plugin_mpi_global_struct_type);
     MPI_Type_free(&plugin_mpi_filenames_struct_type);
@@ -269,4 +287,6 @@ plugin_finalize(void)
     if (plugin_options.IRRIGATION) {
         irr_finalize();
     }
+
+    free(plugin_save_data);
 }

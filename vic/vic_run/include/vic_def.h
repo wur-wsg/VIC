@@ -265,8 +265,6 @@ typedef struct {
                             FALSE = when iterations fail to converge, report an error
                                     and abort simulation for current grid cell
                             Default = TRUE */
-    bool MATRIC;         /**< TRUE = use matric potential to calculate drainage
-                            Default = FALSE */
 
     // input options
     unsigned short int BASEFLOW;     /**< ARNO: read Ds, Dm, Ws, c; NIJSSEN2001: read d1, d2, d3, d4 */

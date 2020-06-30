@@ -49,6 +49,26 @@ plugin_force(void)
 }
 
 /******************************************
+* @brief    Update plugin step vars
+******************************************/
+void
+plugin_update_step_vars(void)
+{
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
+
+    size_t                      i;
+
+    // If running with OpenMP, run this for loop using multiple threads
+    #pragma omp parallel for default(shared) private(i)
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        if (plugin_options.WATERUSE) {
+            wu_update_step_vars(i);
+        }
+    }
+}
+
+/******************************************
 * @brief    Run plugins
 ******************************************/
 void
@@ -64,27 +84,27 @@ plugin_run(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-    	if (plugin_options.IRRIGATION) {
+        if (plugin_options.IRRIGATION) {
             irr_run_requirement(i);
             if (plugin_options.WATERUSE) {
                 irr_set_demand(i);
             }
         }
     }
-    
+
     if (plugin_options.ROUTING) {
         if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
             plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCell = routing_order[i];
-		
+
                 if (plugin_options.DAMS) {
                     local_dam_run(iCell);
                 }
                 rout_basin_run(iCell);
                 if (plugin_options.WATERUSE) {
                     wu_run(iCell);
-        	}
+                }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
                 }
@@ -94,12 +114,13 @@ plugin_run(void)
             rout_random_run();
         }
     }
-    
+
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-    	if (plugin_options.IRRIGATION) {
-            if(plugin_options.POTENTIAL_IRRIGATION || plugin_options.WATERUSE){
+        if (plugin_options.IRRIGATION) {
+            if (plugin_options.POTENTIAL_IRRIGATION ||
+                plugin_options.WATERUSE) {
                 irr_get_withdrawn(i);
             }
             irr_run_shortage(i);
@@ -111,7 +132,7 @@ plugin_run(void)
 * @brief    Write plugins
 ******************************************/
 void
-plugin_put_data()
+plugin_put_data(void)
 {
     extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
@@ -136,6 +157,8 @@ plugin_put_data()
         if (plugin_options.IRRIGATION) {
             irr_put_data(i);
         }
+
+        plugin_store_error(i);
     }
 }
 

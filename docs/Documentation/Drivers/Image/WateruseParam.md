@@ -13,11 +13,12 @@ The water-use parameters are supplied to VIC-WUR in a NetCDF file, with a separa
 
 Below is a list of water-use parameters.
 
-| Variable Name | Dimension                | Units | Type | Number of Values        | Description                 |
-|---------------|--------------------------|-------|------|-------------------------|-----------------------------|
-| receiving_id  | [lat, lon]               | N/A   | int  | 1                       | Current cell grid cell ID   |
-| Nreceiving    | [lat, lon]               | N/A   | int  | 1                       | Number of receiving cells   |
-| receiving     | [wu_receiving, lat, lon] | N/A   | int  | water-use max receiving | Receiving cell grid cell ID |
+| Variable Name    | Dimension                | Units    | Type  | Number of Values        | Description                 |
+|------------------|--------------------------|----------|-------|-------------------------|-----------------------------|
+| receiving_id     | [lat, lon]               | N/A      | int   | 1                       | Current cell grid cell ID   |
+| Nreceiving       | [lat, lon]               | N/A      | int   | 1                       | Number of receiving cells   |
+| receiving        | [wu_receiving, lat, lon] | N/A      | int   | water-use max receiving | Receiving cell grid cell ID |
+| pumping_capacity | [lat, lon]               | mm day-1 | float | 1                       | Pumping capacity of cell    |
 
 # Example netCDF format VIC-WUR image driver water-use parameters
 
@@ -34,6 +35,10 @@ variables:
 	double lat(lat) ;
 		lat:units = "degrees_north" ;
 		lat:long_name = "latitude of grid cell center" ;
+	float pumping_capacity(lat, lon) ;
+		pumping_capacity:units = "mm day-1" ;
+		pumping_capacity:_FillValue = -1.f ;
+		pumping_capacity:long_name = "Pumping capacity" ;
 	float Nreceiving(lat, lon) ;
 		Nreceiving:units = "#" ;
 		Nreceiving:_FillValue = -1.f ;

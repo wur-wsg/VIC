@@ -69,7 +69,6 @@ initialize_options()
     options.SPATIAL_FROST = false;
     options.SPATIAL_SNOW = false;
     options.TFALLBACK = true;
-    options.MATRIC = false;
     // Model dimensions
     options.Ncanopy = 3;
     options.Nfrost = 1;

@@ -57,6 +57,7 @@ typedef struct {
  * @brief   Water-use Constants
  *****************************************************************************/
 typedef struct {
+    double pumping_capacity;        /**< pumping capacity [mm day-1] */
     size_t nreceiving;              /**< number of receiving cells */
     size_t *receiving;              /**< receiving cell id */
 } wu_con_struct;
@@ -68,14 +69,18 @@ typedef struct {
     double available_gw;            /**< available groundwater resources [mm] */
     double available_surf;          /**< available surface water resources [mm] */
     double available_dam;           /**< available dam reservoir resources [mm] */
+    double available_comp;        /**< available compensation resources [mm] */
     double available_remote;        /**< available remote resources [mm] */
     double demand_gw;               /**< demand for groundwater resources [mm] */
     double demand_surf;             /**< demand for surface water resources [mm] */
+    double demand_comp;             /**< demand for compensation resources [mm] */
     double demand_remote;           /**< demand for remote resources [mm] */
     double withdrawn_gw;            /**< withdrawn groundwater resources [mm] */
     double withdrawn_surf;          /**< withdrawn surface water resources [mm] */
     double withdrawn_dam;           /**< withdrawn dam reservoir resources [mm] */
+    double withdrawn_comp;          /**< withdrawn compensation resources [mm] */
     double withdrawn_remote;        /**< withdrawn remote resources [mm] */
+    double withdrawn_nonrenew;      /**< withdrawn non-renewable resources [mm] */
     double returned;                /**< returned water resources [mm] */
     double consumed;                /**< consumed water resources [mm] */
 } wu_var_struct;
@@ -84,6 +89,7 @@ typedef struct {
  * @brief   Water-use Forcing
  *****************************************************************************/
 typedef struct {
+    double pumping_capacity;       /**< pumping capacity [mm day-1] */
     double demand;                 /**< water demand [mm] */
     double consumption_frac;       /**< water groundwater fraction [-] */
     double groundwater_frac;       /**< water consumption fraction [-] */
@@ -93,9 +99,9 @@ typedef struct {
  * @brief   Public structures
  *****************************************************************************/
 wu_con_map_struct *wu_con_map;
-wu_con_struct *wu_con;
-wu_force_struct **wu_force;
-wu_var_struct **wu_var;
+wu_con_struct     *wu_con;
+wu_force_struct  **wu_force;
+wu_var_struct    **wu_var;
 
 /******************************************************************************
  * @brief   Functions
@@ -118,10 +124,10 @@ void wu_set_nc_var_dimids(unsigned int, nc_file_struct *, nc_var_struct *);
 void wu_history(unsigned int, unsigned int *);
 void wu_put_data(size_t);
 
+void wu_update_step_vars(size_t);
 void wu_forcing(void);
 void wu_run(size_t);
 
 void wu_finalize(void);
 
 #endif /* WATERUSE_H */
-

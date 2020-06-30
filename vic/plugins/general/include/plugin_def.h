@@ -57,14 +57,18 @@ enum {
  * @brief   Output Variable Type
  *****************************************************************************/
 enum {
+    // water balance
+    OUT_ROUTING_ERROR,                  /**< routing budget error [mm] */
     // routing
+    OUT_STREAM_INFLOW,                  /**< river (inflow) discharge [m3 s-1] */
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
+    OUT_NONREN_DEFICIT,                 /**< non-renewable storage deficit [mm] */
     // efr
     OUT_EFR_DISCHARGE,                  /**< environmental river discharge [m3 s-1] */
     OUT_EFR_BASEFLOW,                   /**< environmental baseflow [mm] */
     OUT_EFR_MOIST,                      /**< environmental third-layer soil-moisture [mm] */
-    //dams
+    // dams
     OUT_LDAM_INFLOW,                    /**< local dam inflow [hm3] */
     OUT_LDAM_DEMAND,                    /**< local dam water demand [hm3] */
     OUT_LDAM_EFR,                       /**< local dam environmental requirements [hm3] */
@@ -89,25 +93,33 @@ enum {
     OUT_AV_GW_SECT,                     /**< available groundwater resources per sector [mm] */
     OUT_AV_SURF_SECT,                   /**< available surface water resources per sector [mm] */
     OUT_AV_DAM_SECT,                    /**< available dam reservoir resources per sector [mm] */
+    OUT_AV_COMP_SECT,                   /**< available compensation resources per sector [mm] */
     OUT_AV_REM_SECT,                    /**< available remote resources per sector [mm] */
     OUT_DE_GW_SECT,                     /**< demand for groundwater resources per sector [mm] */
-    OUT_DE_SURF_SECT,                   /**< demand for surface water  resources per sector [mm] */
+    OUT_DE_SURF_SECT,                   /**< demand for surface water resources per sector [mm] */
+    OUT_DE_COMP_SECT,                   /**< demand for compensation resources per sector [mm] */
     OUT_DE_REM_SECT,                    /**< demand for remote resources per sector [mm] */
     OUT_WI_GW_SECT,                     /**< withdrawn groundwater resources per sector [mm] */
     OUT_WI_SURF_SECT,                   /**< withdrawn surface water resources per sector [mm] */
     OUT_WI_DAM_SECT,                    /**< withdrawn dam reservoir resources per sector [mm] */
+    OUT_WI_COMP_SECT,                   /**< withdrawn compensation resources per sector [mm] */
     OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector [mm] */
+    OUT_WI_NREN_SECT,                   /**< withdrawn non-renewable resources per sector [mm] */
     OUT_AV_GW,                          /**< available groundwater resources [mm] */
     OUT_AV_SURF,                        /**< available surface water resources [mm] */
     OUT_AV_DAM,                         /**< available dam reservoir resources [mm] */
+    OUT_AV_COMP,                        /**< available compensation resources [mm] */
     OUT_AV_REM,                         /**< available remote resources [mm] */
     OUT_DE_GW,                          /**< demand for groundwater resources [mm] */
     OUT_DE_SURF,                        /**< demand for surface water resources [mm] */
+    OUT_DE_COMP,                        /**< demand for compensation resources [mm] */
     OUT_DE_REM,                         /**< demand for remote resources [mm] */
     OUT_WI_GW,                          /**< withdrawn groundwater resources [mm] */
     OUT_WI_SURF,                        /**< withdrawn surface water resources [mm] */
     OUT_WI_DAM,                         /**< withdrawn dam reservoir resources [mm] */
+    OUT_WI_COMP,                        /**< withdrawn compensation resources [mm] */
     OUT_WI_REM,                         /**< withdrawn remote resources [mm] */
+    OUT_WI_NREN,                        /**< withdrawn non-renewable resources [mm] */
     OUT_AVAILABLE,                      /**< available water resources [mm] */
     OUT_DEMAND,                         /**< demand for water resources [mm] */
     OUT_WITHDRAWN,                      /**< withdrawn water resources [mm] */
@@ -115,6 +127,9 @@ enum {
     // irrigation
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
+    OUT_RECEIVED,                       /**< irrigation water received [mm] */
+    OUT_LEFTOVER,                       /**< irrigation water leftover [mm] */
+    OUT_APPLIED,                        /**< irrigation water applied [mm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_OUTVAR_TYPES               /**< used as a loop counter*/
@@ -130,6 +145,7 @@ enum {
     FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
     FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
     // water-use
+    FORCING_PUMPING_CAP,                /**< pumping capacity [mm day-1] */
     FORCING_IRR_DEMAND,                 /**< irrigation demand [mm] */
     FORCING_IRR_GROUNDWATER,            /**< irrigation groundwater fraction [-] */
     FORCING_IRR_CONSUMPTION,            /**< irrigation consumption fraction [-] */
@@ -158,6 +174,7 @@ enum
     FORCE_STEP,                         /**< model step forcing frequency */
     FORCE_DAY,                          /**< daily forcing frequency */
     FORCE_MONTH,                        /**< monthly forcing frequency */
+    FORCE_YEAR,                         /**< yearly forcing frequency */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCE_FREQS                /**< Number of force frequencies */
@@ -197,6 +214,10 @@ typedef struct {
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
+    bool FORCE_PUMP_CAP;                /**< pumping capacity forcing flag */
+    bool COMP_WITH;                     /**< compensation water abstractions flag */
+    bool REMOTE_WITH;                   /**< remote water abstractions flag */
+    bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
 } plugin_option_struct;
 
 /******************************************************************************
@@ -278,6 +299,7 @@ void plugin_get_forcing_file_info(short unsigned int);
 void plugin_get_forcing_file_skip(short unsigned int);
 void plugin_start_forcing(void);
 void plugin_end_forcing(void);
+void plugin_update_step_vars(void);
 void plugin_run(void);
 
 #endif /* PLUGIN_H */

@@ -55,8 +55,10 @@ typedef struct {
  * @brief   Irrigation Variable
  *****************************************************************************/
 typedef struct {
+    double received;                /**< received irrigation water [mm] */
     double leftover;                /**< leftover irrigation water [mm] */
-    
+    double applied;                 /**< applied irrigation water [mm] */
+
     double shortage;                /**< shortage (below critical soil moisture point) [mm] */
     double requirement;             /**< requirement (between field capacity and critical soil moisture point) [mm] */
     bool flag_req;                  /**< requires irrigation flag */
@@ -94,4 +96,3 @@ void irr_get_withdrawn(size_t);
 void irr_finalize(void);
 
 #endif
-

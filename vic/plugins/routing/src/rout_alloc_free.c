@@ -66,7 +66,7 @@ rout_alloc(void)
         check_alloc_status(rout_con[i].runoff_uh, "Memory allocation error");
 
         rout_var[i].dt_discharge =
-            malloc((plugin_options.UH_LENGTH + rout_steps_per_dt) *
+            malloc((plugin_options.UH_LENGTH + rout_steps_per_dt + 1) *
                    sizeof(*rout_var[i].dt_discharge));
         check_alloc_status(rout_var[i].dt_discharge, "Memory allocation error");
     }

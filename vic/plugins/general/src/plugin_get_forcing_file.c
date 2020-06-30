@@ -48,6 +48,25 @@ plugin_get_forcing_file_info(short unsigned int type)
     dmy_struct                        nc_origin_dmy;
     dmy_struct                        nc_start_dmy;
     size_t                            days_per_year;
+    int                               status;
+    int                               dim_id;
+    size_t                            dim_len;
+
+    // read time length from netcdf file
+    status =
+        nc_inq_dimid(plugin_filenames.forcing[type].nc_id, "time", &dim_id);
+    check_nc_status(status, "Error getting dimension id for %s in %s",
+                    "time", plugin_filenames.forcing[type].nc_filename);
+
+    status = nc_inq_dimlen(plugin_filenames.forcing[type].nc_id, dim_id,
+                           &dim_len);
+    check_nc_status(status, "Error getting dimension length for %s in %s",
+                    "time", plugin_filenames.forcing[type].nc_filename);
+
+    if (dim_len == 1) {
+        count = 1;
+    }
+
 
     // read time info from netcdf file
     get_nc_field_double(&plugin_filenames.forcing[type], "time", &start, &count,
@@ -97,7 +116,11 @@ plugin_get_forcing_file_info(short unsigned int type)
     }
 
     // calculate timestep in forcing file
-    if (time_units == TIME_UNITS_DAYS) {
+    if (dim_len == 1) {
+        plugin_global_param.force_steps_per_year[type] =
+            (size_t) 1;
+    }
+    else if (time_units == TIME_UNITS_DAYS) {
         plugin_global_param.force_steps_per_year[type] =
             (size_t) nearbyint(days_per_year /
                                (nc_times[1] - nc_times[0]));
@@ -125,12 +148,12 @@ plugin_get_forcing_file_info(short unsigned int type)
     // check that this forcing file will work
     if (plugin_global_param.forcefreq[type] == FORCE_STEP) {
         if (plugin_global_param.force_steps_per_year[type] !=
-            global_param.snow_steps_per_day * days_per_year) {
+            global_param.model_steps_per_day * days_per_year) {
             log_err(
                 "Plugin forcing file timestep must match the force model timestep.  "
                 "Force model timesteps per year is set to %zu and the plugin forcing "
                 "file timestep is set to %zu (frequency = FORCE_STEP)",
-                global_param.snow_steps_per_day * days_per_year,
+                global_param.model_steps_per_day * days_per_year,
                 plugin_global_param.force_steps_per_year[type]);
         }
     }
@@ -153,6 +176,16 @@ plugin_get_forcing_file_info(short unsigned int type)
                 "Force model timesteps per year is set to %d and the plugin forcing "
                 "file timestep is set to %zu (frequency = FORCE_MONTH)",
                 MONTHS_PER_YEAR,
+                plugin_global_param.force_steps_per_year[type]);
+        }
+    }
+    else if (plugin_global_param.forcefreq[type] == FORCE_YEAR) {
+        if (plugin_global_param.force_steps_per_year[type] != 1) {
+            log_err(
+                "Plugin forcing file timestep must match the force model timestep.  "
+                "Force model timesteps per year is set to %d and the plugin forcing "
+                "file timestep is set to %zu (frequency = FORCE_YEAR)",
+                1,
                 plugin_global_param.force_steps_per_year[type]);
         }
     }

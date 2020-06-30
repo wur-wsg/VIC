@@ -272,7 +272,6 @@ vic_init(void)
                     else {
                         veg_lib[i][j].fcanopy[k] = MIN_FCANOPY;
                     }
-                    veg_lib[i][j].fcanopy[k] = 1.0;
                 }
             }
         }
@@ -1577,6 +1576,15 @@ vic_init(void)
                             &(all_vars[i].cell[tmp_lake_idx][0]), false);
         }
         initialize_energy(all_vars[i].energy, nveg);
+
+        for (j = 0; j <= nveg; j++) {
+            for (k = 0; k < options.SNOW_BAND; k++) {
+                for (m = 0; m < options.Nlayer; m++) {
+                    all_vars[i].cell[j][k].layer[m].Ksat =
+                        soil_con[i].Ksat[m];
+                }
+            }
+        }
     }
 
     // Canopy Iterations
