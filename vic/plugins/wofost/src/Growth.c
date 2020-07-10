@@ -17,7 +17,7 @@ void Growth(SimUnit *Grid, float NewPlantMaterial)
     /* Water stress is more severe as compared to Nitrogen stress and */
     /* partitioning will follow the original assumptions of LINTUL2   */     
         
-    FRTRL = 0.25;
+    FRTRL = 0.;
     Translocation = 0.;
     if (Grid->crp->st.Development >= 1.)
     {
