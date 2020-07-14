@@ -23,7 +23,6 @@ crop_update_step_vars(size_t iCell)
     double height;
     double root_sum;
     double Wcr_FRAC;
-    double Wfc;
     
     size_t iBand;
     size_t iLayer;
@@ -123,18 +122,19 @@ crop_update_step_vars(size_t iCell)
             cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance /
                     cgrid->crp->prm.CorrectionTransp * area_fract;
             
-            Wcr_FRAC = (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans));
-            for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                Wfc = (csoil_con->Wcr[iLayer] - csoil_con->Wpwp[iLayer]) / 0.7 + csoil_con->Wpwp[iLayer];
-                ccell_data->layer[iLayer].Wcr += csoil_con->Wpwp[iLayer] + 
-                        (Wfc - csoil_con->Wpwp[iLayer]) *  Wcr_FRAC * Cc;
-            }
-            
             if(cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
                 cveg_con->root[0] += (csoil_con->depth[0] * CM_PER_M / cgrid->crp->st.RootDepth) * area_fract;
                 cveg_con->root[1] += (1 - cveg_con->root[0]) * area_fract;
             } else {
                 cveg_con->root[0] += area_fract;
+            }
+            
+            Wcr_FRAC = (1 - sweaf(cgrid->crp->prm.CropGroupNumber, cgrid->met->PotEvaptrans));
+            for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                if(cveg_con->root[iLayer] > 0.) {
+                    ccell_data->layer[iLayer].Wcr += (csoil_con->Wpwp[iLayer] + 
+                            (csoil_con->Wfc[iLayer] - csoil_con->Wpwp[iLayer]) *  Wcr_FRAC) * area_fract;
+                }
             }
             
             cgrid = cgrid->next;
@@ -160,12 +160,14 @@ crop_update_step_vars(size_t iCell)
                     for(iBand = 0; iBand < options.SNOW_BAND; iBand++){
                         ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
 
-                        if (cveg_hist->fcanopy[NR] == 0 || cveg_hist->LAI[NR] == 0) {
-                            ccell_data->layer[0].Wcr = soil_con[iCell].Wcr[0];
-                            ccell_data->layer[1].Wcr = soil_con[iCell].Wcr[1];
-                        } else {
-                            ccell_data->layer[0].Wcr /= cveg_hist->fcanopy[NR];
-                            ccell_data->layer[1].Wcr /= cveg_hist->fcanopy[NR];
+                        for(iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                            if(cveg_con->root[iLayer] > 0.) {
+                                if (cveg_hist->fcanopy[NR] == 0 || cveg_hist->LAI[NR] == 0) {
+                                    ccell_data->layer[iLayer].Wcr = soil_con[iCell].Wcr[iLayer];
+                                } else {
+                                    ccell_data->layer[iLayer].Wcr /= cveg_hist->fcanopy[NR];
+                                }
+                            }
                         }
                     }
 
