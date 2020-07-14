@@ -558,6 +558,8 @@ typedef struct {
                                          soil (mm) */
     double Wpwp[MAX_LAYERS];          /**< soil moisture content at permanent
                                          wilting point (mm) */
+    double Wfc[MAX_LAYERS];           /**< soil moisture content at field
+                                         capacity (mm) */
     double Ws;                        /**< fraction of maximum soil moisture */
     double AlbedoPar;                 /**< soil albedo in PAR range (400-700nm) */
     double alpha[MAX_NODES];          /**< thermal solution constant */

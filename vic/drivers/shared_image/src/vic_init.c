@@ -630,7 +630,17 @@ vic_init(void)
             soil_con[i].Wpwp[j] = (double) dvar[i];
         }
     }
-
+    
+    // Wfc: field capacity for each layer
+    // Note this value is  multiplied with the maximum moisture in each layer
+    for (j = 0; j < options.Nlayer; j++) {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            soil_con[i].Wfc[j] = soil_con[i].Wpwp[j] + 
+                    (soil_con[i].Wcr[j] - soil_con[i].Wpwp[j]) / 
+                    0.7;
+        }
+    }
+    
     // rough: soil roughness
     get_scatter_nc_field_double(&(filenames.params), "rough",
                                 d2start, d2count, dvar);
@@ -754,6 +764,7 @@ vic_init(void)
 
         // compute soil layer critical and wilting point moisture contents
         for (j = 0; j < options.Nlayer; j++) {
+            soil_con[i].Wfc[j] *= soil_con[i].max_moist[j];
             soil_con[i].Wcr[j] *= soil_con[i].max_moist[j];
             soil_con[i].Wpwp[j] *= soil_con[i].max_moist[j];
             if (soil_con[i].Wpwp[j] > soil_con[i].Wcr[j]) {

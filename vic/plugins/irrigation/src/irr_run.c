@@ -45,6 +45,7 @@ irr_run_requirement(size_t iCell)
     double moist[MAX_LAYERS];
     double total_moist;
     double total_wcr;
+    double total_wfc;
     double veg_fract;
     double area_fract;
     
@@ -96,7 +97,8 @@ irr_run_requirement(size_t iCell)
 
                         // Get moisture content and critical moisture content of every layer
                         total_moist = 0.0;
-                        total_wcr = 0.0;        
+                        total_wcr = 0.0;
+                        total_wfc = 0.0;
                         for(k = 0; k < options.Nlayer; k++){
                             moist[k] = 0.0;
                         } 
@@ -111,6 +113,7 @@ irr_run_requirement(size_t iCell)
                             if(cveg_con->root[k] > 0.){
                                 total_moist += moist[k];
                                 total_wcr += ccell_var->layer[k].Wcr;
+                                total_wfc += csoil_con->Wfc[k];
                             }
                         }
 
@@ -129,7 +132,7 @@ irr_run_requirement(size_t iCell)
                             // Without ponding the moisture should be at
                             // field capacity
                             cirr_var->requirement = 
-                                    (total_wcr / plugin_param.Wfc_fract) - 
+                                    total_wfc - 
                                     (total_moist + cirr_var->leftover);
                         }
 
@@ -141,7 +144,7 @@ irr_run_requirement(size_t iCell)
                         if(cirr_con->paddy && cirr_var->requirement > 0){
                             cirr_var->flag_req = true;
                         }
-                        else if (cirr_var->requirement > 0){
+                        else if (total_wcr - (total_moist + cirr_var->leftover) > 0){
                             cirr_var->flag_req = true;
                         }
                     }
