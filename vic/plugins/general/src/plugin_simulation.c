@@ -129,6 +129,9 @@ plugin_run(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
+        if (plugin_options.WATERUSE) {
+            wu_nonrenew(i);
+        }
     	if (plugin_options.IRRIGATION) {
             if(plugin_options.POTENTIAL_IRRIGATION || plugin_options.WATERUSE){
                 irr_get_withdrawn(i);

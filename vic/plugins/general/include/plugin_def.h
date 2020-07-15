@@ -95,31 +95,27 @@ enum {
     OUT_AV_GW_SECT,                     /**< available groundwater resources per sector [mm] */
     OUT_AV_SURF_SECT,                   /**< available surface water resources per sector [mm] */
     OUT_AV_DAM_SECT,                    /**< available dam reservoir resources per sector [mm] */
-    OUT_AV_COMP_SECT,                   /**< available compensation resources per sector [mm] */
     OUT_AV_REM_SECT,                    /**< available remote resources per sector [mm] */
     OUT_DE_GW_SECT,                     /**< demand for groundwater resources per sector [mm] */
     OUT_DE_SURF_SECT,                   /**< demand for surface water resources per sector [mm] */
-    OUT_DE_COMP_SECT,                   /**< demand for compensation resources per sector [mm] */
+    OUT_DE_NREN_SECT,                   /**< demand for non-renewable resources per sector [mm] */
     OUT_DE_REM_SECT,                    /**< demand for remote resources per sector [mm] */
     OUT_WI_GW_SECT,                     /**< withdrawn groundwater resources per sector [mm] */
     OUT_WI_SURF_SECT,                   /**< withdrawn surface water resources per sector [mm] */
     OUT_WI_DAM_SECT,                    /**< withdrawn dam reservoir resources per sector [mm] */
-    OUT_WI_COMP_SECT,                   /**< withdrawn compensation resources per sector [mm] */
     OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector [mm] */
     OUT_WI_NREN_SECT,                   /**< withdrawn non-renewable resources per sector [mm] */
     OUT_AV_GW,                          /**< available groundwater resources [mm] */
     OUT_AV_SURF,                        /**< available surface water resources [mm] */
     OUT_AV_DAM,                         /**< available dam reservoir resources [mm] */
-    OUT_AV_COMP,                        /**< available compensation resources [mm] */
     OUT_AV_REM,                         /**< available remote resources [mm] */
     OUT_DE_GW,                          /**< demand for groundwater resources [mm] */
     OUT_DE_SURF,                        /**< demand for surface water resources [mm] */
-    OUT_DE_COMP,                        /**< demand for compensation resources [mm] */
+    OUT_DE_NREN,                        /**< demand for non-renewable resources [mm] */
     OUT_DE_REM,                         /**< demand for remote resources [mm] */
     OUT_WI_GW,                          /**< withdrawn groundwater resources [mm] */
     OUT_WI_SURF,                        /**< withdrawn surface water resources [mm] */
     OUT_WI_DAM,                         /**< withdrawn dam reservoir resources [mm] */
-    OUT_WI_COMP,                        /**< withdrawn compensation resources [mm] */
     OUT_WI_REM,                         /**< withdrawn remote resources [mm] */
     OUT_WI_NREN,                        /**< withdrawn non-renewable resources [mm] */
     OUT_AVAILABLE,                      /**< available water resources [mm] */

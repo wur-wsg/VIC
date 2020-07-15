@@ -54,12 +54,6 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_DAM_SECT].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_DAM_SECT].description, "available from dam storage for sector");
 
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP_SECT].varname, "OUT_AV_COMP_SECT");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP_SECT].long_name, "available_compensation_sector");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP_SECT].standard_name, "available_compensation_sector");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP_SECT].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP_SECT].description, "available from compensation surface water for sector");
-
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_REM_SECT].varname, "OUT_AV_REM_SECT");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_REM_SECT].long_name, "available_remote_water_sector");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_REM_SECT].standard_name, "available_remote_water_sector");
@@ -78,11 +72,11 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_SURF_SECT].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_SURF_SECT].description, "demand from surface water for sector");
 
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP_SECT].varname, "OUT_DE_COMP_SECT");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP_SECT].long_name, "demand_compensation_sector");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP_SECT].standard_name, "demand_compensation_sector");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP_SECT].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP_SECT].description, "demand from compensation surface water for sector");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN_SECT].varname, "OUT_DE_NREN_SECT");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN_SECT].long_name, "demand_nonrenewable_sector");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN_SECT].standard_name, "demand_nonrenewable_sector");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN_SECT].units, "mm");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN_SECT].description, "demand from non-renewable surface water for sector");
 
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_REM_SECT].varname, "OUT_DE_REM_SECT");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_REM_SECT].long_name, "demand_remote_sector");
@@ -107,12 +101,6 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM_SECT].standard_name, "withdrawn_dam_storage_sector");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM_SECT].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM_SECT].description, "withdrawn from dam storage for sector");
-
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP_SECT].varname, "OUT_WI_COMP_SECT");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP_SECT].long_name, "withdrawn_compensation_sector");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP_SECT].standard_name, "withdrawn_compensation_sector");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP_SECT].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP_SECT].description, "withdrawn from compensation surface water for sector");
 
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM_SECT].varname, "OUT_WI_REM_SECT");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM_SECT].long_name, "withdrawn_remote_sector");
@@ -144,12 +132,6 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_DAM].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_DAM].description, "available from dam storage");
 
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP].varname, "OUT_AV_COMP");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP].long_name, "available_compensation");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP].standard_name, "available_compensation");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP].description, "available from compensation surface water");
-
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_REM].varname, "OUT_AV_REM");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_REM].long_name, "available_remote_water");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_AV_REM].standard_name, "available_remote_water");
@@ -168,11 +150,11 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_SURF].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_SURF].description, "demand from surface water");
 
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP].varname, "OUT_DE_COMP");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP].long_name, "demand_compensation");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP].standard_name, "demand_compensation");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP].description, "demand from compensation surface water");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN].varname, "OUT_DE_NREN");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN].long_name, "demand_nonrenewable");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN].standard_name, "demand_nonrenewable");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN].units, "mm");
+    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN].description, "demand from non-renewable surface water");
 
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_REM].varname, "OUT_DE_REM");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_DE_REM].long_name, "demand_remote");
@@ -197,12 +179,6 @@ wu_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM].standard_name, "withdrawn_dam_storage");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM].units, "mm");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM].description, "withdrawn from dam storage");
-
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP].varname, "OUT_WI_COMP");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP].long_name, "withdrawn_compensation");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP].standard_name, "withdrawn_compensation");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP].units, "mm");
-    strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP].description, "withdrawn from compensation surface water");
 
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM].varname, "OUT_WI_REM");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_WI_REM].long_name, "withdrawn_remote");
@@ -243,32 +219,28 @@ wu_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES + OUT_AV_GW_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_SURF_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_DAM_SECT].nelem = plugin_options.NWUTYPES;
-    out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_REM_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_DE_GW_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_DE_SURF_SECT].nelem = plugin_options.NWUTYPES;
-    out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP_SECT].nelem = plugin_options.NWUTYPES;
+    out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_DE_REM_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_GW_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_SURF_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM_SECT].nelem = plugin_options.NWUTYPES;
-    out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_REM_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN_SECT].nelem = plugin_options.NWUTYPES;
 
     out_metadata[N_OUTVAR_TYPES + OUT_AV_GW].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_SURF].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_DAM].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_AV_COMP].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_AV_REM].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_DE_GW].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_DE_SURF].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_DE_COMP].nelem = 1;
+    out_metadata[N_OUTVAR_TYPES + OUT_DE_NREN].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_DE_REM].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_GW].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_SURF].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_DAM].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_WI_COMP].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_REM].nelem = 1;
     out_metadata[N_OUTVAR_TYPES + OUT_WI_NREN].nelem = 1;
     
@@ -318,16 +290,14 @@ wu_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_AV_GW_SECT:
         case N_OUTVAR_TYPES + OUT_AV_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_AV_DAM_SECT:
-        case N_OUTVAR_TYPES + OUT_AV_COMP_SECT:
         case N_OUTVAR_TYPES + OUT_AV_REM_SECT:
         case N_OUTVAR_TYPES + OUT_DE_GW_SECT:
         case N_OUTVAR_TYPES + OUT_DE_SURF_SECT:
-        case N_OUTVAR_TYPES + OUT_DE_COMP_SECT:
+        case N_OUTVAR_TYPES + OUT_DE_NREN_SECT:
         case N_OUTVAR_TYPES + OUT_DE_REM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_GW_SECT:
         case N_OUTVAR_TYPES + OUT_WI_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_WI_DAM_SECT:
-        case N_OUTVAR_TYPES + OUT_WI_COMP_SECT:
         case N_OUTVAR_TYPES + OUT_WI_REM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_NREN_SECT:
         nc_var->nc_dims = 4;
@@ -338,16 +308,14 @@ wu_set_nc_var_info(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_AV_GW:
         case N_OUTVAR_TYPES + OUT_AV_SURF:
         case N_OUTVAR_TYPES + OUT_AV_DAM:
-        case N_OUTVAR_TYPES + OUT_AV_COMP:
         case N_OUTVAR_TYPES + OUT_AV_REM:
         case N_OUTVAR_TYPES + OUT_DE_GW:
         case N_OUTVAR_TYPES + OUT_DE_SURF:
-        case N_OUTVAR_TYPES + OUT_DE_COMP:
+        case N_OUTVAR_TYPES + OUT_DE_NREN:
         case N_OUTVAR_TYPES + OUT_DE_REM:
         case N_OUTVAR_TYPES + OUT_WI_GW:
         case N_OUTVAR_TYPES + OUT_WI_SURF:
         case N_OUTVAR_TYPES + OUT_WI_DAM:
-        case N_OUTVAR_TYPES + OUT_WI_COMP:
         case N_OUTVAR_TYPES + OUT_WI_REM:
         case N_OUTVAR_TYPES + OUT_WI_NREN:
         case N_OUTVAR_TYPES + OUT_AVAILABLE:
@@ -373,16 +341,14 @@ wu_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_AV_GW_SECT:
         case N_OUTVAR_TYPES + OUT_AV_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_AV_DAM_SECT:
-        case N_OUTVAR_TYPES + OUT_AV_COMP_SECT:
         case N_OUTVAR_TYPES + OUT_AV_REM_SECT:
         case N_OUTVAR_TYPES + OUT_DE_GW_SECT:
         case N_OUTVAR_TYPES + OUT_DE_SURF_SECT:
-        case N_OUTVAR_TYPES + OUT_DE_COMP_SECT:
+        case N_OUTVAR_TYPES + OUT_DE_NREN_SECT:
         case N_OUTVAR_TYPES + OUT_DE_REM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_GW_SECT:
         case N_OUTVAR_TYPES + OUT_WI_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_WI_DAM_SECT:
-        case N_OUTVAR_TYPES + OUT_WI_COMP_SECT:
         case N_OUTVAR_TYPES + OUT_WI_REM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_NREN_SECT:
         nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
@@ -393,16 +359,14 @@ wu_set_nc_var_dimids(unsigned int    varid,
         case N_OUTVAR_TYPES + OUT_AV_GW:
         case N_OUTVAR_TYPES + OUT_AV_SURF:
         case N_OUTVAR_TYPES + OUT_AV_DAM:
-        case N_OUTVAR_TYPES + OUT_AV_COMP:
         case N_OUTVAR_TYPES + OUT_AV_REM:
         case N_OUTVAR_TYPES + OUT_DE_GW:
         case N_OUTVAR_TYPES + OUT_DE_SURF:
-        case N_OUTVAR_TYPES + OUT_DE_COMP:
+        case N_OUTVAR_TYPES + OUT_DE_NREN:
         case N_OUTVAR_TYPES + OUT_DE_REM:
         case N_OUTVAR_TYPES + OUT_WI_GW:
         case N_OUTVAR_TYPES + OUT_WI_SURF:
         case N_OUTVAR_TYPES + OUT_WI_DAM:
-        case N_OUTVAR_TYPES + OUT_WI_COMP:
         case N_OUTVAR_TYPES + OUT_WI_REM:
         case N_OUTVAR_TYPES + OUT_WI_NREN:
         case N_OUTVAR_TYPES + OUT_AVAILABLE:
@@ -426,31 +390,27 @@ wu_history(unsigned int varid, unsigned int *agg_type)
         case N_OUTVAR_TYPES + OUT_AV_GW_SECT:
         case N_OUTVAR_TYPES + OUT_AV_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_AV_DAM_SECT:
-        case N_OUTVAR_TYPES + OUT_AV_COMP_SECT:
         case N_OUTVAR_TYPES + OUT_AV_REM_SECT:
         case N_OUTVAR_TYPES + OUT_DE_GW_SECT:
         case N_OUTVAR_TYPES + OUT_DE_SURF_SECT:
-        case N_OUTVAR_TYPES + OUT_DE_COMP_SECT:
+        case N_OUTVAR_TYPES + OUT_DE_NREN_SECT:
         case N_OUTVAR_TYPES + OUT_DE_REM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_GW_SECT:
         case N_OUTVAR_TYPES + OUT_WI_SURF_SECT:
         case N_OUTVAR_TYPES + OUT_WI_DAM_SECT:
-        case N_OUTVAR_TYPES + OUT_WI_COMP_SECT:
         case N_OUTVAR_TYPES + OUT_WI_REM_SECT:
         case N_OUTVAR_TYPES + OUT_WI_NREN_SECT:
         case N_OUTVAR_TYPES + OUT_AV_GW:
         case N_OUTVAR_TYPES + OUT_AV_SURF:
         case N_OUTVAR_TYPES + OUT_AV_DAM:
-        case N_OUTVAR_TYPES + OUT_AV_COMP:
         case N_OUTVAR_TYPES + OUT_AV_REM:
         case N_OUTVAR_TYPES + OUT_DE_GW:
         case N_OUTVAR_TYPES + OUT_DE_SURF:
-        case N_OUTVAR_TYPES + OUT_DE_COMP:
+        case N_OUTVAR_TYPES + OUT_DE_NREN:
         case N_OUTVAR_TYPES + OUT_DE_REM:
         case N_OUTVAR_TYPES + OUT_WI_GW:
         case N_OUTVAR_TYPES + OUT_WI_SURF:
         case N_OUTVAR_TYPES + OUT_WI_DAM:
-        case N_OUTVAR_TYPES + OUT_WI_COMP:
         case N_OUTVAR_TYPES + OUT_WI_REM:
         case N_OUTVAR_TYPES + OUT_WI_NREN:
         case N_OUTVAR_TYPES + OUT_AVAILABLE:
@@ -485,14 +445,12 @@ wu_put_data(size_t iCell)
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_GW_SECT][i] = wu_var[iCell][iSector].available_gw;
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF_SECT][i] = wu_var[iCell][iSector].available_surf;
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM_SECT][i] = wu_var[iCell][iSector].available_dam;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_AV_COMP_SECT][i] = wu_var[iCell][iSector].available_comp;
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW_SECT][i] = wu_var[iCell][iSector].demand_gw;
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF_SECT][i] = wu_var[iCell][iSector].demand_surf;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_COMP_SECT][i] = wu_var[iCell][iSector].demand_comp;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_NREN_SECT][i] = wu_var[iCell][iSector].demand_nonrenew;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i] = wu_var[iCell][iSector].withdrawn_gw;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] = wu_var[iCell][iSector].withdrawn_surf;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i] = wu_var[iCell][iSector].withdrawn_dam;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_COMP_SECT][i] = wu_var[iCell][iSector].withdrawn_comp;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i] = wu_var[iCell][iSector].withdrawn_nonrenew;
         
             out_data[iCell][N_OUTVAR_TYPES + OUT_RETURNED][0] += wu_var[iCell][iSector].returned;
@@ -514,16 +472,13 @@ wu_put_data(size_t iCell)
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_GW][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_GW_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM_SECT][i];
-        out_data[iCell][N_OUTVAR_TYPES + OUT_AV_COMP][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_COMP_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_REM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_REM_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF_SECT][i];
-        out_data[iCell][N_OUTVAR_TYPES + OUT_DE_COMP][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_COMP_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i];
-        out_data[iCell][N_OUTVAR_TYPES + OUT_WI_COMP][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_COMP_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
     }
@@ -531,18 +486,15 @@ wu_put_data(size_t iCell)
     out_data[iCell][N_OUTVAR_TYPES + OUT_AVAILABLE][0] = 
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_GW][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF][0] +
-            out_data[iCell][N_OUTVAR_TYPES + OUT_AV_COMP][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM][0];
     out_data[iCell][N_OUTVAR_TYPES + OUT_DEMAND][0] = 
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF][0] +
-            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_COMP][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM][0];
     out_data[iCell][N_OUTVAR_TYPES + OUT_WITHDRAWN][0] = 
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM][0] +
-            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_COMP][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN][0];
 }

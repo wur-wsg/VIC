@@ -240,7 +240,8 @@ irr_get_withdrawn(size_t iCell)
        applied - received + (leftover - prev_leftover) > WU_BALANCE_ERROR_THRESH ||
        available - applied - (leftover - prev_leftover) > WU_BALANCE_ERROR_THRESH) {
         log_err("Irrigation water balance error for cell %zu: "
-                "demand is %.10f mm; %.10f is available; %.10f mm is received; %10f mm is applied and %10f mm is leftover",
+                "demand is %.10f mm\t%.10f is available\n"
+                "%.10f mm is received\t%10f mm is applied\t%10f mm is leftover",
                 iCell,
                 demand,
                 available,
