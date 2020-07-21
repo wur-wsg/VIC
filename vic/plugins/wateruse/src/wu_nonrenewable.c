@@ -27,6 +27,8 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+#define CONSUMP_ONLY true
+
 /******************************************
 * @brief   Reset water-use from sectors
 ******************************************/
@@ -61,6 +63,7 @@ calculate_demand_nonrenew(size_t iCell,
     extern plugin_option_struct plugin_options;
     extern wu_var_struct **wu_var;
     extern wu_con_map_struct *wu_con_map;
+    extern wu_force_struct **wu_force;
     
     size_t i;
     int iSector;
@@ -79,7 +82,11 @@ calculate_demand_nonrenew(size_t iCell,
                 wu_var[iCell][iSector].withdrawn_gw -
                 wu_var[iCell][iSector].withdrawn_dam -
                 wu_var[iCell][iSector].withdrawn_remote;
-        if (wu_var[iCell][iSector].demand_nonrenew < 0) {
+        if(CONSUMP_ONLY){
+            wu_var[iCell][iSector].demand_nonrenew *=
+                    wu_force[iCell][iSector].consumption_frac;
+        }
+        if (wu_var[iCell][iSector].demand_nonrenew < 0.) {
             wu_var[iCell][iSector].demand_nonrenew = 0.;
         }
         (*demand_nonrenew) += wu_var[iCell][iSector].demand_nonrenew;
@@ -91,7 +98,8 @@ calculate_demand_nonrenew(size_t iCell,
 ******************************************/
 void
 calculate_use_nonrenew(size_t iCell,
-        double *withdrawn_nonrenew)
+        double *withdrawn_nonrenew,
+        double *returned)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct **wu_var;
@@ -111,9 +119,20 @@ calculate_use_nonrenew(size_t iCell,
         wu_var[iCell][iSector].withdrawn_nonrenew = 
                 wu_var[iCell][iSector].demand_nonrenew;
         
-        wu_var[iCell][iSector].consumed += 
-                wu_var[iCell][iSector].withdrawn_nonrenew * 
-                wu_force[iCell][iSector].consumption_frac;
+        if(CONSUMP_ONLY){
+            wu_var[iCell][iSector].consumed += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew;
+        } else {
+            wu_var[iCell][iSector].consumed += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew * 
+                    wu_force[iCell][iSector].consumption_frac;
+            wu_var[iCell][iSector].returned += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew * 
+                    (1 - wu_force[iCell][iSector].consumption_frac);
+            (*returned) += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew * 
+                    (1 - wu_force[iCell][iSector].consumption_frac);
+        }
         
         (*withdrawn_nonrenew) += wu_var[iCell][iSector].withdrawn_nonrenew;
     }
@@ -124,9 +143,21 @@ calculate_use_nonrenew(size_t iCell,
 ******************************************/
 void
 calculate_hydrology_nonrenew(size_t iCell, 
-        double withdrawn_nonrenew)
+        double withdrawn_nonrenew,
+        double returned)
 {
+    extern global_param_struct global_param;
+    extern domain_struct  local_domain;
     extern rout_var_struct  *rout_var;
+    
+    double withdrawn_discharge_tmp;
+    double available_discharge_tmp;
+    
+    size_t rout_steps_per_dt;
+    size_t iStep;
+    
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
     
     // non-renewable
     if(withdrawn_nonrenew > 0.) {
@@ -134,6 +165,43 @@ calculate_hydrology_nonrenew(size_t iCell,
         
         if(rout_var[iCell].nonrenew_deficit < 0){
             rout_var[iCell].nonrenew_deficit = 0;
+        }
+    }
+    
+    // surface
+    if(returned != 0.) {
+        available_discharge_tmp = 0.;
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+            available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
+        }
+        
+        withdrawn_discharge_tmp = 
+		returned /
+                MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+        rout_var[iCell].discharge = 0.;
+        rout_var[iCell].stream = 0.;
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+            if(available_discharge_tmp > 0) {
+                // Scale withdrawal proportionally to availability
+                rout_var[iCell].dt_discharge[iStep] -= 
+                        withdrawn_discharge_tmp * 
+                        (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
+            } else {
+                // Scale withdrawal proportionally to length
+                rout_var[iCell].dt_discharge[iStep] -= 
+                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
+            }
+            if (rout_var[iCell].dt_discharge[iStep] < 0) {
+                rout_var[iCell].dt_discharge[iStep] = 0.;
+            }
+            
+            // Recalculate discharge and stream moisture
+            if (iStep < rout_steps_per_dt) {
+                rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+            }
+            else {
+                rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
+            }
         }
     }
 }
@@ -186,12 +254,14 @@ wu_nonrenew(size_t iCell)
 {
     double demand_nonrenew;
     double withdrawn_nonrenew;
+    double returned;
     
     /******************************************
      Init
     ******************************************/
     demand_nonrenew = 0.;
     withdrawn_nonrenew = 0.;
+    returned = 0.;
     
     reset_wu_nonrenew(iCell);
     
@@ -203,12 +273,12 @@ wu_nonrenew(size_t iCell)
     /******************************************
      Withdrawals & Consumption
     ******************************************/ 
-    calculate_use_nonrenew(iCell, &withdrawn_nonrenew);
+    calculate_use_nonrenew(iCell, &withdrawn_nonrenew, &returned);
     
     /******************************************
      Return
     ******************************************/
-    calculate_hydrology_nonrenew(iCell, withdrawn_nonrenew);
+    calculate_hydrology_nonrenew(iCell, withdrawn_nonrenew, returned);
     
     /******************************************
      Check balance
