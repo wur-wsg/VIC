@@ -255,6 +255,7 @@ typedef struct {
     bool COMP_WITH;                     /**< compensation water abstractions flag */
     bool REMOTE_WITH;                   /**< remote water abstractions flag */
     bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
+    bool NONRENEW_RUNOFF;               /**< non-renewable water abstractions flag */
     bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
     bool WOFOST_PFERT;                  /**< potential fertilization for wofost module flag */
     bool WOFOST_DIST_SEASON;            /**< distributed seasons for wofost module flag */

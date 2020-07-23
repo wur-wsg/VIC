@@ -68,13 +68,27 @@ rout_basin_run(size_t iCell)
     // Gather runoff from VIC
     in_runoff = out_data[iCell][OUT_RUNOFF][0];
     in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
-    if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
-        in_baseflow -= rout_var[iCell].nonrenew_deficit;
-        rout_var[iCell].nonrenew_deficit = 0.;
-    } else {
-        rout_var[iCell].nonrenew_deficit -= in_baseflow;
-        in_baseflow = 0.;
+    
+    if(rout_var[iCell].nonrenew_deficit > 0) {
+        if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
+            in_baseflow -= rout_var[iCell].nonrenew_deficit;
+            rout_var[iCell].nonrenew_deficit = 0.;
+        } else {
+            rout_var[iCell].nonrenew_deficit -= in_baseflow;
+            in_baseflow = 0.;
+        }
+        
+        if(plugin_options.NONRENEW_RUNOFF) {
+            if (in_runoff > rout_var[iCell].nonrenew_deficit) {
+                in_runoff -= rout_var[iCell].nonrenew_deficit;
+                rout_var[iCell].nonrenew_deficit = 0.;
+            } else {
+                rout_var[iCell].nonrenew_deficit -= in_runoff;
+                in_runoff = 0.;
+            }
+        }
     }
+    
     runoff =
         (in_runoff + in_baseflow) *
         local_domain.locations[iCell].area /

@@ -179,12 +179,25 @@ rout_random_run()
         
         in_runoff = out_data[i][OUT_RUNOFF][0];
         in_baseflow = out_data[i][OUT_BASEFLOW][0];
-        if (in_baseflow > rout_var[i].nonrenew_deficit) {
-            rout_var[i].nonrenew_deficit = 0.;
-            in_baseflow -= rout_var[i].nonrenew_deficit;
-        } else {
-            rout_var[i].nonrenew_deficit -= in_baseflow;
-            in_baseflow = 0.;
+        
+        if(rout_var[i].nonrenew_deficit > 0) {
+            if (in_baseflow > rout_var[i].nonrenew_deficit) {
+                rout_var[i].nonrenew_deficit = 0.;
+                in_baseflow -= rout_var[i].nonrenew_deficit;
+            } else {
+                rout_var[i].nonrenew_deficit -= in_baseflow;
+                in_baseflow = 0.;
+            }
+
+            if(plugin_options.NONRENEW_RUNOFF) {
+                if (in_runoff > rout_var[i].nonrenew_deficit) {
+                    in_runoff -= rout_var[i].nonrenew_deficit;
+                    rout_var[i].nonrenew_deficit = 0.;
+                } else {
+                    rout_var[i].nonrenew_deficit -= in_runoff;
+                    in_runoff = 0.;
+                }
+            }
         }
         
         run_local[i] =

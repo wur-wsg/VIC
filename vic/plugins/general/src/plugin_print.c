@@ -84,7 +84,7 @@ plugin_print_options(plugin_option_struct *op)
             op->FORCE_LANDUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
             op->POTENTIAL_IRRIGATION ? "true" : "false");
-    fprintf(LOG_DEST, "\tFORCE_PUMP_CAP            : %s\n",
+    fprintf(LOG_DEST, "\tFORCE_PUMP_CAP       : %s\n",
             op->FORCE_PUMP_CAP ? "true" : "false");
     fprintf(LOG_DEST, "\tCOMP_WITH            : %s\n",
             op->COMP_WITH ? "true" : "false");
@@ -92,6 +92,8 @@ plugin_print_options(plugin_option_struct *op)
             op->REMOTE_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tNONRENEW_WITH        : %s\n",
             op->NONRENEW_WITH ? "true" : "false");
+    fprintf(LOG_DEST, "\tNONRENEW_RUNOFF      : %s\n",
+            op->NONRENEW_RUNOFF ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_DIST_SEASON   : %s\n",
             op->WOFOST_DIST_SEASON ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_DIST_TSUM     : %s\n",

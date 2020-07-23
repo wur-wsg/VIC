@@ -58,6 +58,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->COMP_WITH = false;
     plugin_options->REMOTE_WITH = false;
     plugin_options->NONRENEW_WITH = false;
+    plugin_options->NONRENEW_RUNOFF = false;
     plugin_options->WOFOST_PIRR = false;
     plugin_options->WOFOST_PFERT = false;
     plugin_options->WOFOST_DIST_SEASON = false;

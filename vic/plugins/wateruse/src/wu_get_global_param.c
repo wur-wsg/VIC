@@ -64,6 +64,10 @@ wu_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.NONRENEW_WITH = str_to_bool(flgstr);
     }
+    else if (strcasecmp("NONRENEWABLE_RUNOFF", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.NONRENEW_RUNOFF = str_to_bool(flgstr);
+    }
     else {
         return false;
     }
