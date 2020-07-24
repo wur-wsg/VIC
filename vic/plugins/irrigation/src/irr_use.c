@@ -217,6 +217,9 @@ irr_get_withdrawn(size_t iCell)
                     // received
                     if(cirr_var->flag_req && avail_frac > 0){
                         cirr_var->received = cirr_var->requirement * cirr_con->irrigation_efficiency * avail_frac;
+                        if(cirr_con->paddy) {
+                            cirr_var->received += PADDY_FLOOD_HEIGHT * cirr_con->irrigation_efficiency * avail_frac;
+                        }
 
                         if(cirr_var->received + cirr_var->applied < max_added){
                             cirr_var->applied += cirr_var->received;
