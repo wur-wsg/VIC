@@ -434,10 +434,7 @@ wu_put_data(size_t iCell)
     extern double ***out_data;
     
     size_t i;
-    size_t j;
-    size_t iCell2;
     int iSector;
-    int iSector2;
     
     for(i = 0; i < plugin_options.NWUTYPES; i++){
         iSector = wu_con_map[iCell].sidx[i];
@@ -445,26 +442,20 @@ wu_put_data(size_t iCell)
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_GW_SECT][i] = wu_var[iCell][iSector].available_gw;
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF_SECT][i] = wu_var[iCell][iSector].available_surf;
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM_SECT][i] = wu_var[iCell][iSector].available_dam;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_AV_REM_SECT][i] = wu_var[iCell][iSector].available_remote;
+            
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW_SECT][i] = wu_var[iCell][iSector].demand_gw;
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF_SECT][i] = wu_var[iCell][iSector].demand_surf;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM_SECT][i] = wu_var[iCell][iSector].demand_remote;
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_NREN_SECT][i] = wu_var[iCell][iSector].demand_nonrenew;
+            
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i] = wu_var[iCell][iSector].withdrawn_gw;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] = wu_var[iCell][iSector].withdrawn_surf;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i] = wu_var[iCell][iSector].withdrawn_dam;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] = wu_var[iCell][iSector].withdrawn_remote;
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i] = wu_var[iCell][iSector].withdrawn_nonrenew;
         
             out_data[iCell][N_OUTVAR_TYPES + OUT_RETURNED][0] += wu_var[iCell][iSector].returned;
-            
-            for(j = 0; j < wu_con[iCell].nreceiving; j++){
-                iCell2 = wu_con[iCell].receiving[j];
-
-                iSector2 = wu_con_map[iCell2].sidx[i];        
-                if(iSector2 != NODATA_WU){
-                    out_data[iCell][N_OUTVAR_TYPES + OUT_AV_REM_SECT][i] += wu_var[iCell2][iSector2].available_remote;
-                    out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM_SECT][i] += wu_var[iCell2][iSector2].demand_remote;
-                    out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] += wu_var[iCell2][iSector2].withdrawn_remote;
-                }
-            }
         }
     }
             
@@ -473,9 +464,12 @@ wu_put_data(size_t iCell)
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_SURF_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_AV_REM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_AV_REM_SECT][i];
+        
         out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM_SECT][i];
+        out_data[iCell][N_OUTVAR_TYPES + OUT_DE_NREN][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_DE_NREN_SECT][i];
+        
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i];
         out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM][0] += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i];
@@ -489,8 +483,7 @@ wu_put_data(size_t iCell)
             out_data[iCell][N_OUTVAR_TYPES + OUT_AV_DAM][0];
     out_data[iCell][N_OUTVAR_TYPES + OUT_DEMAND][0] = 
             out_data[iCell][N_OUTVAR_TYPES + OUT_DE_GW][0] +
-            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF][0] +
-            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_REM][0];
+            out_data[iCell][N_OUTVAR_TYPES + OUT_DE_SURF][0];
     out_data[iCell][N_OUTVAR_TYPES + OUT_WITHDRAWN][0] = 
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0] +
             out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
