@@ -76,12 +76,12 @@ calculate_demand_nonrenew(size_t iCell,
         
         // non-renewable
         wu_var[iCell][iSector].demand_nonrenew = 
-                wu_var[iCell][iSector].demand_surf +
-                wu_var[iCell][iSector].demand_gw -
-                wu_var[iCell][iSector].withdrawn_surf -
-                wu_var[iCell][iSector].withdrawn_gw -
-                wu_var[iCell][iSector].withdrawn_dam -
-                wu_var[iCell][iSector].withdrawn_remote;
+                (wu_var[iCell][iSector].demand_surf +
+                wu_var[iCell][iSector].demand_gw) -
+                (wu_var[iCell][iSector].withdrawn_surf +
+                wu_var[iCell][iSector].withdrawn_gw +
+                wu_var[iCell][iSector].withdrawn_dam +
+                wu_var[iCell][iSector].withdrawn_remote);
         if(CONSUMP_ONLY){
             wu_var[iCell][iSector].demand_nonrenew *=
                     wu_force[iCell][iSector].consumption_frac;

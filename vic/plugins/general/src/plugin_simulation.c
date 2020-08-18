@@ -120,6 +120,13 @@ plugin_run(void)
                     global_dam_run(iCell);
                 }
             }
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCell = routing_order[i];
+                
+                if (plugin_options.WATERUSE) {
+                    wu_remote(iCell);
+        	}
+            }
         }
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
             rout_random_run();
