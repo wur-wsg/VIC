@@ -49,17 +49,24 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->available_surf = 0.0;
     wu_var->available_dam = 0.0;
     wu_var->available_remote = 0.0;
+    wu_var->available_tremote = 0.0;
     wu_var->demand_gw = 0.0;
     wu_var->demand_surf = 0.0;
     wu_var->demand_remote = 0.0;
+    wu_var->demand_tremote = 0.0;
     wu_var->demand_nonrenew = 0.0;
     wu_var->withdrawn_gw = 0.0;
     wu_var->withdrawn_surf = 0.0;
     wu_var->withdrawn_dam = 0.0;
     wu_var->withdrawn_remote = 0.0;
+    wu_var->withdrawn_tremote = 0.0;
     wu_var->withdrawn_nonrenew = 0.0;
     wu_var->returned = 0.0;
     wu_var->consumed = 0.0;
+    
+    wu_var->available_remote_tmp = 0.0;
+    wu_var->demand_remote_tmp = 0.0;
+    wu_var->withdrawn_remote_tmp = 0.0;
 }
 
 /******************************************

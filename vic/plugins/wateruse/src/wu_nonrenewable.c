@@ -30,30 +30,6 @@
 #define CONSUMP_ONLY true
 
 /******************************************
-* @brief   Reset water-use from sectors
-******************************************/
-void
-reset_wu_nonrenew(size_t iCell)
-{
-    extern plugin_option_struct plugin_options;
-    extern wu_var_struct **wu_var;
-    extern wu_con_map_struct *wu_con_map;
-    
-    size_t i;
-    int iSector;
-    
-    for(i = 0; i < plugin_options.NWUTYPES; i ++){
-        iSector = wu_con_map[iCell].sidx[i];        
-        if(iSector == NODATA_WU){
-            continue;
-        }
-        
-        wu_var[iCell][iSector].demand_nonrenew = 0.0;
-        wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
-    }
-}
-
-/******************************************
 * @brief   Get (cell) demand from sectors
 ******************************************/
 void
@@ -81,7 +57,7 @@ calculate_demand_nonrenew(size_t iCell,
                 (wu_var[iCell][iSector].withdrawn_surf +
                 wu_var[iCell][iSector].withdrawn_gw +
                 wu_var[iCell][iSector].withdrawn_dam +
-                wu_var[iCell][iSector].withdrawn_remote);
+                wu_var[iCell][iSector].withdrawn_tremote);
         if(CONSUMP_ONLY){
             wu_var[iCell][iSector].demand_nonrenew *=
                     wu_force[iCell][iSector].consumption_frac;
@@ -267,7 +243,7 @@ wu_nonrenew(size_t iCell)
     withdrawn_nonrenew = 0.;
     returned = 0.;
     
-    reset_wu_nonrenew(iCell);
+    //reset_wu_nonrenew(iCell);
     
     /******************************************
      Demand

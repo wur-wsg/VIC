@@ -123,7 +123,7 @@ plugin_run(void)
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCell = routing_order[i];
                 
-                if (plugin_options.WATERUSE) {
+                if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
                     wu_remote(iCell);
         	}
             }

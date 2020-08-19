@@ -56,6 +56,16 @@ reset_wu(size_t iCell)
         wu_var[iCell][iSector].withdrawn_dam = 0.0;
         wu_var[iCell][iSector].consumed = 0.0;
         wu_var[iCell][iSector].returned = 0.0;
+            
+        wu_var[iCell][iSector].available_remote = 0.0;
+        wu_var[iCell][iSector].demand_remote = 0.0;
+        wu_var[iCell][iSector].withdrawn_remote = 0.0;
+        wu_var[iCell][iSector].available_tremote = 0.0;
+        wu_var[iCell][iSector].demand_tremote = 0.0;
+        wu_var[iCell][iSector].withdrawn_tremote = 0.0;
+        
+        wu_var[iCell][iSector].demand_nonrenew = 0.0;
+        wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
     }
 }
 

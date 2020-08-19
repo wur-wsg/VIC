@@ -35,10 +35,14 @@ reset_wu_remote(size_t iCell)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct **wu_var;
+    extern wu_con_struct *wu_con;
     extern wu_con_map_struct *wu_con_map;
     
     size_t i;
+    size_t j;
     int iSector;
+    size_t iCell2;
+    int iSector2;
     
     for(i = 0; i < plugin_options.NWUTYPES; i ++){
         iSector = wu_con_map[iCell].sidx[i];        
@@ -46,9 +50,19 @@ reset_wu_remote(size_t iCell)
             continue;
         }
         
-        wu_var[iCell][iSector].available_remote = 0.0;
-        wu_var[iCell][iSector].demand_remote = 0.0;
-        wu_var[iCell][iSector].withdrawn_remote = 0.0;
+        // remote
+        for(j = 0; j < wu_con[iCell].nreceiving; j++){
+            iCell2 = wu_con[iCell].receiving[j];
+
+            iSector2 = wu_con_map[iCell2].sidx[i];        
+            if(iSector2 == NODATA_WU){
+                continue;
+            }
+            
+            wu_var[iCell2][iSector2].demand_remote_tmp = 0.;
+            wu_var[iCell2][iSector2].withdrawn_remote_tmp = 0.;
+            wu_var[iCell2][iSector2].available_remote_tmp = 0.;
+        }
     }
 }
 
@@ -88,16 +102,20 @@ calculate_demand_remote(size_t iCell,
                 continue;
             }
 
-            wu_var[iCell2][iSector2].demand_remote = 
+            wu_var[iCell2][iSector2].demand_remote_tmp = 
                     (wu_var[iCell2][iSector2].demand_surf + 
                     wu_var[iCell2][iSector2].demand_gw) - 
                     (wu_var[iCell2][iSector2].withdrawn_surf + 
                     wu_var[iCell2][iSector2].withdrawn_gw + 
-                    wu_var[iCell2][iSector2].withdrawn_dam);
-            if (wu_var[iCell2][iSector2].demand_remote < 0) {
-                wu_var[iCell2][iSector2].demand_remote = 0.;
+                    wu_var[iCell2][iSector2].withdrawn_dam + 
+                    wu_var[iCell2][iSector2].withdrawn_tremote);
+            if (wu_var[iCell2][iSector2].demand_remote_tmp < 0) {
+                wu_var[iCell2][iSector2].demand_remote_tmp = 0.;
             }
-            (*demand_remote) += wu_var[iCell2][iSector2].demand_remote;       
+            
+            wu_var[iCell][iSector].demand_remote += 
+                    wu_var[iCell2][iSector2].demand_remote_tmp;
+            (*demand_remote) += wu_var[iCell2][iSector2].demand_remote_tmp;
         }
     }
 }
@@ -166,24 +184,31 @@ calculate_division_remote(size_t iCell,
         }
                 
         // remote
-        for(j = 0; j < wu_con[iCell].nreceiving; j++){
-            iCell2 = wu_con[iCell].receiving[j];
+        wu_var[iCell][iSector].available_remote = 0.0;
+        if (demand_remote > 0){
+            for(j = 0; j < wu_con[iCell].nreceiving; j++){
+                iCell2 = wu_con[iCell].receiving[j];
 
-            iSector2 = wu_con_map[iCell2].sidx[i];        
-            if(iSector2 == NODATA_WU){
-                continue;
-            }
-
-            if (demand_remote > 0){
-                if(wu_var[iCell2][iSector2].demand_remote >= available_remote_tmp){
-                    wu_var[iCell2][iSector2].available_remote = available_remote_tmp;
-                    
+                iSector2 = wu_con_map[iCell2].sidx[i];        
+                if(iSector2 == NODATA_WU){
+                    continue;
+                }
+                
+                if(wu_var[iCell2][iSector2].demand_remote_tmp >= 
+                        available_remote_tmp){
+                    wu_var[iCell2][iSector2].available_remote_tmp = 
+                            available_remote_tmp;
+        
                     available_remote_tmp = 0.0;
                 } else {
-                    wu_var[iCell2][iSector2].available_remote = wu_var[iCell2][iSector2].demand_remote;
-                    
-                    available_remote_tmp -= wu_var[iCell2][iSector2].demand_remote;
+                    wu_var[iCell2][iSector2].available_remote_tmp = 
+                            wu_var[iCell2][iSector2].demand_remote_tmp;
+
+                    available_remote_tmp -= wu_var[iCell2][iSector2].demand_remote_tmp;
                 }
+                
+                wu_var[iCell][iSector].available_remote += 
+                        wu_var[iCell2][iSector2].available_remote_tmp;
             }
         }
     }
@@ -218,6 +243,7 @@ calculate_use_remote(size_t iCell,
         }
         
         // remote
+        wu_var[iCell][iSector].withdrawn_remote = 0.0;
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
             iCell2 = wu_con[iCell].receiving[j];
 
@@ -226,28 +252,30 @@ calculate_use_remote(size_t iCell,
                 continue;
             }
 
-            if(wu_var[iCell2][iSector2].available_remote > 0){
-                frac = wu_var[iCell2][iSector2].demand_remote / 
-                        wu_var[iCell2][iSector2].available_remote;
+            if(wu_var[iCell2][iSector2].available_remote_tmp > 0){
+                frac = wu_var[iCell2][iSector2].demand_remote_tmp / 
+                        wu_var[iCell2][iSector2].available_remote_tmp;
                 frac = min(frac, 1);
                 
-                wu_var[iCell2][iSector2].withdrawn_remote = 
-                        wu_var[iCell2][iSector2].available_remote * frac;
+                wu_var[iCell2][iSector2].withdrawn_remote_tmp = 
+                        wu_var[iCell2][iSector2].available_remote_tmp * frac;
             } else {
-                wu_var[iCell2][iSector2].withdrawn_remote = 0;
+                wu_var[iCell2][iSector2].withdrawn_remote_tmp = 0;
             }
-
+            
             wu_var[iCell2][iSector2].consumed += 
-                    wu_var[iCell2][iSector2].withdrawn_remote * 
+                wu_var[iCell2][iSector2].withdrawn_remote_tmp * 
                     wu_force[iCell2][iSector2].consumption_frac;
+
+            wu_var[iCell][iSector].withdrawn_remote += 
+                    wu_var[iCell2][iSector2].withdrawn_remote_tmp;
+            (*withdrawn_remote) += wu_var[iCell2][iSector2].withdrawn_remote_tmp;
+
             wu_var[iCell][iSector].returned += 
-                    wu_var[iCell2][iSector2].withdrawn_remote * 
+                wu_var[iCell2][iSector2].withdrawn_remote_tmp * 
                     (1 - wu_force[iCell2][iSector2].consumption_frac);
-            
-            (*withdrawn_remote) += wu_var[iCell2][iSector2].withdrawn_remote;
-            
             (*returned) += 
-                    wu_var[iCell2][iSector2].withdrawn_remote * 
+                wu_var[iCell2][iSector2].withdrawn_remote_tmp * 
                     (1 - wu_force[iCell2][iSector2].consumption_frac);
         }
     }
@@ -317,6 +345,49 @@ calculate_hydrology_remote(size_t iCell,
 }
 
 /******************************************
+* @brief   Do remote water-use accounting
+******************************************/
+void
+account_remote(size_t iCell)
+{
+    extern plugin_option_struct plugin_options;
+    extern wu_var_struct **wu_var;
+    extern wu_con_struct *wu_con;
+    extern wu_con_map_struct *wu_con_map;
+    
+    size_t i;
+    size_t j;
+    int iSector;
+    size_t iCell2;
+    int iSector2;
+    
+    for(i = 0; i < plugin_options.NWUTYPES; i ++){
+        iSector = wu_con_map[iCell].sidx[i];        
+        if(iSector == NODATA_WU){
+            continue;
+        }
+        
+        // remote
+        for(j = 0; j < wu_con[iCell].nreceiving; j++){
+            iCell2 = wu_con[iCell].receiving[j];
+
+            iSector2 = wu_con_map[iCell2].sidx[i];        
+            if(iSector2 == NODATA_WU){
+                continue;
+            }
+            
+            wu_var[iCell2][iSector2].demand_tremote = 
+                    max(wu_var[iCell2][iSector2].demand_remote_tmp,
+                        wu_var[iCell2][iSector2].demand_tremote);
+            wu_var[iCell2][iSector2].withdrawn_tremote += 
+                    wu_var[iCell2][iSector2].withdrawn_remote_tmp;
+            wu_var[iCell2][iSector2].available_tremote += 
+                    wu_var[iCell2][iSector2].available_remote_tmp;
+        }
+    }
+}
+
+/******************************************
 * @brief   Check the water-use water balance
 ******************************************/
 void
@@ -341,6 +412,28 @@ check_water_use_balance_remote(size_t iCell,
         if(iSector == NODATA_WU){
             continue;
         }
+            
+        if(wu_var[iCell][iSector].withdrawn_remote - wu_var[iCell][iSector].available_remote > WU_BALANCE_ERROR_THRESH ||
+            wu_var[iCell][iSector].withdrawn_remote - wu_var[iCell][iSector].demand_remote > WU_BALANCE_ERROR_THRESH) {
+            log_err("Water-use water balance error for sector (using remote withdrawals) %zu:\n"
+                "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
+                "surface-water:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
+                "dam:\t\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
+                "remote:\t\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n",
+                i,
+                wu_var[iCell2][iSector2].withdrawn_gw, 
+                wu_var[iCell2][iSector2].demand_gw, 
+                wu_var[iCell2][iSector2].available_gw,
+                wu_var[iCell2][iSector2].withdrawn_surf, 
+                wu_var[iCell2][iSector2].demand_surf, 
+                wu_var[iCell2][iSector2].available_surf,
+                wu_var[iCell2][iSector2].withdrawn_dam,
+                wu_var[iCell2][iSector2].demand_surf,
+                wu_var[iCell2][iSector2].available_dam,
+                wu_var[iCell2][iSector2].withdrawn_remote, 
+                wu_var[iCell2][iSector2].demand_remote, 
+                wu_var[iCell2][iSector2].available_remote);
+        }
         
         for(j = 0; j < wu_con[iCell].nreceiving; j++){
             iCell2 = wu_con[iCell].receiving[j];
@@ -350,9 +443,9 @@ check_water_use_balance_remote(size_t iCell,
                 continue;
             }
             
-            if(wu_var[iCell2][iSector2].withdrawn_remote - wu_var[iCell2][iSector2].available_remote > WU_BALANCE_ERROR_THRESH ||
-                wu_var[iCell2][iSector2].withdrawn_remote - wu_var[iCell2][iSector2].demand_remote > WU_BALANCE_ERROR_THRESH) {
-                log_err("Water-use water balance error for remote %zu:\n"
+            if(wu_var[iCell2][iSector2].withdrawn_tremote - wu_var[iCell2][iSector2].available_tremote > WU_BALANCE_ERROR_THRESH ||
+                wu_var[iCell2][iSector2].withdrawn_tremote - wu_var[iCell2][iSector2].demand_tremote > WU_BALANCE_ERROR_THRESH) {
+                log_err("Water-use water balance error for remote sector %zu:\n"
                     "groundwater:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                     "surface-water:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
                     "dam:\t\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n"
@@ -367,9 +460,9 @@ check_water_use_balance_remote(size_t iCell,
                     wu_var[iCell2][iSector2].withdrawn_dam,
                     wu_var[iCell2][iSector2].demand_surf,
                     wu_var[iCell2][iSector2].available_dam,
-                    wu_var[iCell2][iSector2].withdrawn_remote, 
-                    wu_var[iCell2][iSector2].demand_remote, 
-                    wu_var[iCell2][iSector2].available_remote);
+                    wu_var[iCell2][iSector2].withdrawn_tremote, 
+                    wu_var[iCell2][iSector2].demand_tremote, 
+                    wu_var[iCell2][iSector2].available_tremote);
             }
         }
     }
@@ -428,6 +521,11 @@ wu_remote(size_t iCell)
     ******************************************/ 
     calculate_use_remote(iCell, 
             &withdrawn_remote, &returned);
+    
+    /******************************************
+     Accounting
+    ******************************************/ 
+    account_remote(iCell);
     
     /******************************************
      Return

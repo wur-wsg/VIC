@@ -92,36 +92,21 @@ enum {
     OUT_GDAM_OP_RELEASE,                /**< global dam calculated release [hm3] */
     OUT_GDAM_OP_STORAGE,                /**< global dam calculated storage [hm3] */
     // water-use
-    OUT_AV_GW_SECT,                     /**< available groundwater resources per sector [mm] */
-    OUT_AV_SURF_SECT,                   /**< available surface water resources per sector [mm] */
-    OUT_AV_DAM_SECT,                    /**< available dam reservoir resources per sector [mm] */
-    OUT_AV_REM_SECT,                    /**< available remote resources per sector [mm] */
     OUT_DE_GW_SECT,                     /**< demand for groundwater resources per sector [mm] */
     OUT_DE_SURF_SECT,                   /**< demand for surface water resources per sector [mm] */
     OUT_DE_NREN_SECT,                   /**< demand for non-renewable resources per sector [mm] */
-    OUT_DE_REM_SECT,                    /**< demand for remote resources per sector [mm] */
+    OUT_DE_REM_SECT,                    /**< demand for remote resources per sector (from this cell) [mm] */
+    OUT_DE_TREM_SECT,                   /**< demand for remote resources per sector (for this cell) [mm] */
     OUT_WI_GW_SECT,                     /**< withdrawn groundwater resources per sector [mm] */
     OUT_WI_SURF_SECT,                   /**< withdrawn surface water resources per sector [mm] */
     OUT_WI_DAM_SECT,                    /**< withdrawn dam reservoir resources per sector [mm] */
-    OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector [mm] */
+    OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector (from this cell) [mm] */
+    OUT_WI_TREM_SECT,                   /**< withdrawn remote resources per sector (for this cell) [mm] */
     OUT_WI_NREN_SECT,                   /**< withdrawn non-renewable resources per sector [mm] */
-    OUT_AV_GW,                          /**< available groundwater resources [mm] */
-    OUT_AV_SURF,                        /**< available surface water resources [mm] */
-    OUT_AV_DAM,                         /**< available dam reservoir resources [mm] */
-    OUT_AV_REM,                         /**< available remote resources [mm] */
-    OUT_DE_GW,                          /**< demand for groundwater resources [mm] */
-    OUT_DE_SURF,                        /**< demand for surface water resources [mm] */
-    OUT_DE_NREN,                        /**< demand for non-renewable resources [mm] */
-    OUT_DE_REM,                         /**< demand for remote resources [mm] */
-    OUT_WI_GW,                          /**< withdrawn groundwater resources [mm] */
-    OUT_WI_SURF,                        /**< withdrawn surface water resources [mm] */
-    OUT_WI_DAM,                         /**< withdrawn dam reservoir resources [mm] */
-    OUT_WI_REM,                         /**< withdrawn remote resources [mm] */
-    OUT_WI_NREN,                        /**< withdrawn non-renewable resources [mm] */
-    OUT_AVAILABLE,                      /**< available water resources [mm] */
     OUT_DEMAND,                         /**< demand for water resources [mm] */
     OUT_WITHDRAWN,                      /**< withdrawn water resources [mm] */
     OUT_RETURNED,                       /**< returned water resources [mm] */
+    OUT_CONSUMED,                       /**< consumed water resources [mm] */
     // irrigation
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
