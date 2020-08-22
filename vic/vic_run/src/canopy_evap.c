@@ -288,7 +288,7 @@ transpiration(layer_data_struct *layer,
         gsm_inv = 1.0;
 
         for (i = 0; i < options.Nlayer; i++) {
-            // Store water stress for use in plugins
+            // Store water stress
             layer[i].water_stress = gsm_inv;
         }
         
@@ -396,7 +396,7 @@ transpiration(layer_data_struct *layer,
                 gsm_inv = 0.0;
             }
 
-            // Store water stress for use in plugins
+            // Store water stress
             layer[i].water_stress = gsm_inv;
                 
             if (gsm_inv > 0.0) {

@@ -642,6 +642,16 @@ crop_put_data(size_t iCell)
                             cgrid->crp->prm.InitialDryWeight * 
                             Afgen(cgrid->crp->prm.Roots, &tmp_develop) * 
                             area_fract * cgrid->growing;
+                    
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_NSOIL][crop_class] += 
+                            List(cgrid->mng->N_Fert_table) * cgrid->mng->N_Uptake_frac * 
+                            area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_PSOIL][crop_class] += 
+                            List(cgrid->mng->P_Fert_table) * cgrid->mng->P_Uptake_frac * 
+                            area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_KSOIL][crop_class] += 
+                            List(cgrid->mng->K_Fert_table) * cgrid->mng->K_Uptake_frac * 
+                            area_fract * cgrid->growing;
                 }
                 
                 /* Store crop states - divide through number of growing days for average */

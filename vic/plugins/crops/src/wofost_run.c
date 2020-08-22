@@ -51,6 +51,11 @@ wofost_run(SimUnit *Grid)
             /* Update the number of days that the crop has grown */
             Grid->crp->CultivateDay++;
             Grid->crp->GrowthDay++;
+            
+            /* External accounting*/
+            Grid->mng->N_external = 0.;
+            Grid->mng->P_external = 0.;
+            Grid->mng->K_external = 0.;
 
         }
         else
