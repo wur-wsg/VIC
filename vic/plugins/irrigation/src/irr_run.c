@@ -128,7 +128,7 @@ irr_run_requirement(size_t iCell)
                         // Without ponding the moisture should be at
                         // field capacity
                         cirr_var->requirement = 
-                                (total_wfc * plugin_param.Wfc_fract) - 
+                                total_wfc - 
                                 (total_moist + cirr_var->leftover);
                     }
 
@@ -140,7 +140,7 @@ irr_run_requirement(size_t iCell)
                     if(cirr_con->paddy && cirr_var->requirement > 0){
                         cirr_var->flag_req = true;
                     }
-                    else if (total_wcr - 
+                    else if (total_wcr * 1.1 - 
                             (total_moist + cirr_var->leftover) > 0 && 
                             cirr_var->requirement > 0){
                         cirr_var->flag_req = true;
