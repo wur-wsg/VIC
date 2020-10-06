@@ -27,7 +27,7 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
-#define CONSUMP_ONLY true
+#define CONSUMP_ONLY false
 
 /******************************************
 * @brief   Get (cell) demand from sectors
