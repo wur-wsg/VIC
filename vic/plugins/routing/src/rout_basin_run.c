@@ -95,6 +95,9 @@ rout_basin_run(size_t iCell)
         (global_param.dt * MM_PER_M);
     // Calculate delta-time runoff (equal contribution)
     dt_runoff = runoff / rout_steps_per_dt;
+    if(dt_runoff != dt_runoff){
+        log_err("Routing basin runoff dt");
+    }
     // Convolute current runoff
     for (i = 0; i < rout_steps_per_dt; i++) {
         convolute(dt_runoff, rout_con[iCell].runoff_uh,
@@ -117,6 +120,9 @@ rout_basin_run(size_t iCell)
         
         for (j = 0; j < rout_con[iCell].Nupstream; j++) {
             dt_inflow += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
+        }
+        if(dt_inflow != dt_inflow){
+            log_err("Routing basin inflow dt");
         }
         
         rout_var[iCell].inflow += dt_inflow;

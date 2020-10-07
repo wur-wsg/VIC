@@ -105,6 +105,11 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
                         global_param.model_steps_per_day;
     
     dam_operate(dam_con, dam_var);
+            global_param.dt;
+    
+    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
+        log_err("Dam discharge");
+    }
     
     prev_discharge = rout_var[iCell].discharge;
     rout_var[iCell].discharge *= 1 - dam_con->inflow_frac;
@@ -119,13 +124,21 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
         if (prev_discharge > 0) {
             rout_var[iCell].dt_discharge[i] *= 
                     rout_var[iCell].discharge / prev_discharge;
+            if(prev_discharge != prev_discharge){
+                log_warn("Dam discharge dt 1");
+            }
+            if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+                log_err("Dam discharge dt 1");
+            }
         } else {
             rout_var[iCell].dt_discharge[i] = 
                     rout_var[iCell].discharge / rout_steps_per_dt;
-        }
-        
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("Dam discharge dt");
+            if(rout_steps_per_dt != rout_steps_per_dt){
+                log_warn("Dam discharge dt 1");
+            }
+            if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+                log_err("Dam discharge dt 2");
+            }
         }
     }
 }
