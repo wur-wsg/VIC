@@ -126,4 +126,8 @@ rout_put_data(size_t iCell)
                     OUT_DISCHARGE][0] = rout_var[iCell].discharge;
     out_data[iCell][N_OUTVAR_TYPES +
                     OUT_STREAM_INFLOW][0] = rout_var[iCell].inflow;
+    
+    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
+        log_err("Rout output discharge");
+    }
 }

@@ -169,6 +169,10 @@ calculate_hydrology_nonrenew(size_t iCell,
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }
+            
+            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
+            log_err("Water-use non-renewable discharge dt");
+            }
         }
             
         
@@ -182,6 +186,10 @@ calculate_hydrology_nonrenew(size_t iCell,
             else {
                 rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
+        }
+            
+        if(rout_var[iCell].discharge != rout_var[iCell].discharge){
+            log_err("Water-use non-renewable discharge");
         }
     }
 }

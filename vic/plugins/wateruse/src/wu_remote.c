@@ -328,6 +328,10 @@ calculate_hydrology_remote(size_t iCell,
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }
+            
+            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
+                log_err("Water-use remote discharge dt");
+            }
         }
         
         rout_var[iCell].discharge = 0.;
@@ -340,6 +344,10 @@ calculate_hydrology_remote(size_t iCell,
             else {
                 rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
+        }
+            
+        if(rout_var[iCell].discharge != rout_var[iCell].discharge){
+            log_err("Water-use remote discharge");
         }
     }
 }

@@ -136,6 +136,14 @@ rout_basin_run(size_t iCell)
         else {
             rout_var[iCell].stream += rout_var[iCell].dt_discharge[i];
         }
+        
+        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+            log_err("Rout basin discharge dt");
+        }
+    }
+    
+    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
+        log_err("Rout basin discharge");
     }
 
     // Check water balance

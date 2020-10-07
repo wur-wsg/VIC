@@ -111,6 +111,10 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
     rout_var[iCell].discharge += dam_var->release * M3_PER_HM3 / 
             global_param.dt;
     
+    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
+        log_err("Dam discharge");
+    }
+    
     for(i = 0; i < rout_steps_per_dt; i++) {
         if (prev_discharge > 0) {
             rout_var[iCell].dt_discharge[i] *= 
@@ -118,6 +122,10 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
         } else {
             rout_var[iCell].dt_discharge[i] = 
                     rout_var[iCell].discharge / rout_steps_per_dt;
+        }
+        
+        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+            log_err("Dam discharge dt");
         }
     }
 }

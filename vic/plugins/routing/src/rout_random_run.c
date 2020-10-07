@@ -319,9 +319,18 @@ rout_random_run()
         for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
             rout_var[i].dt_discharge[j] = dt_dis_local[i][j];
         }
+    
+        if(rout_var[i].dt_discharge[j] != rout_var[i].dt_discharge[j]){
+        log_err("Rout random discharge dt");
+        }
+        
         rout_var[i].discharge = dis_local[i];
         rout_var[i].stream = stream_local[i];
         rout_var[i].inflow = inflow_local[i];
+    
+        if(rout_var[i].discharge != rout_var[i].discharge){
+        log_err("Rout random discharge");
+        }
     }
 
     // Free
