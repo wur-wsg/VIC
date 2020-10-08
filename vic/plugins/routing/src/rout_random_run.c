@@ -72,11 +72,12 @@ rout_random_run()
     double                            in_runoff;
     double                            in_baseflow;
     double                            inflow;
-    double                            dt_inflow;
+    double                           *dt_inflow;
     double                            runoff;
-    double                            dt_runoff;
+    double                           *dt_runoff;
     size_t                            rout_steps_per_dt;
     double                            prev_stream;
+    double                           *convoluted;
 
     size_t                            i;
     size_t                            j;
@@ -86,6 +87,13 @@ rout_random_run()
                         global_param.model_steps_per_day;
 
     // Alloc
+    dt_inflow = malloc(rout_steps_per_dt * sizeof(*dt_inflow));
+    check_alloc_status(dt_inflow, "Memory allocation error");
+    dt_runoff = malloc(rout_steps_per_dt * sizeof(*dt_runoff));
+    check_alloc_status(dt_runoff, "Memory allocation error");
+    convoluted = malloc((plugin_options.UH_LENGTH + rout_steps_per_dt - 1) * sizeof(*convoluted));
+    check_alloc_status(convoluted, "Memory allocation error");
+    
     nup_global = malloc(global_domain.ncells_active * sizeof(*nup_global));
     check_alloc_status(nup_global, "Memory allocation error");
     up_global = malloc(global_domain.ncells_active * sizeof(*up_global));
@@ -119,7 +127,7 @@ rout_random_run()
             malloc(plugin_options.UH_LENGTH * sizeof(*iuh_global[i]));
         check_alloc_status(iuh_global[i], "Memory allocation error");
         dt_dis_global[i] = malloc(
-            (plugin_options.UH_LENGTH + rout_steps_per_dt + 1) *
+            (plugin_options.UH_LENGTH + rout_steps_per_dt - 1) *
             sizeof(*dt_dis_global[i]));
         check_alloc_status(dt_dis_global[i], "Memory allocation error");
     }
@@ -151,7 +159,7 @@ rout_random_run()
         iuh_local[i] = malloc(plugin_options.UH_LENGTH * sizeof(*iuh_local[i]));
         check_alloc_status(iuh_local[i], "Memory allocation error");
         dt_dis_local[i] = malloc(
-            (plugin_options.UH_LENGTH + rout_steps_per_dt + 1) *
+            (plugin_options.UH_LENGTH + rout_steps_per_dt - 1) *
             sizeof(*dt_dis_local[i]));
         check_alloc_status(dt_dis_local[i], "Memory allocation error");
     }
@@ -204,7 +212,7 @@ rout_random_run()
             (in_runoff + in_baseflow) *
             local_domain.locations[i].area /
             (global_param.dt * MM_PER_M);
-        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
+        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; j++) {
             dt_dis_local[i][j] = rout_var[i].dt_discharge[j];
         }
 
@@ -223,7 +231,7 @@ rout_random_run()
     gather_double_2d(iuh_global, iuh_local, plugin_options.UH_LENGTH);
     gather_double(run_global, run_local);
     gather_double_2d(dt_dis_global, dt_dis_local,
-                     plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
+                     plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
     gather_double(dis_global, dis_local);
     gather_double(stream_global, stream_local);
     gather_double(inflow_global, inflow_local);
@@ -240,18 +248,24 @@ rout_random_run()
             for (j = 0; j < rout_steps_per_dt; j++) {
                 dt_dis_global[iCell][0] = 0.0;
                 cshift(dt_dis_global[iCell],
-                       plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
+                       plugin_options.UH_LENGTH + rout_steps_per_dt - 1, 1, 0, 1);
             }
 
     	    /* RUNOFF*/
             // Gather runoff from VIC
             runoff = run_global[iCell];
+            
             // Calculate delta-time runoff (equal contribution)
-            dt_runoff = runoff / rout_steps_per_dt;
-            // Convolute current runoff
             for (j = 0; j < rout_steps_per_dt; j++) {
-                convolute(dt_runoff, ruh_global[iCell], dt_dis_global[iCell],
-                          plugin_options.UH_LENGTH, j);
+                dt_runoff[j] = runoff / rout_steps_per_dt;
+            }
+            
+            // Convolute current runoff
+            convolve(dt_runoff, rout_steps_per_dt, 
+                     ruh_global[iCell], plugin_options.UH_LENGTH,
+                     convoluted);
+            for (j = 0; j < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; j++) {
+                dt_dis_global[iCell][j] += convoluted[j];
             }
 
     	    /* INFLOW*/
@@ -260,28 +274,30 @@ rout_random_run()
             if (plugin_options.FORCE_ROUTING) {
                 inflow += force_global[iCell];
             }
-            // Convolute current inflow
+            
+            // Calculate delta-time inflow (equal contribution)
             inflow_global[iCell] = 0.;
             for (j = 0; j < rout_steps_per_dt; j++) {
-
-            	// Calculate delta-time inflow (equal contribution)
-            	dt_inflow = inflow / rout_steps_per_dt;
-
+                dt_inflow[j] = inflow / rout_steps_per_dt;
                 for (k = 0; k < nup_global[iCell]; k++) {
-                    dt_inflow += dt_dis_global[up_global[iCell][k]][j];
+                    dt_inflow[j] += dt_dis_global[up_global[iCell][k]][j];
                 }
-		
-                inflow_global[iCell] += dt_inflow;
-                convolute(dt_inflow, iuh_global[iCell], 
-                          dt_dis_global[iCell],
-                          plugin_options.UH_LENGTH, j);
+                inflow_global[iCell] += dt_inflow[j];
+            }
+            
+            // Convolute current inflow
+            convolve(dt_inflow, rout_steps_per_dt, 
+                     iuh_global[iCell], plugin_options.UH_LENGTH,
+                     convoluted);
+            for (j = 0; j < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; j++) {
+                dt_dis_global[iCell][j] += convoluted[j];
             }
 
             // Aggregate current timestep discharge & stream moisture
-            dis_global[iCell] = 0.0;
             prev_stream = stream_global[iCell];
+            dis_global[iCell] = 0.0;
             stream_global[iCell] = 0.0;
-            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
+            for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; j++) {
                 if (j < rout_steps_per_dt) {
                     dis_global[iCell] += dt_dis_global[iCell][j];
                 }
@@ -309,31 +325,26 @@ rout_random_run()
 
     // Scatter discharge
     scatter_double_2d(dt_dis_global, dt_dis_local,
-                      plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
+                      plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
     scatter_double(stream_global, stream_local);
     scatter_double(inflow_global, inflow_local);
     scatter_double(dis_global, dis_local);
 
     // Set discharge
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
+        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; j++) {
             rout_var[i].dt_discharge[j] = dt_dis_local[i][j];
         }
-    
-        if(rout_var[i].dt_discharge[j] != rout_var[i].dt_discharge[j]){
-        log_err("Rout random discharge dt");
-        }
-        
         rout_var[i].discharge = dis_local[i];
         rout_var[i].stream = stream_local[i];
         rout_var[i].inflow = inflow_local[i];
-    
-        if(rout_var[i].discharge != rout_var[i].discharge){
-        log_err("Rout random discharge");
-        }
     }
 
     // Free
+    free(dt_inflow);
+    free(dt_runoff);
+    free(convoluted);
+    
     for (i = 0; i < global_domain.ncells_active; i++) {
         free(up_global[i]);
         free(ruh_global[i]);

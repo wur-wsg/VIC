@@ -141,7 +141,7 @@ calculate_availability_remote(size_t iCell,
                         global_param.model_steps_per_day;
     
     // surface water
-    for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+    for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
         (*available_remote) += rout_var[iCell].dt_discharge[iStep] * global_param.dt / 
                 local_domain.locations[iCell].area * MM_PER_M;
     }
@@ -306,7 +306,7 @@ calculate_hydrology_remote(size_t iCell,
     // remote
     if(withdrawn_remote - returned != 0.) {
         available_discharge_tmp = 0.;
-        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
         }
         
@@ -314,7 +314,7 @@ calculate_hydrology_remote(size_t iCell,
 		(withdrawn_remote - returned) /
                 MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
         
-        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
             if(available_discharge_tmp > 0) {
                 // Scale withdrawal proportionally to availability
                 rout_var[iCell].dt_discharge[iStep] -= 
@@ -323,20 +323,16 @@ calculate_hydrology_remote(size_t iCell,
             } else {
                 // Scale withdrawal proportionally to length
                 rout_var[iCell].dt_discharge[iStep] -= 
-                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
+                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
             }
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
-            }
-            
-            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                log_err("Water-use remote discharge dt");
             }
         }
         
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
-        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
             // Recalculate discharge and stream moisture
             if (iStep < rout_steps_per_dt) {
                 rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
@@ -344,14 +340,6 @@ calculate_hydrology_remote(size_t iCell,
             else {
                 rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
-            
-            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                log_err("Water-use non-renewable discharge dt storing");
-            }
-        }
-            
-        if(rout_var[iCell].discharge != rout_var[iCell].discharge){
-            log_err("Water-use remote discharge");
         }
     }
 }

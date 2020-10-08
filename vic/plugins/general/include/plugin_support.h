@@ -31,6 +31,7 @@
  * @brief   Functions
  *****************************************************************************/
 void convolute(double, double *, double *, size_t, size_t);
+void convolve(const double[], size_t, const double[], size_t, double[]);
 void cshift(double *, int, int, int, int);
 void size_t_sort(size_t *, size_t *, size_t, bool);
 void size_t_sort2(size_t *, int *, size_t, bool);

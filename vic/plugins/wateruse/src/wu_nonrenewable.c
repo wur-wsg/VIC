@@ -147,7 +147,7 @@ calculate_hydrology_nonrenew(size_t iCell,
     // surface
     if(returned != 0.) {
         available_discharge_tmp = 0.;
-        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
         }
         
@@ -155,7 +155,7 @@ calculate_hydrology_nonrenew(size_t iCell,
 		returned /
                 MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
         
-        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
             if(available_discharge_tmp > 0) {
                 // Scale withdrawal proportionally to availability
                 rout_var[iCell].dt_discharge[iStep] -= 
@@ -164,21 +164,17 @@ calculate_hydrology_nonrenew(size_t iCell,
             } else {
                 // Scale withdrawal proportionally to length
                 rout_var[iCell].dt_discharge[iStep] -= 
-                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt + 1);
+                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
             }
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
-            }
-            
-            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                log_err("Water-use non-renewable discharge dt");
             }
         }
             
         
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
-        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; iStep++) {
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
             // Recalculate discharge and stream moisture
             if (iStep < rout_steps_per_dt) {
                 rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
@@ -186,14 +182,6 @@ calculate_hydrology_nonrenew(size_t iCell,
             else {
                 rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
-            
-            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                log_err("Water-use non-renewable discharge dt storing");
-            }
-        }
-            
-        if(rout_var[iCell].discharge != rout_var[iCell].discharge){
-            log_err("Water-use non-renewable discharge");
         }
     }
 }
