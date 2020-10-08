@@ -115,9 +115,15 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
         if (prev_discharge > 0) {
             rout_var[iCell].dt_discharge[i] *= 
                     rout_var[iCell].discharge / prev_discharge;
+            if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+                log_err("dt_inflow NaN dam 1");
+            }
         } else {
             rout_var[iCell].dt_discharge[i] = 
                     rout_var[iCell].discharge / rout_steps_per_dt;
+            if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+                log_err("dt_inflow NaN dam 2");
+            }
         }
     }
 }
