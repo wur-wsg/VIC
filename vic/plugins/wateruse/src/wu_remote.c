@@ -344,6 +344,10 @@ calculate_hydrology_remote(size_t iCell,
             else {
                 rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
+            
+            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
+                log_err("Water-use non-renewable discharge dt storing");
+            }
         }
             
         if(rout_var[iCell].discharge != rout_var[iCell].discharge){

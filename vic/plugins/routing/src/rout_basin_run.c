@@ -62,6 +62,10 @@ rout_basin_run(size_t iCell)
         rout_var[iCell].dt_discharge[0] = 0.0;
         cshift(rout_var[iCell].dt_discharge,
                plugin_options.UH_LENGTH + rout_steps_per_dt + 1, 1, 0, 1);
+        
+        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+            log_err("Rout basin discharge dt start");
+        }
     }
     
     /* RUNOFF*/
@@ -103,6 +107,10 @@ rout_basin_run(size_t iCell)
         convolute(dt_runoff, rout_con[iCell].runoff_uh,
                   rout_var[iCell].dt_discharge,
                   plugin_options.UH_LENGTH, i);
+        
+        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
+            log_err("Rout basin discharge dt convolute");
+        }
     }
 
     /* INFLOW*/

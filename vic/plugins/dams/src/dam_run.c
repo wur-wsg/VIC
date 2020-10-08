@@ -133,7 +133,7 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
             rout_var[iCell].dt_discharge[i] = 
                     rout_var[iCell].discharge / rout_steps_per_dt;
             if(rout_steps_per_dt == 0){
-                log_warn("Dam discharge dt 1");
+                log_warn("Dam discharge dt 2");
             }
             if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
                 log_err("Dam discharge dt 2");
