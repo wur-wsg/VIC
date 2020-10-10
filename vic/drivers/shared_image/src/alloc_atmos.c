@@ -64,7 +64,7 @@ alloc_force(force_data_struct *force)
     force->wind = calloc(NR + 1, sizeof(*(force->wind)));
     check_alloc_status(force->wind, "Memory allocation error.");
 
-    if (options.LAKES) {
+    if (options.LAKES && options.FORCE_LAKES) {
         force->channel_in = calloc(NR + 1, sizeof(*(force->channel_in)));
         check_alloc_status(force->channel_in, "Memory allocation error.");
     }
@@ -105,7 +105,7 @@ free_force(force_data_struct *force)
     free(force->vp);
     free(force->vpd);
     free(force->wind);
-    if (options.LAKES) {
+    if (options.LAKES && options.FORCE_LAKES) {
         free(force->channel_in);
     }
     if (options.CARBON) {

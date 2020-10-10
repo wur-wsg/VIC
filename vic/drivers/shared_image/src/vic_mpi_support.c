@@ -171,34 +171,34 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(global_param_struct, endyear);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned short forceday[2];
+    // unsigned short forceday[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceday);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned int forcesec[2];
+    // unsigned int forcesec[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forcesec);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED;
 
-    // unsigned short forcemonth[2];
+    // unsigned short forcemonth[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forcemonth);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned short forceoffset[2];
+    // unsigned short forceoffset[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceoffset);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
-    // unsigned int forceskip[2];
+    // unsigned int forceskip[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceskip);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED;
 
-    // unsigned short int forceyear[2];
+    // unsigned short int forceyear[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceyear);
-    blocklengths[i] = 2;
+    blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // size_t nrecs;
@@ -312,14 +312,14 @@ create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     // reset i
     i = 0;
 
-    // char forcing[2][MAXSTRING];
+    // char forcing[N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, forcing);
-    blocklengths[i] *= 2;
+    blocklengths[i] *= MAX_FORCE_FILES;
     mpi_types[i++] = MPI_CHAR;
 
-    // char f_path_pfx[2][MAXSTRING];
+    // char f_path_pfx[N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(filenames_struct, f_path_pfx);
-    blocklengths[i] *= 2;
+    blocklengths[i] *= N_FORCING_TYPES;
     mpi_types[i++] = MPI_CHAR;
 
     // char global[MAXSTRING];
@@ -395,7 +395,7 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in location_struct
-    nitems = 9;
+    nitems = 10;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -435,6 +435,10 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
 
     // size_t nveg;
     offsets[i] = offsetof(location_struct, nveg);
+    mpi_types[i++] = MPI_AINT;
+
+    // size_t nlake;
+    offsets[i] = offsetof(location_struct, nlake);
     mpi_types[i++] = MPI_AINT;
 
     // size_t global_idx;
@@ -488,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 53;
+    nitems = 59;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -598,10 +602,6 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(option_struct, Nfrost);
     mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
 
-    // size_t Nlakenode;
-    offsets[i] = offsetof(option_struct, Nlakenode);
-    mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
-
     // size_t Nlayer;
     offsets[i] = offsetof(option_struct, Nlayer);
     mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
@@ -616,6 +616,18 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // size_t NVEGTYPES;
     offsets[i] = offsetof(option_struct, NVEGTYPES);
+    mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
+
+    // size_t NLAKETYPES;
+    offsets[i] = offsetof(option_struct, NLAKETYPES);
+    mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
+
+    // size_t NLAKEPROFILE;
+    offsets[i] = offsetof(option_struct, NLAKEPROFILE);
+    mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
+
+    // size_t NLAKENODES;
+    offsets[i] = offsetof(option_struct, NLAKENODES);
     mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
 
     // unsigned short RC_MODE;
@@ -702,12 +714,28 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(option_struct, LAKE_PROFILE);
     mpi_types[i++] = MPI_C_BOOL;
 
+    // bool FORCE_LAKES;
+    offsets[i] = offsetof(option_struct, FORCE_LAKES);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool LAKE_TEMPERATURE;
+    offsets[i] = offsetof(option_struct, LAKE_TEMPERATURE);
+    mpi_types[i++] = MPI_C_BOOL;
+
+    // bool LAKE_ONLY;
+    offsets[i] = offsetof(option_struct, LAKE_ONLY);
+    mpi_types[i++] = MPI_C_BOOL;
+
     // bool ORGANIC_FRACT;
     offsets[i] = offsetof(option_struct, ORGANIC_FRACT);
     mpi_types[i++] = MPI_C_BOOL;
 
     // unsigned short STATE_FORMAT;
     offsets[i] = offsetof(option_struct, STATE_FORMAT);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned short STATE_COMPRESS;
+    offsets[i] = offsetof(option_struct, STATE_COMPRESS);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // bool INIT_STATE;
@@ -755,7 +783,7 @@ create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in parameters_struct
-    nitems = 156;
+    nitems = 157;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -863,6 +891,10 @@ create_MPI_param_struct_type(MPI_Datatype *mpi_type)
 
     // double LAKE_MAX_SURFACE
     offsets[i] = offsetof(parameters_struct, LAKE_MAX_SURFACE);
+    mpi_types[i++] = MPI_DOUBLE;
+
+    // double LAKE_MAX_LAYER
+    offsets[i] = offsetof(parameters_struct, LAKE_MAX_LAYER);
     mpi_types[i++] = MPI_DOUBLE;
 
     // double LAKE_BETA

@@ -34,6 +34,7 @@ vic_finalize(void)
 {
     extern size_t             *filter_active_cells;
     extern size_t             *mpi_map_mapping_array;
+    extern size_t             *mpi_lake_mapping_array;
     extern all_vars_struct    *all_vars;
     extern force_data_struct  *force;
     extern domain_struct       global_domain;
@@ -41,6 +42,8 @@ vic_finalize(void)
     extern filep_struct        filep;
     extern int                *mpi_map_local_array_sizes;
     extern int                *mpi_map_global_array_offsets;
+    extern int                *mpi_lake_local_array_sizes;
+    extern int                *mpi_lake_global_array_offsets;
     extern int                 mpi_rank;
     extern nc_file_struct     *nc_hist_files;
     extern option_struct       options;
@@ -49,7 +52,9 @@ vic_finalize(void)
     extern save_data_struct   *save_data;
     extern soil_con_struct    *soil_con;
     extern veg_con_map_struct *veg_con_map;
+    extern lake_con_map_struct *lake_con_map;
     extern veg_con_struct    **veg_con;
+    extern lake_con_struct    **lake_con;
     extern veg_hist_struct   **veg_hist;
     extern veg_lib_struct    **veg_lib;
     extern MPI_Datatype        mpi_global_struct_type;
@@ -102,6 +107,17 @@ vic_finalize(void)
         free(veg_lib[i]);
     }
 
+    if(options.LAKES) {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            free(lake_con_map[i].lake_out);
+            free(lake_con_map[i].lake_id);
+            free(lake_con_map[i].lidx);
+            free(lake_con[i]);
+        }
+        free(lake_con_map);
+        free(lake_con);
+    }
+    
     free_streams(&output_streams);
     free_out_data(local_domain.ncells_active, out_data);
     free(force);
@@ -119,6 +135,11 @@ vic_finalize(void)
         free(mpi_map_local_array_sizes);
         free(mpi_map_global_array_offsets);
         free(mpi_map_mapping_array);
+        if (options.LAKES && options.LAKE_ONLY) {
+            free(mpi_lake_local_array_sizes);
+            free(mpi_lake_global_array_offsets);
+            free(mpi_lake_mapping_array);
+        }
     }
 
     MPI_Type_free(&mpi_global_struct_type);

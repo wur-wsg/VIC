@@ -43,7 +43,8 @@ vic_alloc(void)
     extern veg_con_struct    **veg_con;
     extern veg_hist_struct   **veg_hist;
     extern veg_lib_struct    **veg_lib;
-    extern lake_con_struct    *lake_con;
+    extern lake_con_map_struct *lake_con_map;
+    extern lake_con_struct    **lake_con;
     size_t                     i;
     size_t                     j;
 
@@ -72,6 +73,10 @@ vic_alloc(void)
     check_alloc_status(veg_lib, "Memory allocation error.");
 
     if (options.LAKES) {
+        // allocate memory for lake mapping structure
+        lake_con_map = malloc(local_domain.ncells_active * sizeof(*lake_con_map));
+        check_alloc_status(lake_con_map, "Memory allocation error.");
+        
         // allocate memory for lake structure
         lake_con = malloc(local_domain.ncells_active * sizeof(*lake_con));
         check_alloc_status(lake_con, "Memory allocation error.");
@@ -151,6 +156,30 @@ vic_alloc(void)
             }
             initialize_veg_con(&(veg_con[i][j]));
         }
+        
+        // lake tile allocation
+        
+        if (options.LAKES) {
+            lake_con_map[i].nl_types = options.NLAKETYPES;
+
+            lake_con_map[i].veg_class = calloc(lake_con_map[i].nl_types,
+                                         sizeof(*(lake_con_map[i].veg_class)));
+            check_alloc_status(lake_con_map[i].veg_class, "Memory allocation error.");
+            lake_con_map[i].lidx = calloc(lake_con_map[i].nl_types,
+                                         sizeof(*(lake_con_map[i].lidx)));
+            check_alloc_status(lake_con_map[i].lidx, "Memory allocation error.");
+            lake_con_map[i].lake_out = calloc(lake_con_map[i].nl_types,
+                                       sizeof(*(lake_con_map[i].lake_out)));
+            check_alloc_status(lake_con_map[i].lake_out, "Memory allocation error.");
+            lake_con_map[i].lake_id = calloc(lake_con_map[i].nl_types,
+                                       sizeof(*(lake_con_map[i].lake_id)));
+            check_alloc_status(lake_con_map[i].lake_id, "Memory allocation error.");
+
+            lake_con_map[i].nl_active = (size_t) local_domain.locations[i].nlake;
+
+            lake_con[i] = malloc((lake_con_map[i].nl_active) * sizeof(*(lake_con[i])));
+            check_alloc_status(lake_con[i], "Memory allocation error.");
+        }
 
         // vegetation library allocation - there is a veg library for each
         // active grid cell
@@ -158,7 +187,7 @@ vic_alloc(void)
         veg_lib[i] = calloc(options.NVEGTYPES, sizeof(*(veg_lib[i])));
         check_alloc_status(veg_lib[i], "Memory allocation error.");
 
-        all_vars[i] = make_all_vars(veg_con_map[i].nv_active - 1);
+        all_vars[i] = make_all_vars(veg_con_map[i].nv_active - 1, lake_con_map[i].nl_active);
 
         // allocate memory for veg_hist
         veg_hist[i] = calloc(veg_con_map[i].nv_active, sizeof(*(veg_hist[i])));

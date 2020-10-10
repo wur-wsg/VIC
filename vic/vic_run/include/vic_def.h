@@ -27,7 +27,7 @@
 #ifndef VIC_DEF_H
 #define VIC_DEF_H
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define __USE_XOPEN
 #define _GNU_SOURCE
 
@@ -63,8 +63,10 @@
 #define MAX_NODES       50     /**< maximum number of soil thermal nodes */
 #define MAX_FRONTS      3      /**< maximum number of freezing and thawing front depths to store */
 #define MAX_FROST_AREAS 10     /**< maximum number of frost sub-areas */
-#define MAX_LAKE_NODES  20     /**< maximum number of lake thermal nodes */
+#define MAX_LAKE_NODES  2000   /**< maximum number of lake thermal nodes */
+#define MAX_LAKE_PROFILE 20    /**< maximum number of lake profile nodes */
 #define MAX_ZWTVMOIST   11     /**< maximum number of points in water table vs moisture curve for each soil layer; should include points at lower and upper boundaries of the layer */
+#define MAX_FORCE_FILES 15
 
 /***** Define minimum values for model parameters *****/
 #define MINSOILDEPTH    0.001  /**< Minimum layer depth with which model can work (m) */
@@ -228,12 +230,13 @@ typedef struct {
     bool LAKES;          /**< TRUE = use lake energy code */
     size_t Ncanopy;      /**< Number of canopy layers in the model. */
     size_t Nfrost;       /**< Number of frost subareas in model */
-    size_t Nlakenode;    /**< Number of lake thermal nodes in the model. */
     size_t Nlayer;       /**< Number of layers in model */
     size_t Nnode;        /**< Number of soil thermal nodes in the model */
     bool NOFLUX;         /**< TRUE = Use no flux lower bondary when computing
                             soil thermal fluxes */
     size_t NVEGTYPES;    /**< number of vegetation types in veg_param file */
+    size_t NLAKETYPES;   /**< number of lake types in lake_param file */
+    size_t NLAKEPROFILE; /**< number of lake profile layers in lake_param file */
     size_t NLAKENODES;   /**< number of lake layers in lake_param file */
     unsigned short int RC_MODE;        /**< RC_JARVIS = compute canopy resistance via Jarvis formulation (default)
                                           RC_PHOTO = compute canopy resistance based on photosynthetic activity */
@@ -278,10 +281,14 @@ typedef struct {
     unsigned short int LAI_SRC;        /**< FROM_VEGLIB = use LAI values from veg library file
                                           FROM_VEGPARAM = use LAI values from the veg param file */
     bool LAKE_PROFILE;   /**< TRUE = user-specified lake/area profile */
+    bool FORCE_LAKES;    /**< TRUE = force channel inflow */
+    bool LAKE_TEMPERATURE;      /**< TRUE = only simulate lakes (omit other vegetation) */
+    bool LAKE_ONLY;      /**< TRUE = only output lakes (in a single array) */
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 
     // state options
     unsigned short int STATE_FORMAT;  /**< TRUE = model state file is binary (default) */
+    unsigned short int STATE_COMPRESS; /**< Compress state files in stream*/
     bool INIT_STATE;     /**< TRUE = initialize model state from file */
     bool SAVE_STATE;     /**< TRUE = save state file */
 
@@ -306,15 +313,15 @@ typedef struct {
     unsigned short int endday;     /**< Last day of model simulation */
     unsigned short int endmonth;   /**< Last month of model simulation */
     unsigned short int endyear;    /**< Last year of model simulation */
-    unsigned short int forceday[2];  /**< day forcing files starts */
-    unsigned int forcesec[2];          /**< seconds since midnight when forcing
+    unsigned short int forceday[MAX_FORCE_FILES];  /**< day forcing files starts */
+    unsigned int forcesec[MAX_FORCE_FILES];          /**< seconds since midnight when forcing
                                           files starts */
-    unsigned short int forcemonth[2];  /**< month forcing files starts */
-    unsigned short int forceoffset[2];  /**< counter to keep track of offset in reading
+    unsigned short int forcemonth[MAX_FORCE_FILES];  /**< month forcing files starts */
+    unsigned short int forceoffset[MAX_FORCE_FILES];  /**< counter to keep track of offset in reading
                                            forcing files; updated after every read */
-    unsigned int forceskip[2];   /**< number of model time steps to skip at
+    unsigned int forceskip[MAX_FORCE_FILES];   /**< number of model time steps to skip at
                                       the start of the forcing file */
-    unsigned short int forceyear[2];  /**< year forcing files start */
+    unsigned short int forceyear[MAX_FORCE_FILES];  /**< year forcing files start */
     size_t nrecs;                /**< Number of time steps simulated */
     unsigned short int startday;  /**< Starting day of the simulation */
     unsigned short int startmonth;  /**< Starting month of the simulation */
@@ -378,6 +385,7 @@ typedef struct {
     // Lake Parameters
     double LAKE_TMELT;
     double LAKE_MAX_SURFACE;  /**< max. surface layer thickness for E-B (m) */
+    double LAKE_MAX_LAYER;    /**< max. layer thickness for E-B (m) */
     double LAKE_BETA;  /**< Curve shape parameter for lake profile. */
     double LAKE_FRACMIN;  /**< min ice thickness in meters */
     double LAKE_FRACLIM;  /**< lower limit on fractional ice cover */
@@ -630,6 +638,7 @@ typedef struct {
                                class. */
     double LAI[MONTHS_PER_YEAR]; /**< climatological leaf area index (m2/m2) */
     int LAKE;               /**< TRUE = this tile is a lake/wetland tile */
+    int lake_idx;           /**< lake index number */
     double lag_one;         /**< Lag one gradient autocorrelation of
                                terrain slope */
     double root[MAX_LAYERS]; /**< percent of roots in each soil layer
@@ -1015,9 +1024,10 @@ typedef struct {
 typedef struct {
     // Lake basin dimensions
     size_t numnod;                /**< Maximum number of lake nodes for this grid cell */
-    double z[MAX_LAKE_NODES + 1]; /**< Elevation of each lake node (when lake storage is at maximum), relative to lake's deepest point (m) */
-    double basin[MAX_LAKE_NODES + 1]; /**< Area of lake basin at each lake node (when lake storage is at maximum) (m^2) */
-    double Cl[MAX_LAKE_NODES + 1]; /**< Fractional coverage of lake basin at each node (when lake storage is at maximum) (fraction of grid cell area) */
+    size_t numnod_profile;        /**< Maximum number of lake profile nodes for this grid cell */
+    double z[MAX_LAKE_PROFILE + 1]; 	/**< Elevation of each lake node (when lake storage is at maximum), relative to lake's deepest point (m) */
+    double basin[MAX_LAKE_PROFILE + 1]; /**< Area of lake basin at each lake node (when lake storage is at maximum) (m^2) */
+    double Cl[MAX_LAKE_PROFILE + 1]; 	/**< Fractional coverage of lake basin at each node (when lake storage is at maximum) (fraction of grid cell area) */
     double b;                     /**< Exponent in default lake depth-area profile (y=Ax^b) */
     double maxdepth;              /**< Maximum allowable depth of liquid portion of lake (m) */
     double mindepth;              /**< Minimum allowable depth of liquid portion of lake (m) */
@@ -1029,7 +1039,11 @@ typedef struct {
     double wfrac;                 /**< Width of lake outlet, expressed as fraction of lake perimeter */
     // Initial conditions
     double depth_in;              /**< Initial lake depth (distance from surface to deepest point) (m) */
-    int lake_idx;                 /**< index number of the lake/wetland veg tile */
+    size_t lake_type_num;         /**< number of lake types in the grid
+                                          cell */
+    size_t lake_class;            /**< vegetation class id number */ 
+    int veg_idx;                  /**< index number of the lake/wetland veg tile */
+    size_t elev_idx;              /**< index number of the lake/wetland elevation tile */
 } lake_con_struct;
 
 /******************************************************************************
@@ -1092,7 +1106,7 @@ typedef struct {
 typedef struct {
     cell_data_struct **cell;      /**< Stores soil layer variables */
     energy_bal_struct **energy;   /**< Stores energy balance variables */
-    lake_var_struct lake_var;     /**< Stores lake/wetland variables */
+    lake_var_struct *lake_var;     /**< Stores lake/wetland variables */
     snow_data_struct **snow;      /**< Stores snow variables */
     veg_var_struct **veg_var;     /**< Stores vegetation variables */
     gridcell_avg_struct gridcell_avg;   /**< Stores gridcell average variables */

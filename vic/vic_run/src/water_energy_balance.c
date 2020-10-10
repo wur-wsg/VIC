@@ -165,6 +165,7 @@ water_energy_balance(int     numnod,
             *deltaH = (joulenew - jouleold) /
                       (surface[0] * dt);
             *energy_ice_formation = 0.0;
+            *new_ice_area = 0.0; 
         }
 
         Tmean = (Tnew[0] + T[0]) / 2.;
@@ -196,7 +197,10 @@ water_energy_balance(int     numnod,
                     new_ice_water_eq, lvolume);
         }
         else {
+            *deltaH = (joulenew - jouleold) /
+                      (surface[0] * dt);
             *energy_ice_formation = 0.0;
+            *new_ice_area = 0.0; 
         }
 
         *deltaH = 0.0;

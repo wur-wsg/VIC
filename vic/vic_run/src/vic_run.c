@@ -27,8 +27,6 @@
 
 #include <vic_run.h>
 
-veg_lib_struct *vic_run_veg_lib;
-
 /******************************************************************************
 * @brief        This subroutine controls the model core, it solves both the
 *               energy and water balance models, as well as frozen soils.
@@ -49,9 +47,11 @@ vic_run(force_data_struct   *force,
     char                     overstory;
     size_t                   l;
     unsigned short           iveg;
+    unsigned short           ilake;
     size_t                   Nveg;
     unsigned short           veg_class;
     unsigned short           band;
+    unsigned short           sband;
     size_t                   Nbands;
     int                      ErrorFlag;
     double                  *out_prec;
@@ -75,6 +75,7 @@ vic_run(force_data_struct   *force,
     double                   rainonly;
     double                   sum_runoff;
     double                   sum_baseflow;
+    double                   frac_runoff;
     double                   tmp_wind[3];
     double                   gauge_correction[2];
     double                   lag_one;
@@ -104,18 +105,11 @@ vic_run(force_data_struct   *force,
     snow_inflow = calloc(options.SNOW_BAND, sizeof(*snow_inflow));
     check_alloc_status(snow_inflow, "Memory allocation error.");
 
-    // assign vic_run_veg_lib to veg_lib, so that the veg_lib for the correct
-    // grid cell is used within vic_run. For simplicity sake, use vic_run_veg_lib
-    // everywhere within vic_run
-    vic_run_veg_lib = veg_lib;
-
-    /* set local pointers */
-    lake_var = &all_vars->lake_var;
-
     Nbands = options.SNOW_BAND;
 
     /* Set number of vegetation tiles */
     Nveg = veg_con[0].vegetat_type_num;
+    overstory = false;
 
     /** Set Damping Depth **/
     dp = soil_con->dp;
@@ -143,6 +137,7 @@ vic_run(force_data_struct   *force,
         /** Solve Veg Tile only if Coverage Greater than 0% **/
         if (veg_con[iveg].Cv > 0.0) {
             Cv = veg_con[iveg].Cv;
+            sband = 0;
             Nbands = options.SNOW_BAND;
 
             /** Define vegetation class number **/
@@ -154,38 +149,31 @@ vic_run(force_data_struct   *force,
 
             /** Lake-specific processing **/
             if (veg_con[iveg].LAKE) {
-                /* Update areai to equal new ice area from previous time step. */
-                lake_var->areai = lake_var->new_ice_area;
+                /* set local pointers */
+                ilake = veg_con[iveg].lake_idx;
+                lake_var = &all_vars->lake_var[ilake];
+                
+                lakefrac = lake_var->sarea / lake_con[ilake].basin[0];
 
-                /* Compute lake fraction and ice-covered fraction */
-                if (lake_var->areai < 0) {
-                    lake_var->areai = 0;
-                }
-                if (lake_var->sarea > 0) {
-                    fraci = lake_var->areai / lake_var->sarea;
-                    if (fraci > 1.0) {
-                        fraci = 1.0;
-                    }
-                }
-                else {
-                    fraci = 0.0;
-                }
-                lakefrac = lake_var->sarea / lake_con->basin[0];
-
-                Nbands = 1;
+                sband = lake_con[ilake].elev_idx;
+                Nbands = sband + 1;
                 Cv *= (1 - lakefrac);
 
                 if (Cv == 0) {
                     continue;
                 }
             }
-
+            
+            if (options.LAKES && options.LAKE_TEMPERATURE) {
+                continue;
+            }
+            
             /* local pointer to veg_var */
             veg_var = &(all_vars->veg_var[iveg][0]);
 
             /** Assign wind_h **/
             /** Note: this is ignored below **/
-            wind_h = vic_run_veg_lib[veg_class].wind_h;
+            wind_h = veg_lib[veg_class].wind_h;
 
             /* Initialize wind speeds */
             tmp_wind[0] = force->wind[NR];
@@ -198,7 +186,7 @@ vic_run(force_data_struct   *force,
             if (roughness[0] == 0) {
                 roughness[0] = soil_con->rough;
             }
-            overstory = vic_run_veg_lib[veg_class].overstory;
+            overstory = veg_lib[veg_class].overstory;
 
             /* Estimate vegetation height */
             height = calc_veg_height(displacement[0]);
@@ -213,9 +201,9 @@ vic_run(force_data_struct   *force,
 
             /* Compute aerodynamic resistance */
             ErrorFlag = CalcAerodynamic(overstory, height,
-                                        vic_run_veg_lib[veg_class].trunk_ratio,
+                                        veg_lib[veg_class].trunk_ratio,
                                         soil_con->snow_rough, soil_con->rough,
-                                        vic_run_veg_lib[veg_class].wind_atten,
+                                        veg_lib[veg_class].wind_atten,
                                         aero_resist, tmp_wind,
                                         displacement, ref_height,
                                         roughness);
@@ -226,7 +214,7 @@ vic_run(force_data_struct   *force,
             /**************************************************
                Loop over elevation bands
             **************************************************/
-            for (band = 0; band < Nbands; band++) {
+            for (band = sband; band < Nbands; band++) {
                 /** Solve band only if coverage greater than 0% **/
                 if (soil_con->AreaFract[band] > 0) {
 
@@ -248,9 +236,8 @@ vic_run(force_data_struct   *force,
 
                     /** Surface Attenuation due to Vegetation Coverage **/
                     surf_atten = (1 - veg_var->fcanopy) * 1.0 +
-                                 veg_var->fcanopy *
-                                 exp(-vic_run_veg_lib[veg_class].rad_atten *
-                                     veg_var->LAI);
+                                 veg_var->fcanopy *exp(-veg_lib[veg_class].rad_atten *
+                                                       veg_var->LAI);
 
                     /** Bare (free of snow) Albedo **/
                     if (iveg != Nveg) {
@@ -282,7 +269,7 @@ vic_run(force_data_struct   *force,
                             veg_var->aPAR = 0;
 
                             calc_Nscale_factors(
-                                vic_run_veg_lib[veg_class].NscaleFlag,
+                                veg_lib[veg_class].NscaleFlag,
                                 veg_con[iveg].CanopLayerBnd,
                                 veg_var->LAI,
                                 force->coszen[NR],
@@ -330,10 +317,11 @@ vic_run(force_data_struct   *force,
                                                &snow_inflow[band],
                                                tmp_wind, veg_con[iveg].root,
                                                options.Nlayer, Nveg, band, dp,
-                                               iveg, veg_class, force, dmy,
+                                               iveg, force, dmy,
                                                energy, gp, cell, snow,
-                                               soil_con, veg_var, lag_one,
-                                               sigma_slope, fetch,
+                                               soil_con, veg_var,
+                                               &(veg_lib[veg_class]),
+                                               lag_one, sigma_slope, fetch,
                                                veg_con[iveg].CanopLayerBnd);
 
                     if (ErrorFlag == ERROR) {
@@ -383,23 +371,45 @@ vic_run(force_data_struct   *force,
 
     /** Compute total runoff and baseflow for all vegetation types
         within each snowband. **/
-    if (options.LAKES && lake_con->lake_idx >= 0) {
+    if (options.LAKES) {
         wetland_runoff = wetland_baseflow = 0;
         sum_runoff = sum_baseflow = 0;
+        frac_runoff = 0;
 
         // Loop through all vegetation tiles
         for (iveg = 0; iveg <= Nveg; iveg++) {
             /** Solve Veg Tile only if Coverage Greater than 0% **/
             if (veg_con[iveg].Cv > 0.) {
+                if (veg_con[iveg].LAKE) {
+                    /* set local pointers */
+                    ilake = veg_con[iveg].lake_idx;
+                    
+                    frac_runoff += lake_con[ilake].rpercent;
+                }
+            }
+        }
+        
+        // Loop through all vegetation tiles
+        for (iveg = 0; iveg <= Nveg; iveg++) {
+            /** Solve Veg Tile only if Coverage Greater than 0% **/
+            if (veg_con[iveg].Cv > 0.) {
                 Cv = veg_con[iveg].Cv;
+                sband = 0;
                 Nbands = options.SNOW_BAND;
                 if (veg_con[iveg].LAKE) {
+                    /* set local pointers */
+                    ilake = veg_con[iveg].lake_idx;
+                    lake_var = &all_vars->lake_var[ilake];
+                    
+                    lakefrac = lake_var->sarea / lake_con[ilake].basin[0];
+
                     Cv *= (1 - lakefrac);
-                    Nbands = 1;
+                    sband = lake_con[ilake].elev_idx;
+                    Nbands = sband + 1;
                 }
 
                 // Loop through snow elevation bands
-                for (band = 0; band < Nbands; band++) {
+                for (band = sband; band < Nbands; band++) {
                     if (soil_con->AreaFract[band] > 0) {
                         /* Set local pointers */
                         cell = &(all_vars->cell[iveg][band]);
@@ -416,8 +426,8 @@ vic_run(force_data_struct   *force,
                                            soil_con->AreaFract[band]);
                             sum_baseflow += (cell->baseflow * Cv *
                                              soil_con->AreaFract[band]);
-                            cell->runoff *= (1 - lake_con->rpercent);
-                            cell->baseflow *= (1 - lake_con->rpercent);
+                            cell->runoff *= (1 - frac_runoff);
+                            cell->baseflow *= (1 - frac_runoff);
                         }
                     }
                 }
@@ -425,58 +435,91 @@ vic_run(force_data_struct   *force,
         }
 
         /** Run lake model **/
-        iveg = lake_con->lake_idx;
-        band = 0;
-        lake_var->runoff_in =
-            (sum_runoff * lake_con->rpercent +
-             wetland_runoff) * soil_con->cell_area / MM_PER_M;                                               // m3
-        lake_var->baseflow_in =
-            (sum_baseflow * lake_con->rpercent +
-             wetland_baseflow) * soil_con->cell_area / MM_PER_M;                                                 // m3
-        lake_var->channel_in = force->channel_in[NR] * soil_con->cell_area /
-                               MM_PER_M;                                        // m3
-        lake_var->prec = force->prec[NR] * lake_var->sarea / MM_PER_M; // m3
-        rainonly = calc_rainonly(force->air_temp[NR], force->prec[NR],
-                                 param.SNOW_MAX_SNOW_TEMP,
-                                 param.SNOW_MIN_RAIN_TEMP);
-        if ((int) rainonly == ERROR) {
-            return(ERROR);
+        // Loop through all vegetation tiles
+        for (iveg = 0; iveg <= Nveg; iveg++) {
+            /** Solve Veg Tile only if Coverage Greater than 0% **/
+            if (veg_con[iveg].Cv > 0.) {
+                if (veg_con[iveg].LAKE) {
+                    /* set local pointers */
+                    ilake = veg_con[iveg].lake_idx;
+                    lake_var = &all_vars->lake_var[ilake];
+
+                    /* Update areai to equal new ice area from previous time step. */
+                    lake_var->areai = lake_var->new_ice_area;
+
+                    /* Compute lake fraction and ice-covered fraction */
+                    if (lake_var->areai < 0) {
+                        lake_var->areai = 0;
+                    }
+                    if (lake_var->sarea > 0) {
+                        fraci = lake_var->areai / lake_var->sarea;
+                        if (fraci > 1.0) {
+                            fraci = 1.0;
+                        }
+                    }
+                    else {
+                        fraci = 0.0;
+                    }
+                    lakefrac = lake_var->sarea / lake_con[ilake].basin[0];
+
+                    band = lake_con[ilake].elev_idx;
+                    lake_var->runoff_in =
+                        (sum_runoff * lake_con[ilake].rpercent +
+                         wetland_runoff) * soil_con->cell_area / MM_PER_M;                                               // m3
+                    lake_var->baseflow_in =
+                        (sum_baseflow * lake_con[ilake].rpercent +
+                         wetland_baseflow) * soil_con->cell_area / MM_PER_M;                                                 // m3
+                    if (options.FORCE_LAKES) {
+                        lake_var->channel_in = force->channel_in[NR] * soil_con->cell_area /
+                                               MM_PER_M;                                        // m3
+                    }
+                    lake_var->prec = force->prec[NR] * soil_con->Pfactor[band] * lake_var->sarea / MM_PER_M; // m3
+                    rainonly = calc_rainonly(force->air_temp[NR] + soil_con->Tfactor[band], 
+                                             force->prec[NR] *  soil_con->Pfactor[band],
+                                             param.SNOW_MAX_SNOW_TEMP,
+                                             param.SNOW_MIN_RAIN_TEMP);
+                    if ((int) rainonly == ERROR) {
+                        return(ERROR);
+                    }
+
+                    /**********************************************************************
+                       Solve the energy budget for the lake.
+                    **********************************************************************/
+
+                    snowprec = gauge_correction[SNOW] * (force->prec[NR] * soil_con->Pfactor[band] - rainonly);
+                    rainprec = gauge_correction[SNOW] * rainonly;
+                    Cv = veg_con[iveg].Cv * lakefrac;
+                    force->out_prec += (snowprec + rainprec) * Cv;
+                    force->out_rain += rainprec * Cv;
+                    force->out_snow += snowprec * Cv;
+
+                    ErrorFlag = solve_lake(snowprec, rainprec, 
+                                           force->air_temp[NR] + soil_con->Tfactor[band],
+                                           force->wind[NR], force->vp[NR] / PA_PER_KPA,
+                                           force->shortwave[NR], force->longwave[NR],
+                                           force->vpd[NR] / PA_PER_KPA,
+                                           force->pressure[NR] / PA_PER_KPA,
+                                           force->density[NR], lake_var,
+                                           *soil_con, gp->dt, gp->wind_h, *dmy,
+                                           fraci);
+                    if (ErrorFlag == ERROR) {
+                        return (ERROR);
+                    }
+
+                    /**********************************************************************
+                       Solve the water budget for the lake.
+                    **********************************************************************/
+
+                    ErrorFlag = water_balance(lake_var, &lake_con[ilake], gp->dt, all_vars,
+                                              iveg, band, lakefrac, *soil_con,
+                                              veg_con[iveg]);
+                    if (ErrorFlag == ERROR) {
+                        return (ERROR);
+                    }
+                }
+            }
         }
-
-        /**********************************************************************
-           Solve the energy budget for the lake.
-        **********************************************************************/
-
-        snowprec = gauge_correction[SNOW] * (force->prec[NR] - rainonly);
-        rainprec = gauge_correction[SNOW] * rainonly;
-        Cv = veg_con[iveg].Cv * lakefrac;
-        force->out_prec += (snowprec + rainprec) * Cv;
-        force->out_rain += rainprec * Cv;
-        force->out_snow += snowprec * Cv;
-
-        ErrorFlag = solve_lake(snowprec, rainprec, force->air_temp[NR],
-                               force->wind[NR], force->vp[NR] / PA_PER_KPA,
-                               force->shortwave[NR], force->longwave[NR],
-                               force->vpd[NR] / PA_PER_KPA,
-                               force->pressure[NR] / PA_PER_KPA,
-                               force->density[NR], lake_var,
-                               *soil_con, gp->dt, gp->wind_h, *dmy,
-                               fraci);
-        if (ErrorFlag == ERROR) {
-            return (ERROR);
-        }
-
-        /**********************************************************************
-           Solve the water budget for the lake.
-        **********************************************************************/
-
-        ErrorFlag = water_balance(lake_var, *lake_con, gp->dt, all_vars,
-                                  iveg, band, lakefrac, *soil_con,
-                                  veg_con[iveg]);
-        if (ErrorFlag == ERROR) {
-            return (ERROR);
-        }
-    } // end if (options.LAKES && lake_con->lake_idx >= 0)
+    } // end if (options.LAKES)
 
     free((char *) (out_prec));
     free((char *) (out_rain));

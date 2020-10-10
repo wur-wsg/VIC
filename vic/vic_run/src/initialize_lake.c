@@ -33,7 +33,7 @@
  *****************************************************************************/
 void
 initialize_lake(lake_var_struct  *lake,
-                lake_con_struct   lake_con,
+                lake_con_struct  *lake_con,
                 soil_con_struct  *soil_con,
                 cell_data_struct *cell,
                 bool              preserve_essentials)

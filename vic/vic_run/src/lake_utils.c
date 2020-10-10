@@ -31,9 +31,9 @@
  *           given the current depth of liquid water.
  *****************************************************************************/
 int
-get_sarea(lake_con_struct lake_con,
-          double          depth,
-          double         *sarea)
+get_sarea(lake_con_struct *lake_con,
+          double           depth,
+          double          *sarea)
 {
     size_t i;
     int    status;
@@ -41,21 +41,21 @@ get_sarea(lake_con_struct lake_con,
     status = 0;
     *sarea = 0.0;
 
-    if (depth > lake_con.z[0]) {
-        *sarea = lake_con.basin[0];
+    if (depth > lake_con->z[0]) {
+        *sarea = lake_con->basin[0];
     }
     else {
-        for (i = 0; i < lake_con.numnod; i++) {
-            if (depth <= lake_con.z[i] && depth > lake_con.z[i + 1]) {
+        for (i = 0; i < lake_con->numnod_profile; i++) {
+            if (depth <= lake_con->z[i] && depth > lake_con->z[i + 1]) {
                 *sarea =
-                    lake_con.basin[i +
+                    lake_con->basin[i +
                                    1] +
                     (depth -
-                     lake_con.z[i +
+                     lake_con->z[i +
                                 1]) *
-                    (lake_con.basin[i] -
-                     lake_con.basin[i +
-                                    1]) / (lake_con.z[i] - lake_con.z[i + 1]);
+                    (lake_con->basin[i] -
+                     lake_con->basin[i +
+                                    1]) / (lake_con->z[i] - lake_con->z[i + 1]);
             }
         }
         if (*sarea == 0.0 && depth != 0.0) {
@@ -71,9 +71,9 @@ get_sarea(lake_con_struct lake_con,
  *           basin, given the current depth of liquid water.
  *****************************************************************************/
 int
-get_volume(lake_con_struct lake_con,
-           double          depth,
-           double         *volume)
+get_volume(lake_con_struct *lake_con,
+           double           depth,
+           double          *volume)
 {
     int    i;
     int    status;
@@ -82,27 +82,27 @@ get_volume(lake_con_struct lake_con,
     status = 0;
     *volume = 0.0;
 
-    if (depth > lake_con.z[0]) {
+    if (depth > lake_con->z[0]) {
         status = 1;
-        *volume = lake_con.maxvolume;
+        *volume = lake_con->maxvolume;
     }
 
-    for (i = lake_con.numnod - 1; i >= 0; i--) {
-        if (depth >= lake_con.z[i]) {
+    for (i = lake_con->numnod_profile - 1; i >= 0; i--) {
+        if (depth >= lake_con->z[i]) {
             *volume +=
-                (lake_con.basin[i] +
-                 lake_con.basin[i +
-                                1]) * (lake_con.z[i] - lake_con.z[i + 1]) / 2.;
+                (lake_con->basin[i] +
+                 lake_con->basin[i +
+                                1]) * (lake_con->z[i] - lake_con->z[i + 1]) / 2.;
         }
-        else if (depth < lake_con.z[i] && depth >= lake_con.z[i + 1]) {
+        else if (depth < lake_con->z[i] && depth >= lake_con->z[i + 1]) {
             m =
-                (lake_con.basin[i] -
-                 lake_con.basin[i + 1]) / (lake_con.z[i] - lake_con.z[i + 1]);
+                (lake_con->basin[i] -
+                 lake_con->basin[i + 1]) / (lake_con->z[i] - lake_con->z[i + 1]);
             *volume +=
                 (depth -
-                 lake_con.z[i +
+                 lake_con->z[i +
                             1]) *
-                (m * (depth - lake_con.z[i + 1]) / 2. + lake_con.basin[i + 1]);
+                (m * (depth - lake_con->z[i + 1]) / 2. + lake_con->basin[i + 1]);
         }
     }
 
@@ -119,9 +119,9 @@ get_volume(lake_con_struct lake_con,
  *           liquid water currently stored in lake.
  *****************************************************************************/
 int
-get_depth(lake_con_struct lake_con,
-          double          volume,
-          double         *depth)
+get_depth(lake_con_struct *lake_con,
+          double           volume,
+          double          *depth)
 {
     int    k;
     int    status;
@@ -135,9 +135,9 @@ get_depth(lake_con_struct lake_con,
         status = 1;
     }
 
-    if (volume >= lake_con.maxvolume) {
-        *depth = lake_con.maxdepth;
-        *depth += (volume - lake_con.maxvolume) / lake_con.basin[0];
+    if (volume >= lake_con->maxvolume) {
+        *depth = lake_con->maxdepth;
+        *depth += (volume - lake_con->maxvolume) / lake_con->basin[0];
     }
     else if (volume < DBL_EPSILON) {
         *depth = 0.0;
@@ -146,42 +146,44 @@ get_depth(lake_con_struct lake_con,
         // Update lake depth
         *depth = 0.0;
         tempvolume = volume;
-        for (k = lake_con.numnod - 1; k >= 0; k--) {
-            if (tempvolume > ((lake_con.z[k] - lake_con.z[k + 1]) *
-                              (lake_con.basin[k] +
-                               lake_con.basin[k + 1]) / 2.)) {
+        for (k = lake_con->numnod_profile - 1; k >= 0; k--) {
+            if (tempvolume >= ((lake_con->z[k] - lake_con->z[k + 1]) *
+                              (lake_con->basin[k] +
+                               lake_con->basin[k + 1]) / 2.)) {
                 // current layer completely filled
                 tempvolume -=
-                    (lake_con.z[k] -
-                     lake_con.z[k +
+                    (lake_con->z[k] -
+                     lake_con->z[k +
                                 1]) *
-                    (lake_con.basin[k] + lake_con.basin[k + 1]) / 2.;
-                *depth += lake_con.z[k] - lake_con.z[k + 1];
+                    (lake_con->basin[k] + lake_con->basin[k + 1]) / 2.;
+                *depth += lake_con->z[k] - lake_con->z[k + 1];
             }
             else if (tempvolume > 0.0) {
-                if (lake_con.basin[k] == lake_con.basin[k + 1]) {
-                    *depth += tempvolume / lake_con.basin[k + 1];
+                if (lake_con->basin[k] == lake_con->basin[k + 1]) {
+                    *depth += tempvolume / lake_con->basin[k + 1];
                     tempvolume = 0.0;
                 }
                 else {
                     m =
-                        (lake_con.basin[k] -
-                         lake_con.basin[k +
+                        (lake_con->basin[k] -
+                         lake_con->basin[k +
                                         1]) /
-                        (lake_con.z[k] - lake_con.z[k + 1]);
+                        (lake_con->z[k] - lake_con->z[k + 1]);
                     *depth +=
                         ((-1 *
-                          lake_con.basin[k +
+                          lake_con->basin[k +
                                          1]) +
-                         sqrt(lake_con.basin[k +
+                         sqrt(lake_con->basin[k +
                                              1] *
-                              lake_con.basin[k + 1] + 2. * m * tempvolume)) / m;
+                              lake_con->basin[k + 1] + 2. * m * tempvolume)) / m;
                     tempvolume = 0.0;
                 }
             }
         }
-        if (tempvolume / lake_con.basin[0] > DBL_EPSILON) {
-            status = ERROR;
+        if (tempvolume / lake_con->basin[0] > DBL_EPSILON) {
+            *depth = lake_con->maxdepth;
+            *depth += (volume - lake_con->maxvolume) / lake_con->basin[0];
+	    log_warn("Prev error, tempvolume = %f", tempvolume);
         }
     }
 

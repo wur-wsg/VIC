@@ -31,6 +31,7 @@ size_t              NF, NR;
 size_t              current;
 size_t             *filter_active_cells = NULL;
 size_t             *mpi_map_mapping_array = NULL;
+size_t             *mpi_lake_mapping_array = NULL;
 all_vars_struct    *all_vars = NULL;
 force_data_struct  *force = NULL;
 dmy_struct         *dmy = NULL;
@@ -39,7 +40,8 @@ filenames_struct    filenames;
 filep_struct        filep;
 domain_struct       global_domain;
 global_param_struct global_param;
-lake_con_struct    *lake_con = NULL;
+lake_con_map_struct *lake_con_map = NULL;
+lake_con_struct    **lake_con = NULL;
 domain_struct       local_domain;
 MPI_Comm            MPI_COMM_VIC = MPI_COMM_WORLD;
 MPI_Datatype        mpi_global_struct_type;
@@ -50,6 +52,8 @@ MPI_Datatype        mpi_option_struct_type;
 MPI_Datatype        mpi_param_struct_type;
 int                *mpi_map_local_array_sizes = NULL;
 int                *mpi_map_global_array_offsets = NULL;
+int                *mpi_lake_local_array_sizes = NULL;
+int                *mpi_lake_global_array_offsets = NULL;
 int                 mpi_rank;
 int                 mpi_size;
 option_struct       options;
@@ -141,6 +145,10 @@ main(int    argc,
     timer_stop(&(global_timers[TIMER_VIC_INIT]));
     // start vic run timer
     timer_start(&(global_timers[TIMER_VIC_RUN]));
+    // start vic force timer
+    timer_start(&(global_timers[TIMER_VIC_FORCE]));
+    // start vic write timer
+    timer_start(&(global_timers[TIMER_VIC_WRITE]));
 
     // loop over all timesteps
     for (current = 0; current < global_param.nrecs; current++) {

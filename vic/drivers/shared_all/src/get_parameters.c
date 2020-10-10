@@ -121,6 +121,9 @@ get_parameters(FILE *paramfile)
             else if (strcasecmp("LAKE_MAX_SURFACE", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &param.LAKE_MAX_SURFACE);
             }
+            else if (strcasecmp("LAKE_MAX_LAYER", optstr) == 0) {
+                sscanf(cmdstr, "%*s %lf", &param.LAKE_MAX_LAYER);
+            }
             else if (strcasecmp("LAKE_BETA", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &param.LAKE_BETA);
             }
@@ -620,6 +623,9 @@ validate_parameters()
     // LAKE_TMELT - Currently, no constraints
     if (!(param.LAKE_MAX_SURFACE >= 0.)) {
         log_err("LAKE_MAX_SURFACE must be defined on the interval [0, inf) (m)");
+    }
+    if (!(param.LAKE_MAX_LAYER >= 0.)) {
+        log_err("LAKE_MAX_LAYER must be defined on the interval [0, inf) (m)");
     }
     // LAKE_BETA - Currently, no constraints
     // LAKE_FRACMIN - Currently, no constraints

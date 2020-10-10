@@ -40,7 +40,7 @@ vic_init_output(dmy_struct *dmy_current)
     extern MPI_Comm           MPI_COMM_VIC;
     extern int                mpi_rank;
     extern nc_file_struct    *nc_hist_files;
-    extern lake_con_struct    lake_con;
+    extern lake_con_struct  **lake_con;
     extern double          ***out_data;
     extern save_data_struct  *save_data;
     extern soil_con_struct   *soil_con;
@@ -66,7 +66,7 @@ vic_init_output(dmy_struct *dmy_current)
     // initialize the save data structures
     for (i = 0; i < local_domain.ncells_active; i++) {
         initialize_save_data(&(all_vars[i]), &(force[i]), &(soil_con[i]),
-                             veg_con[i], veg_lib[i], &lake_con, out_data[i],
+                             veg_con[i], veg_lib[i], lake_con[i], out_data[i],
                              &(save_data[i]), &timer);
     }
 
@@ -285,6 +285,18 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status, "Error defining frost_area dimension in %s",
                     stream->filename);
 
+    if (options.LAKES) {
+        status = nc_def_dim(nc->nc_id, "lake_class", nc->lake_size,
+                            &(nc->lake_dimid));
+        check_nc_status(status, "Error defining lake_class dimension in %s",
+                        stream->filename);
+
+        status = nc_def_dim(nc->nc_id, "lake_node", nc->lake_node_size,
+                            &(nc->lake_node_dimid));
+        check_nc_status(status, "Error defining lake_node dimension in %s",
+                        stream->filename);
+    }
+
     status = nc_def_dim(nc->nc_id, "nlayer", nc->layer_size,
                         &(nc->layer_dimid));
     check_nc_status(status, "Error defining nlayer dimension in %s",
@@ -434,12 +446,16 @@ initialize_history_file(nc_file_struct *nc,
     check_nc_status(status,
                     "Error adding latitude standard_name attribute in %s",
                     stream->filename);
-
+    
     // create output variables
     for (j = 0; j < stream->nvars; j++) {
         varid = stream->varid[j];
 
         set_nc_var_dimids(varid, nc, &(nc->nc_vars[j]));
+        
+        if (options.LAKES && options.LAKE_ONLY) {
+           set_nc_var_dimids_lake_only(varid, nc, &(nc->nc_vars[j]));
+        }
 
         // define the variable
         status = nc_def_var(nc->nc_id,
@@ -681,6 +697,7 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->band_dimid = MISSING;
     nc_file->front_dimid = MISSING;
     nc_file->frost_dimid = MISSING;
+    nc_file->lake_dimid = MISSING;
     nc_file->lake_node_dimid = MISSING;
     nc_file->layer_dimid = MISSING;
     nc_file->ni_dimid = MISSING;
@@ -694,6 +711,8 @@ initialize_nc_file(nc_file_struct     *nc_file,
     nc_file->band_size = options.SNOW_BAND;
     nc_file->front_size = MAX_FRONTS;
     nc_file->frost_size = options.Nfrost;
+    nc_file->lake_size = options.NLAKETYPES;
+    nc_file->lake_node_size = options.NLAKENODES + 1;
     nc_file->layer_size = options.Nlayer;
     nc_file->ni_size = global_domain.n_nx;
     nc_file->nj_size = global_domain.n_ny;
@@ -708,5 +727,12 @@ initialize_nc_file(nc_file_struct     *nc_file,
 
     for (i = 0; i < nvars; i++) {
         set_nc_var_info(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+    }
+    
+    if(options.LAKES && options.LAKE_ONLY){
+        nc_file->lake_size = global_domain.nlakes_active;
+        for (i = 0; i < nvars; i++) {
+            set_nc_var_info_lake_only(varids[i], dtypes[i], nc_file, &(nc_file->nc_vars[i]));
+        }
     }
 }

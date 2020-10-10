@@ -70,6 +70,7 @@ print_domain(domain_struct *domain,
     fprintf(LOG_DEST, "domain:\n");
     fprintf(LOG_DEST, "\tncells_total : %zd\n", domain->ncells_total);
     fprintf(LOG_DEST, "\tncells_active: %zd\n", domain->ncells_active);
+    fprintf(LOG_DEST, "\tnlakes_active: %zd\n", domain->nlakes_active);
     fprintf(LOG_DEST, "\tn_nx         : %zd\n", domain->n_nx);
     fprintf(LOG_DEST, "\tn_ny         : %zd\n", domain->n_ny);
     fprintf(LOG_DEST, "\tlocations    : %p\n", domain->locations);
@@ -92,6 +93,7 @@ print_location(location_struct *loc)
     fprintf(LOG_DEST, "\tarea           : %.4f\n", loc->area);
     fprintf(LOG_DEST, "\tfrac           : %.4f\n", loc->frac);
     fprintf(LOG_DEST, "\tnveg           : %zd\n", loc->nveg);
+    fprintf(LOG_DEST, "\tnlake          : %zd\n", loc->nlake);
     fprintf(LOG_DEST, "\tglobal_idx     : %zd\n", loc->global_idx);
     fprintf(LOG_DEST, "\tio_idx         : %zd\n", loc->io_idx);
     fprintf(LOG_DEST, "\tlocal_idx      : %zd\n", loc->local_idx);
@@ -192,5 +194,24 @@ print_veg_con_map(veg_con_map_struct *veg_con_map)
         fprintf(LOG_DEST, "\t%zd      : %d (vidx) %f (Cv)\n", i,
                 veg_con_map->vidx[i],
                 veg_con_map->Cv[i]);
+    }
+}
+
+/******************************************************************************
+ * @brief    Print lake_con_map structure.
+ *****************************************************************************/
+void
+print_lake_con_map(lake_con_map_struct *lake_con_map)
+{
+    size_t i;
+
+    fprintf(LOG_DEST, "lake_con_map:\n");
+    fprintf(LOG_DEST, "\tnv_types : %zd\n", lake_con_map->nl_types);
+    fprintf(LOG_DEST, "\tnv_active: %zd\n", lake_con_map->nl_active);
+    for (i = 0; i < lake_con_map->nl_types; i++) {
+        fprintf(LOG_DEST, "\t%zd      : %d (lidx) %d (lake_id) %d (lake_out)\n", i,
+                lake_con_map->lidx[i],
+                lake_con_map->lake_id[i],
+                lake_con_map->lake_out[i]);
     }
 }

@@ -60,6 +60,9 @@ initialize_options()
     options.IMPLICIT = true;
     options.LAKES = false;
     options.LAKE_PROFILE = false;
+    options.FORCE_LAKES = false;
+    options.LAKE_TEMPERATURE = false;
+    options.LAKE_ONLY = false;
     options.NOFLUX = false;
     options.QUICK_FLUX = true;
     options.QUICK_SOLVE = false;
@@ -76,6 +79,8 @@ initialize_options()
     options.Nnode = 3;
     options.ROOT_ZONES = 0;
     options.SNOW_BAND = 1;
+    options.NLAKEPROFILE = 0;
+    options.NLAKENODES = 0;
     // input options
     options.ALB_SRC = FROM_VEGLIB;
     options.BASEFLOW = ARNO;
@@ -91,6 +96,7 @@ initialize_options()
     options.VEGPARAM_LAI = false;
     // state options
     options.STATE_FORMAT = UNSET_FILE_FORMAT;
+    options.STATE_COMPRESS = false;
     options.INIT_STATE = false;
     options.SAVE_STATE = false;
     // output options

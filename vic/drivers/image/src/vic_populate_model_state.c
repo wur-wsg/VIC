@@ -38,14 +38,17 @@
 void
 vic_populate_model_state(dmy_struct *dmy_current)
 {
-    extern all_vars_struct *all_vars;
-    extern lake_con_struct *lake_con;
-    extern domain_struct    local_domain;
-    extern option_struct    options;
-    extern soil_con_struct *soil_con;
-    extern veg_con_struct **veg_con;
+    extern all_vars_struct  *all_vars;
+    extern lake_con_struct **lake_con;
+    extern lake_con_map_struct *lake_con_map;
+    extern domain_struct     local_domain;
+    extern option_struct     options;
+    extern soil_con_struct  *soil_con;
+    extern veg_con_struct  **veg_con;
 
     size_t                  i;
+    size_t                  iLake;
+    size_t                  Nlake;
 
     // read the model state from the netcdf file if there is one
     if (options.INIT_STATE) {
@@ -57,8 +60,12 @@ vic_populate_model_state(dmy_struct *dmy_current)
             generate_default_state(&(all_vars[i]), &(soil_con[i]), veg_con[i],
                                    dmy_current);
             if (options.LAKES) {
-                generate_default_lake_state(&(all_vars[i]), &(soil_con[i]),
-                                            lake_con[i]);
+                Nlake = lake_con_map[i].nl_active;
+                
+                for (iLake = 0; iLake < Nlake; iLake++){
+                    generate_default_lake_state(&(all_vars[i].lake_var[iLake]), 
+                                                &(soil_con[i]), &(lake_con[i][iLake]));
+                }
             }
         }
     }
@@ -67,8 +74,19 @@ vic_populate_model_state(dmy_struct *dmy_current)
     for (i = 0; i < local_domain.ncells_active; i++) {
         compute_derived_state_vars(&(all_vars[i]), &(soil_con[i]), veg_con[i]);
         if (options.LAKES) {
-            compute_derived_lake_dimensions(&(all_vars[i].lake_var),
-                                            lake_con[i]);
+            Nlake = lake_con_map[i].nl_active;
+            
+            for (iLake = 0; iLake < Nlake; iLake++){
+                compute_derived_lake_dimensions(&(all_vars[i].lake_var[iLake]),
+                                            &(lake_con[i][iLake]));
+                
+                if (all_vars[i].lake_var[iLake].new_ice_area > all_vars[i].lake_var[iLake].surface[0]) {
+                    all_vars[i].lake_var[iLake].sarea = all_vars[i].lake_var[iLake].new_ice_area;
+                }
+                else {
+                    all_vars[i].lake_var[iLake].sarea = all_vars[i].lake_var[iLake].surface[0];
+                }
+            }
         }
     }
 }

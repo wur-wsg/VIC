@@ -33,7 +33,7 @@
  *****************************************************************************/
 void
 compute_derived_lake_dimensions(lake_var_struct *lake,
-                                lake_con_struct  lake_con)
+                                lake_con_struct *lake_con)
 {
     extern parameters_struct param;
 
@@ -43,19 +43,19 @@ compute_derived_lake_dimensions(lake_var_struct *lake,
     double                   tmp_volume;
 
     /* number and thicknesses of lake layers */
-    if (lake->ldepth > param.LAKE_MAX_SURFACE && lake->ldepth < 2 *
-        param.LAKE_MAX_SURFACE) {
+    if (lake->ldepth > param.LAKE_MAX_SURFACE && lake->ldepth <
+        param.LAKE_MAX_LAYER + param.LAKE_MAX_SURFACE) {
         /* Not quite enough for two full layers. */
-        lake->surfdz = lake->ldepth / 2.;
-        lake->dz = lake->ldepth / 2.;
+        lake->surfdz = param.LAKE_MAX_SURFACE;
+        lake->dz = lake->ldepth - param.LAKE_MAX_SURFACE;
         lake->activenod = 2;
     }
-    else if (lake->ldepth >= 2 * param.LAKE_MAX_SURFACE) {
+    else if (lake->ldepth >= param.LAKE_MAX_LAYER + param.LAKE_MAX_SURFACE) {
         /* More than two layers. */
         lake->surfdz = param.LAKE_MAX_SURFACE;
-        lake->activenod = (int) (lake->ldepth / param.LAKE_MAX_SURFACE);
-        if (lake->activenod > MAX_LAKE_NODES) {
-            lake->activenod = MAX_LAKE_NODES;
+        lake->activenod = (int) ((lake->ldepth - param.LAKE_MAX_SURFACE) / param.LAKE_MAX_LAYER) + 1;
+        if (lake->activenod > lake_con->numnod) {
+            lake->activenod = lake_con->numnod;
         }
         lake->dz = (lake->ldepth - lake->surfdz) /
                    ((double) (lake->activenod - 1));
@@ -97,8 +97,11 @@ compute_derived_lake_dimensions(lake_var_struct *lake,
                 "volume = %e", 0, depth, tmp_volume);
     }
     else if (status > 0) {
-        log_err("lake depth exceeds maximum; "
-                "setting to maximum; record = %d", 0);
+        log_warn("lake depth exceeds maximum; "
+                "setting to maximum; "
+                "record = %d, depth = %f, "
+                "maxdepth = %e", 0,
+                lake->ldepth, lake_con->maxdepth);
     }
     lake->volume = tmp_volume + lake->ice_water_eq;
 }

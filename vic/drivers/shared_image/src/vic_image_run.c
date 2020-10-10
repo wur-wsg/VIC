@@ -39,7 +39,7 @@ vic_image_run(dmy_struct *dmy_current)
     extern domain_struct       local_domain;
     extern option_struct       options;
     extern global_param_struct global_param;
-    extern lake_con_struct     lake_con;
+    extern lake_con_struct   **lake_con;
     extern double           ***out_data;
     extern stream_struct      *output_streams;
     extern save_data_struct   *save_data;
@@ -67,12 +67,18 @@ vic_image_run(dmy_struct *dmy_current)
 
         timer_start(&timer);
         vic_run(&(force[i]), &(all_vars[i]), dmy_current, &global_param,
-                &lake_con, &(soil_con[i]), veg_con[i], veg_lib[i]);
+                lake_con[i], &(soil_con[i]), veg_con[i], veg_lib[i]);
         timer_stop(&timer);
 
-        put_data(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],
-                 veg_lib[i], &lake_con, out_data[i], &(save_data[i]),
+        if (options.LAKES && options.LAKE_ONLY) {
+            put_data_lake_only(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],
+                 veg_lib[i], lake_con[i], out_data[i], &(save_data[i]),
                  &timer);
+        } else {
+            put_data(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],
+                     veg_lib[i], lake_con[i], out_data[i], &(save_data[i]),
+                     &timer);
+        }
     }
 
     // run routing over the domain

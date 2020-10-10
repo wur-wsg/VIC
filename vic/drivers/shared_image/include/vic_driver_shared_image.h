@@ -60,6 +60,7 @@ typedef struct {
     double area; /**< area of grid cell */
     double frac; /**< fraction of grid cell that is active */
     size_t nveg; /**< number of vegetation type according to parameter file */
+    size_t nlake; /**< number of lake type according to parameter file */
     size_t global_idx; /**< index of grid cell in global list of grid cells */
     size_t io_idx; /**< index of cell in 1-D I/O arrays */
     size_t local_idx; /**< index of grid cell in local list of grid cells */
@@ -86,6 +87,7 @@ typedef struct {
 typedef struct {
     size_t ncells_total; /**< total number of grid cells on domain */
     size_t ncells_active; /**< number of active grid cells on domain */
+    size_t nlakes_active; /**< number of active lakes on domain */
     size_t n_nx; /**< size of x-index; */
     size_t n_ny; /**< size of y-index */
     location_struct *locations; /**< locations structs for local domain */
@@ -117,6 +119,7 @@ typedef struct {
     int band_dimid;
     int front_dimid;
     int frost_dimid;
+    int lake_dimid;
     int lake_node_dimid;
     int layer_dimid;
     int ni_dimid;
@@ -133,6 +136,7 @@ typedef struct {
     size_t band_size;
     size_t front_size;
     size_t frost_size;
+    size_t lake_size;
     size_t lake_node_size;
     size_t layer_size;
     size_t ni_size;
@@ -146,6 +150,20 @@ typedef struct {
     bool open;
     nc_var_struct *nc_vars;
 } nc_file_struct;
+
+/******************************************************************************
+ * @brief    Structure for mapping the lake types for each grid cell as
+ *           stored in VIC's lake_con_struct to a regular array.
+ *****************************************************************************/
+typedef struct {
+    size_t nl_types; /**< total number of lake types */
+                     /**< size of lidx array */
+    size_t nl_active; /**< number of active lake types */
+    int *veg_class;  /**< array of vegetation classes for active lake types */
+    int *lidx;       /**< array of lake indices for active lake types */
+    int *lake_out;   /**< lake output id */
+    int *lake_id;    /**< lake id */
+} lake_con_map_struct;
 
 /******************************************************************************
  * @brief    Structure for mapping the vegetation types for each grid cell as
@@ -176,7 +194,7 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     nameid_struct forcing[MAX_FORCE_FILES];  /**< atmospheric forcing files */
-    char f_path_pfx[MAX_FORCE_FILES][MAXSTRING]; /**< path and prefix for
+    char f_path_pfx[N_FORCING_TYPES][MAXSTRING]; /**< path and prefix for
                                                     atmospheric forcing files */
     char global[MAXSTRING];     /**< global control file name */
     nameid_struct domain;       /**< domain file name and nc_id*/
@@ -190,6 +208,8 @@ typedef struct {
 } filenames_struct;
 
 void add_nveg_to_global_domain(nameid_struct *nc_nameid,
+                               domain_struct *global_domain);
+void add_nlake_to_global_domain(nameid_struct *nc_nameid,
                                domain_struct *global_domain);
 void alloc_force(force_data_struct *force);
 void alloc_veg_hist(veg_hist_struct *veg_hist);
@@ -242,13 +262,18 @@ void print_location(location_struct *location);
 void print_nc_file(nc_file_struct *nc);
 void print_nc_var(nc_var_struct *nc_var);
 void print_veg_con_map(veg_con_map_struct *veg_con_map);
+void print_lake_con_map(lake_con_map_struct *lake_con_map);
 void put_nc_attr(int nc_id, int var_id, const char *name, const char *value);
-void set_force_type(char *cmdstr, int file_num, int *field);
+void set_force_type(char *cmdstr);
 void set_global_nc_attributes(int ncid, unsigned short int file_type);
 void set_state_meta_data_info();
 void set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,
                        nc_var_struct *nc_var);
+void set_nc_var_dimids_lake_only(unsigned int varid, nc_file_struct *nc_hist_file,
+                       nc_var_struct *nc_var);
 void set_nc_var_info(unsigned int varid, unsigned short int dtype,
+                     nc_file_struct *nc_hist_file, nc_var_struct *nc_var);
+void set_nc_var_info_lake_only(unsigned int varid, unsigned short int dtype,
                      nc_file_struct *nc_hist_file, nc_var_struct *nc_var);
 void set_nc_state_file_info(nc_file_struct *nc_state_file);
 void set_nc_state_var_info(nc_file_struct *nc_state_file);
@@ -262,6 +287,8 @@ void vic_restore(void);
 void vic_start(void);
 void vic_store(dmy_struct *dmy_state, char *state_filename);
 void vic_write(stream_struct *stream, nc_file_struct *nc_hist_file,
+               dmy_struct *dmy_current);
+void vic_write_lake_only(stream_struct *stream, nc_file_struct *nc_hist_file,
                dmy_struct *dmy_current);
 void vic_write_output(dmy_struct *dmy);
 void write_vic_timing_table(timer_struct *timers, char *driver);

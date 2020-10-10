@@ -47,7 +47,6 @@ func_surf_energy_bal(double  Ts,
     /* general model terms */
     size_t             i;
     int                VEG;
-    int                veg_class;
     int                Error;
 
     double             delta_t;
@@ -163,6 +162,7 @@ func_surf_energy_bal(double  Ts,
     soil_con_struct   *soil_con;
     layer_data_struct *layer;
     veg_var_struct    *veg_var;
+    veg_lib_struct    *veg_lib;
 
     /* control flags */
     int                INCLUDE_SNOW;
@@ -220,7 +220,6 @@ func_surf_energy_bal(double  Ts,
 
     /* general model terms */
     VEG = (int) va_arg(ap, int);
-    veg_class = (int) va_arg(ap, int);
     delta_t = (double) va_arg(ap, double);
 
     /* soil layer terms */
@@ -317,6 +316,7 @@ func_surf_energy_bal(double  Ts,
     soil_con = (soil_con_struct *) va_arg(ap, soil_con_struct *);
     layer = (layer_data_struct *) va_arg(ap, layer_data_struct *);
     veg_var = (veg_var_struct *) va_arg(ap, veg_var_struct *);
+    veg_lib = (veg_lib_struct *) va_arg(ap, veg_lib_struct *);
 
     /* control flags */
     INCLUDE_SNOW = (int) va_arg(ap, int);
@@ -751,7 +751,7 @@ func_surf_energy_bal(double  Ts,
     Evap = 0.;
     if (!SNOWING) {
         if (VEG && veg_var->fcanopy > 0) {
-            Evap = canopy_evap(layer, veg_var, true, veg_class, Wdew,
+            Evap = canopy_evap(layer, veg_var, veg_lib, true, Wdew,
                                delta_t, NetBareRad, vpd, NetShortBare,
                                Tair, Ra_veg[1], elevation, rainfall,
                                Wmax, Wcr, Wpwp, frost_fract, root,

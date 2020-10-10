@@ -31,7 +31,6 @@
 #include <vic_version.h>
 
 // Define maximum array sizes for driver level objects
-#define MAX_FORCE_FILES 2
 #define MAX_OUTPUT_STREAMS 20
 
 // Output compression setting
@@ -194,6 +193,7 @@ enum
     OUT_FDEPTH,           /**< depth of freezing fronts [cm] */
     OUT_LAKE_ICE_TEMP,    /**< temperature of lake ice [C] */
     OUT_LAKE_SURF_TEMP,   /**< lake surface temperature [C] */
+    OUT_LAKE_LAYER_TEMP,  /**< lake layer temperature [C] */
     OUT_RAD_TEMP,         /**< average radiative surface temperature [K] */
     OUT_SALBEDO,          /**< snow pack albedo [fraction] */
     OUT_SNOW_PACK_TEMP,   /**< snow pack temperature [C] */
@@ -335,6 +335,7 @@ enum
     STATE_LAKE_SNOW_DENSITY,           /**<  snow density: lake_var.snow.density */
     STATE_LAKE_SNOW_COLD_CONTENT,      /**<  snow cold content: lake_var.snow.coldcontent */
     STATE_LAKE_SNOW_CANOPY,            /**<  snow canopy storage: lake_var.snow.snow_canopy */
+    STATE_LAKE_SNOW_DEPTH,             /**<  snow depth: lake_var.snow.depth */
     STATE_LAKE_SOIL_NODE_TEMP,         /**<  soil node temperatures: lake_var.energy.T[nidx] */
     STATE_LAKE_ACTIVE_LAYERS,          /**<  lake active layers: lake_var.activenod */
     STATE_LAKE_LAYER_DZ,               /**<  lake layer thickness: lake_var.dz */
@@ -480,13 +481,13 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     force_type_struct TYPE[N_FORCING_TYPES];
-    double FORCE_DT[2];    /**< forcing file time step */
-    size_t force_steps_per_day[2];    /**< forcing file timesteps per day */
-    unsigned short int FORCE_ENDIAN[2];  /**< endian-ness of input file, used for
+    double FORCE_DT[N_FORCING_TYPES];    /**< forcing file time step */
+    size_t force_steps_per_day[N_FORCING_TYPES];    /**< forcing file timesteps per day */
+    unsigned short int FORCE_ENDIAN[N_FORCING_TYPES];  /**< endian-ness of input file, used for
                                             DAILY_BINARY format */
-    int FORCE_FORMAT[2];            /**< ASCII or BINARY */
-    int FORCE_INDEX[2][N_FORCING_TYPES];
-    size_t N_TYPES[2];
+    int FORCE_FORMAT[N_FORCING_TYPES];            /**< ASCII or BINARY */
+    int FORCE_INDEX[N_FORCING_TYPES];
+    size_t N_TYPES[N_FORCING_TYPES];
 } param_set_struct;
 
 /******************************************************************************
@@ -602,6 +603,12 @@ void collect_eb_terms(energy_bal_struct, snow_data_struct, cell_data_struct,
 void collect_wb_terms(cell_data_struct, veg_var_struct, snow_data_struct,
                       double, double, double, bool, double, bool, double *,
                       double **);
+void collect_eb_terms_lake_only(energy_bal_struct, snow_data_struct, cell_data_struct,
+                      double, double, double, bool, bool, double, bool, int,
+                      double *, double, double **, size_t);
+void collect_wb_terms_lake_only(cell_data_struct, veg_var_struct, snow_data_struct,
+                      double, double, double, bool, double, bool, double *,
+                      double **, size_t);
 void compute_derived_state_vars(all_vars_struct *, soil_con_struct *,
                                 veg_con_struct *);
 void compute_lake_params(lake_con_struct *, soil_con_struct);
@@ -634,8 +641,8 @@ void free_streams(stream_struct **streams);
 void free_vegcon(veg_con_struct **veg_con);
 void generate_default_state(all_vars_struct *, soil_con_struct *,
                             veg_con_struct *, dmy_struct *);
-void generate_default_lake_state(all_vars_struct *, soil_con_struct *,
-                                 lake_con_struct);
+void generate_default_lake_state(lake_var_struct *, soil_con_struct *,
+                                 lake_con_struct *);
 void get_default_nstreams_nvars(size_t *nstreams, size_t nvars[]);
 void get_parameters(FILE *paramfile);
 void init_output_list(double **out_data, int write, char *format, int type,
@@ -655,7 +662,7 @@ void initialize_time(void);
 void initialize_veg(veg_var_struct **veg_var, size_t nveg);
 double julian_day_from_dmy(dmy_struct *dmy, unsigned short int calendar);
 bool leap_year(unsigned short int year, unsigned short int calendar);
-all_vars_struct make_all_vars(size_t nveg);
+all_vars_struct make_all_vars(size_t nveg, size_t nlake);
 cell_data_struct **make_cell_data(size_t veg_type_num);
 dmy_struct *make_dmy(global_param_struct *global);
 energy_bal_struct **make_energy_bal(size_t nveg);
@@ -663,6 +670,7 @@ void make_lastday(unsigned short int calendar, unsigned short int year,
                   unsigned short int lastday[]);
 snow_data_struct **make_snow_data(size_t nveg);
 veg_var_struct **make_veg_var(size_t veg_type_num);
+lake_var_struct *make_lake_var(size_t lake_type_num);
 double no_leap_day_from_dmy(dmy_struct *dmy);
 void num2date(double origin, double time_value, double tzoffset,
               unsigned short int calendar, unsigned short int time_units,
@@ -671,6 +679,9 @@ FILE *open_file(char string[], char type[]);
 void parse_nc_time_units(char *nc_unit_chars, unsigned short int *units,
                          dmy_struct *dmy);
 void put_data(all_vars_struct *, force_data_struct *, soil_con_struct *,
+              veg_con_struct *, veg_lib_struct *veg_lib, lake_con_struct *,
+              double **out_data, save_data_struct *, timer_struct *timer);
+void put_data_lake_only(all_vars_struct *, force_data_struct *, soil_con_struct *,
               veg_con_struct *, veg_lib_struct *veg_lib, lake_con_struct *,
               double **out_data, save_data_struct *, timer_struct *timer);
 void print_alarm(alarm_struct *alarm);

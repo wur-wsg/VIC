@@ -42,8 +42,13 @@ vic_write_output(dmy_struct *dmy)
     for (stream_idx = 0; stream_idx < options.Noutstreams; stream_idx++) {
         if (raise_alarm(&(output_streams[stream_idx].agg_alarm), dmy)) {
             debug("raised alarm for stream %zu", stream_idx);
-            vic_write(&(output_streams[stream_idx]),
+            if (options.LAKES && options.LAKE_ONLY) {
+                vic_write_lake_only(&(output_streams[stream_idx]),
                       &(nc_hist_files[stream_idx]), dmy);
+            } else {
+                vic_write(&(output_streams[stream_idx]),
+                          &(nc_hist_files[stream_idx]), dmy);
+            }
             reset_stream(&(output_streams[stream_idx]), dmy);
         }
     }

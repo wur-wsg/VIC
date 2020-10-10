@@ -264,7 +264,7 @@ print_global_param(global_param_struct *gp)
     fprintf(LOG_DEST, "\tendday              : %hu\n", gp->endday);
     fprintf(LOG_DEST, "\tendmonth            : %hu\n", gp->endmonth);
     fprintf(LOG_DEST, "\tendyear             : %hu\n", gp->endyear);
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < MAX_FORCE_FILES; i++) {
         fprintf(LOG_DEST, "\tforceday[%zd]        : %hu\n", i, gp->forceday[i]);
         fprintf(LOG_DEST, "\tforcesec[%zd]        : %u\n", i, gp->forcesec[i]);
         fprintf(LOG_DEST, "\tforcemonth[%zd]      : %hu\n", i,
@@ -312,16 +312,19 @@ print_lake_con(lake_con_struct *lcon,
         fprintf(LOG_DEST, "\t%.4f", lcon->Cl[i]);
     }
     fprintf(LOG_DEST, "\n");
-    fprintf(LOG_DEST, "\tb        : %.4f\n", lcon->b);
-    fprintf(LOG_DEST, "\tmaxdepth : %.4f\n", lcon->maxdepth);
-    fprintf(LOG_DEST, "\tmindepth : %.4f\n", lcon->mindepth);
-    fprintf(LOG_DEST, "\tmaxvolume: %.4f\n", lcon->maxvolume);
-    fprintf(LOG_DEST, "\tminvolume: %.4f\n", lcon->minvolume);
-    fprintf(LOG_DEST, "\tbpercent : %.4f\n", lcon->bpercent);
-    fprintf(LOG_DEST, "\trpercent : %.4f\n", lcon->rpercent);
-    fprintf(LOG_DEST, "\twfrac    : %.4f\n", lcon->wfrac);
-    fprintf(LOG_DEST, "\tdepth_in : %.4f\n", lcon->depth_in);
-    fprintf(LOG_DEST, "\tlake_idx : %d\n", lcon->lake_idx);
+    fprintf(LOG_DEST, "\tb            : %.4f\n", lcon->b);
+    fprintf(LOG_DEST, "\tmaxdepth     : %.4f\n", lcon->maxdepth);
+    fprintf(LOG_DEST, "\tmindepth     : %.4f\n", lcon->mindepth);
+    fprintf(LOG_DEST, "\tmaxvolume    : %.4f\n", lcon->maxvolume);
+    fprintf(LOG_DEST, "\tminvolume    : %.4f\n", lcon->minvolume);
+    fprintf(LOG_DEST, "\tbpercent     : %.4f\n", lcon->bpercent);
+    fprintf(LOG_DEST, "\trpercent     : %.4f\n", lcon->rpercent);
+    fprintf(LOG_DEST, "\twfrac        : %.4f\n", lcon->wfrac);
+    fprintf(LOG_DEST, "\tdepth_in     : %.4f\n", lcon->depth_in);
+    fprintf(LOG_DEST, "\tlake_class   : %zu\n", lcon->lake_class);
+    fprintf(LOG_DEST, "\tlake_type_num: %zu\n", lcon->lake_type_num);
+    fprintf(LOG_DEST, "\tveg_idx      : %d\n", lcon->veg_idx);
+    fprintf(LOG_DEST, "\telev_idx     : %zu\n", lcon->elev_idx);
 }
 
 /******************************************************************************
@@ -475,12 +478,14 @@ print_option(option_struct *option)
             option->LAKES ? "true" : "false");
     fprintf(LOG_DEST, "\tNcanopy              : %zu\n", option->Ncanopy);
     fprintf(LOG_DEST, "\tNfrost               : %zu\n", option->Nfrost);
-    fprintf(LOG_DEST, "\tNlakenode            : %zu\n", option->Nlakenode);
     fprintf(LOG_DEST, "\tNlayer               : %zu\n", option->Nlayer);
     fprintf(LOG_DEST, "\tNnode                : %zu\n", option->Nnode);
     fprintf(LOG_DEST, "\tNOFLUX               : %s\n",
             option->NOFLUX ? "true" : "false");
     fprintf(LOG_DEST, "\tNVEGTYPES            : %zu\n", option->NVEGTYPES);
+    fprintf(LOG_DEST, "\tNLAKETYPES           : %zu\n", option->NLAKETYPES);
+    fprintf(LOG_DEST, "\tNLAKEPROFILE         : %zu\n", option->NLAKEPROFILE);
+    fprintf(LOG_DEST, "\tNLAKENODES           : %zu\n", option->NLAKENODES);
     fprintf(LOG_DEST, "\tRC_MODE              : %d\n", option->RC_MODE);
     fprintf(LOG_DEST, "\tROOT_ZONES           : %zu\n", option->ROOT_ZONES);
     fprintf(LOG_DEST, "\tQUICK_FLUX           : %s\n",
@@ -517,6 +522,7 @@ print_option(option_struct *option)
     fprintf(LOG_DEST, "\tORGANIC_FRACT        : %s\n",
             option->ORGANIC_FRACT ? "true" : "false");
     fprintf(LOG_DEST, "\tSTATE_FORMAT         : %d\n", option->STATE_FORMAT);
+    fprintf(LOG_DEST, "\tSTATE_COMPRESS       : %d\n", option->STATE_COMPRESS);
     fprintf(LOG_DEST, "\tINIT_STATE           : %s\n",
             option->INIT_STATE ? "true" : "false");
     fprintf(LOG_DEST, "\tSAVE_STATE           : %s\n",
@@ -635,20 +641,12 @@ print_param_set(param_set_struct *param_set)
     fprintf(LOG_DEST, "param_set:\n");
     for (i = 0; i < N_FORCING_TYPES; i++) {
         print_force_type(&(param_set->TYPE[i]));
+        fprintf(LOG_DEST, "\tFORCE_DT    : %.4f\n", param_set->FORCE_DT[i]);
+        fprintf(LOG_DEST, "\tFORCE_ENDIAN: %d\n", param_set->FORCE_ENDIAN[i]);
+        fprintf(LOG_DEST, "\tFORCE_FORMAT: %d\n", param_set->FORCE_FORMAT[i]);
+        fprintf(LOG_DEST, "\tFORCE_INDEX : %d\n", param_set->FORCE_INDEX[i]);
+	fprintf(LOG_DEST, "\tN_TYPES     : %zu\n", param_set->N_TYPES[i]);
     }
-    fprintf(LOG_DEST, "\tFORCE_DT    : %.4f %.4f\n", param_set->FORCE_DT[0],
-            param_set->FORCE_DT[1]);
-    fprintf(LOG_DEST, "\tFORCE_ENDIAN: %d %d\n", param_set->FORCE_ENDIAN[0],
-            param_set->FORCE_ENDIAN[1]);
-    fprintf(LOG_DEST, "\tFORCE_FORMAT: %d %d\n", param_set->FORCE_FORMAT[0],
-            param_set->FORCE_FORMAT[1]);
-    fprintf(LOG_DEST, "\tFORCE_INDEX :\n");
-    for (i = 0; i < N_FORCING_TYPES; i++) {
-        fprintf(LOG_DEST, "\t\t%zd: %d %d\n", i, param_set->FORCE_INDEX[0][i],
-                param_set->FORCE_INDEX[1][i]);
-    }
-    fprintf(LOG_DEST, "\tN_TYPES     : %zu %zu\n", param_set->N_TYPES[0],
-            param_set->N_TYPES[1]);
 }
 
 /******************************************************************************
@@ -682,6 +680,7 @@ print_parameters(parameters_struct *param)
             param->CANOPY_VPDMINFACTOR);
     fprintf(LOG_DEST, "\tLAKE_TMELT: %.4f\n", param->LAKE_TMELT);
     fprintf(LOG_DEST, "\tLAKE_MAX_SURFACE: %.4f\n", param->LAKE_MAX_SURFACE);
+    fprintf(LOG_DEST, "\tLAKE_MAX_LAYER: %.4f\n", param->LAKE_MAX_LAYER);
     fprintf(LOG_DEST, "\tLAKE_BETA: %.4f\n", param->LAKE_BETA);
     fprintf(LOG_DEST, "\tLAKE_FRACMIN: %.4f\n", param->LAKE_FRACMIN);
     fprintf(LOG_DEST, "\tLAKE_FRACLIM: %.4f\n", param->LAKE_FRACLIM);
@@ -1145,6 +1144,7 @@ print_veg_con(veg_con_struct *vcon,
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tveg_class       : %d\n", vcon->veg_class);
     fprintf(LOG_DEST, "\tvegetat_type_num: %zu\n", vcon->vegetat_type_num);
+    fprintf(LOG_DEST, "\tlake_idx        : %d\n", vcon->lake_idx);
     if (blowing) {
         fprintf(LOG_DEST, "\tsigma_slope     : %.4f\n", vcon->sigma_slope);
         fprintf(LOG_DEST, "\tlag_one         : %.4f\n", vcon->lag_one);
