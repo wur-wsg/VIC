@@ -27,7 +27,7 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
-#define CONSUMP_ONLY false
+//#define CONSUMP_ONLY false
 
 /******************************************
 * @brief   Get (cell) demand from sectors
@@ -58,10 +58,10 @@ calculate_demand_nonrenew(size_t iCell,
                 wu_var[iCell][iSector].withdrawn_gw +
                 wu_var[iCell][iSector].withdrawn_dam +
                 wu_var[iCell][iSector].withdrawn_tremote);
-        if(CONSUMP_ONLY){
-            wu_var[iCell][iSector].demand_nonrenew *=
-                    wu_force[iCell][iSector].consumption_frac;
-        }
+        //if(CONSUMP_ONLY){
+        //    wu_var[iCell][iSector].demand_nonrenew *=
+        //            wu_force[iCell][iSector].consumption_frac;
+        //}
         if (wu_var[iCell][iSector].demand_nonrenew < 0.) {
             wu_var[iCell][iSector].demand_nonrenew = 0.;
         }
@@ -95,20 +95,18 @@ calculate_use_nonrenew(size_t iCell,
         wu_var[iCell][iSector].withdrawn_nonrenew = 
                 wu_var[iCell][iSector].demand_nonrenew;
         
-        if(CONSUMP_ONLY){
-            wu_var[iCell][iSector].consumed += 
-                    wu_var[iCell][iSector].withdrawn_nonrenew;
-        } else {
-            wu_var[iCell][iSector].consumed += 
-                    wu_var[iCell][iSector].withdrawn_nonrenew * 
-                    wu_force[iCell][iSector].consumption_frac;
+        //if(CONSUMP_ONLY){
+        //    wu_var[iCell][iSector].consumed += 
+        //            wu_var[iCell][iSector].withdrawn_nonrenew;
+        //} else {
             wu_var[iCell][iSector].returned += 
                     wu_var[iCell][iSector].withdrawn_nonrenew * 
                     (1 - wu_force[iCell][iSector].consumption_frac);
-            (*returned) += 
+            wu_var[iCell][iSector].consumed += 
                     wu_var[iCell][iSector].withdrawn_nonrenew * 
-                    (1 - wu_force[iCell][iSector].consumption_frac);
-        }
+                    wu_force[iCell][iSector].consumption_frac;
+            (*returned) += wu_var[iCell][iSector].returned;
+        //}
         
         (*withdrawn_nonrenew) += wu_var[iCell][iSector].withdrawn_nonrenew;
     }
@@ -138,6 +136,9 @@ calculate_hydrology_nonrenew(size_t iCell,
     // non-renewable
     if(withdrawn_nonrenew > 0.) {
         rout_var[iCell].nonrenew_deficit += withdrawn_nonrenew;
+        if(withdrawn_nonrenew != withdrawn_nonrenew){
+            log_err("withdrawn_nonrenew NaN wu_nonrenewable 1");
+        }
         
         if(rout_var[iCell].nonrenew_deficit < 0){
             rout_var[iCell].nonrenew_deficit = 0;
