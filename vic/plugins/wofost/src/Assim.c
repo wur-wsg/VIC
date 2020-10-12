@@ -100,11 +100,13 @@ float DailyTotalAssimilation(SimUnit *Grid)
         {
             Hour       = 12.0+0.5*Grid->met->Daylength*XGauss[i];
             SinB       = max (0.,Grid->met->SinLD+Grid->met->CosLD*cos(2.*CONST_PI*(Hour+12.)/24.));
-            PAR        = 0.5*Grid->met->Radiation*SinB*(1.+0.4*SinB)/Grid->met->DSinBE;
-            PARDiffuse = min (PAR,SinB*Grid->met->DiffRadPP);
-            PARDirect  = PAR-PARDiffuse;
-            DailyTotalAssimilation = DailyTotalAssimilation + 
-                InstantAssimilation(Grid, KDiffuse,EFF,AssimMax,SinB,PARDiffuse,PARDirect) * WGauss[i];
+            if (Grid->met->Daylength > 0) {
+                PAR        = 0.5*Grid->met->Radiation*SinB*(1.+0.4*SinB)/Grid->met->DSinBE;
+                PARDiffuse = min (PAR,SinB*Grid->met->DiffRadPP);
+                PARDirect  = PAR-PARDiffuse;
+                DailyTotalAssimilation = DailyTotalAssimilation + 
+                    InstantAssimilation(Grid, KDiffuse,EFF,AssimMax,SinB,PARDiffuse,PARDirect) * WGauss[i];
+            }
         }  
     }
     return(DailyTotalAssimilation*Grid->met->Daylength);
