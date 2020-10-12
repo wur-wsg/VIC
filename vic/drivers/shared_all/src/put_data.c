@@ -646,8 +646,14 @@ collect_wb_terms(cell_data_struct cell,
     /** record saturated area fraction **/
     out_data[OUT_ASAT][0] += cell.asat * AreaFactor;
 
+    if(cell.runoff != cell.runoff){
+        log_err("runoff NaN put_data 1");
+    }
     /** record runoff **/
     out_data[OUT_RUNOFF][0] += cell.runoff * AreaFactor;
+    if(out_data[OUT_RUNOFF][0] != out_data[OUT_RUNOFF][0]){
+        log_err("OUT_RUNOFF NaN put_data 1");
+    }
 
     /** record recharge **/
     out_data[OUT_RECHARGE][0] += cell.recharge * AreaFactor;

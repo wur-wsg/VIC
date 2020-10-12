@@ -27,8 +27,6 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
-//#define CONSUMP_ONLY false
-
 /******************************************
 * @brief   Get (cell) demand from sectors
 ******************************************/
@@ -58,10 +56,10 @@ calculate_demand_nonrenew(size_t iCell,
                 wu_var[iCell][iSector].withdrawn_gw +
                 wu_var[iCell][iSector].withdrawn_dam +
                 wu_var[iCell][iSector].withdrawn_tremote);
-        //if(CONSUMP_ONLY){
-        //    wu_var[iCell][iSector].demand_nonrenew *=
-        //            wu_force[iCell][iSector].consumption_frac;
-        //}
+        if(CONSUMP_ONLY){
+            wu_var[iCell][iSector].demand_nonrenew *=
+                    wu_force[iCell][iSector].consumption_frac;
+        }
         if (wu_var[iCell][iSector].demand_nonrenew < 0.) {
             wu_var[iCell][iSector].demand_nonrenew = 0.;
         }
@@ -95,18 +93,20 @@ calculate_use_nonrenew(size_t iCell,
         wu_var[iCell][iSector].withdrawn_nonrenew = 
                 wu_var[iCell][iSector].demand_nonrenew;
         
-        //if(CONSUMP_ONLY){
-        //    wu_var[iCell][iSector].consumed += 
-        //            wu_var[iCell][iSector].withdrawn_nonrenew;
-        //} else {
+        if(CONSUMP_ONLY){
+            wu_var[iCell][iSector].consumed += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew;
+        } else {
             wu_var[iCell][iSector].returned += 
                     wu_var[iCell][iSector].withdrawn_nonrenew * 
                     (1 - wu_force[iCell][iSector].consumption_frac);
             wu_var[iCell][iSector].consumed += 
                     wu_var[iCell][iSector].withdrawn_nonrenew * 
                     wu_force[iCell][iSector].consumption_frac;
-            (*returned) += wu_var[iCell][iSector].returned;
-        //}
+            (*returned) += 
+                    wu_var[iCell][iSector].withdrawn_nonrenew * 
+                    (1 - wu_force[iCell][iSector].consumption_frac);
+        }
         
         (*withdrawn_nonrenew) += wu_var[iCell][iSector].withdrawn_nonrenew;
     }

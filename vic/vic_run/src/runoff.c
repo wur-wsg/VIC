@@ -402,7 +402,13 @@ runoff(cell_data_struct  *cell,
                 frost_fract[fidx];
         }
         cell->asat += A * frost_fract[fidx];
+        if(runoff[fidx] != runoff[fidx]){
+            log_err("runoff NaN runoff 1");
+        }
         cell->runoff += runoff[fidx] * frost_fract[fidx];
+        if(cell->runoff != cell->runoff){
+            log_err("runoff NaN runoff 2");
+        }
         cell->recharge += recharge[fidx] * frost_fract[fidx];
         cell->baseflow += baseflow[fidx] * frost_fract[fidx];
     }
