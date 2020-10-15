@@ -96,8 +96,6 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
     extern plugin_global_param_struct plugin_global_param;
     extern rout_var_struct *rout_var;
     
-    double prev_discharge;
-    
     size_t rout_steps_per_dt;
     size_t i;
     
@@ -107,27 +105,12 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
     dam_operate(dam_con, dam_var);
     
     for(i = 0; i < rout_steps_per_dt; i++) {
-        if(dam_con->inflow_frac != dam_con->inflow_frac){
-            log_err("inflow_frac NaN dam 1");
-        }
         rout_var[iCell].dt_discharge[i] *= 1 - dam_con->inflow_frac;
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN dam 1");
-        }
-        if(dam_var->release != dam_var->release){
-            log_err("release NaN dam 1");
-        }
         rout_var[iCell].dt_discharge[i] += dam_var->release * M3_PER_HM3 / 
             global_param.dt / rout_steps_per_dt;
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN dam 2");
-        }
         
         if(rout_var[iCell].dt_discharge[i] < 0){
             rout_var[iCell].dt_discharge[i] = 0.;
-        }
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN dam 3");
         }
     }
     
@@ -135,45 +118,6 @@ global_dam_operate(dam_con_struct *dam_con, dam_var_struct *dam_var, size_t iCel
     for(i = 0; i < rout_steps_per_dt; i++) {
         rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
     }
-    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
-        log_err("discharge NaN dam 1");
-    }
-    
-//    prev_discharge = rout_var[iCell].discharge;
-//    if(prev_discharge != prev_discharge){
-//        log_err("prev_discharge NaN dam 1");
-//    }
-//    rout_var[iCell].discharge *= 1 - dam_con->inflow_frac;
-//    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
-//        log_err("discharge NaN dam 1");
-//    }
-//    rout_var[iCell].discharge += dam_var->release * M3_PER_HM3 / 
-//            global_param.dt;
-//    if(dam_var->release != dam_var->release){
-//        log_err("release NaN dam 1");
-//    }
-//    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
-//        log_err("discharge NaN dam 2");
-//    }
-//    
-//    for(i = 0; i < rout_steps_per_dt; i++) {
-//        if (prev_discharge > 0) {
-//            if(prev_discharge == 0){
-//                log_err("prev_discharge 0 dam 2");
-//            }
-//            rout_var[iCell].dt_discharge[i] *= 
-//                    rout_var[iCell].discharge / prev_discharge;
-//            if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-//                log_err("dt_inflow NaN dam 1");
-//            }
-//        } else {
-//            rout_var[iCell].dt_discharge[i] = 
-//                    rout_var[iCell].discharge / rout_steps_per_dt;
-//            if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-//                log_err("dt_inflow NaN dam 2");
-//            }
-//        }
-//    }
 }
 
 /******************************************

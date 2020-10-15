@@ -39,9 +39,7 @@ vic_run(force_data_struct   *force,
         lake_con_struct     *lake_con,
         soil_con_struct     *soil_con,
         veg_con_struct      *veg_con,
-        veg_lib_struct      *veg_lib,
-        double lon,
-        double lat)
+        veg_lib_struct      *veg_lib)
 {
     extern option_struct     options;
     extern parameters_struct param;
@@ -329,8 +327,7 @@ vic_run(force_data_struct   *force,
                                                soil_con, veg_var,
                                                &(veg_lib[veg_class]),
                                                lag_one, sigma_slope, fetch,
-                                               veg_con[iveg].CanopLayerBnd,
-                            lon, lat);
+                                               veg_con[iveg].CanopLayerBnd);
 
                     if (ErrorFlag == ERROR) {
                         return (ERROR);

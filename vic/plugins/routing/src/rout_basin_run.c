@@ -72,66 +72,28 @@ rout_basin_run(size_t iCell)
         cshift(rout_var[iCell].dt_discharge,
                plugin_options.UH_LENGTH + rout_steps_per_dt - 1, 1, 0, 1);
     }
-    for (i = 0; i < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; i++) {
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN 1");
-        }
-    }
     
     /* RUNOFF*/
     // Gather runoff from VIC
     in_runoff = out_data[iCell][OUT_RUNOFF][0];
-    if(in_runoff != in_runoff){
-        log_err("in_runoff NaN 1");
-    }
     in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
-    if(in_baseflow != in_baseflow){
-        log_err("in_baseflow NaN 1");
-    }
     
-    if(rout_var[iCell].nonrenew_deficit != rout_var[iCell].nonrenew_deficit){
-        log_err("nonrenew_deficit NaN 1");
-    }
     if(rout_var[iCell].nonrenew_deficit > 0) {
         if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
             in_baseflow -= rout_var[iCell].nonrenew_deficit;
             rout_var[iCell].nonrenew_deficit = 0.;
-            if(in_baseflow != in_baseflow){
-                log_err("in_baseflow NaN 2");
-            }
-            if(rout_var[iCell].nonrenew_deficit != rout_var[iCell].nonrenew_deficit){
-                log_err("nonrenew_deficit NaN 2");
-            }
         } else {
             rout_var[iCell].nonrenew_deficit -= in_baseflow;
             in_baseflow = 0.;
-            if(in_baseflow != in_baseflow){
-                log_err("in_baseflow NaN 3");
-            }
-            if(rout_var[iCell].nonrenew_deficit != rout_var[iCell].nonrenew_deficit){
-                log_err("nonrenew_deficit NaN 3");
-            }
         }
         
         if(plugin_options.NONRENEW_RUNOFF) {
             if (in_runoff > rout_var[iCell].nonrenew_deficit) {
                 in_runoff -= rout_var[iCell].nonrenew_deficit;
                 rout_var[iCell].nonrenew_deficit = 0.;
-                if(in_runoff != in_runoff){
-                    log_err("in_runoff NaN 2");
-                }
-                if(rout_var[iCell].nonrenew_deficit != rout_var[iCell].nonrenew_deficit){
-                    log_err("nonrenew_deficit in_runoff NaN 2");
-                }
             } else {
                 rout_var[iCell].nonrenew_deficit -= in_runoff;
                 in_runoff = 0.;
-                if(in_runoff != in_runoff){
-                    log_err("in_runoff NaN 3");
-                }
-                if(rout_var[iCell].nonrenew_deficit != rout_var[iCell].nonrenew_deficit){
-                    log_err("nonrenew_deficit in_runoff NaN 3");
-                }
             }
         }
     }
@@ -140,34 +102,18 @@ rout_basin_run(size_t iCell)
         (in_runoff + in_baseflow) *
         local_domain.locations[iCell].area /
         (global_param.dt * MM_PER_M);
-    if(runoff != runoff){
-        log_err("runoff NaN 1");
-    }
     
     // Calculate delta-time runoff (equal contribution)
     for (i = 0; i < rout_steps_per_dt; i++) {
         dt_runoff[i] = runoff / rout_steps_per_dt;
-        if(dt_runoff[i] != dt_runoff[i]){
-            log_err("dt_runoff NaN 1");
-        }
     }
     
     // Convolute current runoff
     convolve(dt_runoff, rout_steps_per_dt, 
              rout_con[iCell].runoff_uh, plugin_options.UH_LENGTH,
              convoluted);
-    for (i = 0; i < rout_steps_per_dt; i++) {
-        if(convoluted[i] != convoluted[i]){
-            log_err("convoluted NaN 1");
-        }
-    }
     for (i = 0; i < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; i++) {
         rout_var[iCell].dt_discharge[i] += convoluted[i];
-    }
-    for (i = 0; i < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; i++) {
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN 2");
-        }
     }
 
     /* INFLOW*/
@@ -176,22 +122,13 @@ rout_basin_run(size_t iCell)
     if (plugin_options.FORCE_ROUTING) {
         inflow += rout_force[iCell].discharge;
     }
-    if(inflow != inflow){
-        log_err("inflow NaN 1");
-    }
     
     // Calculate delta-time inflow (equal contribution)
     rout_var[iCell].inflow = 0.;
     for (i = 0; i < rout_steps_per_dt; i++) {
         dt_inflow[i] = inflow / rout_steps_per_dt;
-        if(dt_inflow[i] != dt_inflow[i]){
-            log_err("dt_inflow NaN 1");
-        }
         for (j = 0; j < rout_con[iCell].Nupstream; j++) {
             dt_inflow[i] += rout_var[rout_con[iCell].upstream[j]].dt_discharge[i];
-            if(dt_inflow[i] != dt_inflow[i]){
-                log_err("dt_inflow NaN 2");
-            }
         }
         rout_var[iCell].inflow += dt_inflow[i];
     }
@@ -200,18 +137,8 @@ rout_basin_run(size_t iCell)
     convolve(dt_inflow, rout_steps_per_dt, 
             rout_con[iCell].runoff_uh, plugin_options.UH_LENGTH,
             convoluted);
-    for (i = 0; i < rout_steps_per_dt; i++) {
-        if(convoluted[i] != convoluted[i]){
-            log_err("convoluted NaN 1");
-        }
-    }
     for (i = 0; i < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; i++) {
         rout_var[iCell].dt_discharge[i] += convoluted[i];
-    }
-    for (i = 0; i < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; i++) {
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN 3");
-        }
     }
 
     // Aggregate current timestep discharge & stream moisture
@@ -219,21 +146,12 @@ rout_basin_run(size_t iCell)
     rout_var[iCell].discharge = 0.0;
     rout_var[iCell].stream = 0.0;
     for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; i++) {
-        if(rout_var[iCell].dt_discharge[i] != rout_var[iCell].dt_discharge[i]){
-            log_err("dt_discharge NaN 4");
-        }
         if (i < rout_steps_per_dt) {
             rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
         }
         else {
             rout_var[iCell].stream += rout_var[iCell].dt_discharge[i];
         }
-    }
-    if(rout_var[iCell].discharge != rout_var[iCell].discharge){
-        log_err("discharge NaN 1");
-    }
-    if(rout_var[iCell].stream != rout_var[iCell].stream){
-        log_err("stream NaN 1");
     }
 
     // Check water balance

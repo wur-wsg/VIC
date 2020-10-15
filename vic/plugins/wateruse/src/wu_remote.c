@@ -320,22 +320,13 @@ calculate_hydrology_remote(size_t iCell,
                 rout_var[iCell].dt_discharge[iStep] -= 
                         withdrawn_discharge_tmp * 
                         (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
-                if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                    log_err("dt_inflow NaN wu_remote 1");
-                }
             } else {
                 // Scale withdrawal proportionally to length
                 rout_var[iCell].dt_discharge[iStep] -= 
-                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
-                if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                    log_err("dt_inflow NaN wu_remote 2");
-                }
+                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH - 1);
             }
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
-            }
-            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                log_err("dt_inflow NaN wu_remote 3");
             }
         }
         

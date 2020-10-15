@@ -136,9 +136,6 @@ calculate_hydrology_nonrenew(size_t iCell,
     // non-renewable
     if(withdrawn_nonrenew > 0.) {
         rout_var[iCell].nonrenew_deficit += withdrawn_nonrenew;
-        if(withdrawn_nonrenew != withdrawn_nonrenew){
-            log_err("withdrawn_nonrenew NaN wu_nonrenewable 1");
-        }
         
         if(rout_var[iCell].nonrenew_deficit < 0){
             rout_var[iCell].nonrenew_deficit = 0;
@@ -162,22 +159,13 @@ calculate_hydrology_nonrenew(size_t iCell,
                 rout_var[iCell].dt_discharge[iStep] -= 
                         withdrawn_discharge_tmp * 
                         (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
-                if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                    log_err("dt_inflow NaN wu_nonrenewable 2");
-                }
             } else {
                 // Scale withdrawal proportionally to length
                 rout_var[iCell].dt_discharge[iStep] -= 
-                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
-                if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                    log_err("dt_inflow NaN wu_nonrenewable 2");
-                }
+                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH - 1);
             }
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
-            }
-            if(rout_var[iCell].dt_discharge[iStep] != rout_var[iCell].dt_discharge[iStep]){
-                log_err("dt_inflow NaN wu_nonrenewable 3");
             }
         }
             

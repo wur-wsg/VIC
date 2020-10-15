@@ -70,8 +70,7 @@ vic_image_run(dmy_struct *dmy_current)
 
         timer_start(&timer);
         vic_run(&(force[i]), &(all_vars[i]), dmy_current, &global_param,
-                &lake_con, &(soil_con[i]), veg_con[i], veg_lib[i],
-                local_domain.locations[i].longitude, local_domain.locations[i].latitude);
+                &lake_con, &(soil_con[i]), veg_con[i], veg_lib[i]);
         timer_stop(&timer);
 
         put_data(&(all_vars[i]), &(force[i]), &(soil_con[i]), veg_con[i],

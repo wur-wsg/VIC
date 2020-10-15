@@ -38,9 +38,7 @@ runoff(cell_data_struct  *cell,
        soil_con_struct   *soil_con,
        double             ppt,
        double            *frost_fract,
-       int                Nnodes,
-        double lon,
-        double lat)
+       int                Nnodes)
 {
     extern option_struct       options;
     extern global_param_struct global_param;
@@ -177,9 +175,6 @@ runoff(cell_data_struct  *cell,
         }
         compute_runoff_and_asat(soil_con, tmp_moist_for_runoff, inflow, &A,
                                 &(runoff[fidx]));
-        if(runoff[fidx] != runoff[fidx]){
-            log_err("runoff NaN runoff 4 %lf %lf", lon, lat);
-        }
 
         // save dt_runoff based on initial runoff estimate,
         // since we will modify total runoff below for the case of completely saturated soil
@@ -260,9 +255,6 @@ runoff(cell_data_struct  *cell,
                             if (tmplayer < 0) {
                                 /** If top layer saturated, add to runoff **/
                                 runoff[fidx] += tmp_inflow;
-                                if(runoff[fidx] != runoff[fidx]){
-                                    log_err("runoff NaN runoff 3 %lf %lf", lon, lat);
-                                }
                                 tmp_inflow = 0;
                             }
                             else {
@@ -364,9 +356,6 @@ runoff(cell_data_struct  *cell,
                     if (tmplayer < 0) {
                         /** If top layer saturated, add to runoff **/
                         runoff[fidx] += tmp_moist;
-                        if(runoff[fidx] != runoff[fidx]){
-                            log_err("runoff NaN runoff 2 %lf %lf", lon, lat);
-                        }
                         tmp_moist = 0;
                     }
                     else {
@@ -413,13 +402,7 @@ runoff(cell_data_struct  *cell,
                 frost_fract[fidx];
         }
         cell->asat += A * frost_fract[fidx];
-        if(runoff[fidx] != runoff[fidx]){
-            log_err("runoff NaN runoff 1 %lf %lf", lon, lat);
-        }
         cell->runoff += runoff[fidx] * frost_fract[fidx];
-        if(cell->runoff != cell->runoff){
-            log_err("runoff NaN runoff 2 %lf %lf", lon, lat);
-        }
         cell->recharge += recharge[fidx] * frost_fract[fidx];
         cell->baseflow += baseflow[fidx] * frost_fract[fidx];
     }
