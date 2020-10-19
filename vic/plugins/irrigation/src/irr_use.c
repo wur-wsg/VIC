@@ -224,7 +224,8 @@ irr_get_withdrawn(size_t iCell)
     double avail_frac;
     double area_fract;
     double veg_fract;
-    double max_moist;
+    double max_moist_1;
+    double max_moist_2;
     double max_added;
     
     size_t iSector;
@@ -306,8 +307,9 @@ irr_get_withdrawn(size_t iCell)
                 area_fract = csoil_con->AreaFract[j];
 
                 if(area_fract > 0){
-                    max_moist = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                    max_added = max_moist;
+                    max_moist_1 = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
+                    max_moist_2 = csoil_con->max_moist[1] - ccell_var->layer[1].moist;
+                    max_added = max_moist_1;
                     
                     // leftover
                     if(cirr_var->leftover > 0){
@@ -335,7 +337,7 @@ irr_get_withdrawn(size_t iCell)
                     prev_leftover += cirr_var->leftover * veg_fract * area_fract;
                     
                     // apply
-                    ccell_var->layer[0].moist += cirr_var->applied;
+                    ccell_var->layer[0].moist += min(cirr_var->applied, max_moist_1);
                     cirr_var->leftover += cirr_var->received - cirr_var->applied;
                     
                     received += cirr_var->received * veg_fract * area_fract;

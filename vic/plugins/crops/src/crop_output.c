@@ -503,7 +503,6 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
-    case  N_OUTVAR_TYPES + OUT_CROP_LAI:
     case  N_OUTVAR_TYPES + OUT_CROP_NNI:
     case  N_OUTVAR_TYPES + OUT_CROP_PNI:
     case  N_OUTVAR_TYPES + OUT_CROP_KNI:
@@ -528,6 +527,9 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_KDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH:
         (*agg_type) = AGG_TYPE_SUM;
+        break;
+    case  N_OUTVAR_TYPES + OUT_CROP_LAI:
+        (*agg_type) = AGG_TYPE_MAX;
         break;
     }
 }

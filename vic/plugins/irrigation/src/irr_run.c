@@ -65,6 +65,18 @@ irr_run_requirement(size_t iCell)
     for(i = 0; i < irr_con_map[iCell].ni_active; i++){
         cirr_con = &irr_con[iCell][i];
         cveg_con = &veg_con[iCell][cirr_con->veg_index];
+        
+        for(j = 0; j < options.SNOW_BAND; j++){
+            cirr_var = &irr_var[iCell][i][j];
+            ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
+            
+            // Reset values
+            cirr_var->requirement = 0.0;
+            cirr_var->flag_req = false;
+            ccell_var->layer[0].Ksat = csoil_con->Ksat[0];
+            ccell_var->layer[1].Ksat = csoil_con->Ksat[1];
+        }
+        
         veg_fract = cveg_con->Cv;
         
         if(veg_fract > 0) {
@@ -75,12 +87,6 @@ irr_run_requirement(size_t iCell)
                 area_fract = csoil_con->AreaFract[j];
 
                 if(area_fract > 0){
-
-                    // Reset values
-                    cirr_var->requirement = 0.0;
-                    cirr_var->flag_req = false;
-                    ccell_var->layer[0].Ksat = csoil_con->Ksat[0];
-                    ccell_var->layer[1].Ksat = csoil_con->Ksat[1];
 
                     /**********************************************************************
                     * Initialize
@@ -140,7 +146,7 @@ irr_run_requirement(size_t iCell)
                     if(cirr_con->paddy && cirr_var->requirement > 0){
                         cirr_var->flag_req = true;
                     }
-                    else if (total_wcr * 1.1 - 
+                    else if (total_wcr - 
                             (total_moist + cirr_var->leftover) > 0 && 
                             cirr_var->requirement > 0){
                         cirr_var->flag_req = true;
@@ -190,6 +196,14 @@ irr_run_shortage(size_t iCell)
     for(i = 0; i < irr_con_map[iCell].ni_active; i++){
         cirr_con = &irr_con[iCell][i];
         cveg_con = &veg_con[iCell][cirr_con->veg_index];
+        
+        for(j = 0; j < options.SNOW_BAND; j++){
+            cirr_var = &irr_var[iCell][i][j];
+
+            // Reset values
+            cirr_var->shortage = 0.0;
+        }
+        
         veg_fract = cveg_con->Cv;
         
         if(veg_fract > 0) {
@@ -200,9 +214,6 @@ irr_run_shortage(size_t iCell)
                 area_fract = csoil_con->AreaFract[j];
 
                 if(area_fract > 0){ 
-
-                    // Reset values
-                    cirr_var->shortage = 0.0;
 
                     /**********************************************************************
                     * Initialize

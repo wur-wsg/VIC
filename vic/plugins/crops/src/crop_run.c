@@ -104,6 +104,7 @@ crop_register_soil(size_t iCell)
     extern option_struct options;
     extern all_vars_struct *all_vars;
     extern veg_con_map_struct *veg_con_map;
+    extern SimUnit ***Grid;
     
     size_t iBand;
     size_t crop_class;
