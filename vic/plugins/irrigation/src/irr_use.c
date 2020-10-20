@@ -94,7 +94,7 @@ irr_set_demand(size_t iCell)
         efficiency = 1 / efficiency;
         groundwater /= total;
     }
-    efficiency = 1.0;
+    //efficiency = 1.0;
     
     if(irr_con_map[iCell].ni_active > 0){
         iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
@@ -151,8 +151,10 @@ irr_return_leftover(size_t iCell)
                 area_fract = csoil_con->AreaFract[j];
 
                 if(area_fract > 0){
-                    leftover += cirr_var->leftover * veg_fract * area_fract;
-                    cirr_var->leftover = 0.0;
+                    if(!cirr_con->paddy){
+                        leftover += cirr_var->leftover * veg_fract * area_fract;
+                        cirr_var->leftover = 0.0;
+                    }
                 }
             }
         }
@@ -363,5 +365,5 @@ irr_get_withdrawn(size_t iCell)
                 leftover - prev_leftover);
     }
     
-    irr_return_leftover(iCell);
+    //irr_return_leftover(iCell);
 }     
