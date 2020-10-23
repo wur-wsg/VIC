@@ -511,7 +511,7 @@ wu_remote(size_t iCell)
             &available_remote);
     
     /******************************************
-     Devide
+     Divide
     ******************************************/ 
     calculate_division_remote(iCell, 
             available_remote, demand_remote);

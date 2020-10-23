@@ -68,6 +68,63 @@ calculate_demand_nonrenew(size_t iCell,
 }
 
 /******************************************
+* @brief   Get (cell) availability
+******************************************/
+void
+calculate_availability_nonrenew(size_t iCell, 
+        double *available_nonrenew)
+{
+    extern plugin_parameters_struct plugin_param;
+    extern rout_var_struct *rout_var;
+    
+    (*available_nonrenew) = plugin_param.NREN_LIM - rout_var[iCell].nonrenew_deficit;
+    
+    if((*available_nonrenew) < 0){
+        (*available_nonrenew) = 0;
+    }
+}
+
+/******************************************
+* @brief   Divide available resources over sectors
+******************************************/
+void
+calculate_division_nonrenew(size_t iCell, 
+        double available_nonrenew,
+        double demand_nonrenew)
+{
+    extern plugin_option_struct plugin_options;
+    extern wu_var_struct **wu_var;
+    extern wu_con_map_struct *wu_con_map;
+    
+    double available_nonrenew_tmp;
+    
+    size_t i;
+    int iSector;
+    
+    available_nonrenew_tmp = available_nonrenew;
+    
+    for(i = 0; i < plugin_options.NWUTYPES; i ++){
+        iSector = wu_con_map[iCell].sidx[i];        
+        if(iSector == NODATA_WU){
+            continue;
+        }
+        
+        // non-renewable
+        if(demand_nonrenew > 0){
+            if(wu_var[iCell][iSector].demand_nonrenew >= available_nonrenew_tmp){
+                wu_var[iCell][iSector].available_nonrenew = available_nonrenew_tmp;
+                
+                available_nonrenew_tmp = 0.0;
+            } else {
+                wu_var[iCell][iSector].available_nonrenew = wu_var[iCell][iSector].demand_nonrenew;
+                
+                available_nonrenew_tmp -= wu_var[iCell][iSector].demand_nonrenew;
+            }
+        }
+    }
+}
+
+/******************************************
 * @brief   Calculate (cell) withdrawals and return flows from sectors
 ******************************************/
 void
@@ -80,6 +137,8 @@ calculate_use_nonrenew(size_t iCell,
     extern wu_force_struct **wu_force;
     extern wu_con_map_struct *wu_con_map;
     
+    double frac;
+    
     size_t i;
     int iSector;
     
@@ -90,9 +149,17 @@ calculate_use_nonrenew(size_t iCell,
         }
         
         // non-renewable
-        wu_var[iCell][iSector].withdrawn_nonrenew = 
-                wu_var[iCell][iSector].demand_nonrenew;
-        
+        if(wu_var[iCell][iSector].available_nonrenew > 0){
+            frac = wu_var[iCell][iSector].demand_nonrenew / 
+                    wu_var[iCell][iSector].available_nonrenew;
+            frac = min(frac, 1);
+            
+            wu_var[iCell][iSector].withdrawn_nonrenew = 
+                    wu_var[iCell][iSector].available_nonrenew * frac;
+        } else {
+            wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
+        }
+
         if(CONSUMP_ONLY){
             wu_var[iCell][iSector].consumed += 
                     wu_var[iCell][iSector].withdrawn_nonrenew;
@@ -189,6 +256,7 @@ calculate_hydrology_nonrenew(size_t iCell,
 ******************************************/
 void
 check_water_use_balance_nonrenew(size_t iCell,
+        double available_nonrenew,
         double demand_nonrenew,
         double withdrawn_nonrenew)
 {
@@ -205,22 +273,24 @@ check_water_use_balance_nonrenew(size_t iCell,
             continue;
         }
                 
-        if (wu_var[iCell][iSector].withdrawn_nonrenew - wu_var[iCell][iSector].demand_nonrenew > WU_BALANCE_ERROR_THRESH) {
-            fprintf(stderr, "%.10f\n", wu_var[iCell][iSector].withdrawn_nonrenew);
-            fprintf(stderr, "%.10f\n", wu_var[iCell][iSector].demand_nonrenew);
+        if (wu_var[iCell][iSector].withdrawn_nonrenew - wu_var[iCell][iSector].demand_nonrenew > WU_BALANCE_ERROR_THRESH ||
+            wu_var[iCell][iSector].withdrawn_nonrenew - wu_var[iCell][iSector].available_nonrenew > WU_BALANCE_ERROR_THRESH) {
             log_err("Water-use non-renewable water balance error for sector %zu:\n"
-                    "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [Inf]\n",
+                    "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\tavailable [%.4f]\n",
                     i,
                     wu_var[iCell][iSector].withdrawn_nonrenew,
-                    wu_var[iCell][iSector].demand_nonrenew);
+                    wu_var[iCell][iSector].demand_nonrenew,
+                    wu_var[iCell][iSector].available_nonrenew);
         }
     }
-    if(withdrawn_nonrenew - demand_nonrenew > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES){ 
+    if(withdrawn_nonrenew - demand_nonrenew > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES ||
+       withdrawn_nonrenew - available_nonrenew > WU_BALANCE_ERROR_THRESH * plugin_options.NWUTYPES){ 
         log_err("Water-use non-renewable water balance error for cell %zu:\n"
-                "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\t\t\tavailable [Inf]\n",
+                "non-renewable:\twithdrawn [%.4f]\tdemand [%.4f]\t\t\tavailable [%.4f]\n",
                 iCell,
                 withdrawn_nonrenew, 
-                demand_nonrenew);
+                demand_nonrenew,
+                available_nonrenew);
     }
 }
 
@@ -230,6 +300,7 @@ check_water_use_balance_nonrenew(size_t iCell,
 void
 wu_nonrenew(size_t iCell)
 {
+    double available_nonrenew;
     double demand_nonrenew;
     double withdrawn_nonrenew;
     double returned;
@@ -237,16 +308,27 @@ wu_nonrenew(size_t iCell)
     /******************************************
      Init
     ******************************************/
+    available_nonrenew= 0.;
     demand_nonrenew = 0.;
     withdrawn_nonrenew = 0.;
     returned = 0.;
-    
-    //reset_wu_nonrenew(iCell);
     
     /******************************************
      Demand
     ******************************************/
     calculate_demand_nonrenew(iCell, &demand_nonrenew);
+    
+    /******************************************
+     Availability
+    ******************************************/
+    calculate_availability_nonrenew(iCell, 
+            &available_nonrenew);
+    
+    /******************************************
+     Divide
+    ******************************************/ 
+    calculate_division_nonrenew(iCell, 
+            available_nonrenew, demand_nonrenew);
     
     /******************************************
      Withdrawals & Consumption
@@ -261,5 +343,5 @@ wu_nonrenew(size_t iCell)
     /******************************************
      Check balance
     ******************************************/
-    check_water_use_balance_nonrenew(iCell, demand_nonrenew, withdrawn_nonrenew);
+    check_water_use_balance_nonrenew(iCell, available_nonrenew, demand_nonrenew, withdrawn_nonrenew);
 }

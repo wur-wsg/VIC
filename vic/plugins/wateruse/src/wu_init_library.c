@@ -50,6 +50,7 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->available_dam = 0.0;
     wu_var->available_remote = 0.0;
     wu_var->available_tremote = 0.0;
+    wu_var->available_nonrenew = 0.0;
     wu_var->demand_gw = 0.0;
     wu_var->demand_surf = 0.0;
     wu_var->demand_remote = 0.0;

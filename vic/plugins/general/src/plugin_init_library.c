@@ -106,6 +106,7 @@ plugin_initialize_parameters(plugin_parameters_struct *plugin_param)
     plugin_param->DAM_ALPHA = 0.85;
     plugin_param->DAM_BETA = 0.6;
     plugin_param->DAM_GAMMA = 5;
+    plugin_param->NREN_LIM = INFINITY;
     plugin_param->Wfc_fract = 0.7;
     plugin_param->Ksat_expt = 0.33;
 }

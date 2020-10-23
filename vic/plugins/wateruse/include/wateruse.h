@@ -73,6 +73,7 @@ typedef struct {
     double available_dam;           /**< available dam reservoir resources [mm] */
     double available_tremote;       /**< available remote resources (for this cell) [mm] */
     double available_remote;        /**< available remote resources (for other cells) [mm] */
+    double available_nonrenew;      /**< available non-renewable resources [mm] */
     double demand_gw;               /**< demand for groundwater resources [mm] */
     double demand_surf;             /**< demand for surface water resources [mm] */
     double demand_tremote;          /**< demand for remote resources (for this cell) [mm] */
@@ -115,6 +116,8 @@ wu_var_struct **wu_var;
  *****************************************************************************/
 bool wu_get_global_param(char *);
 void wu_validate_global_param(void);
+bool wu_get_parameters(char *);
+void wu_validate_parameters(void);
 
 void wu_start(void);
 

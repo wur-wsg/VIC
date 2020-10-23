@@ -64,6 +64,7 @@ reset_wu(size_t iCell)
         wu_var[iCell][iSector].demand_tremote = 0.0;
         wu_var[iCell][iSector].withdrawn_tremote = 0.0;
         
+        wu_var[iCell][iSector].available_nonrenew = 0.0;
         wu_var[iCell][iSector].demand_nonrenew = 0.0;
         wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
     }
@@ -656,7 +657,7 @@ wu_run(size_t iCell)
                           &available_gw, &available_surf, &available_dam, av_gw, av_dam);
     
     /******************************************
-     Devide
+     Divide
     ******************************************/ 
     calculate_division(iCell, 
                        available_gw, available_surf, available_dam,

@@ -135,3 +135,38 @@ wu_validate_global_param(void)
         plugin_options.WU_INPUT[WU_IRRIGATION] = WU_CALCULATE;
     }
 }
+
+/******************************************
+* @brief   Get water-use parameters
+******************************************/
+bool
+wu_get_parameters(char *cmdstr)
+{
+    extern plugin_parameters_struct    plugin_param;
+
+    char                    optstr[MAXSTRING];
+
+    sscanf(cmdstr, "%s", optstr);
+
+    if (strcasecmp("NONRENEWABLE_LIMIT", optstr) == 0) {
+                sscanf(cmdstr, "%*s %lf", &plugin_param.NREN_LIM);
+    }
+    else {
+        return false;
+    }
+
+    return true;
+}
+
+/******************************************
+* @brief   Validate water-use parameters
+******************************************/
+void
+wu_validate_parameters(void)
+{
+    extern plugin_parameters_struct    plugin_param;
+    
+    if (!(plugin_param.NREN_LIM >= 0)) {
+        log_err("NREN_LIM must be defined on the interval [0,Inf) (mm)");
+    }
+}

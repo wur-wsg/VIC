@@ -95,6 +95,8 @@ plugin_get_parameters(char cmdstr[MAXSTRING])
     }
     else if (irr_get_parameters(cmdstr)) {
     } 
+    else if (wu_get_parameters(cmdstr)) {
+    } 
     else {
         return false;
     }
@@ -115,6 +117,9 @@ plugin_validate_parameters(void)
     }
     if (plugin_options.IRRIGATION) {
         irr_validate_parameters();
+    }
+    if(plugin_options.WATERUSE){
+        wu_validate_parameters();
     }
 }
 
