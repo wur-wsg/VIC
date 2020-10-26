@@ -32,7 +32,7 @@
 #define NODATA_WU              -1       /**< water-use nodata flag */
 #define WU_BALANCE_ERROR_THRESH 1e-10   /**< water-use balance error threshold */
 
-#define CONSUMP_ONLY false
+#define NREN_CONSUMP_ONLY true
 
 /******************************************************************************
  * @brief   Water-use Input type

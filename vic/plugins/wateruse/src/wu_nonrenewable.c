@@ -56,10 +56,6 @@ calculate_demand_nonrenew(size_t iCell,
                 wu_var[iCell][iSector].withdrawn_gw +
                 wu_var[iCell][iSector].withdrawn_dam +
                 wu_var[iCell][iSector].withdrawn_tremote);
-        if(CONSUMP_ONLY){
-            wu_var[iCell][iSector].demand_nonrenew *=
-                    wu_force[iCell][iSector].consumption_frac;
-        }
         if (wu_var[iCell][iSector].demand_nonrenew < 0.) {
             wu_var[iCell][iSector].demand_nonrenew = 0.;
         }
@@ -160,21 +156,16 @@ calculate_use_nonrenew(size_t iCell,
             wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
         }
 
-        if(CONSUMP_ONLY){
-            wu_var[iCell][iSector].consumed += 
-                    wu_var[iCell][iSector].withdrawn_nonrenew;
-        } else {
-            wu_var[iCell][iSector].returned += 
-                    wu_var[iCell][iSector].withdrawn_nonrenew * 
-                    (1 - wu_force[iCell][iSector].consumption_frac);
-            wu_var[iCell][iSector].consumed += 
-                    wu_var[iCell][iSector].withdrawn_nonrenew * 
-                    wu_force[iCell][iSector].consumption_frac;
-            (*returned) += 
-                    wu_var[iCell][iSector].withdrawn_nonrenew * 
-                    (1 - wu_force[iCell][iSector].consumption_frac);
-        }
+        wu_var[iCell][iSector].returned += 
+                wu_var[iCell][iSector].withdrawn_nonrenew * 
+                (1 - wu_force[iCell][iSector].consumption_frac);
+        wu_var[iCell][iSector].consumed += 
+                wu_var[iCell][iSector].withdrawn_nonrenew * 
+                wu_force[iCell][iSector].consumption_frac;
         
+        (*returned) += 
+                wu_var[iCell][iSector].withdrawn_nonrenew * 
+                (1 - wu_force[iCell][iSector].consumption_frac);
         (*withdrawn_nonrenew) += wu_var[iCell][iSector].withdrawn_nonrenew;
     }
 }
@@ -209,43 +200,52 @@ calculate_hydrology_nonrenew(size_t iCell,
         }
     }
     
-    // surface
     if(returned != 0.) {
-        available_discharge_tmp = 0.;
-        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-            available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
-        }
-        
-        withdrawn_discharge_tmp = 
-		returned /
-                MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
-        
-        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-            if(available_discharge_tmp > 0) {
-                // Scale withdrawal proportionally to availability
-                rout_var[iCell].dt_discharge[iStep] -= 
-                        withdrawn_discharge_tmp * 
-                        (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
-            } else {
-                // Scale withdrawal proportionally to length
-                rout_var[iCell].dt_discharge[iStep] -= 
-                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+        if (!NREN_CONSUMP_ONLY) {
+            // surface
+            available_discharge_tmp = 0.;
+            for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+                available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
             }
-            if (rout_var[iCell].dt_discharge[iStep] < 0) {
-                rout_var[iCell].dt_discharge[iStep] = 0.;
+
+            withdrawn_discharge_tmp = 
+                    returned /
+                    MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+
+            for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+                if(available_discharge_tmp > 0) {
+                    // Scale withdrawal proportionally to availability
+                    rout_var[iCell].dt_discharge[iStep] -= 
+                            withdrawn_discharge_tmp * 
+                            (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
+                } else {
+                    // Scale withdrawal proportionally to length
+                    rout_var[iCell].dt_discharge[iStep] -= 
+                        withdrawn_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                }
+                if (rout_var[iCell].dt_discharge[iStep] < 0) {
+                    rout_var[iCell].dt_discharge[iStep] = 0.;
+                }
             }
-        }
-            
-        
-        rout_var[iCell].discharge = 0.;
-        rout_var[iCell].stream = 0.;
-        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-            // Recalculate discharge and stream moisture
-            if (iStep < rout_steps_per_dt) {
-                rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+
+
+            rout_var[iCell].discharge = 0.;
+            rout_var[iCell].stream = 0.;
+            for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+                // Recalculate discharge and stream moisture
+                if (iStep < rout_steps_per_dt) {
+                    rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+                }
+                else {
+                    rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
+                }
             }
-            else {
-                rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
+        } else {
+            // non-renewable
+            rout_var[iCell].nonrenew_deficit -= returned;
+
+            if(rout_var[iCell].nonrenew_deficit < 0){
+                rout_var[iCell].nonrenew_deficit = 0;
             }
         }
     }
