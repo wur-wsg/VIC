@@ -209,7 +209,7 @@ calculate_hydrology_nonrenew(size_t iCell,
             }
 
             withdrawn_discharge_tmp = 
-                    returned /
+                    -returned /
                     MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
             for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
