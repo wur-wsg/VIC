@@ -37,7 +37,6 @@ calculate_demand_nonrenew(size_t iCell,
     extern plugin_option_struct plugin_options;
     extern wu_var_struct **wu_var;
     extern wu_con_map_struct *wu_con_map;
-    extern wu_force_struct **wu_force;
     
     size_t i;
     int iSector;
@@ -182,7 +181,6 @@ calculate_hydrology_nonrenew(size_t iCell,
     extern domain_struct  local_domain;
     extern rout_var_struct  *rout_var;
     
-    double withdrawn_discharge_tmp;
     double available_discharge_tmp;
     
     size_t rout_steps_per_dt;
@@ -208,20 +206,20 @@ calculate_hydrology_nonrenew(size_t iCell,
                 available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
             }
 
-            withdrawn_discharge_tmp = 
-                    -returned /
+            returned = 
+                    returned /
                     MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
             for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
                 if(available_discharge_tmp > 0) {
                     // Scale withdrawal proportionally to availability
-                    rout_var[iCell].dt_discharge[iStep] -= 
-                            withdrawn_discharge_tmp * 
+                    rout_var[iCell].dt_discharge[iStep] += 
+                            returned * 
                             (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
                 } else {
                     // Scale withdrawal proportionally to length
-                    rout_var[iCell].dt_discharge[iStep] -= 
-                        withdrawn_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                    rout_var[iCell].dt_discharge[iStep] += 
+                        returned / (plugin_options.UH_LENGTH - 1);
                 }
                 if (rout_var[iCell].dt_discharge[iStep] < 0) {
                     rout_var[iCell].dt_discharge[iStep] = 0.;
