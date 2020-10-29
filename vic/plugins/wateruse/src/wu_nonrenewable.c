@@ -198,52 +198,58 @@ calculate_hydrology_nonrenew(size_t iCell,
         }
     }
     
-    if(returned != 0.) {
-        if (!NREN_CONSUMP_ONLY) {
-            // surface
-            available_discharge_tmp = 0.;
-            for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-                available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
-            }
-
-            returned = 
-                    returned /
-                    MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
-
-            for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-                if(available_discharge_tmp > 0) {
-                    // Scale withdrawal proportionally to availability
-                    rout_var[iCell].dt_discharge[iStep] += 
-                            returned * 
-                            (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
-                } else {
-                    // Scale withdrawal proportionally to length
-                    rout_var[iCell].dt_discharge[iStep] += 
-                        returned / (plugin_options.UH_LENGTH - 1);
-                }
-                if (rout_var[iCell].dt_discharge[iStep] < 0) {
-                    rout_var[iCell].dt_discharge[iStep] = 0.;
-                }
-            }
-
-
-            rout_var[iCell].discharge = 0.;
-            rout_var[iCell].stream = 0.;
-            for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-                // Recalculate discharge and stream moisture
-                if (iStep < rout_steps_per_dt) {
-                    rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
-                }
-                else {
-                    rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
-                }
-            }
-        } else {
-            // non-renewable
+    if(returned > 0. && NREN_CONSUMP_ONLY) {
+        // non-renewable
+        if(returned <= rout_var[iCell].nonrenew_deficit) {
             rout_var[iCell].nonrenew_deficit -= returned;
+            returned = 0.0;
+        } else {
+            returned -= rout_var[iCell].nonrenew_deficit;
+            rout_var[iCell].nonrenew_deficit = 0.0;
+        }
 
-            if(rout_var[iCell].nonrenew_deficit < 0){
-                rout_var[iCell].nonrenew_deficit = 0;
+        if(rout_var[iCell].nonrenew_deficit < 0.0){
+            rout_var[iCell].nonrenew_deficit = 0.0;
+        }
+    }
+    
+    if(returned > 0.) {
+        // surface
+        available_discharge_tmp = 0.;
+        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+            available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
+        }
+
+        returned = 
+                returned /
+                MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+
+        for(iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+            if(available_discharge_tmp > 0) {
+                // Scale withdrawal proportionally to availability
+                rout_var[iCell].dt_discharge[iStep] += 
+                        returned * 
+                        (rout_var[iCell].dt_discharge[iStep] / available_discharge_tmp);
+            } else {
+                // Scale withdrawal proportionally to length
+                rout_var[iCell].dt_discharge[iStep] += 
+                    returned / (plugin_options.UH_LENGTH - 1);
+            }
+            if (rout_var[iCell].dt_discharge[iStep] < 0) {
+                rout_var[iCell].dt_discharge[iStep] = 0.;
+            }
+        }
+
+
+        rout_var[iCell].discharge = 0.;
+        rout_var[iCell].stream = 0.;
+        for(iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+            // Recalculate discharge and stream moisture
+            if (iStep < rout_steps_per_dt) {
+                rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+            }
+            else {
+                rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
         }
     }

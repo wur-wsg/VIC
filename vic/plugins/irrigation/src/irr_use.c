@@ -94,7 +94,7 @@ irr_set_demand(size_t iCell)
         efficiency = 1 / efficiency;
         groundwater /= total;
     }
-    efficiency = 1.0;
+    //efficiency = 1.0;
     
     if(irr_con_map[iCell].ni_active > 0){
         iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
@@ -227,12 +227,8 @@ irr_get_withdrawn(size_t iCell)
     double area_fract;
     double veg_fract;
     double max_moist_1;
-    double max_moist_2;
-    double max_moist_3;
     double max_added;
     double applied_1;
-    double applied_2;
-    double applied_3;
     
     size_t iSector;
     size_t i;
@@ -314,14 +310,7 @@ irr_get_withdrawn(size_t iCell)
 
                 if(area_fract > 0){
                     max_moist_1 = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
-                    max_moist_2 = csoil_con->max_moist[1] - ccell_var->layer[1].moist;
-                    max_moist_3 = csoil_con->max_moist[2] - ccell_var->layer[2].moist;
-                    
                     max_added = max_moist_1;
-                    if(!cirr_con->paddy){
-                        max_added += max_moist_2;
-                        max_added += max_moist_3;
-                    }
                     
                     // leftover
                     if(cirr_var->leftover > 0){
@@ -351,12 +340,6 @@ irr_get_withdrawn(size_t iCell)
                     // apply
                     applied_1 = min(cirr_var->applied, max_moist_1);
                     ccell_var->layer[0].moist += applied_1;
-                    if(!cirr_con->paddy){
-                        applied_2 = min(cirr_var->applied - applied_1, max_moist_2);
-                        applied_3 = min(cirr_var->applied - applied_1 - applied_2, max_moist_3);
-                        ccell_var->layer[1].moist += applied_2;
-                        ccell_var->layer[2].moist += applied_3;
-                    }
                     cirr_var->leftover += cirr_var->received - cirr_var->applied;
                     
                     received += cirr_var->received * veg_fract * area_fract;
