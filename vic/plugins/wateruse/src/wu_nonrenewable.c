@@ -42,6 +42,10 @@ calculate_demand_nonrenew(size_t iCell,
     int iSector;
     
     for(i = 0; i < plugin_options.NWUTYPES; i ++){
+        if(i == WU_ENERGY){
+            continue;
+        }
+        
         iSector = wu_con_map[iCell].sidx[i];        
         if(iSector == NODATA_WU){
             continue;
@@ -195,21 +199,6 @@ calculate_hydrology_nonrenew(size_t iCell,
         
         if(rout_var[iCell].nonrenew_deficit < 0){
             rout_var[iCell].nonrenew_deficit = 0;
-        }
-    }
-    
-    if(returned > 0. && NREN_CONSUMP_ONLY) {
-        // non-renewable
-        if(returned <= rout_var[iCell].nonrenew_deficit) {
-            rout_var[iCell].nonrenew_deficit -= returned;
-            returned = 0.0;
-        } else {
-            returned -= rout_var[iCell].nonrenew_deficit;
-            rout_var[iCell].nonrenew_deficit = 0.0;
-        }
-
-        if(rout_var[iCell].nonrenew_deficit < 0.0){
-            rout_var[iCell].nonrenew_deficit = 0.0;
         }
     }
     
