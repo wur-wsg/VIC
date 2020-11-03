@@ -94,7 +94,7 @@ irr_set_demand(size_t iCell)
         efficiency = 1 / efficiency;
         groundwater /= total;
     }
-    //efficiency = 1.0;
+    efficiency = 1.0;
     
     if(irr_con_map[iCell].ni_active > 0){
         iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
