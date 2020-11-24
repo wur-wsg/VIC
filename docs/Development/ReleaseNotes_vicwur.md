@@ -6,6 +6,10 @@ This is the list of changes to VIC between each release. For full details and/or
 
 ## Latest
 
+## VIC-WOFOST 1.0.0
+
+VIC simulations with crop growth (following WOFOST).
+
 ## VIC-WUR 2.0.0
 
 Human impacted VIC simulations. Includes water withdrawal, consumption and return flow, dam operation and environmental flow requirements.

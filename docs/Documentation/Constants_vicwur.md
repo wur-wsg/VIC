@@ -15,3 +15,4 @@ The table below lists the constants available for manipulation via the `CONSTANT
 | DAM_GAMMA | Dam correction period | days | 5 |
 | Ksat_expt | Paddy irrigation saturated conductivity exponent | - | 0.33 |
 | Wfc_fract | Field capacity as fraction of critical moisture content | fraction | 0.8 |
+| NONRENEWABLE_LIMIT | Non-renewable withdrawal limit (depth) | mm | Inf |
