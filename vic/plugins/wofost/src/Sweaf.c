@@ -17,14 +17,16 @@
 /*    (1986; p.108, table 20).                                    */
 /*    Original fortran version: D.M. Jansen and C.A. van Diepen,  */
 /*    October 1986.                                               */
-/* ---------------------------------------------------------------*/ 
-float sweaf(float CropGroupNumber, float PotEvapotransp){
-    float sweaf; 
-    sweaf = 1./(0.76 + 1.5 * PotEvapotransp) - (5.-CropGroupNumber ) * 0.10;
-    if  (CropGroupNumber < 3.) {
+/* ---------------------------------------------------------------*/
+float
+sweaf(float CropGroupNumber,
+      float PotEvapotransp)
+{
+    float sweaf;
+    sweaf = 1. / (0.76 + 1.5 * PotEvapotransp) - (5. - CropGroupNumber) * 0.10;
+    if (CropGroupNumber < 3.) {
         sweaf = sweaf + (PotEvapotransp - 0.6) /
                 (CropGroupNumber * (CropGroupNumber + 3.));
     }
     return limit(0.10, 0.95, sweaf);
-
 }

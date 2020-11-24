@@ -124,7 +124,7 @@ snow_intercept(double             Dt,
     double                   Vpd; // vapor pressure defficit
     double                   shortwave; //
     double                   Catm; //
-    
+
     /* Transform variables */
     double                   Wcr_array[MAX_LAYERS];
     size_t                   lidex;

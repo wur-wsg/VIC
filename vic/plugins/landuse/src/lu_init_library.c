@@ -31,11 +31,12 @@
 * @brief   Initialize the land-use forcing
 ******************************************/
 void
-initialize_lu_force(lu_force_struct *lu_force, size_t nveg)
+initialize_lu_force(lu_force_struct *lu_force,
+                    size_t           nveg)
 {
     size_t i;
-    
-    for(i = 0; i < nveg; i++){
+
+    for (i = 0; i < nveg; i++) {
         lu_force->Cv[i] = 0.0;
         lu_force->veg_class[i] = 0.0;
     }
@@ -47,11 +48,11 @@ initialize_lu_force(lu_force_struct *lu_force, size_t nveg)
 void
 lu_initialize_local_structures(void)
 {
-    extern domain_struct        local_domain;
-    extern veg_con_map_struct  *veg_con_map;
-    extern lu_force_struct     *lu_force;
+    extern domain_struct       local_domain;
+    extern veg_con_map_struct *veg_con_map;
+    extern lu_force_struct    *lu_force;
 
-    size_t                      i;
+    size_t                     i;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         initialize_lu_force(&lu_force[i], veg_con_map[i].nv_active);

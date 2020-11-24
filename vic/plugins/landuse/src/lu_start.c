@@ -42,17 +42,19 @@ lu_start(void)
 
     // Get information from the forcing file(s)
     // Open first-year forcing files and get info
-    snprintf(plugin_filenames.forcing[FORCING_CV].nc_filename, MAXSTRING, "%s%4d.nc",
+    snprintf(plugin_filenames.forcing[FORCING_CV].nc_filename, MAXSTRING,
+             "%s%4d.nc",
              plugin_filenames.f_path_pfx[FORCING_CV], global_param.startyear);
-    status = nc_open(plugin_filenames.forcing[FORCING_CV].nc_filename, NC_NOWRITE,
+    status = nc_open(plugin_filenames.forcing[FORCING_CV].nc_filename,
+                     NC_NOWRITE,
                      &(plugin_filenames.forcing[FORCING_CV].nc_id));
     check_nc_status(status, "Error opening %s",
                     plugin_filenames.forcing[FORCING_CV].nc_filename);
 
     NVEGTYPES = get_nc_dimension(&(plugin_filenames.forcing[FORCING_CV]),
-                                                "veg_class");
-    
-    if(NVEGTYPES != options.NVEGTYPES){
+                                 "veg_class");
+
+    if (NVEGTYPES != options.NVEGTYPES) {
         log_err("NVEGTYPES in the land-use forcing file [%zu] "
                 "is not equal to the parameter file [%zu]",
                 NVEGTYPES,

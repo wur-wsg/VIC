@@ -345,7 +345,7 @@ func_surf_energy_bal(double  Ts,
     for (lindex = 0; lindex < options.Nlayer; lindex++) {
         Wcr_array[lindex] = layer[lindex].Wcr;
     }
-    
+
     /* take additional variables from soil_con structure */
     b_infilt = soil_con->b_infilt;
     Wmax = soil_con->max_moist;

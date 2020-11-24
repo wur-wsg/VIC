@@ -33,20 +33,21 @@
 void
 dam_compute_derived_state_vars(void)
 {
-    extern domain_struct       local_domain;
-    extern plugin_option_struct       plugin_options;
-    extern dam_con_map_struct  *global_dam_con_map;
-    extern dam_var_struct     **global_dam_var;
-    extern plugin_save_data_struct   *plugin_save_data;
+    extern domain_struct            local_domain;
+    extern plugin_option_struct     plugin_options;
+    extern dam_con_map_struct      *global_dam_con_map;
+    extern dam_var_struct         **global_dam_var;
+    extern plugin_save_data_struct *plugin_save_data;
 
-    size_t                     i;
-    size_t                     j;
+    size_t                          i;
+    size_t                          j;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < plugin_options.NDAMTYPES; j++){
-            if(global_dam_con_map[i].didx[j] != NODATA_DAM){
-                plugin_save_data[i].total_moist_storage += 
-                        global_dam_var[i][j].storage * M3_PER_HM3 / local_domain.locations[i].area * MM_PER_M;
+        for (j = 0; j < plugin_options.NDAMTYPES; j++) {
+            if (global_dam_con_map[i].didx[j] != NODATA_DAM) {
+                plugin_save_data[i].total_moist_storage +=
+                    global_dam_var[i][j].storage * M3_PER_HM3 /
+                    local_domain.locations[i].area * MM_PER_M;
             }
         }
     }

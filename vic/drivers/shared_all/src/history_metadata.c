@@ -316,7 +316,8 @@ set_output_met_data_info()
     /* vertical average of water stress (soil moisture - wilting point)/(critical moisture - wilting point) [mm/mm] */
     snprintf(out_metadata[OUT_SOIL_WSTRESS].varname, MAXSTRING, "%s",
              "OUT_SOIL_WSTRESS");
-    snprintf(out_metadata[OUT_SOIL_WSTRESS].long_name, MAXSTRING, "%s", "soil_water_stress");
+    snprintf(out_metadata[OUT_SOIL_WSTRESS].long_name, MAXSTRING, "%s",
+             "soil_water_stress");
     snprintf(out_metadata[OUT_SOIL_WSTRESS].standard_name, MAXSTRING, "%s",
              "soil_moisture_water_stress_fraction");
     snprintf(out_metadata[OUT_SOIL_WSTRESS].units, MAXSTRING, "%s", "1");

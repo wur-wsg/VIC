@@ -50,7 +50,8 @@ plugin_set_output_met_data_info(void)
         out_metadata[v].nelem = 1;
     }
 
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].varname, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].varname,
+             MAXSTRING,
              "%s", "OUT_ROUTING_ERROR");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].long_name,
              MAXSTRING, "%s", "non_renewable_deficit");
@@ -60,13 +61,13 @@ plugin_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].description,
              MAXSTRING, "%s", "non-renewable deficit");
-    
+
     out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].nelem = 1;
 
     if (plugin_options.ROUTING) {
         rout_set_output_met_data_info();
     }
-    if(plugin_options.FORCE_LANDUSE){
+    if (plugin_options.FORCE_LANDUSE) {
         lu_set_output_met_data_info();
     }
     if (plugin_options.EFR) {
@@ -92,8 +93,8 @@ plugin_set_output_met_data_info(void)
 void
 plugin_initialize_nc_file(nc_file_struct *nc_file)
 {
-    extern plugin_option_struct    plugin_options;
-    
+    extern plugin_option_struct plugin_options;
+
     if (plugin_options.DAMS) {
         dam_initialize_nc_file(nc_file);
     }
@@ -112,8 +113,8 @@ void
 plugin_add_hist_dim(nc_file_struct *nc,
                     stream_struct  *stream)
 {
-    extern plugin_option_struct    plugin_options;
-    
+    extern plugin_option_struct plugin_options;
+
     if (plugin_options.DAMS) {
         dam_add_hist_dim(nc, stream);
     }
@@ -134,10 +135,10 @@ plugin_set_nc_var_info(unsigned int       varid,
                        nc_file_struct    *nc_hist_file,
                        nc_var_struct     *nc_var)
 {
-    extern plugin_option_struct    plugin_options;
+    extern plugin_option_struct plugin_options;
 
     /* Local variables */
-    size_t i;
+    size_t                      i;
 
     // set datatype
     nc_var->nc_type = get_nc_dtype(dtype);
@@ -151,7 +152,7 @@ plugin_set_nc_var_info(unsigned int       varid,
     nc_var->nc_dims = 3;
     nc_var->nc_counts[1] = nc_hist_file->nj_size;
     nc_var->nc_counts[2] = nc_hist_file->ni_size;
-    
+
     if (plugin_options.FORCE_LANDUSE) {
         lu_set_nc_var_info(varid, nc_hist_file, nc_var);
     }
@@ -174,10 +175,10 @@ plugin_set_nc_var_dimids(unsigned int    varid,
                          nc_file_struct *nc_hist_file,
                          nc_var_struct  *nc_var)
 {
-    extern plugin_option_struct    plugin_options;
+    extern plugin_option_struct plugin_options;
 
     /* Local variables */
-    size_t i;
+    size_t                      i;
 
     for (i = 0; i < MAXDIMS; i++) {
         nc_var->nc_dimids[i] = -1;
@@ -187,7 +188,7 @@ plugin_set_nc_var_dimids(unsigned int    varid,
     nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
     nc_var->nc_dimids[1] = nc_hist_file->nj_dimid;
     nc_var->nc_dimids[2] = nc_hist_file->ni_dimid;
-    
+
     if (plugin_options.FORCE_LANDUSE) {
         lu_set_nc_var_dimids(varid, nc_hist_file, nc_var);
     }
@@ -216,7 +217,7 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
         (*agg_type) = AGG_TYPE_SUM;
         break;
     }
-    
+
     if (plugin_options.ROUTING) {
         rout_history(varid, agg_type);
     }

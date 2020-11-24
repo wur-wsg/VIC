@@ -54,7 +54,6 @@ plugin_force(void)
     plugin_end_forcing();
 }
 
-
 /******************************************
 * @brief    Update plugin step vars
 ******************************************/
@@ -65,7 +64,7 @@ plugin_update_step_vars(void)
     extern plugin_option_struct plugin_options;
 
     size_t                      i;
-    
+
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
@@ -95,9 +94,9 @@ plugin_run(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-    	if (plugin_options.IRRIGATION) {
+        if (plugin_options.IRRIGATION) {
             irr_run_requirement(i);
-            if(plugin_options.WOFOST){
+            if (plugin_options.WOFOST) {
                 crop_adjust_requirement(i);
             }
             if (plugin_options.WATERUSE) {
@@ -105,51 +104,52 @@ plugin_run(void)
             }
         }
     }
-    
+
     if (plugin_options.ROUTING) {
         if (plugin_options.DECOMPOSITION == BASIN_DECOMPOSITION ||
             plugin_options.DECOMPOSITION == FILE_DECOMPOSITION) {
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCell = routing_order[i];
-		
+
                 if (plugin_options.DAMS) {
                     local_dam_run(iCell);
                 }
                 rout_basin_run(iCell);
                 if (plugin_options.WATERUSE) {
                     wu_run(iCell);
-        	}
+                }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
                 }
             }
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCell = routing_order[i];
-                
+
                 if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
                     wu_remote(iCell);
-        	}
+                }
             }
         }
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
             rout_random_run();
         }
     }
-    
+
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
         if (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH) {
             wu_nonrenew(i);
         }
-    	if (plugin_options.IRRIGATION) {
-            if(plugin_options.POTENTIAL_IRRIGATION || plugin_options.WATERUSE){
+        if (plugin_options.IRRIGATION) {
+            if (plugin_options.POTENTIAL_IRRIGATION ||
+                plugin_options.WATERUSE) {
                 irr_get_withdrawn(i);
             }
             irr_run_shortage(i);
         }
-        
-        if(plugin_options.WOFOST){
+
+        if (plugin_options.WOFOST) {
             crop_run(i);
         }
     }
@@ -172,7 +172,7 @@ plugin_put_data(void)
         if (plugin_options.ROUTING) {
             rout_put_data(i);
         }
-        if(plugin_options.FORCE_LANDUSE) {
+        if (plugin_options.FORCE_LANDUSE) {
             lu_put_data(i);
         }
         if (plugin_options.EFR) {
@@ -190,7 +190,7 @@ plugin_put_data(void)
         if (plugin_options.WOFOST) {
             crop_put_data(i);
         }
-        
+
         plugin_store_error(i);
     }
 }

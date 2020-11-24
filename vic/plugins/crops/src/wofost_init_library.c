@@ -143,7 +143,7 @@ initialize_wofost_nutrient_rates(nutrient_rates *rt)
     rt->Uptake_st = 0.;
     rt->Uptake_ro = 0.;
     rt->death_lv = 0.;
-    rt->death_st = 0.; 
+    rt->death_st = 0.;
 }
 
 void
@@ -197,82 +197,82 @@ initialize_wofost_parameters(Parameters *prm)
     prm->N_MaxLeaves = NULL;
     prm->P_MaxLeaves = NULL;
     prm->K_MaxLeaves = NULL;
-    
-    prm->TempBaseEmergence          = 0.;
-    prm->TempEffMax          = 0.;
-    prm->TSumEmergence          = 0.;
-    prm->IdentifyAnthesis          = 0;
-    prm->OptimumDaylength          = 0.;
-    prm->CriticalDaylength          = 0.;
-    prm->SatVernRequirement          = 0.;
-    prm->BaseVernRequirement          = 0.;
-    prm->TempSum1          = 0.;
-    prm->TempSum2          = 0.;
-    prm->InitialDVS          = 0.;
-    prm->DevelopStageHarvest          = 0.;
-    prm->InitialDryWeight          = 0.;
-    prm->RelIncreaseLAI          = 0.;
-    prm->SpecificPodArea          = 0.;
-    prm->LifeSpan          = 0.;
-    prm->TempBaseLeaves          = 0.;
-    prm->ConversionLeaves          = 0.;
-    prm->ConversionStorage          = 0.;
-    prm->ConversionRoots          = 0.;
-    prm->ConversionStems          = 0.;
-    prm->Q10          = 0.;
-    prm->RelRespiLeaves          = 0.;
-    prm->RelRespiStorage          = 0.;
-    prm->RelRespiRoots          = 0.;
-    prm->RelRespiStems          = 0.;
-    prm->MaxRelDeathRate          = 0.;
-    prm->CorrectionTransp          = 0.;
-    prm->CropGroupNumber          = 0.;
-    prm->Airducts          = 0.;
-    prm->InitRootingDepth          = 0.;
-    prm->MaxIncreaseRoot          = 0.;
-    prm->MaxRootingDepth          = 0.;
-    prm->DyingLeaves_NPK_Stress          = 0.;
-    prm->DevelopmentStageNLimit          = 0.;
-    prm->DevelopmentStageNT          = 0.;
-    prm->FracTranslocRoots          = 0.;
-    prm->Opt_N_Frac          = 0.;
-    prm->Opt_P_Frac          = 0.;
-    prm->Opt_K_Frac          = 0.;
-    prm->N_MaxRoots          = 0.;
-    prm->P_MaxRoots          = 0.;
-    prm->K_MaxRoots          = 0.;
-    prm->N_MaxStems          = 0.;
-    prm->P_MaxStems          = 0.;
-    prm->K_MaxStems          = 0.; 
+
+    prm->TempBaseEmergence = 0.;
+    prm->TempEffMax = 0.;
+    prm->TSumEmergence = 0.;
+    prm->IdentifyAnthesis = 0;
+    prm->OptimumDaylength = 0.;
+    prm->CriticalDaylength = 0.;
+    prm->SatVernRequirement = 0.;
+    prm->BaseVernRequirement = 0.;
+    prm->TempSum1 = 0.;
+    prm->TempSum2 = 0.;
+    prm->InitialDVS = 0.;
+    prm->DevelopStageHarvest = 0.;
+    prm->InitialDryWeight = 0.;
+    prm->RelIncreaseLAI = 0.;
+    prm->SpecificPodArea = 0.;
+    prm->LifeSpan = 0.;
+    prm->TempBaseLeaves = 0.;
+    prm->ConversionLeaves = 0.;
+    prm->ConversionStorage = 0.;
+    prm->ConversionRoots = 0.;
+    prm->ConversionStems = 0.;
+    prm->Q10 = 0.;
+    prm->RelRespiLeaves = 0.;
+    prm->RelRespiStorage = 0.;
+    prm->RelRespiRoots = 0.;
+    prm->RelRespiStems = 0.;
+    prm->MaxRelDeathRate = 0.;
+    prm->CorrectionTransp = 0.;
+    prm->CropGroupNumber = 0.;
+    prm->Airducts = 0.;
+    prm->InitRootingDepth = 0.;
+    prm->MaxIncreaseRoot = 0.;
+    prm->MaxRootingDepth = 0.;
+    prm->DyingLeaves_NPK_Stress = 0.;
+    prm->DevelopmentStageNLimit = 0.;
+    prm->DevelopmentStageNT = 0.;
+    prm->FracTranslocRoots = 0.;
+    prm->Opt_N_Frac = 0.;
+    prm->Opt_P_Frac = 0.;
+    prm->Opt_K_Frac = 0.;
+    prm->N_MaxRoots = 0.;
+    prm->P_MaxRoots = 0.;
+    prm->K_MaxRoots = 0.;
+    prm->N_MaxStems = 0.;
+    prm->P_MaxStems = 0.;
+    prm->K_MaxStems = 0.;
     prm->NitrogenStressLAI = 0.;
     prm->NLUE = 0.;
-    prm->Max_N_storage          = 0.;
-    prm->Max_P_storage          = 0.;
-    prm->Max_K_storage          = 0.;
-    prm->N_lv_partitioning          = 0.;
-    prm->NutrientStessSLA          = 0.;
-    prm->N_ResidualFrac_lv          = 0.;
-    prm->N_ResidualFrac_st          = 0.;
-    prm->N_ResidualFrac_ro          = 0.;
-    prm->P_ResidualFrac_lv          = 0.;
-    prm->P_ResidualFrac_st          = 0.;
-    prm->P_ResidualFrac_ro          = 0.;
-    prm->K_ResidualFrac_lv          = 0.;
-    prm->K_ResidualFrac_st          = 0.;
-    prm->K_ResidualFrac_ro          = 0.;
-    prm->TCNT          = 0.;
-    prm->TCPT          = 0.;
-    prm->TCKT          = 0.;
-    prm->N_fixation                 = 0.;
-    prm->MaxHeight                  = 0.;
-    prm->RGL                        = 0.;
-    prm->RadiationAttenuation       = 0.;
-    prm->WindAttenuation            = 0.;
-    prm->TrunkRatio                 = 0.;
-    prm->Albedo                     = 0.;
-    prm->MinStomatalResistance      = 0.;
+    prm->Max_N_storage = 0.;
+    prm->Max_P_storage = 0.;
+    prm->Max_K_storage = 0.;
+    prm->N_lv_partitioning = 0.;
+    prm->NutrientStessSLA = 0.;
+    prm->N_ResidualFrac_lv = 0.;
+    prm->N_ResidualFrac_st = 0.;
+    prm->N_ResidualFrac_ro = 0.;
+    prm->P_ResidualFrac_lv = 0.;
+    prm->P_ResidualFrac_st = 0.;
+    prm->P_ResidualFrac_ro = 0.;
+    prm->K_ResidualFrac_lv = 0.;
+    prm->K_ResidualFrac_st = 0.;
+    prm->K_ResidualFrac_ro = 0.;
+    prm->TCNT = 0.;
+    prm->TCPT = 0.;
+    prm->TCKT = 0.;
+    prm->N_fixation = 0.;
+    prm->MaxHeight = 0.;
+    prm->RGL = 0.;
+    prm->RadiationAttenuation = 0.;
+    prm->WindAttenuation = 0.;
+    prm->TrunkRatio = 0.;
+    prm->Albedo = 0.;
+    prm->MinStomatalResistance = 0.;
     prm->MaxArchitecturalResistance = 0.;
-    prm->Fcanopy                    = 0.;
+    prm->Fcanopy = 0.;
 }
 
 void
@@ -290,7 +290,7 @@ initialize_wofost_plant(Plant *crp)
     crp->fac_ro = 0.;
     crp->fac_so = 0.;
     crp->fac_st = 0.;
-    
+
     initialize_wofost_parameters(&crp->prm);
     initialize_wofost_growth_rates(&crp->rt);
     initialize_wofost_growth_states(&crp->st);
@@ -302,7 +302,7 @@ initialize_wofost_plant(Plant *crp)
     initialize_wofost_nutrient_states(&crp->K_st);
     initialize_wofost_nutrient_rates(&crp->P_rt);
     initialize_wofost_nutrient_states(&crp->P_st);
-    
+
     crp->LeaveProperties = NULL;
 }
 
@@ -332,7 +332,7 @@ initialize_wofost_field(Field *ste)
     ste->rt_N_mins = 0.;
     ste->rt_P_mins = 0.;
     ste->rt_K_mins = 0.;
-    
+
     ste->NotInfTB = NULL;
 }
 
@@ -343,11 +343,11 @@ initialize_wofost_soil(Soil *soil)
     soil->InfPreviousDay = 0.;
     soil->SoilMaxRootingDepth = 0.;
     soil->WaterStress = 0.;
-    
+
     initialize_wofost_states(&soil->st);
     initialize_wofost_rates(&soil->rt);
     initialize_wofost_constants(&soil->ct);
-    
+
     soil->HydraulicConductivity = NULL;
     soil->VolumetricSoilMoisture = NULL;
 }
@@ -356,14 +356,14 @@ void
 initialize_wofost_vic(Meteo *met)
 {
     size_t i;
-    
+
     met->crop_class = MISSING_USI;
     met->Latitude = 0.;
     met->Longitude = 0.;
     met->MeteoDay = 0;
     met->MeteoYear = 0;
     met->CycleLength = 0;
-    for(i = 0; i < DAYS_PER_WEEK; i++) {
+    for (i = 0; i < DAYS_PER_WEEK; i++) {
         met->Tmin[i] = 0.;
     }
     met->Tmax = 0.;
@@ -397,7 +397,7 @@ initialize_wofost_management(Management *mng)
     mng->N_external = 0.;
     mng->P_external = 0.;
     mng->K_external = 0.;
-    
+
     mng->N_Fert_table = NULL;
     mng->P_Fert_table = NULL;
     mng->K_Fert_table = NULL;
@@ -413,7 +413,7 @@ initialize_wofost_grid(SimUnit *Grid)
     Grid->growing = 0;
     initialize_dmy(&Grid->start);
     initialize_dmy(&Grid->end);
-    
+
     initialize_wofost_plant(Grid->crp);
     initialize_wofost_management(Grid->mng);
     initialize_wofost_field(Grid->ste);
@@ -425,18 +425,17 @@ void
 wofost_initialize_local_structures(void)
 {
     extern option_struct options;
-    extern domain_struct        local_domain;
-    extern SimUnit                  ***Grid;
+    extern domain_struct local_domain;
+    extern SimUnit    ***Grid;
 
-    SimUnit                    *iGrid;
-    size_t                      i;
-    size_t                      j;
-    
+    SimUnit             *iGrid;
+    size_t               i;
+    size_t               j;
+
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < options.SNOW_BAND; j++) {
-
+        for (j = 0; j < options.SNOW_BAND; j++) {
             iGrid = Grid[i][j];
-            while(iGrid) {
+            while (iGrid) {
                 initialize_wofost_grid(iGrid);
                 iGrid = iGrid->next;
             }

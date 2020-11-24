@@ -46,23 +46,23 @@ convolute(double  quantity,
 /******************************************************************************
  * @brief   Function to convolute two arrays
  *****************************************************************************/
-void convolve(const double Signal[/* SignalLen */], size_t SignalLen,
-              const double Kernel[/* KernelLen */], size_t KernelLen,
-              double Result[/* SignalLen + KernelLen - 1 */])
+void
+convolve(const double Signal[] /* SignalLen */,
+         size_t       SignalLen,
+         const double Kernel[] /* KernelLen */,
+         size_t       KernelLen,
+         double       Result[] /* SignalLen + KernelLen - 1 */)
 {
-  size_t n, kmin, kmax, k;
+    size_t n, kmin, kmax, k;
 
-  for (n = 0; n < SignalLen + KernelLen - 1; n++)
-  {
+    for (n = 0; n < SignalLen + KernelLen - 1; n++) {
+        Result[n] = 0;
 
-    Result[n] = 0;
+        kmin = (n >= KernelLen - 1) ? n - (KernelLen - 1) : 0;
+        kmax = (n < SignalLen - 1) ? n : SignalLen - 1;
 
-    kmin = (n >= KernelLen - 1) ? n - (KernelLen - 1) : 0;
-    kmax = (n < SignalLen - 1) ? n : SignalLen - 1;
-
-    for (k = kmin; k <= kmax; k++)
-    {
-      Result[n] += Signal[k] * Kernel[n - k];
+        for (k = kmin; k <= kmax; k++) {
+            Result[n] += Signal[k] * Kernel[n - k];
+        }
     }
-  }
 }

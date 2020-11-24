@@ -33,32 +33,33 @@
 void
 wu_set_nsectors(void)
 {
-    extern domain_struct local_domain;
-    extern plugin_option_struct       plugin_options;
-    extern wu_con_map_struct  *wu_con_map;
-        
-    int *ivar;
-    
-    size_t i;
-    size_t j;
-    
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
+    extern wu_con_map_struct   *wu_con_map;
+
+    int                        *ivar;
+
+    size_t                      i;
+    size_t                      j;
+
     ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         wu_con_map[i].ns_types = plugin_options.NWUTYPES;
         wu_con_map[i].ns_active = 0;
-        
-        for(j = 0; j < plugin_options.NWUTYPES; j++){
-            if(plugin_options.WU_INPUT[j] == WU_SKIP){
+
+        for (j = 0; j < plugin_options.NWUTYPES; j++) {
+            if (plugin_options.WU_INPUT[j] == WU_SKIP) {
                 wu_con_map[i].sidx[j] = NODATA_WU;
-            } else {
+            }
+            else {
                 wu_con_map[i].sidx[j] = wu_con_map[i].ns_active;
                 wu_con_map[i].ns_active++;
             }
         }
     }
-    
+
     free(ivar);
 }
 
@@ -68,32 +69,32 @@ wu_set_nsectors(void)
 void
 wu_set_nreceiving(void)
 {
-    extern domain_struct local_domain;
-    extern domain_struct global_domain;
+    extern domain_struct           local_domain;
+    extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
-    extern wu_con_struct  *wu_con;
-        
-    int *ivar;
-    
-    size_t i;
-    
-    size_t  d2count[2];
-    size_t  d2start[2];
-    
+    extern wu_con_struct          *wu_con;
+
+    int                           *ivar;
+
+    size_t                         i;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
+
     d2start[0] = 0;
     d2start[1] = 0;
     d2count[0] = global_domain.n_ny;
-    d2count[1] = global_domain.n_nx; 
-    
+    d2count[1] = global_domain.n_nx;
+
     ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
-    
-    get_scatter_nc_field_int(&(plugin_filenames.wateruse), "Nreceiving", 
+
+    get_scatter_nc_field_int(&(plugin_filenames.wateruse), "Nreceiving",
                              d2start, d2count, ivar);
     for (i = 0; i < local_domain.ncells_active; i++) {
         wu_con[i].nreceiving = ivar[i];
     }
-    
+
     free(ivar);
 }
 
@@ -103,15 +104,15 @@ wu_set_nreceiving(void)
 void
 wu_alloc(void)
 {
-    extern domain_struct    local_domain;
+    extern domain_struct      local_domain;
     extern wu_con_map_struct *wu_con_map;
-    extern wu_var_struct **wu_var;
-    extern wu_con_struct *wu_con;
-    extern wu_force_struct **wu_force;
-    extern int mpi_rank;
-    
-    size_t                     i;
-    int status;
+    extern wu_var_struct    **wu_var;
+    extern wu_con_struct     *wu_con;
+    extern wu_force_struct  **wu_force;
+    extern int                mpi_rank;
+
+    size_t                    i;
+    int                       status;
 
     // open parameter file
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -130,10 +131,11 @@ wu_alloc(void)
     wu_var = malloc(local_domain.ncells_active * sizeof(*wu_var));
     check_alloc_status(wu_var, "Memory allocation error");
     for (i = 0; i < local_domain.ncells_active; i++) {
-        wu_con_map[i].sidx = malloc(plugin_options.NWUTYPES * sizeof(*wu_con_map[i].sidx));
+        wu_con_map[i].sidx =
+            malloc(plugin_options.NWUTYPES * sizeof(*wu_con_map[i].sidx));
         check_alloc_status(wu_con_map[i].sidx, "Memory allocation error");
     }
-    
+
     wu_set_nsectors();
 
     for (i = 0; i < local_domain.ncells_active; i++) {
@@ -142,27 +144,29 @@ wu_alloc(void)
         wu_var[i] = malloc(wu_con_map[i].ns_active * sizeof(*wu_var[i]));
         check_alloc_status(wu_var[i], "Memory allocation error");
     }
-    
+
     if (plugin_options.REMOTE_WITH) {
         wu_set_nreceiving();
-    } else {
+    }
+    else {
         for (i = 0; i < local_domain.ncells_active; i++) {
             wu_con[i].nreceiving = 0;
         }
     }
-    
+
     for (i = 0; i < local_domain.ncells_active; i++) {
-        wu_con[i].receiving = malloc(wu_con[i].nreceiving * sizeof(*wu_con[i].receiving));
+        wu_con[i].receiving =
+            malloc(wu_con[i].nreceiving * sizeof(*wu_con[i].receiving));
         check_alloc_status(wu_con[i].receiving, "Memory allocation error");
     }
-    
+
     // close parameter file
     if (mpi_rank == VIC_MPI_ROOT) {
         status = nc_close(plugin_filenames.wateruse.nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.wateruse.nc_filename);
     }
-    
+
     wu_initialize_local_structures();
 }
 
@@ -172,13 +176,13 @@ wu_alloc(void)
 void
 wu_finalize(void)
 {
-    extern domain_struct    local_domain;
+    extern domain_struct      local_domain;
     extern wu_con_map_struct *wu_con_map;
-    extern wu_var_struct **wu_var;
-    extern wu_con_struct *wu_con;
-    extern wu_force_struct **wu_force;
+    extern wu_var_struct    **wu_var;
+    extern wu_con_struct     *wu_con;
+    extern wu_force_struct  **wu_force;
 
-    size_t                  i;
+    size_t                    i;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         free(wu_con_map[i].sidx);
@@ -186,7 +190,7 @@ wu_finalize(void)
         free(wu_var[i]);
         free(wu_force[i]);
     }
-    
+
     free(wu_con_map);
     free(wu_con);
     free(wu_var);

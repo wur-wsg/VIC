@@ -36,8 +36,8 @@ wu_get_global_param(char *cmdstr)
     extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
 
-    char                    optstr[MAXSTRING];
-    char                    flgstr[MAXSTRING];
+    char                           optstr[MAXSTRING];
+    char                           flgstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
@@ -83,55 +83,72 @@ wu_validate_global_param(void)
 {
     extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
-    
+
     // Options
-    if(!plugin_options.ROUTING){
+    if (!plugin_options.ROUTING) {
         log_err("WATERUSE = TRUE but ROUTING = FALSE");
     }
-    if(plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION){
+    if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
         log_err("WATERUSE = TRUE but DECOMPOSITION = RANDOM");
     }
-   
+
     // Parameters
     if (strcasecmp(plugin_filenames.wateruse.nc_filename, MISSING_S) == 0) {
         log_err("WATERUSE = TRUE but file is missing");
     }
-    
+
     // Forcing
-    if(plugin_options.FORCE_PUMP_CAP) {
-        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_PUMPING_CAP], MISSING_S) == 0) {
+    if (plugin_options.FORCE_PUMP_CAP) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_PUMPING_CAP],
+                       MISSING_S) == 0) {
             log_err("FORCE_PUMP_CAP = TRUE but file is missing");
         }
     }
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_DEMAND], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_GROUNDWATER], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_CONSUMPTION], MISSING_S) != 0) {
-        if(plugin_options.IRRIGATION){
-            log_err("WATERUSE = TRUE and IRRIGATION = TRUE but forcing file provided");
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_DEMAND],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_GROUNDWATER],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_CONSUMPTION],
+                   MISSING_S) != 0) {
+        if (plugin_options.IRRIGATION) {
+            log_err(
+                "WATERUSE = TRUE and IRRIGATION = TRUE but forcing file provided");
         }
         plugin_options.WU_INPUT[WU_IRRIGATION] = WU_FROM_FILE;
     }
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_DEMAND], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_GROUNDWATER], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_CONSUMPTION], MISSING_S) != 0) {
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_DEMAND],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_GROUNDWATER],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_MUN_CONSUMPTION],
+                   MISSING_S) != 0) {
         plugin_options.WU_INPUT[WU_MUNICIPAL] = WU_FROM_FILE;
     }
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_DEMAND], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_GROUNDWATER], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_CONSUMPTION], MISSING_S) != 0) {
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_DEMAND],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_GROUNDWATER],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_LIV_CONSUMPTION],
+                   MISSING_S) != 0) {
         plugin_options.WU_INPUT[WU_LIVESTOCK] = WU_FROM_FILE;
     }
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_DEMAND], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_GROUNDWATER], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_CONSUMPTION], MISSING_S) != 0) {
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_DEMAND],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_GROUNDWATER],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_ENE_CONSUMPTION],
+                   MISSING_S) != 0) {
         plugin_options.WU_INPUT[WU_ENERGY] = WU_FROM_FILE;
     }
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_DEMAND], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_GROUNDWATER], MISSING_S) != 0 &&
-            strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_CONSUMPTION], MISSING_S) != 0) {
+    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_DEMAND],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_GROUNDWATER],
+                   MISSING_S) != 0 &&
+        strcasecmp(plugin_filenames.f_path_pfx[FORCING_MAN_CONSUMPTION],
+                   MISSING_S) != 0) {
         plugin_options.WU_INPUT[WU_MANUFACTURING] = WU_FROM_FILE;
     }
-    if(plugin_options.IRRIGATION){
+    if (plugin_options.IRRIGATION) {
         plugin_options.WU_INPUT[WU_IRRIGATION] = WU_CALCULATE;
     }
 }
@@ -142,14 +159,14 @@ wu_validate_global_param(void)
 bool
 wu_get_parameters(char *cmdstr)
 {
-    extern plugin_parameters_struct    plugin_param;
+    extern plugin_parameters_struct plugin_param;
 
-    char                    optstr[MAXSTRING];
+    char                            optstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
     if (strcasecmp("NONRENEWABLE_LIMIT", optstr) == 0) {
-                sscanf(cmdstr, "%*s %lf", &plugin_param.NREN_LIM);
+        sscanf(cmdstr, "%*s %lf", &plugin_param.NREN_LIM);
     }
     else {
         return false;
@@ -164,8 +181,8 @@ wu_get_parameters(char *cmdstr)
 void
 wu_validate_parameters(void)
 {
-    extern plugin_parameters_struct    plugin_param;
-    
+    extern plugin_parameters_struct plugin_param;
+
     if (!(plugin_param.NREN_LIM >= 0)) {
         log_err("NREN_LIM must be defined on the interval [0,Inf) (mm)");
     }

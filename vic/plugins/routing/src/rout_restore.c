@@ -138,7 +138,7 @@ rout_compute_derived_state_vars(void)
                 rout_var[i].stream += rout_var[i].dt_discharge[j];
             }
         }
-        
+
         plugin_save_data[i].total_moist_storage += rout_var[i].stream;
         plugin_save_data[i].total_moist_storage += rout_var[i].nonrenew_deficit;
     }

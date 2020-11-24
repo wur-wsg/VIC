@@ -43,7 +43,8 @@ void copy_dmy(dmy_struct *, dmy_struct *);
 void initialize_dmy(dmy_struct *);
 double between_dmy(dmy_struct, dmy_struct, dmy_struct);
 double between_jday(double, double, double);
-unsigned short int days_per_month(unsigned short int, unsigned short int, unsigned short int);
+unsigned short int days_per_month(unsigned short int, unsigned short int,
+                                  unsigned short int);
 double array_average(double *, size_t, size_t, size_t, size_t);
 void dmy_doy(double, unsigned short int, unsigned short int, dmy_struct *);
 

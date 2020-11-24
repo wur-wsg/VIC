@@ -33,50 +33,54 @@
 void
 plugin_store_error(size_t iCell)
 {
-    extern global_param_struct global_param;
-    extern domain_struct        local_domain;
+    extern global_param_struct      global_param;
+    extern domain_struct            local_domain;
     extern plugin_save_data_struct *plugin_save_data;
-    extern save_data_struct *save_data;
-    extern double           ***out_data;
-    
-    double inflow;
-    double outflow;
-    double storage;
-    
-    size_t i;
-    
+    extern save_data_struct        *save_data;
+    extern double                ***out_data;
+
+    double                          inflow;
+    double                          outflow;
+    double                          storage;
+
+    size_t                          i;
+
     inflow = out_data[iCell][OUT_RUNOFF][0] + out_data[iCell][OUT_BASEFLOW][0];
-    inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0] * 
-            global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+    inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0] *
+              global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_RETURNED][0];
-    
-    outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] * 
-            global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
-    
-    for(i = 0; i < WU_NSECTORS; i++){
+
+    outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] *
+              global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+
+    for (i = 0; i < WU_NSECTORS; i++) {
         outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] +
-                out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] +
-                out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] +
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
     }
-    
+
     /* NOTE: local dams are not included in the routing error, since they modify runoff*/
-    storage = out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] - 
-            out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
-    storage += out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_STORAGE][0] * 
-            M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
-        
+    storage = out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] -
+              out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
+    storage += out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_STORAGE][0] *
+               M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+
     out_data[iCell][N_OUTVAR_TYPES + OUT_ROUTING_ERROR][0] = \
-            calc_water_balance_error(inflow, 
-                                     outflow, 
-                                     storage, 
-                                     plugin_save_data[iCell].total_moist_storage);
-    
+        calc_water_balance_error(inflow,
+                                 outflow,
+                                 storage,
+                                 plugin_save_data[iCell].total_moist_storage);
+
     plugin_save_data[iCell].total_moist_storage = storage;
-    
-    for(i = 0; i < WU_NSECTORS; i++){
-        save_data[iCell].total_soil_moist -= out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
-        save_data[iCell].total_moist_storage -= out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+
+    for (i = 0; i < WU_NSECTORS; i++) {
+        save_data[iCell].total_soil_moist -=
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+        save_data[iCell].total_moist_storage -=
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
     }
-    save_data[iCell].total_soil_moist += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
-    save_data[iCell].total_moist_storage += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
+    save_data[iCell].total_soil_moist +=
+        out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
+    save_data[iCell].total_moist_storage +=
+        out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
 }

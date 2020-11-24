@@ -31,7 +31,8 @@
 * @brief   Copy dmy structure
 ******************************************/
 void
-copy_dmy(dmy_struct *from, dmy_struct *to)
+copy_dmy(dmy_struct *from,
+         dmy_struct *to)
 {
     to->day = from->day;
     to->day_in_year = from->day_in_year;
@@ -62,9 +63,11 @@ between_dmy(dmy_struct start,
             dmy_struct end,
             dmy_struct current)
 {
-    return (between_jday((double)start.day_in_year + start.dayseconds / SEC_PER_DAY,
-                        (double)end.day_in_year + end.dayseconds / SEC_PER_DAY,
-                        (double)current.day_in_year + current.dayseconds / SEC_PER_DAY));
+    return (between_jday((double)start.day_in_year + start.dayseconds /
+                         SEC_PER_DAY,
+                         (double)end.day_in_year + end.dayseconds / SEC_PER_DAY,
+                         (double)current.day_in_year + current.dayseconds /
+                         SEC_PER_DAY));
 }
 
 /******************************************************************************
@@ -108,10 +111,12 @@ days_per_month(unsigned short int month,
                unsigned short int year,
                unsigned short int calendar)
 {
-    unsigned short int days_per_month[MONTHS_PER_YEAR] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    
+    unsigned short int days_per_month[MONTHS_PER_YEAR] = {
+        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+
     days_per_month[1] += leap_year(year, calendar);
-    
+
     return(days_per_month[month - 1]);
 }
 
@@ -124,28 +129,31 @@ dmy_doy(double             doy,
         unsigned short int calendar,
         dmy_struct        *dmy)
 {
-    int day, second, nday, month;
+    int    day, second, nday, month;
     double dayofyr;
     size_t i;
-    
+
     if (doy < 1 || doy >= DAYS_PER_YEAR + leap_year(year, calendar) + 1) {
-        log_err("Please define doy in range (1 - %d)", DAYS_PER_YEAR + leap_year(year, calendar));
+        log_err("Please define doy in range (1 - %d)", DAYS_PER_YEAR + leap_year(
+                    year,
+                    calendar));
     }
-    
+
     dayofyr = doy;
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         nday = days_per_month(i + 1, year, calendar);
-        
+
         if (doy < (double)(nday + 1)) {
             month = i + 1;
             day = (int)doy;
             second = (int)((doy - (double)day) * SEC_PER_DAY);
             break;
-        } else {
+        }
+        else {
             doy -= (double)nday;
         }
     }
-    
+
     dmy->day = day;
     dmy->day_in_year = (int)dayofyr;
     dmy->dayseconds = second;

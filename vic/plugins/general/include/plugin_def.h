@@ -70,7 +70,7 @@ enum {
     OUT_EFR_DISCHARGE,                  /**< environmental river discharge [m3 s-1] */
     OUT_EFR_BASEFLOW,                   /**< environmental baseflow [mm] */
     OUT_EFR_MOIST,                      /**< environmental third-layer soil-moisture [mm] */
-    //dams
+    // dams
     OUT_LDAM_INFLOW,                    /**< local dam inflow [hm3] */
     OUT_LDAM_DEMAND,                    /**< local dam water demand [hm3] */
     OUT_LDAM_EFR,                       /**< local dam environmental requirements [hm3] */
@@ -176,11 +176,11 @@ enum {
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
     // crops
-    FORCING_CO2,			/**< CO2 concentration [ppm] */
-    FORCING_FERT_DVS,			/**< Fertilizer application DVS point [-] */
-    FORCING_FERT_N,			/**< Fertilizer application N amount [kg ha-1] */
-    FORCING_FERT_P,			/**< Fertilizer application P amount [kg ha-1] */
-    FORCING_FERT_K,			/**< Fertilizer application K amount [kg ha-1] */
+    FORCING_CO2,                        /**< CO2 concentration [ppm] */
+    FORCING_FERT_DVS,                   /**< Fertilizer application DVS point [-] */
+    FORCING_FERT_N,                     /**< Fertilizer application N amount [kg ha-1] */
+    FORCING_FERT_P,                     /**< Fertilizer application P amount [kg ha-1] */
+    FORCING_FERT_K,                     /**< Fertilizer application K amount [kg ha-1] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/

@@ -639,7 +639,7 @@ print_param_set(param_set_struct *param_set)
         fprintf(LOG_DEST, "\tFORCE_ENDIAN: %d\n", param_set->FORCE_ENDIAN[i]);
         fprintf(LOG_DEST, "\tFORCE_FORMAT: %d\n", param_set->FORCE_FORMAT[i]);
         fprintf(LOG_DEST, "\tFORCE_INDEX : %d\n", param_set->FORCE_INDEX[i]);
-	fprintf(LOG_DEST, "\tN_TYPES     : %zu\n", param_set->N_TYPES[i]);
+        fprintf(LOG_DEST, "\tN_TYPES     : %zu\n", param_set->N_TYPES[i]);
     }
 }
 

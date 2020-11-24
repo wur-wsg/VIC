@@ -4,11 +4,11 @@
 bool
 crop_get_global_param(char *cmdstr)
 {
-    extern plugin_option_struct       plugin_options;
-    extern plugin_filenames_struct    plugin_filenames;
+    extern plugin_option_struct    plugin_options;
+    extern plugin_filenames_struct plugin_filenames;
 
-    char                              optstr[MAXSTRING];
-    char                              flgstr[MAXSTRING];
+    char                           optstr[MAXSTRING];
+    char                           flgstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
@@ -69,7 +69,7 @@ crop_validate_global_param(void)
 {
     extern plugin_global_param_struct plugin_global_param;
     extern plugin_filenames_struct    plugin_filenames;
-    
+
     // Validate wofost time step
     if (plugin_global_param.wofost_steps_per_day == 0) {
         log_err("Wofost time steps per day has not been defined.  Make sure "
@@ -78,15 +78,15 @@ crop_validate_global_param(void)
     else if (plugin_global_param.wofost_steps_per_day != 1) {
         log_err("The specified number of wofost steps per day (%zu) != "
                 "the number of subdaily steps per day required (%d).  Make "
-                "sure that the global file defines WOFOST_STEPS_PER_DAY of (%d).", 
+                "sure that the global file defines WOFOST_STEPS_PER_DAY of (%d).",
                 plugin_global_param.wofost_steps_per_day, 1, 1);
     }
     else {
         plugin_global_param.wofost_dt = SEC_PER_DAY /
-                                      (double) plugin_global_param.
-                                      wofost_steps_per_day;
+                                        (double) plugin_global_param.
+                                        wofost_steps_per_day;
     }
-    
+
     // Parameters
     if (strcasecmp(plugin_filenames.crop.nc_filename, MISSING_S) == 0) {
         log_err("WOFOST = TRUE but crop netcdf file is missing");
@@ -94,24 +94,28 @@ crop_validate_global_param(void)
     if (strcasecmp(plugin_filenames.wofost_text, MISSING_S) == 0) {
         log_err("WOFOST = TRUE but text file is missing");
     }
-     // Forcing
+    // Forcing
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_CO2], MISSING_S) == 0) {
         log_err("WOFOST = TRUE but CO2 forcing file is missing");
     }
     if (plugin_options.WOFOST_FORCE_FERT) {
-        if (!plugin_options.WOFOST_DIST_FERT){
+        if (!plugin_options.WOFOST_DIST_FERT) {
             log_err("WOFOST_FORCE_FERT = TRUE but WOFOST_DIST_FERT = FALSE");
         }
-        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_DVS], MISSING_S) == 0) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_DVS],
+                       MISSING_S) == 0) {
             log_err("WOFOST_FORCE_FERT = TRUE but DVS forcing file is missing");
         }
-        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_N], MISSING_S) == 0) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_N],
+                       MISSING_S) == 0) {
             log_err("WOFOST_FORCE_FERT = TRUE but N forcing file is missing");
         }
-        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_P], MISSING_S) == 0) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_P],
+                       MISSING_S) == 0) {
             log_err("WOFOST_FORCE_FERT = TRUE but P forcing file is missing");
         }
-        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_K], MISSING_S) == 0) {
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_K],
+                       MISSING_S) == 0) {
             log_err("WOFOST_FORCE_FERT = TRUE but K forcing file is missing");
         }
     }
@@ -120,12 +124,12 @@ crop_validate_global_param(void)
 bool
 crop_get_parameters(char *cmdstr)
 {
-    extern plugin_parameters_struct   plugin_param;
+    extern plugin_parameters_struct plugin_param;
 
-    char                              optstr[MAXSTRING];
+    char                            optstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
-    
+
     UNUSED(plugin_param);
 
     return true;
@@ -134,7 +138,7 @@ crop_get_parameters(char *cmdstr)
 void
 crop_validate_parameters(void)
 {
-    extern plugin_parameters_struct    plugin_param;
-    
+    extern plugin_parameters_struct plugin_param;
+
     UNUSED(plugin_param);
 }

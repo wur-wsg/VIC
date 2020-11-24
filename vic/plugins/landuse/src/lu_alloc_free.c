@@ -33,13 +33,13 @@
 void
 lu_alloc(void)
 {
-    extern domain_struct              local_domain;
-    extern veg_con_map_struct        *veg_con_map;
-    
-    extern lu_force_struct           *lu_force;
-    
-    size_t                            i;
-    
+    extern domain_struct       local_domain;
+    extern veg_con_map_struct *veg_con_map;
+
+    extern lu_force_struct    *lu_force;
+
+    size_t                     i;
+
     lu_force = malloc(local_domain.ncells_active * sizeof(*lu_force));
     check_alloc_status(lu_force, "Memory allocation error");
 
@@ -63,10 +63,10 @@ lu_alloc(void)
 void
 lu_finalize(void)
 {
-    extern domain_struct        local_domain;
-    extern lu_force_struct     *lu_force;
+    extern domain_struct    local_domain;
+    extern lu_force_struct *lu_force;
 
-    size_t                      i;
+    size_t                  i;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         free(lu_force[i].Cv);

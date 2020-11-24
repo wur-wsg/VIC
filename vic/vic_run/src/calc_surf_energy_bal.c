@@ -157,7 +157,7 @@ calc_surf_energy_bal(double             Le,
     for (lidex = 0; lidex < options.Nlayer; lidex++) {
         Wcr_array[lidex] = layer[lidex].Wcr;
     }
-    
+
     /**************************************************
        Set All Variables For Use
     **************************************************/

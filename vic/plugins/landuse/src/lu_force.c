@@ -67,9 +67,9 @@ lu_forcing(void)
                  plugin_global_param.forceoffset[FORCING_CV];
 
     if (plugin_global_param.forcerun[FORCING_CV]) {
-        for(j = 0; j < options.NVEGTYPES; j++){
+        for (j = 0; j < options.NVEGTYPES; j++) {
             d4start[1] = j;
-            
+
             get_scatter_nc_field_double(
                 &(plugin_filenames.forcing[
                       FORCING_CV]),
@@ -79,17 +79,18 @@ lu_forcing(void)
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 vidx = veg_con_map[i].vidx[j];
-                if(vidx != NODATA_VEG){
+                if (vidx != NODATA_VEG) {
                     lu_force[i].Cv[vidx] = dvar[i];
                     lu_force[i].veg_class[vidx] = j;
-                } else if (dvar[i] > 0) {
+                }
+                else if (dvar[i] > 0) {
                     log_err("Vegetation class %zu is not allocated, "
                             "but Cv forcing > 0 [%.4f] for cell %zu",
                             j, dvar[i], i);
                 }
             }
         }
-        
+
         lu_apply();
     }
 

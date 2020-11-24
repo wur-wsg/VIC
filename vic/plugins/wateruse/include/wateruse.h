@@ -85,7 +85,7 @@ typedef struct {
     double withdrawn_nonrenew;      /**< withdrawn non-renewable resources [mm] */
     double returned;                /**< returned water resources [mm] */
     double consumed;                /**< consumed water resources [mm] */
-    
+
     double available_remote_tmp;    /**< available remote resources (temporary) [mm] */
     double demand_remote_tmp;       /**< demand for remote resources (temporary) [mm] */
     double withdrawn_remote_tmp;    /**< withdrawn remote resources (temporary) [mm] */
@@ -105,9 +105,9 @@ typedef struct {
  * @brief   Public structures
  *****************************************************************************/
 wu_con_map_struct *wu_con_map;
-wu_con_struct *wu_con;
-wu_force_struct **wu_force;
-wu_var_struct **wu_var;
+wu_con_struct     *wu_con;
+wu_force_struct  **wu_force;
+wu_var_struct    **wu_var;
 
 /******************************************************************************
  * @brief   Functions
@@ -141,4 +141,3 @@ void wu_nonrenew(size_t);
 void wu_finalize(void);
 
 #endif /* WATERUSE_H */
-

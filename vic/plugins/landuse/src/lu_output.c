@@ -54,11 +54,11 @@ lu_set_output_met_data_info(void)
 * @brief   Set output variable dimension sizes
 ******************************************/
 void
-lu_set_nc_var_info(unsigned int       varid,
-                   nc_file_struct    *nc_hist_file,
-                   nc_var_struct     *nc_var)
-{   
-    switch(varid){
+lu_set_nc_var_info(unsigned int    varid,
+                   nc_file_struct *nc_hist_file,
+                   nc_var_struct  *nc_var)
+{
+    switch (varid) {
     case N_OUTVAR_TYPES + OUT_CV:
         nc_var->nc_dims = 4;
         nc_var->nc_counts[1] = nc_hist_file->veg_size;
@@ -75,7 +75,7 @@ lu_set_nc_var_dimids(unsigned int    varid,
                      nc_file_struct *nc_hist_file,
                      nc_var_struct  *nc_var)
 {
-    switch(varid){
+    switch (varid) {
     case N_OUTVAR_TYPES + OUT_CV:
         nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
         nc_var->nc_dimids[1] = nc_hist_file->veg_dimid;
@@ -89,7 +89,7 @@ lu_set_nc_var_dimids(unsigned int    varid,
 ******************************************/
 void
 lu_history(int           varid,
-             unsigned int *agg_type)
+           unsigned int *agg_type)
 {
     switch (varid) {
     case  N_OUTVAR_TYPES + OUT_CV:
@@ -107,8 +107,8 @@ lu_put_data(size_t iCell)
     extern veg_con_map_struct *veg_con_map;
     extern double           ***out_data;
 
-    size_t i;
-    
+    size_t                     i;
+
     for (i = 0; i < veg_con_map[iCell].nv_types; i++) {
         out_data[iCell][N_OUTVAR_TYPES +
                         OUT_CV][i] = veg_con_map[iCell].Cv[i];

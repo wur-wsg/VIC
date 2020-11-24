@@ -34,7 +34,7 @@ void
 plugin_initialize_options(plugin_option_struct *plugin_options)
 {
     size_t i;
-    
+
     plugin_options->DECOMPOSITION = RANDOM_DECOMPOSITION;
     plugin_options->ROUTING = false;
     plugin_options->EFR = false;
@@ -49,7 +49,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->NDAMSERVICE = 0;
     plugin_options->NWUTYPES = WU_NSECTORS;
     plugin_options->NWURECEIVING = 0;
-    for(i = 0; i < WU_NSECTORS; i++){
+    for (i = 0; i < WU_NSECTORS; i++) {
         plugin_options->WU_INPUT[i] = WU_SKIP;
     }
     plugin_options->NIRRTYPES = 0;
@@ -123,8 +123,10 @@ plugin_initialize_filenames(plugin_filenames_struct *plugin_filenames)
     snprintf(plugin_filenames->decomposition.nc_filename, MAXSTRING, "%s",
              MISSING_S);
     snprintf(plugin_filenames->dams.nc_filename, MAXSTRING, "%s", MISSING_S);
-    snprintf(plugin_filenames->wateruse.nc_filename, MAXSTRING, "%s", MISSING_S);
-    snprintf(plugin_filenames->irrigation.nc_filename, MAXSTRING, "%s", MISSING_S);
+    snprintf(plugin_filenames->wateruse.nc_filename, MAXSTRING, "%s",
+             MISSING_S);
+    snprintf(plugin_filenames->irrigation.nc_filename, MAXSTRING, "%s",
+             MISSING_S);
     snprintf(plugin_filenames->crop.nc_filename, MAXSTRING, "%s", MISSING_S);
     snprintf(plugin_filenames->wofost_text, MAXSTRING, "%s", MISSING_S);
 

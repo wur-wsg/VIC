@@ -6,7 +6,7 @@
 typedef struct {
     size_t nc_types;
     size_t nc_active;
-    
+
     int *veg_class;
     int *cidx;
     double **Cc;
@@ -28,8 +28,8 @@ typedef struct {
 } crop_force_struct;
 
 crop_con_map_struct *crop_con_map;
-crop_con_struct **crop_con;
-crop_force_struct *crop_force;
+crop_con_struct    **crop_con;
+crop_force_struct   *crop_force;
 
 bool crop_get_global_param(char *);
 void crop_validate_global_param(void);
@@ -66,5 +66,4 @@ void crop_run(size_t);
 void wofost_run(SimUnit *);
 void crop_put_data(size_t);
 
-#endif	// CROP_H
-
+#endif  // CROP_H

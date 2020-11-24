@@ -74,7 +74,7 @@ vic_force(void)
         if (strcmp(filenames.f_path_pfx[f], "MISSING") == 0) {
             continue;
         }
-        
+
         // global_param.forceoffset resets every year since the met file restarts
         // every year
         // global_param.forceskip should also reset to 0 after the first year
@@ -111,7 +111,8 @@ vic_force(void)
 
     // Air temperature: tas
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[AIR_TEMP] + global_param.forceoffset[AIR_TEMP] +
+        d3start[0] = global_param.forceskip[AIR_TEMP] +
+                     global_param.forceoffset[AIR_TEMP] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[AIR_TEMP]),
                                     param_set.TYPE[AIR_TEMP].varname,
@@ -123,7 +124,8 @@ vic_force(void)
 
     // Precipitation: prcp
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[PREC] + global_param.forceoffset[PREC] +
+        d3start[0] = global_param.forceskip[PREC] +
+                     global_param.forceoffset[PREC] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[PREC]),
                                     param_set.TYPE[PREC].varname,
@@ -135,7 +137,8 @@ vic_force(void)
 
     // Downward solar radiation: dswrf
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[SWDOWN] + global_param.forceoffset[SWDOWN] +
+        d3start[0] = global_param.forceskip[SWDOWN] +
+                     global_param.forceoffset[SWDOWN] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[SWDOWN]),
                                     param_set.TYPE[SWDOWN].varname,
@@ -147,7 +150,8 @@ vic_force(void)
 
     // Downward longwave radiation: dlwrf
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[LWDOWN] + global_param.forceoffset[LWDOWN] +
+        d3start[0] = global_param.forceskip[LWDOWN] +
+                     global_param.forceoffset[LWDOWN] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[LWDOWN]),
                                     param_set.TYPE[LWDOWN].varname,
@@ -159,7 +163,8 @@ vic_force(void)
 
     // Wind speed: wind
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[WIND] + global_param.forceoffset[WIND] +
+        d3start[0] = global_param.forceskip[WIND] +
+                     global_param.forceoffset[WIND] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[WIND]),
                                     param_set.TYPE[WIND].varname,
@@ -183,7 +188,8 @@ vic_force(void)
 
     // Pressure: pressure
     for (j = 0; j < NF; j++) {
-        d3start[0] = global_param.forceskip[PRESSURE] + global_param.forceoffset[PRESSURE] +
+        d3start[0] = global_param.forceskip[PRESSURE] +
+                     global_param.forceoffset[PRESSURE] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[PRESSURE]),
                                     param_set.TYPE[PRESSURE].varname,
@@ -195,7 +201,8 @@ vic_force(void)
     // Optional inputs
     if (options.LAKES) {
         // Channel inflow to lake
-        d3start[0] = global_param.forceskip[CHANNEL_IN] + global_param.forceoffset[CHANNEL_IN] +
+        d3start[0] = global_param.forceskip[CHANNEL_IN] +
+                     global_param.forceoffset[CHANNEL_IN] +
                      j;
         get_scatter_nc_field_double(&(filenames.forcing[CHANNEL_IN]),
                                     param_set.TYPE[CHANNEL_IN].varname,
@@ -294,7 +301,7 @@ vic_force(void)
                              global_param.forceoffset[LAI] + j;
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[LAI]), 
+                    get_scatter_nc_field_double(&(filenames.forcing[LAI]),
                                                 param_set.TYPE[LAI].varname,
                                                 d4start, d4count, dvar);
                     for (i = 0; i < local_domain.ncells_active; i++) {
@@ -315,7 +322,8 @@ vic_force(void)
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
                     get_scatter_nc_field_double(&(filenames.forcing[FCANOPY]),
-                                                param_set.TYPE[FCANOPY].varname, d4start, d4count,
+                                                param_set.TYPE[FCANOPY].varname,
+                                                d4start, d4count,
                                                 dvar);
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         vidx = veg_con_map[i].vidx[v];
@@ -335,7 +343,8 @@ vic_force(void)
                 for (v = 0; v < options.NVEGTYPES; v++) {
                     d4start[1] = v;
                     get_scatter_nc_field_double(&(filenames.forcing[ALBEDO]),
-                                                param_set.TYPE[ALBEDO].varname, d4start, d4count,
+                                                param_set.TYPE[ALBEDO].varname,
+                                                d4start, d4count,
                                                 dvar);
                     for (i = 0; i < local_domain.ncells_active; i++) {
                         vidx = veg_con_map[i].vidx[v];

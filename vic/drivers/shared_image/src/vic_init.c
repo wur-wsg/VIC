@@ -630,17 +630,17 @@ vic_init(void)
             soil_con[i].Wpwp[j] = (double) dvar[i];
         }
     }
-    
+
     // Wfc: field capacity for each layer
     // Note this value is  multiplied with the maximum moisture in each layer
     for (j = 0; j < options.Nlayer; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
-            soil_con[i].Wfc[j] = soil_con[i].Wpwp[j] + 
-                    (soil_con[i].Wcr[j] - soil_con[i].Wpwp[j]) / 
-                    0.7;
+            soil_con[i].Wfc[j] = soil_con[i].Wpwp[j] +
+                                 (soil_con[i].Wcr[j] - soil_con[i].Wpwp[j]) /
+                                 0.7;
         }
     }
-    
+
     // rough: soil roughness
     get_scatter_nc_field_double(&(filenames.params), "rough",
                                 d2start, d2count, dvar);
@@ -1587,14 +1587,14 @@ vic_init(void)
                             &(all_vars[i].cell[tmp_lake_idx][0]), false);
         }
         initialize_energy(all_vars[i].energy, nveg);
-        
+
         for (j = 0; j <= nveg; j++) {
             for (k = 0; k < options.SNOW_BAND; k++) {
                 for (m = 0; m < options.Nlayer; m++) {
                     all_vars[i].cell[j][k].layer[m].Ksat =
-                            soil_con[i].Ksat[m];
+                        soil_con[i].Ksat[m];
                     all_vars[i].cell[j][k].layer[m].Wcr =
-                            soil_con[i].Wcr[m];
+                        soil_con[i].Wcr[m];
                 }
             }
         }

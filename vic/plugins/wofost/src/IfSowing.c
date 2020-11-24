@@ -8,14 +8,15 @@
 /*           is set to 0 the Emergence date has to be established.            */
 /* ---------------------------------------------------------------------------*/
 
-void IfSowing(SimUnit *Grid, dmy_struct* start)
+void
+IfSowing(SimUnit   *Grid,
+         dmy_struct*start)
 {
     extern dmy_struct *dmy;
-    extern size_t current;
-      
+    extern size_t      current;
+
     if (dmy[current].month == start->month &&
-        dmy[current].day == start->day)
-    {
+        dmy[current].day == start->day) {
         Grid->crp->Sowing = 1;
     }
 }

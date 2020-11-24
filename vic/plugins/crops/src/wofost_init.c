@@ -4,33 +4,34 @@
 void
 wofost_set_data_text(char *list)
 {
-    extern option_struct options;
-    extern domain_struct local_domain;
-    extern plugin_option_struct       plugin_options;
+    extern option_struct        options;
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
     extern crop_con_map_struct *crop_con_map;
-    extern SimUnit ***Grid;
-    
-    FILE *ifp;
-    int Emergence;
-    char line[MAXSTRING];
-    char path[MAXSTRING];
-    char cf[MAXSTRING], mf[MAXSTRING], start[MAXSTRING];
-        
-    size_t i;
-    size_t k;
-    size_t m;
-    size_t l;
-    int iCrop;
-    SimUnit *iGrid;
-    SimUnit *tmpGrid;
+    extern SimUnit           ***Grid;
+
+    FILE                       *ifp;
+    int                         Emergence;
+    char                        line[MAXSTRING];
+    char                        path[MAXSTRING];
+    char                        cf[MAXSTRING], mf[MAXSTRING], start[MAXSTRING];
+
+    size_t                      i;
+    size_t                      k;
+    size_t                      m;
+    size_t                      l;
+    int                         iCrop;
+    SimUnit                    *iGrid;
+    SimUnit                    *tmpGrid;
 
     if ((ifp = fopen(list, "r")) == NULL) {
         log_err("Can't open wofost text file, %s\n", list);
     }
 
     k = 0;
-    while(fgets(line, MAXSTRING, ifp)) {
-        if(line[0] == '*' || line[0] == ' ' || line[0] == '\n' || line[0] == '\r'){
+    while (fgets(line, MAXSTRING, ifp)) {
+        if (line[0] == '*' || line[0] == ' ' || line[0] == '\n' ||
+            line[0] == '\r') {
             continue;
         }
 
@@ -49,10 +50,10 @@ wofost_set_data_text(char *list)
         tmpGrid->next = NULL;
 
         initialize_wofost_grid(tmpGrid);
-    
+
         sscanf(line, "%s %s %s %s %d", path, cf, mf, start, &Emergence);
 
-        if(k >= plugin_options.NCROPTYPES) {
+        if (k >= plugin_options.NCROPTYPES) {
             log_err("Crops in wofost text (%zu) file are more than "
                     "crops in wofost netcdf file (%d)",
                     k, plugin_options.NCROPTYPES);
@@ -60,20 +61,20 @@ wofost_set_data_text(char *list)
 
         GetSimInput(path, cf, mf, start, Emergence, k, tmpGrid);
         tmpGrid->met->crop_class = k;
-    
-        for(i = 0; i < local_domain.ncells_active; i++) {
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
             iCrop = crop_con_map[i].cidx[k];
 
-            if(iCrop != NODATA_VEG){
+            if (iCrop != NODATA_VEG) {
                 tmpGrid->met->Latitude = local_domain.locations[i].latitude;
                 tmpGrid->met->Longitude = local_domain.locations[i].longitude;
-                    
-                for(l = 0; l < options.SNOW_BAND; l++){
+
+                for (l = 0; l < options.SNOW_BAND; l++) {
                     iGrid = Grid[i][l];
-                    for(m = 0; m < (size_t)iCrop; m++){
+                    for (m = 0; m < (size_t)iCrop; m++) {
                         iGrid = iGrid->next;
                     }
-                    
+
                     copy_wofost_grid(tmpGrid, iGrid);
                 }
             }
@@ -83,7 +84,7 @@ wofost_set_data_text(char *list)
         k++;
     }
 
-    if(k + 1 < plugin_options.NCROPTYPES) {
+    if (k + 1 < plugin_options.NCROPTYPES) {
         log_err("Crops in wofost text file are less than "
                 "crops in wofost netcdf file");
     }
@@ -94,30 +95,30 @@ wofost_set_data_text(char *list)
 void
 wofost_set_data(void)
 {
-    extern option_struct options;
-    extern domain_struct local_domain;
-    extern domain_struct global_domain;
-    extern global_param_struct global_param;
+    extern option_struct           options;
+    extern domain_struct           local_domain;
+    extern domain_struct           global_domain;
+    extern global_param_struct     global_param;
     extern plugin_filenames_struct plugin_filenames;
-    extern plugin_option_struct       plugin_options;
-    extern crop_con_map_struct *crop_con_map;
-    extern crop_con_struct **crop_con;
-    extern SimUnit ***Grid;
-    
-    double *dvar;
-    
-    size_t i;
-    size_t j;
-    size_t k;
-    size_t l;
-    int iCrop;
-    SimUnit *iGrid;
-    
-    size_t  d3count[3];
-    size_t  d3start[3];
-    size_t  d4count[4];
-    size_t  d4start[4];
-    
+    extern plugin_option_struct    plugin_options;
+    extern crop_con_map_struct    *crop_con_map;
+    extern crop_con_struct       **crop_con;
+    extern SimUnit              ***Grid;
+
+    double                        *dvar;
+
+    size_t                         i;
+    size_t                         j;
+    size_t                         k;
+    size_t                         l;
+    int                            iCrop;
+    SimUnit                       *iGrid;
+
+    size_t                         d3count[3];
+    size_t                         d3start[3];
+    size_t                         d4count[4];
+    size_t                         d4start[4];
+
     d3start[0] = 0;
     d3start[1] = 0;
     d3start[2] = 0;
@@ -132,72 +133,74 @@ wofost_set_data(void)
     d4count[1] = 1;
     d4count[2] = global_domain.n_ny;
     d4count[3] = global_domain.n_nx;
-    
+
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
-    
+
     if (plugin_options.WOFOST_DIST_SEASON) {
         // Set plant day
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "plant_day", d3start, d3count, dvar);
+                                        "plant_day", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
                         // plant is set to a random non-leap year
-                        dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->start));
+                        dmy_doy(dvar[i], 1900, global_param.calendar,
+                                &(iGrid->start));
                     }
                 }
             }
         }
 
         // Set harvest day
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "harvest_day", d3start, d3count, dvar);
+                                        "harvest_day", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
                         // harvest is set to a random non-leap year
-                        dmy_doy(dvar[i], 1900, global_param.calendar, &(iGrid->end));
+                        dmy_doy(dvar[i], 1900, global_param.calendar,
+                                &(iGrid->end));
                     }
                 }
             }
         }
     }
-    
+
     if (plugin_options.WOFOST_DIST_TSUM) {
         // Set TSUM1
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "TSUM1", d3start, d3count, dvar);
+                                        "TSUM1", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -208,18 +211,18 @@ wofost_set_data(void)
         }
 
         // Set TSUM2
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "TSUM2", d3start, d3count, dvar);
+                                        "TSUM2", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -229,16 +232,17 @@ wofost_set_data(void)
             }
         }
     }
-    
+
     if (plugin_options.WOFOST_DIST_FERT) {
         // Set DVS_point
         for (k = 0; k < plugin_options.NFERTTIMES; k++) {
             d4start[0] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
                 d4start[1] = j;
 
                 get_scatter_nc_field_double(&plugin_filenames.crop,
-                                         "DVS_point", d4start, d4count, dvar);
+                                            "DVS_point", d4start, d4count,
+                                            dvar);
 
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     iCrop = crop_con_map[i].cidx[j];
@@ -248,15 +252,15 @@ wofost_set_data(void)
                 }
             }
         }
-        
+
         // Set N_amount
         for (k = 0; k < plugin_options.NFERTTIMES; k++) {
             d4start[0] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
                 d4start[1] = j;
 
                 get_scatter_nc_field_double(&plugin_filenames.crop,
-                                         "N_amount", d4start, d4count, dvar);
+                                            "N_amount", d4start, d4count, dvar);
 
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     iCrop = crop_con_map[i].cidx[j];
@@ -266,15 +270,15 @@ wofost_set_data(void)
                 }
             }
         }
-        
+
         // Set P_amount
         for (k = 0; k < plugin_options.NFERTTIMES; k++) {
             d4start[0] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
                 d4start[1] = j;
 
                 get_scatter_nc_field_double(&plugin_filenames.crop,
-                                         "P_amount", d4start, d4count, dvar);
+                                            "P_amount", d4start, d4count, dvar);
 
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     iCrop = crop_con_map[i].cidx[j];
@@ -284,15 +288,15 @@ wofost_set_data(void)
                 }
             }
         }
-        
+
         // Set K_amount
         for (k = 0; k < plugin_options.NFERTTIMES; k++) {
             d4start[0] = k;
-            for(j = 0; j < plugin_options.NCROPTYPES; j++){
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
                 d4start[1] = j;
 
                 get_scatter_nc_field_double(&plugin_filenames.crop,
-                                         "K_amount", d4start, d4count, dvar);
+                                            "K_amount", d4start, d4count, dvar);
 
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     iCrop = crop_con_map[i].cidx[j];
@@ -303,21 +307,21 @@ wofost_set_data(void)
             }
         }
     }
-    
+
     if (plugin_options.WOFOST_DIST_MIN) {
         // Set N_Mins
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "N_mins", d3start, d3count, dvar);
+                                        "N_mins", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -328,18 +332,18 @@ wofost_set_data(void)
         }
 
         // Set NRecoveryFrac
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "N_recovery", d3start, d3count, dvar);
+                                        "N_recovery", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -348,20 +352,20 @@ wofost_set_data(void)
                 }
             }
         }
-        
+
         // Set P_Mins
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "P_mins", d3start, d3count, dvar);
+                                        "P_mins", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -372,18 +376,18 @@ wofost_set_data(void)
         }
 
         // Set PRecoveryFrac
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "P_recovery", d3start, d3count, dvar);
+                                        "P_recovery", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -392,20 +396,20 @@ wofost_set_data(void)
                 }
             }
         }
-        
+
         // Set K_Mins
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "K_mins", d3start, d3count, dvar);
+                                        "K_mins", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -416,18 +420,18 @@ wofost_set_data(void)
         }
 
         // Set KRecoveryFrac
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             d3start[0] = j;
 
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                     "K_recovery", d3start, d3count, dvar);
+                                        "K_recovery", d3start, d3count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
                     for (k = 0; k < options.SNOW_BAND; k++) {
                         iGrid = Grid[i][k];
-                        for(l = 0; l < (size_t)iCrop; l++){
+                        for (l = 0; l < (size_t)iCrop; l++) {
                             iGrid = iGrid->next;
                         }
 
@@ -440,22 +444,27 @@ wofost_set_data(void)
 
     // Set cycle length
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < plugin_options.NCROPTYPES; j++){
+        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
             iCrop = crop_con_map[i].cidx[j];
             if (iCrop != NODATA_VEG) {
                 for (k = 0; k < options.SNOW_BAND; k++) {
                     iGrid = Grid[i][k];
-                    for(l = 0; l < (size_t)iCrop; l++){
+                    for (l = 0; l < (size_t)iCrop; l++) {
                         iGrid = iGrid->next;
                     }
-                    
+
                     if (!plugin_options.WOFOST_CONTINUE) {
-                        if(iGrid->start.day_in_year < iGrid->end.day_in_year){
-                            iGrid->met->CycleLength = iGrid->end.day_in_year - iGrid->start.day_in_year;
-                        } else {
-                            iGrid->met->CycleLength = DAYS_PER_YEAR - iGrid->start.day_in_year + iGrid->end.day_in_year;
+                        if (iGrid->start.day_in_year < iGrid->end.day_in_year) {
+                            iGrid->met->CycleLength = iGrid->end.day_in_year -
+                                                      iGrid->start.day_in_year;
                         }
-                    } else {
+                        else {
+                            iGrid->met->CycleLength = DAYS_PER_YEAR -
+                                                      iGrid->start.day_in_year +
+                                                      iGrid->end.day_in_year;
+                        }
+                    }
+                    else {
                         /* Restrict cycle length to about a year to avoid double-sowing */
                         iGrid->met->CycleLength = DAYS_PER_YEAR - 10;
                     }
@@ -463,7 +472,7 @@ wofost_set_data(void)
             }
         }
     }
-    
+
     free(dvar);
 }
 
@@ -472,18 +481,17 @@ wofost_check_data(void)
 {
     extern option_struct options;
     extern domain_struct local_domain;
-    extern SimUnit ***Grid;
-    
-    size_t i;
-    size_t k;
-    SimUnit *iGrid;
-    
+    extern SimUnit    ***Grid;
+
+    size_t               i;
+    size_t               k;
+    SimUnit             *iGrid;
+
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (k = 0; k < options.SNOW_BAND; k++) {
             iGrid = Grid[i][k];
 
-            while(iGrid) {
-                
+            while (iGrid) {
                 if (iGrid->crp->prm.TempSum1 <= 0) {
                     log_err("TempSum1 [%.2f] should be in range [0, inf)",
                             iGrid->crp->prm.TempSum1);
@@ -504,19 +512,22 @@ wofost_check_data(void)
                     log_err("K_Mins [%.2f] should be in range (0, inf)",
                             iGrid->mng->K_Mins);
                 }
-                if (iGrid->mng->NRecoveryFrac < 0 || iGrid->mng->NRecoveryFrac > 1) {
+                if (iGrid->mng->NRecoveryFrac < 0 ||
+                    iGrid->mng->NRecoveryFrac > 1) {
                     log_err("NRecoveryFrac [%.2f] should be in range (0, 1)",
                             iGrid->mng->NRecoveryFrac);
                 }
-                if (iGrid->mng->PRecoveryFrac < 0 || iGrid->mng->PRecoveryFrac > 1) {
+                if (iGrid->mng->PRecoveryFrac < 0 ||
+                    iGrid->mng->PRecoveryFrac > 1) {
                     log_err("PRecoveryFrac [%.2f] should be in range (0, 1)",
                             iGrid->mng->PRecoveryFrac);
                 }
-                if (iGrid->mng->KRecoveryFrac < 0 || iGrid->mng->KRecoveryFrac > 1) {
+                if (iGrid->mng->KRecoveryFrac < 0 ||
+                    iGrid->mng->KRecoveryFrac > 1) {
                     log_err("KRecoveryFrac [%.2f] should be in range (0, 1)",
                             iGrid->mng->KRecoveryFrac);
                 }
-                
+
                 iGrid = iGrid->next;
             }
         }

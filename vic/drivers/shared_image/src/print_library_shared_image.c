@@ -117,7 +117,8 @@ sprint_location(char            *str,
              "\tio_idx         : %zd\n"
              "\tlocal_idx      : %zd\n",
              loc->latitude, loc->longitude, loc->area, loc->frac,
-             loc->nveg, loc->ncrop, loc->global_idx, loc->io_idx, loc->local_idx);
+             loc->nveg, loc->ncrop, loc->global_idx, loc->io_idx,
+             loc->local_idx);
 }
 
 /******************************************************************************

@@ -33,10 +33,10 @@
 bool
 lu_get_global_param(char *cmdstr)
 {
-    extern plugin_option_struct       plugin_options;
+    extern plugin_option_struct plugin_options;
 
-    char                              optstr[MAXSTRING];
-    char                              flgstr[MAXSTRING];
+    char                        optstr[MAXSTRING];
+    char                        flgstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
@@ -57,8 +57,8 @@ lu_get_global_param(char *cmdstr)
 void
 lu_validate_global_param(void)
 {
-    extern plugin_option_struct       plugin_options;
-    extern plugin_filenames_struct    plugin_filenames;
+    extern plugin_option_struct    plugin_options;
+    extern plugin_filenames_struct plugin_filenames;
 
     // Forcing
     if (plugin_options.FORCE_LANDUSE) {
