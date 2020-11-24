@@ -16,8 +16,8 @@
    viewBox="0 0 800 390.10541"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="VIC-WUR_framework.svg"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="VICWUR.svg"
    inkscape:export-filename="\\WURNET.NL\Homes\dropp001\AppData\FolderRedirection\Desktop\VICWUR.png"
    inkscape:export-xdpi="300"
    inkscape:export-ydpi="300">
@@ -29,15 +29,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.27558923"
-     inkscape:cx="2149.8047"
-     inkscape:cy="469.59258"
+     inkscape:cx="905.47416"
+     inkscape:cy="633.54735"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer13"
+     inkscape:current-layer="layer12"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-height="1005"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1"
      inkscape:snap-object-midpoints="true"
      inkscape:snap-center="true"
@@ -67,18 +67,6 @@
   </sodipodi:namedview>
   <defs
      id="defs2">
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient5269">
-      <stop
-         style="stop-color:#536fb6;stop-opacity:1;"
-         offset="0"
-         id="stop5265" />
-      <stop
-         style="stop-color:#536fb6;stop-opacity:0;"
-         offset="1"
-         id="stop5267" />
-    </linearGradient>
     <marker
        inkscape:stockid="Arrow2Send"
        orient="auto"
@@ -459,15 +447,6 @@
          d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
          transform="matrix(-0.3,0,0,-0.3,0.69,0)" />
     </marker>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5269"
-       id="linearGradient5271"
-       x1="289.23111"
-       y1="199.14456"
-       x2="289.5701"
-       y2="224.92192"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <metadata
      id="metadata5">
@@ -1716,18 +1695,6 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer16"
-     inkscape:label="WithdrawalBS">
-    <path
-       transform="translate(210.70752,122.06755)"
-       style="display:inline;fill:none;stroke:url(#linearGradient5271);stroke-width:6.69606018;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 289.57011,150.80986 v 74.11206"
-       id="path5613-7"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Groundwater"
      transform="translate(210.70752,122.06755)">
@@ -2174,13 +2141,13 @@
     <text
        xml:space="preserve"
        style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.99221706px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Italic';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.44291648"
-       x="434.28021"
-       y="189.26123"
+       x="443.27066"
+       y="197.45001"
        id="text19169-0-8-1"
        transform="rotate(-1.322086)"><tspan
          sodipodi:role="line"
-         x="434.28021"
-         y="189.26123"
+         x="443.27066"
+         y="197.45001"
          style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.99221706px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Italic';stroke-width:0.44291648"
          id="tspan19229-6">Groundwater</tspan></text>
     <text

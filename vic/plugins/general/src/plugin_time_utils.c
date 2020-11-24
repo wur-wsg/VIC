@@ -27,6 +27,33 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/******************************************
+* @brief   Copy dmy structure
+******************************************/
+void
+copy_dmy(dmy_struct *from,
+         dmy_struct *to)
+{
+    to->day = from->day;
+    to->day_in_year = from->day_in_year;
+    to->dayseconds = from->dayseconds;
+    to->month = from->month;
+    to->year = from->year;
+}
+
+/******************************************
+* @brief   Initialize dmy structure
+******************************************/
+void
+initialize_dmy(dmy_struct *dmy)
+{
+    dmy->day = 0;
+    dmy->day_in_year = 0;
+    dmy->dayseconds = 0;
+    dmy->month = 0;
+    dmy->year = 0;
+}
+
 /******************************************************************************
  * @brief  returns the day in the defined season,
  *         or the number of days past the season
@@ -91,4 +118,45 @@ days_per_month(unsigned short int month,
     days_per_month[1] += leap_year(year, calendar);
 
     return(days_per_month[month - 1]);
+}
+
+/******************************************************************************
+ * @brief  makes a dmy from day of year
+ *****************************************************************************/
+void
+dmy_doy(double             doy,
+        unsigned short int year,
+        unsigned short int calendar,
+        dmy_struct        *dmy)
+{
+    int    day, second, nday, month;
+    double dayofyr;
+    size_t i;
+
+    if (doy < 1 || doy >= DAYS_PER_YEAR + leap_year(year, calendar) + 1) {
+        log_err("Please define doy in range (1 - %d)", DAYS_PER_YEAR + leap_year(
+                    year,
+                    calendar));
+    }
+
+    dayofyr = doy;
+    for (i = 0; i < MONTHS_PER_YEAR; i++) {
+        nday = days_per_month(i + 1, year, calendar);
+
+        if (doy < (double)(nday + 1)) {
+            month = i + 1;
+            day = (int)doy;
+            second = (int)((doy - (double)day) * SEC_PER_DAY);
+            break;
+        }
+        else {
+            doy -= (double)nday;
+        }
+    }
+
+    dmy->day = day;
+    dmy->day_in_year = (int)dayofyr;
+    dmy->dayseconds = second;
+    dmy->month = month;
+    dmy->year = year;
 }

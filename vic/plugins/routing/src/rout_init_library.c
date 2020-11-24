@@ -56,7 +56,7 @@ initialize_rout_var(rout_var_struct *rout_var)
     rout_var->stream = 0.0;
     rout_var->discharge = 0.0;
     rout_var->nonrenew_deficit = 0.0;
-    for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; i++) {
+    for (i = 0; i < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; i++) {
         rout_var->dt_discharge[i] = 0.0;
     }
 }

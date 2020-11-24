@@ -198,8 +198,7 @@ dam_set_service(void)
                                                          adjustment[i][j]] = l;
                             global_dam_con[i][j].service_frac[k -
                                                               adjustment[i][j]]
-                                =
-                                    dvar[i];
+                                = dvar[i];
                             done = true;
                         }
                     }

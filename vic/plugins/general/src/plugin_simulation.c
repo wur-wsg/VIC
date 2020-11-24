@@ -39,11 +39,17 @@ plugin_force(void)
     if (plugin_options.ROUTING && plugin_options.FORCE_ROUTING) {
         rout_forcing();
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_forcing();
+    }
     if (plugin_options.EFR) {
         efr_forcing();
     }
     if (plugin_options.WATERUSE) {
         wu_forcing();
+    }
+    if (plugin_options.WOFOST) {
+        crop_forcing();
     }
     plugin_end_forcing();
 }
@@ -64,6 +70,10 @@ plugin_update_step_vars(void)
     for (i = 0; i < local_domain.ncells_active; i++) {
         if (plugin_options.WATERUSE) {
             wu_update_step_vars(i);
+        }
+        if (plugin_options.WOFOST) {
+            crop_update_step_vars(i);
+            wofost_update_step_vars(i);
         }
     }
 }
@@ -86,6 +96,9 @@ plugin_run(void)
     for (i = 0; i < local_domain.ncells_active; i++) {
         if (plugin_options.IRRIGATION) {
             irr_run_requirement(i);
+            if (plugin_options.WOFOST) {
+                crop_adjust_requirement(i);
+            }
             if (plugin_options.WATERUSE) {
                 irr_set_demand(i);
             }
@@ -109,6 +122,13 @@ plugin_run(void)
                     global_dam_run(iCell);
                 }
             }
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                iCell = routing_order[i];
+
+                if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
+                    wu_remote(iCell);
+                }
+            }
         }
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
             rout_random_run();
@@ -118,12 +138,19 @@ plugin_run(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
+        if (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH) {
+            wu_nonrenew(i);
+        }
         if (plugin_options.IRRIGATION) {
             if (plugin_options.POTENTIAL_IRRIGATION ||
                 plugin_options.WATERUSE) {
                 irr_get_withdrawn(i);
             }
             irr_run_shortage(i);
+        }
+
+        if (plugin_options.WOFOST) {
+            crop_run(i);
         }
     }
 }
@@ -145,6 +172,9 @@ plugin_put_data(void)
         if (plugin_options.ROUTING) {
             rout_put_data(i);
         }
+        if (plugin_options.FORCE_LANDUSE) {
+            lu_put_data(i);
+        }
         if (plugin_options.EFR) {
             efr_put_data(i);
         }
@@ -156,6 +186,9 @@ plugin_put_data(void)
         }
         if (plugin_options.IRRIGATION) {
             irr_put_data(i);
+        }
+        if (plugin_options.WOFOST) {
+            crop_put_data(i);
         }
 
         plugin_store_error(i);

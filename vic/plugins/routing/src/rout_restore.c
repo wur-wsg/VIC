@@ -47,7 +47,7 @@ rout_check_init_state_file(void)
                             global_param.model_steps_per_day;
 
         dimlen = get_nc_dimension(&(filenames.init_state), "routing_dt");
-        if (dimlen != plugin_options.UH_LENGTH + rout_steps_per_dt + 1) {
+        if (dimlen != plugin_options.UH_LENGTH + rout_steps_per_dt - 1) {
             log_err("Rout delta time in state file does not "
                     "match parameter file");
         }
@@ -92,7 +92,7 @@ rout_restore(void)
     d3count[2] = global_domain.n_nx;
 
     // total soil moisture
-    for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
+    for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; j++) {
         d3start[0] = j;
         get_scatter_nc_field_double(&(filenames.init_state),
                                     state_metadata[N_STATE_VARS +
@@ -130,7 +130,7 @@ rout_compute_derived_state_vars(void)
     for (i = 0; i < local_domain.ncells_active; i++) {
         rout_var[i].discharge = 0.0;
         rout_var[i].stream = 0.0;
-        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt + 1; j++) {
+        for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; j++) {
             if (j < rout_steps_per_dt) {
                 rout_var[i].discharge += rout_var[i].dt_discharge[j];
             }

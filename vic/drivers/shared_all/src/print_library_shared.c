@@ -53,6 +53,7 @@ print_cell_data(cell_data_struct *cell,
     }
     fprintf(LOG_DEST, "\trootmoist   : %f\n", cell->rootmoist);
     fprintf(LOG_DEST, "\twetness     : %f\n", cell->wetness);
+    fprintf(LOG_DEST, "\twater_stress: %f\n", cell->water_stress);
     fprintf(LOG_DEST, "\tzwt         : %f\n", cell->zwt);
     fprintf(LOG_DEST, "\tzwt_lumped  : %f\n", cell->zwt_lumped);
 
@@ -400,18 +401,19 @@ print_layer_data_states(layer_data_struct *ldata,
     size_t i;
 
     fprintf(LOG_DEST, "layer_data (states):\n");
-    fprintf(LOG_DEST, "\tCs   : %f\n", ldata->Cs);
-    fprintf(LOG_DEST, "\tT    : %f\n", ldata->T);
-    fprintf(LOG_DEST, "\tice  :");
+    fprintf(LOG_DEST, "\tCs          : %f\n", ldata->Cs);
+    fprintf(LOG_DEST, "\tT           : %f\n", ldata->T);
+    fprintf(LOG_DEST, "\tice         :");
     for (i = 0; i < nfrost; i++) {
         fprintf(LOG_DEST, "\t%f", ldata->ice[i]);
     }
     fprintf(LOG_DEST, "\n");
-    fprintf(LOG_DEST, "\tkappa: %f\n", ldata->kappa);
-    fprintf(LOG_DEST, "\tmoist: %f\n", ldata->moist);
-    fprintf(LOG_DEST, "\teff_sat: %f\n", ldata->eff_sat);
-    fprintf(LOG_DEST, "\tphi  : %f\n", ldata->phi);
-    fprintf(LOG_DEST, "\tzwt  : %f\n", ldata->zwt);
+    fprintf(LOG_DEST, "\tkappa       : %f\n", ldata->kappa);
+    fprintf(LOG_DEST, "\tmoist       : %f\n", ldata->moist);
+    fprintf(LOG_DEST, "\teff_sat     : %f\n", ldata->eff_sat);
+    fprintf(LOG_DEST, "\tphi         : %f\n", ldata->phi);
+    fprintf(LOG_DEST, "\tzwt         : %f\n", ldata->zwt);
+    fprintf(LOG_DEST, "\twater_stress: %f\n", ldata->water_stress);
 }
 
 void

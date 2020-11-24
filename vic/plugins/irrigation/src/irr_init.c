@@ -143,7 +143,12 @@ irr_set_info(void)
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < irr_con_map[i].ni_active; j++) {
-            irr_con[i][j].groundwater_fraction = dvar[i];
+            if (irr_con[i][j].paddy) {
+                irr_con[i][j].groundwater_fraction = 0.0;
+            }
+            else {
+                irr_con[i][j].groundwater_fraction = dvar[i];
+            }
         }
     }
 

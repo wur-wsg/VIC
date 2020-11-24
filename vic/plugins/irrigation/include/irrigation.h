@@ -27,6 +27,8 @@
 #ifndef IRRIGATION_H
 #define IRRIGATION_H
 
+#define PADDY_FLOOD_HEIGHT 200 // 20 cm paddy flooding
+
 /******************************************************************************
  * @brief   Irrigation Mapping
  *****************************************************************************/
