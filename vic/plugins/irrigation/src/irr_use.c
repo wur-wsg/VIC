@@ -276,11 +276,10 @@ irr_get_withdrawn(size_t iCell)
                 if (area_fract > 0) {
                     if (cirr_var->flag_req) {
                         demand += cirr_var->requirement * veg_fract *
-                                  area_fract * cirr_con->irrigation_efficiency;
+                                  area_fract;
                         if (cirr_con->paddy) {
                             demand += PADDY_FLOOD_HEIGHT * veg_fract *
-                                      area_fract *
-                                      cirr_con->irrigation_efficiency;
+                                      area_fract;
                         }
                     }
                 }
@@ -339,12 +338,9 @@ irr_get_withdrawn(size_t iCell)
                     // received
                     if (cirr_var->flag_req && avail_frac > 0) {
                         cirr_var->received = cirr_var->requirement *
-                                             cirr_con->irrigation_efficiency *
                                              avail_frac;
                         if (cirr_con->paddy) {
                             cirr_var->received += PADDY_FLOOD_HEIGHT *
-                                                  cirr_con->
-                                                  irrigation_efficiency *
                                                   avail_frac;
                         }
 
