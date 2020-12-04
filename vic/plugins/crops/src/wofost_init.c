@@ -327,7 +327,7 @@ wofost_set_data(void)
 
             // Set soil ph
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "ph", d2start, d2count, dvar);
+                                        "pH", d2start, d2count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
                 soil_con[i].ph = dvar[i];
