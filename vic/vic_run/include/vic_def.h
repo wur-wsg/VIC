@@ -574,6 +574,7 @@ typedef struct {
     double bulk_dens_min[MAX_LAYERS]; /**< bulk density of mineral soil (kg/m^3) */
     double bulk_dens_org[MAX_LAYERS]; /**< bulk density of organic soil (kg/m^3) */
     double c;                         /**< exponent in ARNO baseflow scheme */
+    double carbon;                    /**< organic carbon content in the top 20cm of soil (g/kg) */
     double depth[MAX_LAYERS];         /**< thickness of each soil moisture layer (m) */
     double dp;                        /**< soil thermal damping depth (m) */
     double dz_node[MAX_NODES];        /**< thermal node thickness (m) */
@@ -588,6 +589,7 @@ typedef struct {
     double max_moist[MAX_LAYERS];     /**< maximum moisture content (mm) per layer */
     double max_moist_node[MAX_NODES]; /**< maximum moisture content (mm/mm) per node */
     double max_snow_distrib_slope;    /**< Maximum slope of snow depth distribution [m].  This should equal 2*depth_min, where depth_min = minimum snow pack depth below which coverage < 1.  Comment, ported from user_def.h, with questionable units: SiB uses 0.076; Rosemount data imply 0.155cm depth ~ 0.028mm swq. */
+    double ph;                        /**< soil pH in the top 20cm (-) */
     double phi_s[MAX_LAYERS];         /**< soil moisture diffusion parameter (mm/mm) */
     double porosity[MAX_LAYERS];      /**< porosity (fraction) */
     double quartz[MAX_LAYERS];        /**< quartz content of soil (fraction of mineral soil volume) */

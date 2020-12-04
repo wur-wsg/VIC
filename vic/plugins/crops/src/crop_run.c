@@ -194,6 +194,9 @@ crop_run(size_t iCell)
     extern dmy_struct          *dmy;
     extern size_t               current;
 
+    double fN;
+    double aN;
+    
     size_t                      iTime;
     size_t                      iBand;
     size_t                      crop_class;
@@ -269,7 +272,19 @@ crop_run(size_t iCell)
                             }
                         }
                     }
-
+                    
+                    if (plugin_options.WOFOST_CALC_MIN) {
+                        fN = 0.25 * (soil_con[iCell].ph - 3);
+                        if(soil_con[iCell].ph > 7.0){
+                            fN = 1;
+                        } else if (soil_con[iCell].ph < 4.7){
+                            fN = 0.4;
+                        }
+                        aN = 2 * pow(2, (cgrid->met->Temp - 9.0) / 9.0);
+                        
+                        cgrid->mng->N_Mins = fN * aN * soil_con[iCell].carbon;
+                    }
+                    
                     wofost_run(cgrid);
 
                     /* Check crop coverage */

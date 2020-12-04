@@ -247,6 +247,7 @@ typedef struct {
     bool WOFOST_DIST_TSUM;              /**< distributed tsums for wofost module flag */
     bool WOFOST_DIST_FERT;              /**< distributed fertilization for wofost module flag */
     bool WOFOST_DIST_MIN;               /**< distributed mineralization for wofost module flag */
+    bool WOFOST_CALC_MIN;               /**< calculated mineralization for wofost module flag */
     bool WOFOST_CONTINUE;               /**< continue on end land-use for wofost module flag */
     bool WOFOST_FORCE_FERT;             /**< distributed fertilizer forcing for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */

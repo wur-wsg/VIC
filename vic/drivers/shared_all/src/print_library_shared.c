@@ -955,6 +955,7 @@ print_soil_con(soil_con_struct *scon,
     }
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tc                     : %f\n", scon->c);
+    fprintf(LOG_DEST, "\tcarbon                : %f\n", scon->carbon);
     fprintf(LOG_DEST, "\tdepth                 :");
     for (i = 0; i < nlayers; i++) {
         fprintf(LOG_DEST, "\t%f", scon->depth[i]);
@@ -1010,6 +1011,7 @@ print_soil_con(soil_con_struct *scon,
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tmax_snow_distrib_slope: %f\n",
             scon->max_snow_distrib_slope);
+    fprintf(LOG_DEST, "\tph                    : %f\n", scon->ph);
     fprintf(LOG_DEST, "\tphi_s                 :");
     for (i = 0; i < nlayers; i++) {
         fprintf(LOG_DEST, "\t%f", scon->phi_s[i]);

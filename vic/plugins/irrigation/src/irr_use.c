@@ -43,9 +43,10 @@ irr_set_demand(size_t iCell)
     extern wu_force_struct   **wu_force;
 
     double                     demand;
+    double                     demand_crop;
     double                     efficiency;
     double                     groundwater;
-    double                     total;
+    double                     consumed;
     double                     area_fract;
     double                     veg_fract;
 
@@ -62,7 +63,7 @@ irr_set_demand(size_t iCell)
     demand = 0.0;
     efficiency = 0.0;
     groundwater = 0.0;
-    total = 0.0;
+    consumed = 0.0;
     csoil_con = &soil_con[iCell];
     for (i = 0; i < irr_con_map[iCell].ni_active; i++) {
         cirr_con = &irr_con[iCell][i];
@@ -76,25 +77,26 @@ irr_set_demand(size_t iCell)
 
                 if (area_fract > 0) {
                     if (cirr_var->flag_req) {
-                        demand += cirr_var->requirement * veg_fract *
-                                  area_fract * cirr_con->irrigation_efficiency;
+                        demand_crop = cirr_var->requirement * veg_fract *
+                                  area_fract;
                         if (cirr_con->paddy) {
-                            demand += PADDY_FLOOD_HEIGHT * veg_fract *
-                                      area_fract *
-                                      cirr_con->irrigation_efficiency;
+                            demand_crop += PADDY_FLOOD_HEIGHT * veg_fract *
+                                      area_fract;
                         }
-                        efficiency += demand * cirr_con->irrigation_efficiency;
-                        groundwater += demand * cirr_con->groundwater_fraction;
-                        total += demand;
+                        consumed += demand_crop;
+                        demand += demand_crop * 
+                                cirr_con->irrigation_efficiency;
+                        groundwater += demand_crop * 
+                                cirr_con->irrigation_efficiency * 
+                                cirr_con->groundwater_fraction;
                     }
                 }
             }
         }
     }
-    if (total > 0) {
-        efficiency /= total;
-        efficiency = 1 / efficiency;
-        groundwater /= total;
+    if (demand > 0) {
+        efficiency = consumed / demand;
+        groundwater = groundwater / demand;
     }
     // efficiency = 1.0;
 

@@ -49,6 +49,10 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_DIST_MIN = str_to_bool(flgstr);
     }
+    else if (strcasecmp("WOFOST_CALC_MINERALIZATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_CALC_MIN = str_to_bool(flgstr);
+    }
     else if (strcasecmp("WOFOST_CONTINUE", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_CONTINUE = str_to_bool(flgstr);
@@ -117,6 +121,11 @@ crop_validate_global_param(void)
         if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_FERT_K],
                        MISSING_S) == 0) {
             log_err("WOFOST_FORCE_FERT = TRUE but K forcing file is missing");
+        }
+    }
+    if (plugin_options.WOFOST_CALC_MIN) {
+        if (!plugin_options.WOFOST_DIST_MIN) {
+            log_err("WOFOST_CALC_MIN = TRUE but WOFOST_DIST_MIN = FALSE");
         }
     }
 }
