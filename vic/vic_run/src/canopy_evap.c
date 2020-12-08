@@ -43,6 +43,7 @@ canopy_evap(layer_data_struct *layer,
             double             delta_t,
             double             rad,
             double             vpd,
+            double             co2,
             double             net_short,
             double             air_temp,
             double             ra,
@@ -92,8 +93,9 @@ canopy_evap(layer_data_struct *layer,
         tmp_Wdew = veg_var->Wdmax;
     }
 
-    rc = calc_rc((double) 0.0, net_short, veg_lib->RGL,
-                 air_temp, vpd, veg_var->LAI, (double) 1.0, false);
+    rc = calc_rc((double) 0.0, net_short, veg_lib->RGL, co2,
+                 air_temp, vpd, veg_var->LAI, veg_lib->b_co2, 
+                 (double) 1.0, false);
     if (veg_var->LAI > 0) {
         canopyevap = pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0)) *
                      penman(air_temp, elevation, rad, vpd, ra, rc,
@@ -141,7 +143,7 @@ canopy_evap(layer_data_struct *layer,
        Compute Evapotranspiration from Vegetation
     *******************************************/
     if (CALC_EVAP) {
-        transpiration(layer, veg_var, veg_lib, rad, vpd, net_short,
+        transpiration(layer, veg_var, veg_lib, rad, vpd, co2, net_short,
                       air_temp, ra, *dryFrac, delta_t, elevation, Wmax, Wcr,
                       Wpwp, layertransp, frost_fract, root, shortwave, Catm,
                       CanopLayerBnd);
@@ -170,6 +172,7 @@ transpiration(layer_data_struct *layer,
               veg_lib_struct    *veg_lib,
               double             rad,
               double             vpd,
+              double             co2,
               double             net_short,
               double             air_temp,
               double             ra,
@@ -298,7 +301,8 @@ transpiration(layer_data_struct *layer,
             /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
             veg_var->rc = calc_rc(veg_lib->rmin, net_short,
                                   veg_lib->RGL, air_temp, vpd,
-                                  veg_var->LAI, gsm_inv, false);
+                                  co2, veg_var->LAI, veg_lib->b_co2,
+                                  gsm_inv, false);
             if (options.CARBON) {
                 for (cidx = 0; cidx < options.Ncanopy; cidx++) {
                     if (veg_var->LAI > 0) {
@@ -407,8 +411,9 @@ transpiration(layer_data_struct *layer,
                     veg_var->rc = calc_rc(veg_lib->rmin,
                                           net_short,
                                           veg_lib->RGL,
-                                          air_temp, vpd,
-                                          veg_var->LAI, gsm_inv, false);
+                                          air_temp, vpd, co2,
+                                          veg_var->LAI, veg_lib->b_co2, 
+                                          gsm_inv, false);
                     if (options.CARBON) {
                         for (cidx = 0; cidx < options.Ncanopy; cidx++) {
                             if (veg_var->LAI > 0) {

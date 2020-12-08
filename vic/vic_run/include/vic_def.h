@@ -280,6 +280,8 @@ typedef struct {
                                           FROM_VEGPARAM = use fcanopy values from the veg param file */
     unsigned short int LAI_SRC;        /**< FROM_VEGLIB = use LAI values from veg library file
                                           FROM_VEGPARAM = use LAI values from the veg param file */
+    unsigned short int BCO2_SRC;       /**< FROM_VEGLIB = use b_co2 values from veg library file
+                                          FROM_VEGPARAM = use b_co2 values from the veg param file */
     bool LAKE_PROFILE;   /**< TRUE = user-specified lake/area profile */
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 
@@ -377,6 +379,7 @@ typedef struct {
     double CANOPY_CLOSURE;  /**< Threshold vapor pressure deficit for stomatal closure (Pa) */
     double CANOPY_RSMAX;  /**< Maximum allowable resistance (s/m) */
     double CANOPY_VPDMINFACTOR;  /**< Minimum allowable vapor pressure deficit factor */
+    double CANOPY_CO2REF;  /**< Reference atmospheric co2 concentration (ppm) */
 
     // Lake Parameters
     double LAKE_TMELT;
@@ -674,6 +677,7 @@ typedef struct {
                               default = 0.5 (N/A) */
     double rarc;           /**< architectural resistance (s/m) */
     double rmin;           /**< minimum stomatal resistance (s/m) */
+    double b_co2;          /**< stomatal resistance co2 parameter */
     double roughness[MONTHS_PER_YEAR];  /**< vegetation roughness length (m) */
     double trunk_ratio;    /**< ratio of trunk height to tree height,
                               default = 0.2 (fraction) */

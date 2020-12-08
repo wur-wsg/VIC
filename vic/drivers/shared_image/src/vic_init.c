@@ -182,6 +182,23 @@ vic_init(void)
         }
     }
 
+    // default value for b_co2
+    for (j = 0; j < options.NVEGTYPES; j++) {
+        if (options.BCO2_SRC == FROM_DEFAULT) {
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                veg_lib[i][j].b_co2 = 0.0;
+            }
+        }
+        else if (options.BCO2_SRC == FROM_VEGLIB || options.BCO2_SRC == FROM_VEGPARAM) {
+            d3start[0] = j;
+            get_scatter_nc_field_double(&(filenames.params), "b_co2",
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                veg_lib[i][j].b_co2 = (double) dvar[i];
+            }
+        }
+    }
+
     // wind_atten
     for (j = 0; j < options.NVEGTYPES; j++) {
         d3start[0] = j;

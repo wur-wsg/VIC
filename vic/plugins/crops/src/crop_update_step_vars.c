@@ -122,11 +122,9 @@ crop_update_step_vars(size_t iCell)
                                    area_fract;
             cveg_lib->RGL += cgrid->crp->prm.RGL * area_fract;
 
-            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance /
-                              cgrid->crp->prm.CorrectionTransp * tmp_min *
+            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min *
                               area_fract;
-            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance /
-                              cgrid->crp->prm.CorrectionTransp * area_fract;
+            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * area_fract;
 
             if (cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
                 cveg_con->root[0] +=

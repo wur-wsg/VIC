@@ -159,7 +159,7 @@ put_data(all_vars_struct   *all_vars,
         out_data[OUT_PAR][0] = force->par[NR];
     }
     else {
-        out_data[OUT_CATM][0] = MISSING;
+        out_data[OUT_CATM][0] = force->Catm[NR] / PPM_to_MIXRATIO;
         out_data[OUT_FDIR][0] = MISSING;
         out_data[OUT_PAR][0] = MISSING;
     }

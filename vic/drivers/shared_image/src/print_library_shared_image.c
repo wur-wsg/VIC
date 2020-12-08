@@ -55,6 +55,8 @@ print_force_data(force_data_struct *force)
         fprintf(LOG_DEST, "\tCatm      : %.4f\n", force->Catm[0]);
         fprintf(LOG_DEST, "\tfdir      : %.4f\n", force->fdir[0]);
         fprintf(LOG_DEST, "\tpar       : %.4f\n", force->par[0]);
+    } else {
+        fprintf(LOG_DEST, "\tCatm      : %.4f\n", force->Catm[0]);
     }
 }
 

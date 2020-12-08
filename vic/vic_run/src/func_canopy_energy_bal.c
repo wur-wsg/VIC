@@ -54,6 +54,7 @@ func_canopy_energy_bal(double  Tfoliage,
     double                   Le;
     double                   Tcanopy;
     double                   Vpd;
+    double                   co2;
     double                   shortwave;
     double                   Catm;
     double                  *dryFrac;
@@ -121,6 +122,7 @@ func_canopy_energy_bal(double  Tfoliage,
     Le = (double) va_arg(ap, double);
     Tcanopy = (double) va_arg(ap, double);
     Vpd = (double) va_arg(ap, double);
+    co2 = (double) va_arg(ap, double);
     shortwave = (double) va_arg(ap, double);
     Catm = (double) va_arg(ap, double);
     dryFrac = (double *) va_arg(ap, double *);
@@ -239,7 +241,7 @@ func_canopy_energy_bal(double  Tfoliage,
         prec = Rainfall * MM_PER_M;
         *Evap = canopy_evap(layer, veg_var, veg_lib, false,
                             Wdew, delta_t, *NetRadiation,
-                            Vpd, NetShortOver, Tcanopy, Ra_used[1],
+                            Vpd, co2, NetShortOver, Tcanopy, Ra_used[1],
                             elevation, prec, Wmax, Wcr, Wpwp, frost_fract,
                             root, dryFrac, shortwave, Catm, CanopLayerBnd);
         *Wdew /= MM_PER_M;

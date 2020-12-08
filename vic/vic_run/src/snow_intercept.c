@@ -122,6 +122,7 @@ snow_intercept(double             Dt,
     double                   EactAir;
     double                   Press; // atmospheric pressure
     double                   Vpd; // vapor pressure defficit
+    double                   co2; // atmospheric co2 concentration
     double                   shortwave; //
     double                   Catm; //
 
@@ -136,6 +137,7 @@ snow_intercept(double             Dt,
     EactAir = force->vp[hidx];
     Press = force->pressure[hidx];
     Vpd = force->vpd[hidx];
+    co2 = force->Catm[hidx] / PPM_to_MIXRATIO;
     shortwave = force->shortwave[hidx];
     if (options.CARBON) {
         Catm = force->Catm[hidx];
@@ -309,7 +311,7 @@ snow_intercept(double             Dt,
                                        soil_con->max_moist, &(Wcr_array[0]),
                                        soil_con->Wpwp, soil_con->frost_fract,
                                        AirDens, EactAir, Press, Le, Tcanopy,
-                                       Vpd, shortwave, Catm, dryFrac, &Evap,
+                                       Vpd, co2, shortwave, Catm, dryFrac, &Evap,
                                        Ra, Ra_used, *RainFall, Wind,
                                        displacement, ref_height, roughness,
                                        root, CanopLayerBnd, IntRainOrg,
@@ -351,7 +353,7 @@ snow_intercept(double             Dt,
                                &(Wcr_array[0]), soil_con->Wpwp,
                                soil_con->frost_fract,
                                AirDens, EactAir, Press, Le,
-                               Tcanopy, Vpd, shortwave, Catm, dryFrac,
+                               Tcanopy, Vpd, co2, shortwave, Catm, dryFrac,
                                &Evap, Ra, Ra_used, *RainFall, Wind,
                                displacement, ref_height,
                                roughness, root, CanopLayerBnd, IntRainOrg,
@@ -409,7 +411,7 @@ snow_intercept(double             Dt,
                                        soil_con->max_moist, &(Wcr_array[0]),
                                        soil_con->Wpwp, soil_con->frost_fract,
                                        AirDens, EactAir, Press, Le, Tcanopy,
-                                       Vpd, shortwave, Catm, dryFrac, &Evap,
+                                       Vpd, co2, shortwave, Catm, dryFrac, &Evap,
                                        Ra, Ra_used, *RainFall, Wind,
                                        displacement, ref_height, roughness,
                                        root, CanopLayerBnd, IntRainOrg,

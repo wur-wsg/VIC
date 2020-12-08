@@ -62,7 +62,7 @@ double calc_sensible_heat(double atmos_density, double t1, double t0,
                           double Ra);
 void calc_Nscale_factors(bool, double *, double, double, double *);
 double calc_rainonly(double, double, double, double);
-double calc_rc(double, double, double, double, double, double, double, char);
+double calc_rc(double, double, double, double, double, double, double, double, double, char);
 void calc_rc_ps(char, double, double, double, double *, double, double,
                 double *, double, double, double *, double, double, double,
                 double *, double *);
@@ -74,7 +74,7 @@ int calc_soil_thermal_fluxes(int, double *, double *, char *, unsigned int *,
                              double *, double *, double *, double *, double *,
                              double *, int, int, int);
 double calc_surf_energy_bal(double, double, double, double, double, double,
-                            double, double, double, double, double, double,
+                            double, double, double, double, double, double, double,
                             double, double, double, double, double, double,
                             double, double, double, double, double, double *,
                             double *, double *, double *, double *, double *,
@@ -105,15 +105,15 @@ void canopy_assimilation(char, double, double, double, double *, double, double,
                          double *, double *, double *, double *, double *);
 double canopy_evap(layer_data_struct *, veg_var_struct *, veg_lib_struct *,
                    bool, double *, double, double, double, double, double,
-                   double, double, double, double *, double *, double *,
+                   double, double, double, double, double *, double *, double *,
                    double *, double *, double *, double, double, double *);
 void colavg(double *, double *, double *, double, double *, int, double,
             double);
 double compute_coszen(double, double, double, unsigned short int, unsigned int);
 void compute_derived_lake_dimensions(lake_var_struct *, lake_con_struct);
 void compute_pot_evap(size_t, double, double, double, double, double, double,
-                      double, double, double, double *, char, double, double,
-                      double, double *);
+                      double, double, double, double, double, double *, char,
+                      double, double, double, double *);
 void compute_runoff_and_asat(soil_con_struct *, double *, double, double *,
                              double *);
 double calc_Q12(double, double, double, double, double);
@@ -307,7 +307,7 @@ void temp_area(double, double, double, double *, double *, double *, double *,
                double *);
 void tracer_mixer(double *, int *, double *, int, double, double, double *);
 void transpiration(layer_data_struct *, veg_var_struct *, veg_lib_struct *,
-                   double, double, double, double, double, double, double,
+                   double, double, double, double, double, double, double, double,
                    double, double *, double *, double *, double *, double *,
                    double *, double, double, double *);
 double transport_with_height(double z, double es, double Wind, double AirDens,
