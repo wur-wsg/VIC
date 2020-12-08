@@ -100,7 +100,6 @@ surface_fluxes(bool                 overstory,
     double                   Tsurf; // ground surface temperature
     double                   VPDcanopy; // vapor pressure deficit in canopy/atmos
     double                   VPcanopy; // vapor pressure in canopy/atmos
-    double                   co2;
     double                   coverage; // mid-step snow cover fraction
     double                   delta_coverage; // change in snow cover fraction
     double                   delta_snow_heat; // change in snowpack heat storage
@@ -384,7 +383,6 @@ surface_fluxes(bool                 overstory,
         Tcanopy = Tair;
         VPcanopy = force->vp[hidx];
         VPDcanopy = force->vpd[hidx];
-        co2 = force->Catm[hidx] / PPM_to_MIXRATIO;
 
         over_iter = 0;
         tol_over = 999;
@@ -602,7 +600,7 @@ surface_fluxes(bool                 overstory,
                                              iter_snow_energy.latent_sub,
                                              iter_snow_energy.sensible,
                                              Tcanopy, VPDcanopy,
-                                             VPcanopy, co2,
+                                             VPcanopy,
                                              delta_coverage, dp,
                                              ice0, step_melt_energy, moist0,
                                              iter_snow.coverage,
@@ -791,7 +789,8 @@ surface_fluxes(bool                 overstory,
                          veg_lib->rmin,
                          iter_soil_veg_var.albedo, force->shortwave[hidx],
                          iter_soil_energy.NetLongAtmos,
-                         veg_lib->RGL, Tair, VPDcanopy, co2,
+                         veg_lib->RGL, Tair, VPDcanopy,
+                         force->Catm[hidx] / PPM_to_MIXRATIO,
                          iter_soil_veg_var.LAI, veg_lib->b_co2,
                          soil_con->elevation,
                          iter_aero_resist_veg,

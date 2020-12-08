@@ -28,63 +28,26 @@
 #include <plugin.h>
 
 /******************************************
-* @brief   Initialize the crop constants
+* @brief   Initialize the co2 forcing
 ******************************************/
 void
-initialize_crop_con(crop_con_struct *crop_con)
+initialize_co2_force(co2_force_struct *co2_force)
 {
-    extern plugin_option_struct plugin_options;
-
-    size_t                      i;
-
-    for (i = 0; i < plugin_options.NFERTTIMES; i++) {
-        crop_con->DVS_point[i] = 0.;
-        crop_con->N_amount[i] = 0.;
-        crop_con->P_amount[i] = 0.;
-        crop_con->K_amount[i] = 0.;
-    }
-}
-
-/******************************************
-* @brief   Initialize the irrigation constants
-******************************************/
-void
-initialize_crop_force(crop_force_struct *crop_force,
-                      size_t             ncrops)
-{
-    extern plugin_option_struct plugin_options;
-
-    size_t                      iCrop;
-    size_t                      iFert;
-
-    for (iCrop = 0; iCrop < ncrops; iCrop++) {
-        for (iFert = 0; iFert < plugin_options.NFERTTIMES; iFert++) {
-            crop_force->DVS_point[iCrop][iFert] = 0.;
-            crop_force->N_amount[iCrop][iFert] = 0.;
-            crop_force->P_amount[iCrop][iFert] = 0.;
-            crop_force->K_amount[iCrop][iFert] = 0.;
-        }
-    }
+    co2_force->CO2 = 0.;
 }
 
 /******************************************
 * @brief   Initialize the irrigation structures
 ******************************************/
 void
-crop_initialize_local_structures(void)
+co2_initialize_local_structures(void)
 {
     extern domain_struct        local_domain;
-    extern crop_con_struct    **crop_con;
-    extern crop_con_map_struct *crop_con_map;
-    extern crop_force_struct   *crop_force;
+    extern co2_force_struct    *co2_force;
 
     size_t                      i;
-    size_t                      j;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        initialize_crop_force(&crop_force[i], crop_con_map[i].nc_active);
-        for (j = 0; j < crop_con_map[i].nc_active; j++) {
-            initialize_crop_con(&crop_con[i][j]);
-        }
+        initialize_co2_force(&co2_force[i]);
     }
 }

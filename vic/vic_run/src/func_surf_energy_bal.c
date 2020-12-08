@@ -102,7 +102,6 @@ func_surf_energy_bal(double  Ts,
     double             surf_atten;
     double             vp;
     double             vpd;
-    double             co2;
     double             shortwave;
     double             Catm;
     double            *dryFrac;
@@ -260,7 +259,6 @@ func_surf_energy_bal(double  Ts,
     surf_atten = (double) va_arg(ap, double);
     vp = (double) va_arg(ap, double);
     vpd = (double) va_arg(ap, double);
-    co2 = (double) va_arg(ap, double);
     shortwave = (double) va_arg(ap, double);
     Catm = (double) va_arg(ap, double);
     dryFrac = (double *) va_arg(ap, double *);
@@ -762,7 +760,7 @@ func_surf_energy_bal(double  Ts,
         // if VEG is true, then fcanopy > 0 and LAI > 0
         if (VEG) {
             Evap = canopy_evap(layer, veg_var, veg_lib, true, Wdew,
-                               delta_t, NetBareRad, vpd, co2, NetShortBare,
+                               delta_t, NetBareRad, vpd, NetShortBare,
                                Tair, Ra_veg[1], elevation, rainfall,
                                Wmax, Wcr, Wpwp, frost_fract, root,
                                dryFrac, shortwave, Catm, CanopLayerBnd);

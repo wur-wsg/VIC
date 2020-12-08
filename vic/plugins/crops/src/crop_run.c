@@ -37,7 +37,7 @@ crop_register_meteo(size_t iCell)
     extern soil_con_struct    *soil_con;
     extern option_struct       options;
     extern force_data_struct  *force;
-    extern crop_force_struct  *crop_force;
+    extern co2_force_struct   *co2_force;
     extern all_vars_struct    *all_vars;
     extern veg_con_map_struct *veg_con_map;
     extern size_t              NR;
@@ -59,7 +59,7 @@ crop_register_meteo(size_t iCell)
             iVeg = veg_con_map[iCell].vidx[veg_class];
             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
 
-            cgrid->met->CO2 += crop_force[iCell].CO2 *
+            cgrid->met->CO2 += co2_force[iCell].CO2 *
                                (plugin_global_param.wofost_steps_per_day /
                                 global_param.atmos_steps_per_day);
             cgrid->met->Radiation += force[iCell].shortwave[NR] * SEC_PER_DAY *

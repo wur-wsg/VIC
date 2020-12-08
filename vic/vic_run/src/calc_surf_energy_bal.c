@@ -48,7 +48,6 @@ calc_surf_energy_bal(double             Le,
                      double             Tair,        // T of canopy or air
                      double             VPDcanopy,
                      double             VPcanopy,
-                     double             co2,
                      double             delta_coverage,        // change in coverage fraction
                      double             dp,
                      double             ice0,
@@ -212,12 +211,7 @@ calc_surf_energy_bal(double             Le,
     atmos_density = force->density[hidx];     // atmospheric density
     atmos_pressure = force->pressure[hidx];    // atmospheric pressure
     atmos_shortwave = force->shortwave[hidx];   // incoming shortwave radiation
-    if (options.CARBON) {
-        atmos_Catm = force->Catm[hidx];        // CO2 mixing ratio
-    }
-    else {
-        atmos_Catm = MISSING;
-    }
+    atmos_Catm = force->Catm[hidx];        // CO2 mixing ratio
     emissivity = 1.;        // longwave emissivity
     delta_t = dt;
     max_moist = soil_con->max_moist[0] / (soil_con->depth[0] * MM_PER_M);
@@ -313,7 +307,7 @@ calc_surf_energy_bal(double             Le,
                            CanopLayerBnd, UnderStory, overstory, NetShortBare,
                            NetShortGrnd, TmpNetShortSnow, Tair, atmos_density,
                            atmos_pressure, emissivity, LongBareIn, LongSnowIn,
-                           surf_atten, VPcanopy, co2, VPDcanopy, atmos_shortwave,
+                           surf_atten, VPcanopy, VPDcanopy, atmos_shortwave,
                            atmos_Catm, dryFrac, &Wdew, displacement,
                            aero_resist, aero_resist_veg, aero_resist_used,
                            rainfall, ref_height,
@@ -436,7 +430,7 @@ calc_surf_energy_bal(double             Le,
                                NetShortGrnd,
                                TmpNetShortSnow, Tair, atmos_density,
                                atmos_pressure, emissivity, LongBareIn,
-                               LongSnowIn, surf_atten, VPcanopy, VPDcanopy, co2,
+                               LongSnowIn, surf_atten, VPcanopy, VPDcanopy,
                                atmos_shortwave, atmos_Catm, dryFrac, &Wdew,
                                displacement, aero_resist, aero_resist_veg,
                                aero_resist_used,
@@ -566,7 +560,7 @@ calc_surf_energy_bal(double             Le,
                                   NetShortGrnd, TmpNetShortSnow, Tair,
                                   atmos_density, atmos_pressure, emissivity,
                                   LongBareIn, LongSnowIn, surf_atten, VPcanopy,
-                                  VPDcanopy, co2, atmos_shortwave, atmos_Catm,
+                                  VPDcanopy, atmos_shortwave, atmos_Catm,
                                   dryFrac, &Wdew, displacement, aero_resist,
                                   aero_resist_veg, aero_resist_used, rainfall,
                                   ref_height,

@@ -20,7 +20,6 @@ typedef struct {
 } crop_con_struct;
 
 typedef struct {
-    double CO2;
     double **DVS_point;
     double **N_amount;
     double **P_amount;

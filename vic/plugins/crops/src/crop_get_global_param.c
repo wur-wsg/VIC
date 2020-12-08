@@ -72,6 +72,7 @@ void
 crop_validate_global_param(void)
 {
     extern plugin_global_param_struct plugin_global_param;
+    extern plugin_option_struct       plugin_options;
     extern plugin_filenames_struct    plugin_filenames;
 
     // Validate wofost time step
@@ -99,8 +100,8 @@ crop_validate_global_param(void)
         log_err("WOFOST = TRUE but text file is missing");
     }
     // Forcing
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_CO2], MISSING_S) == 0) {
-        log_err("WOFOST = TRUE but CO2 forcing file is missing");
+    if (!plugin_options.FORCE_CO2) {
+        log_err("WOFOST = TRUE but FORCE_CO2 = FALSE");
     }
     if (plugin_options.WOFOST_FORCE_FERT) {
         if (!plugin_options.WOFOST_DIST_FERT) {

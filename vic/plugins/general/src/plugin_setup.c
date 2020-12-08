@@ -165,7 +165,10 @@ plugin_alloc(void)
     plugin_save_data =
         malloc(local_domain.ncells_active * sizeof(*plugin_save_data));
     check_alloc_status(plugin_save_data, "Memory allocation error");
-
+    
+    if(plugin_options.FORCE_CO2){
+        co2_alloc();
+    }
     if (plugin_options.ROUTING) {
         rout_alloc();
     }
@@ -299,6 +302,9 @@ plugin_finalize(void)
     MPI_Type_free(&plugin_mpi_option_struct_type);
     MPI_Type_free(&plugin_mpi_param_struct_type);
 
+    if(plugin_options.FORCE_CO2){
+        co2_finalize();
+    }
     if (plugin_options.ROUTING) {
         rout_finalize();
     }

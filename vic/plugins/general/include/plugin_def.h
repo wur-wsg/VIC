@@ -176,11 +176,12 @@ enum {
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
     // crops
-    FORCING_CO2,                        /**< CO2 concentration [ppm] */
     FORCING_FERT_DVS,                   /**< Fertilizer application DVS point [-] */
     FORCING_FERT_N,                     /**< Fertilizer application N amount [kg ha-1] */
     FORCING_FERT_P,                     /**< Fertilizer application P amount [kg ha-1] */
     FORCING_FERT_K,                     /**< Fertilizer application K amount [kg ha-1] */
+    // co2
+    FORCING_CO2,                        /**< CO2 concentration [ppm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/
@@ -252,6 +253,7 @@ typedef struct {
     bool WOFOST_FORCE_FERT;             /**< distributed fertilizer forcing for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */
     short unsigned int NFERTTIMES;      /**< number of fertilizer occations */
+    bool FORCE_CO2;                     /**< force atmospheric CO2 concentration flag */
 } plugin_option_struct;
 
 /******************************************************************************
