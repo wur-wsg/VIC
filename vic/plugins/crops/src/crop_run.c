@@ -154,8 +154,7 @@ crop_run_flag(void)
     extern dmy_struct         *dmy;
     extern size_t              current;
 
-    if (current > 0 &&
-        dmy[current].dayseconds ==
+    if (dmy[current].dayseconds ==
         SEC_PER_DAY - (SEC_PER_DAY / global_param.model_steps_per_day)) {
         return true;
     }

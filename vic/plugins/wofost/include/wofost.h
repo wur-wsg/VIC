@@ -471,6 +471,7 @@ void FillManageVariables();
 /* General help functions */
 float Afgen(TABLE *, float *);
 float List(TABLE_D *);
+float List_cumsum(TABLE_D *, size_t);
 float limit(float a, float b, float c);
 float insw(float x1, float x2, float x3);
 float sweaf(float, float);

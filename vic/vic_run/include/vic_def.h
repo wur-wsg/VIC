@@ -75,7 +75,7 @@
 #define MIN_SNOW_WETFRAC 0.01  /**< Minimum fraction of snow depth to be considered wet */
 
 /***** Define minimum and maximum values for model timesteps *****/
-#define MIN_SUBDAILY_STEPS_PER_DAY  4
+#define MIN_SUBDAILY_STEPS_PER_DAY  1
 #define MAX_SUBDAILY_STEPS_PER_DAY  1440
 
 #ifndef WET

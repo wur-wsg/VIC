@@ -149,7 +149,8 @@ plugin_run(void)
         }
         if (plugin_options.IRRIGATION) {
             if (plugin_options.POTENTIAL_IRRIGATION ||
-                plugin_options.WATERUSE) {
+                plugin_options.WATERUSE ||
+                plugin_options.WOFOST) {
                 irr_get_withdrawn(i);
             }
             irr_run_shortage(i);
