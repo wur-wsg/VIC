@@ -80,11 +80,6 @@ rout_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].description,
              MAXSTRING, "%s", "non-renewable deficit");
-
-    out_metadata[N_OUTVAR_TYPES + OUT_STREAM_INFLOW].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].nelem = 1;
 }
 
 /******************************************

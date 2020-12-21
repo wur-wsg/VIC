@@ -89,12 +89,6 @@ irr_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].description,
              MAXSTRING, "%s", "total irrigation water applied");
-
-    out_metadata[N_OUTVAR_TYPES + OUT_SHORTAGE].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_REQUIREMENT].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].nelem = 1;
 }
 
 /******************************************

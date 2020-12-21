@@ -33,6 +33,7 @@
 void
 crop_set_output_met_data_info(void)
 {
+    extern plugin_option_struct plugin_options;
     extern metadata_struct out_metadata[];
 
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].varname,

@@ -565,7 +565,7 @@ irr_wofost(size_t iCell)
                     crop_fract = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
                     
                     if(veg_con_map[iCell].vidx[veg_class] == (int) iVeg) {
-                        received_tmp += List(cgrid->mng->Irrigation) * crop_fract;
+                        received_tmp += List(cgrid->mng->Irrigation) * crop_fract * MM_PER_CM;
                     }
 
                     cgrid = cgrid->next;
