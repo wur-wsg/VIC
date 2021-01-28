@@ -14,16 +14,14 @@ Growth(SimUnit *Grid,
     extern plugin_global_param_struct plugin_global_param;
     float                             shoots;
     float                             Translocation;
-    float                             FRTRL;
 
     /* Water stress is more severe as compared to Nitrogen stress and */
     /* partitioning will follow the original assumptions of LINTUL2   */
 
-    FRTRL = 0.;
     Translocation = 0.;
     if (Grid->crp->st.Development >= 1.) {
         Translocation = (Grid->crp->st.stems + Grid->crp->dst.stems) *
-                        Grid->crp->rt.Development * FRTRL;
+                        Grid->crp->rt.Development * Grid->crp->prm.TranslocationFrac;
     }
 
     Grid->crp->drt.roots = Grid->crp->st.roots * Afgen(

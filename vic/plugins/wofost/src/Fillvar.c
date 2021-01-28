@@ -116,6 +116,8 @@ FillCropVariables(Plant *CROP,
     CROP->prm.MinStomatalResistance = Variable[72];
     CROP->prm.MaxArchitecturalResistance = Variable[73];
     CROP->prm.Fcanopy = Variable[74];
+    
+    CROP->prm.TranslocationFrac = Variable[75];
 
     for (i = 0; i <= NR_VARIABLES_CRP; i++) {
         Variable[i] = 0.;

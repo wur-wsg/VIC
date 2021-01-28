@@ -104,6 +104,7 @@ char *CropParam[MAXSTRING] = {
     "MinStomResist",
     "MaxArchResist",
     "Fcanopy",
+    "FRTRL",
     "NULL"
 };
 char *CropParam2[MAXSTRING] = {

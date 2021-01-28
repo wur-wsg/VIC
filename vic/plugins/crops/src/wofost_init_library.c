@@ -273,6 +273,7 @@ initialize_wofost_parameters(Parameters *prm)
     prm->MinStomatalResistance = 0.;
     prm->MaxArchitecturalResistance = 0.;
     prm->Fcanopy = 0.;
+    prm->TranslocationFrac = 0.;
 }
 
 void

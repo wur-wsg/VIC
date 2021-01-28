@@ -324,6 +324,7 @@ irr_potential(size_t iCell)
 
     double                     area_fract;
     double                     veg_fract;
+    double received_tmp;
 
     size_t                     iIrr;
     size_t                     iBand;
@@ -349,13 +350,18 @@ irr_potential(size_t iCell)
 
                 if (area_fract > 0) {
                     
+                    received_tmp = 0.0;
                     if(cirr_var->flag_req){
-                        cirr_var->received = cirr_var->requirement;
+                        received_tmp = cirr_var->requirement;
+                        if (cirr_con->paddy) {
+                            received_tmp += PADDY_FLOOD_HEIGHT;
+                        }
                         
                         irr_apply(iCell, iVeg, iBand, 
-                                  cirr_var->received, 
+                                  received_tmp, 
                                 &(cirr_var->applied), 
                                 &(cirr_var->leftover));
+                        cirr_var->received += received_tmp;
                     }
                 }
             }
@@ -377,6 +383,7 @@ irr_wateruse(size_t iCell)
     extern soil_con_struct    *soil_con;
     extern wu_con_map_struct  *wu_con_map;
 
+    double received_tmp;
     double                     demand;
     double                     available;
     double                     received;
@@ -466,32 +473,27 @@ irr_wateruse(size_t iCell)
 
                     if (area_fract > 0) {
 
+                        received_tmp = 0.0;
                         if (cirr_var->flag_req && avail_frac > 0) {
-                            cirr_var->received = cirr_var->requirement *
+                            received_tmp = cirr_var->requirement *
                                                  avail_frac;
                             if (cirr_con->paddy) {
-                                cirr_var->received += PADDY_FLOOD_HEIGHT *
+                                received_tmp += PADDY_FLOOD_HEIGHT *
                                                       avail_frac;
                             }
                             
                             prev_leftover += cirr_var->leftover * veg_fract * area_fract;
                             prev_applied += cirr_var->applied * veg_fract * area_fract;
-                            double prev_left = cirr_var->leftover;
-                            double prev_app = cirr_var->applied;
                             
                             irr_apply(iCell, iVeg, iBand,
-                                    cirr_var->received,
+                                    received_tmp,
                                     &(cirr_var->applied),
                                     &(cirr_var->leftover));
+                            cirr_var->received += received_tmp;
 
                             received += cirr_var->received * veg_fract * area_fract;
                             applied += cirr_var->applied * veg_fract * area_fract;
                             leftover += cirr_var->leftover * veg_fract * area_fract;
-                            
-                            if((cirr_var->applied - prev_app) + (cirr_var->leftover - prev_left) - cirr_var->received > WU_BALANCE_ERROR_THRESH ||
-                                    (cirr_var->applied - prev_app) + (cirr_var->leftover - prev_left) - cirr_var->received < -WU_BALANCE_ERROR_THRESH){
-                                log_info("error");
-                            }
                         }
                     }
                 }
@@ -524,6 +526,10 @@ void
 irr_wofost(size_t iCell)
 {
     extern option_struct       options;
+    extern irr_con_map_struct *irr_con_map;
+    extern irr_con_struct    **irr_con;
+    extern irr_var_struct   ***irr_var;
+    extern veg_con_struct    **veg_con;
     extern veg_con_map_struct *veg_con_map;
     extern soil_con_struct    *soil_con;
     extern SimUnit           ***Grid;
@@ -531,50 +537,101 @@ irr_wofost(size_t iCell)
     extern size_t current;
     
     double                     area_fract;
+    double                     veg_fract;
     double                     crop_fract;
     double received_tmp;
-    double applied_tmp;
-    double leftover_tmp;
+    bool irrigated;
 
     size_t                     crop_class;
     size_t                     veg_class;
+    size_t                     iIrr;
     size_t                     iBand;
     size_t                     iVeg;
-    
+
+    irr_con_struct            *cirr_con;
+    irr_var_struct            *cirr_var;
     soil_con_struct           *csoil_con;
-    SimUnit                   *cgrid;
+    veg_con_struct            *cveg_con;
+    SimUnit *cgrid;
     
     csoil_con = &(soil_con[iCell]);
 
     // get availability
     // this takes the wofost irrigation times the fractional crop cover
     // note this assumes irrigation to be spread over the entire tile
+    csoil_con = &(soil_con[iCell]);
+    
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        cirr_con = &(irr_con[iCell][iIrr]);
+        iVeg = cirr_con->veg_index;
+        cveg_con = &(veg_con[iCell][iVeg]);
+        veg_fract = cveg_con->Cv;
+
+        if (veg_fract > 0) {
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                cirr_var = &(irr_var[iCell][iIrr][iBand]);
+                area_fract = csoil_con->AreaFract[iBand];
+                cgrid = Grid[iCell][iBand];
+
+                if (area_fract > 0) {
+
+                    received_tmp = 0.0;
+                    while (cgrid) {
+                        crop_class = cgrid->met->crop_class;
+                        veg_class = crop_con_map[iCell].veg_class[crop_class];
+                        crop_fract = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
+                        
+                        if(veg_con_map[iCell].vidx[veg_class] == (int)iVeg) {
+                            received_tmp += List(cgrid->mng->Irrigation) * crop_fract * MM_PER_CM;
+                        }
+
+                        cgrid = cgrid->next;
+                    }
+                    
+                    if(received_tmp > 0){
+                        log_info("test");
+                    }
+                    
+                    irr_apply(iCell, iVeg, iBand,
+                              received_tmp,
+                             &cirr_var->applied,
+                             &cirr_var->leftover);
+                    cirr_var->received += received_tmp;
+                }
+            }
+        }
+    }
+    
+    // Check wofost crop that are not irrigated
     for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-        cgrid = Grid[iCell][iBand];
-        
+        cirr_var = &(irr_var[iCell][iIrr][iBand]);
         area_fract = csoil_con->AreaFract[iBand];
+        cgrid = Grid[iCell][iBand];
 
         if (area_fract > 0) {
-            
-            for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++){
+
+            while (cgrid) {
+                crop_class = cgrid->met->crop_class;
+                veg_class = crop_con_map[iCell].veg_class[crop_class];
+                iVeg = veg_con_map[iCell].vidx[veg_class];
+                crop_fract = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
+
+                received_tmp = List(cgrid->mng->Irrigation) * crop_fract * MM_PER_CM;
                 
-                received_tmp = 0.0;
-                while (cgrid) {
-                    crop_class = cgrid->met->crop_class;
-                    veg_class = crop_con_map[iCell].veg_class[crop_class];
-                    crop_fract = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
-                    
-                    if(veg_con_map[iCell].vidx[veg_class] == (int) iVeg) {
-                        received_tmp += List(cgrid->mng->Irrigation) * crop_fract * MM_PER_CM;
+                irrigated = false;
+                for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+                    if(irr_con_map[iCell].vidx[iIrr] == (int)iVeg){
+                        irrigated = true;
                     }
-
-                    cgrid = cgrid->next;
                 }
-
-                irr_apply(iCell, iVeg, iBand,
-                          received_tmp,
-                         &applied_tmp,
-                         &leftover_tmp);
+                
+                if(received_tmp > 0 && !irrigated){
+                    log_err("WOFOST crop %zu contains irrigation in management, "
+                            "but irrigation module does not irrigate "
+                            "vegetation type %zu", crop_class, veg_class);
+                }
+                
+                cgrid = cgrid->next;
             }
         }
     }
