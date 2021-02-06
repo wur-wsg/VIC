@@ -6,7 +6,7 @@ Liang, X., D. P. Lettenmaier, E. F. Wood, and S. J. Burges (1994), A simple hydr
 
 ### Primary Reference for VIC-WOFOST
 
-Droppers, B., Supit, I., van Vliet, M.T.H., Ludwig, F. (2020b), Worldwide water constraints on attainable irrigated production, not submitted yet
+Droppers, B., Supit, I., van Vliet, M.T.H., Ludwig, F. (2020b), Worldwide water constraints on attainable irrigated production, submitted
 
 ### Primary Reference for VIC-WUR
 
