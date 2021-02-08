@@ -148,7 +148,8 @@ crop_update_step_vars(size_t iCell)
                     ccell_data->layer[iLayer].Wcr += (csoil_con->Wpwp[iLayer] +
                                                       (csoil_con->Wfc[iLayer] -
                                                        csoil_con->Wpwp[iLayer])
-                                                      * Wcr_FRAC) * area_fract;
+                                                      *
+                                                      Wcr_FRAC) * area_fract;
                 }
             }
 

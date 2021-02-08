@@ -368,6 +368,7 @@ transpiration(layer_data_struct *layer,
             }
         }
     }
+
     /*********************************************************************
        CASE 2: Independent transpirations
 

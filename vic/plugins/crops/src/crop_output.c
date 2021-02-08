@@ -739,8 +739,8 @@ crop_put_data(size_t iCell)
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_DVS][crop_class] +=
                         cgrid->crp->prm.InitialDVS *
-                        area_fract
-                        * cgrid->
+                        area_fract *
+                        cgrid->
                         growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WLV][crop_class] +=
