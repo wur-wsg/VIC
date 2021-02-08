@@ -764,8 +764,9 @@ get_global_param(FILE *gp)
         // Validate forcing files and variables
         if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
             if (file_num == AIR_TEMP || file_num == LWDOWN ||
-                file_num == PREC || file_num == PRESSURE || file_num == VP ||
-                file_num == SWDOWN || file_num == WIND) {
+                file_num == PREC ||
+                file_num == PRESSURE || file_num == VP || file_num == SWDOWN ||
+                file_num == WIND) {
                 log_err("No forcing file has been defined.  Make sure that the global "
                         "file defines forcing files for each variable.");
             }

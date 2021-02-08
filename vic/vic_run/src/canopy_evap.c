@@ -288,6 +288,11 @@ transpiration(layer_data_struct *layer,
           0.5))) {
         gsm_inv = 1.0;
 
+        for (i = 0; i < options.Nlayer; i++) {
+            // Store water stress
+            layer[i].water_stress = gsm_inv;
+        }
+
         /* compute whole-canopy stomatal resistance */
         if (!options.CARBON || options.RC_MODE == RC_JARVIS) {
             /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
@@ -350,11 +355,16 @@ transpiration(layer_data_struct *layer,
 
         /** Assign excess transpiration to wetter layer **/
         if (spare_transp > 0.0) {
-            for (i = 0; i < options.Nlayer; i++) {
-                if (avail_moist[i] >= Wcr[i]) {
-                    layertransp[i] += (double) root[i] *
-                                      spare_transp / root_sum;
+            if (root_sum > 0) {
+                for (i = 0; i < options.Nlayer; i++) {
+                    if (avail_moist[i] >= Wcr[i]) {
+                        layertransp[i] += (double) root[i] *
+                                          spare_transp / root_sum;
+                    }
                 }
+            }
+            else {
+                transp -= spare_transp;
             }
         }
     }
@@ -387,6 +397,9 @@ transpiration(layer_data_struct *layer,
             else {
                 gsm_inv = 0.0;
             }
+
+            // Store water stress
+            layer[i].water_stress = gsm_inv;
 
             if (gsm_inv > 0.0) {
                 /* compute whole-canopy stomatal resistance */

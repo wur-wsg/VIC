@@ -59,6 +59,9 @@ plugin_set_force_type(char *cmdstr)
     if (strcasecmp("DISCHARGE", nctype) == 0) {
         type = FORCING_DISCHARGE;
     }
+    else if (strcasecmp("CV", nctype) == 0) {
+        type = FORCING_CV;
+    }
     else if (strcasecmp("EFR_DISCHARGE", nctype) == 0) {
         type = FORCING_EFR_DISCHARGE;
     }
@@ -112,6 +115,21 @@ plugin_set_force_type(char *cmdstr)
     }
     else if (strcasecmp("ENE_CONSUMPTION", nctype) == 0) {
         type = FORCING_ENE_CONSUMPTION;
+    }
+    else if (strcasecmp("CO2", nctype) == 0) {
+        type = FORCING_CO2;
+    }
+    else if (strcasecmp("FERT_DVS", nctype) == 0) {
+        type = FORCING_FERT_DVS;
+    }
+    else if (strcasecmp("FERT_N", nctype) == 0) {
+        type = FORCING_FERT_N;
+    }
+    else if (strcasecmp("FERT_P", nctype) == 0) {
+        type = FORCING_FERT_P;
+    }
+    else if (strcasecmp("FERT_K", nctype) == 0) {
+        type = FORCING_FERT_K;
     }
     /** Undefined variable type **/
     else {

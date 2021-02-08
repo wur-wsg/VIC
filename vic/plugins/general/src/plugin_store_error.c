@@ -43,6 +43,8 @@ plugin_store_error(size_t iCell)
     double                          outflow;
     double                          storage;
 
+    size_t                          i;
+
     inflow = out_data[iCell][OUT_RUNOFF][0] + out_data[iCell][OUT_BASEFLOW][0];
     inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0] *
               global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
@@ -50,10 +52,12 @@ plugin_store_error(size_t iCell)
 
     outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] *
               global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
-    outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF][0] +
-               out_data[iCell][N_OUTVAR_TYPES + OUT_WI_COMP][0] +
-               out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM][0] +
-               out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN][0];
+
+    for (i = 0; i < WU_NSECTORS; i++) {
+        outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] +
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] +
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
+    }
 
     /* NOTE: local dams are not included in the routing error, since they modify runoff*/
     storage = out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] -
@@ -69,10 +73,12 @@ plugin_store_error(size_t iCell)
 
     plugin_save_data[iCell].total_moist_storage = storage;
 
-    save_data[iCell].total_soil_moist -=
-        out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0];
-    save_data[iCell].total_moist_storage -=
-        out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW][0];
+    for (i = 0; i < WU_NSECTORS; i++) {
+        save_data[iCell].total_soil_moist -=
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+        save_data[iCell].total_moist_storage -=
+            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+    }
     save_data[iCell].total_soil_moist +=
         out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
     save_data[iCell].total_moist_storage +=

@@ -102,8 +102,6 @@ global_dam_operate(dam_con_struct *dam_con,
     extern plugin_global_param_struct plugin_global_param;
     extern rout_var_struct           *rout_var;
 
-    double                            prev_discharge;
-
     size_t                            rout_steps_per_dt;
     size_t                            i;
 
@@ -112,20 +110,19 @@ global_dam_operate(dam_con_struct *dam_con,
 
     dam_operate(dam_con, dam_var);
 
-    prev_discharge = rout_var[iCell].discharge;
-    rout_var[iCell].discharge *= 1 - dam_con->inflow_frac;
-    rout_var[iCell].discharge += dam_var->release * M3_PER_HM3 /
-                                 global_param.dt;
-
     for (i = 0; i < rout_steps_per_dt; i++) {
-        if (prev_discharge > 0) {
-            rout_var[iCell].dt_discharge[i] *=
-                rout_var[iCell].discharge / prev_discharge;
+        rout_var[iCell].dt_discharge[i] *= 1 - dam_con->inflow_frac;
+        rout_var[iCell].dt_discharge[i] += dam_var->release * M3_PER_HM3 /
+                                           global_param.dt / rout_steps_per_dt;
+
+        if (rout_var[iCell].dt_discharge[i] < 0) {
+            rout_var[iCell].dt_discharge[i] = 0.;
         }
-        else {
-            rout_var[iCell].dt_discharge[i] =
-                rout_var[iCell].discharge / rout_steps_per_dt;
-        }
+    }
+
+    rout_var[iCell].discharge = 0.0;
+    for (i = 0; i < rout_steps_per_dt; i++) {
+        rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
     }
 }
 

@@ -46,6 +46,7 @@ The following options determine the method of resolving the surface energy balan
 | DAMS   | string    | TRUE or FALSE     | Option for computing dam operation. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 | WATERUSE   | string    | TRUE or FALSE     | Option for computing water-use. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 | IRRIGATION   | string    | TRUE or FALSE     | Option for computing irrigation. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
+| WOFOST   | string    | TRUE or FALSE     | Option for computing crops with wofost. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 
 # Define State Files
 
@@ -63,12 +64,12 @@ The following options control input and output of state files.
 
 # Define Frocing Files
 
-This section describes how to define the forcing files needed by the VIC-WUR model. See [Forcing Data](ForcingData_vicwur.md) for details about the forcing files.
+This section describes how to define the forcing files needed by the VIC-WUR model.
 
 | Name          | Type                 | Units                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 |---------------|----------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | FORCE_TYPE    | string string string | N/A                      | Defines what forcing types are read from the file, followed by corresponding netCDF variable name (separated by space or tab), followed by the corresponding netCDF file path (separated by space or tab). The required forcing types are: AIR_TEMP, PREC, PRESSURE, SWDOWN, LWDOWN, VP, WIND.                                                                                                                                                                                                              |
-| PLUGIN_FORCE_TYPE    | string string string string | N/A                      | Defines what forcing types are read from the file, followed by corresponding netCDF variable name (separated by space or tab), followed by the forcing aggrigation frequency (STEP, DAY or MONTH; separated by space or tab) by the corresponding netCDF file path (separated by space or tab). Valid forcing types are: DISCHARGE, EFR_DISCHARGE, EFR_BASEFLOW, MUN_DEMAND, MUN_GROUNDWATER, MUN_CONSUMPTION, LIV_DEMAND, LIV_GROUNDWATER, LIV_CONSUMPTION, IRR_DEMAND, IRR_GROUNDWATER, IRR_CONSUMPTION, ENE_DEMAND, ENE_GROUNDWATER, ENE_CONSUMPTION, MAN_DEMAND, MAN_GROUNDWATER, MAN_CONSUMPTION, PUMPING_CAP|
+| PLUGIN_FORCE_TYPE    | string string string string | N/A                      | Defines what forcing types are read from the file, followed by corresponding netCDF variable name (separated by space or tab), followed by the forcing aggrigation frequency (STEP, DAY, MONTH, or YEAR; separated by space or tab) by the corresponding netCDF file path (separated by space or tab). Valid forcing types are: DISCHARGE, EFR_DISCHARGE, EFR_BASEFLOW, MUN_DEMAND, MUN_GROUNDWATER, MUN_CONSUMPTION, LIV_DEMAND, LIV_GROUNDWATER, LIV_CONSUMPTION, IRR_DEMAND, IRR_GROUNDWATER, IRR_CONSUMPTION, ENE_DEMAND, ENE_GROUNDWATER, ENE_CONSUMPTION, MAN_DEMAND, MAN_GROUNDWATER, MAN_CONSUMPTION, CO2, CV, FERT_DVS, FERT_N, FERT_P, FERT_K |
 
 # Define Domain File
 
@@ -90,17 +91,8 @@ The following options describe the input parameter files.
 | WATERUSE_PARAMETERS | string | path/filename | Water-use parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | IRRIGATION_PARAMETERS | string | path/filename | Irrigation parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | DAMS_PARAMETERS | string | path/filename | Dam parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-
-# Define Plugin Module Options
-
-The following options describe the plugin module options.
-
-| Name                    | Type   | Units         | Description                                                                                        |
-|-------------------------|--------|---------------|----------------------------------------------------------------------------------------------------|
-| REMOTE_WITHDRAWAL       | string | TRUE or FALSE | **TRUE** = activate remote water withdrawals                                                       |
-| FORCE_PUMPING_CAPACITY  | string | TRUE or FALSE | **TRUE** = use pumping capacity forcing files                                                      |
-| COMPENSATION_WITHDRAWAL | string | TRUE or FALSE | **TRUE** = compensate groundwater withdrawals with surface water (before non-renewable withdrawal) |
-| NONRENEWABLE_WITHDRAWAL | string | TRUE or FALSE | **TRUE** = use non-renewable withdrawals to statify demands                                        |
+| CROP_PARAMETERS | string | path/filename | Crop parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| WOFOST_PARAMETERS | string | path/filename | Wofost parameter text file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 # Define Output Files
 
@@ -163,11 +155,12 @@ EFR							TRUE				# TRUE = calculate enviromental flow requirements;  Default = 
 DAMS						TRUE				# TRUE = calculate dam operation;  Default = FALSE
 WATERUSE					TRUE				# TRUE = calculate water use;  Default = FALSE
 IRRIGATION					TRUE				# TRUE = calculate irrigation;  Default = FALSE
+WOFOST					    TRUE		        # TRUE = calculate crops with wofost;  Default = FALSE
 
 #######################################################################
 # Domain Files and Info
 #######################################################################
-DOMAIN          				parameters/global/domain_global.nc
+DOMAIN          				parameters/domain_global.nc
 DOMAIN_TYPE    	LAT     		lat
 DOMAIN_TYPE    	LON     		lon
 DOMAIN_TYPE    	MASK    		mask
@@ -197,7 +190,6 @@ FORCE_TYPE    	WIND			wind				forcing/wind_6hourly_WFDEI/wind_6hourly_WFDEI_
 PLUGIN_FORCE_TYPE	EFR_DISCHARGE		discharge				DAY		forcing/efr_discharge_6hourly/efr_discharge_6hourly_
 PLUGIN_FORCE_TYPE	EFR_BASEFLOW		baseflow				DAY		forcing/efr_baseflow_6hourly/efr_baseflow_6hourly_
 # Water use forcing
-PLUGIN_FORCE_TYPE	PUMPING_CAP			pumping_capacity		MONTH	forcing/pumpCap_monthly/pumpCap_monthly_
 PLUGIN_FORCE_TYPE	MUN_DEMAND			demand					MONTH	forcing/dom_demand_6hourly/dom_demand_6hourly_
 PLUGIN_FORCE_TYPE	MUN_GROUNDWATER		groundwater_fraction	MONTH	forcing/dom_ground_6hourly/dom_ground_6hourly_
 PLUGIN_FORCE_TYPE	MUN_CONSUMPTION		consumption_fraction	MONTH	forcing/dom_consump_6hourly/dom_consump_6hourly_
@@ -210,6 +202,15 @@ PLUGIN_FORCE_TYPE	MAN_CONSUMPTION		consumption_fraction	MONTH	forcing/man_consum
 PLUGIN_FORCE_TYPE	ENE_DEMAND			demand					MONTH	forcing/ene_demand_6hourly/ene_demand_6hourly_
 PLUGIN_FORCE_TYPE	ENE_GROUNDWATER		groundwater_fraction	MONTH	forcing/ene_ground_6hourly/ene_ground_6hourly_
 PLUGIN_FORCE_TYPE	ENE_CONSUMPTION		consumption_fraction	MONTH	forcing/ene_consump_6hourly/ene_consump_6hourly_
+# CO2 forcing
+PLUGIN_FORCE_TYPE	CO2 		        co2			            YEAR   forcing/co2_yearly_fixed/co2_yearly_fixed_
+# Fertilizer forcing
+PLUGIN_FORCE_TYPE	FERT_DVS	        DVS_point	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+PLUGIN_FORCE_TYPE	FERT_N	            N_amount	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+PLUGIN_FORCE_TYPE	FERT_P	            P_amount	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+PLUGIN_FORCE_TYPE	FERT_K    	        K_amount	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+# Land-cover forcing
+PLUGIN_FORCE_TYPE	  CV			    coverage                MONTH  forcing/coverage_monthly_VICWOFOST/coverage_monthly_VICWOFOST_
 
 #######################################################################
 # Land Surface Files and Info
@@ -220,11 +221,8 @@ ROUTING_PARAMETERS				parameters/rout_params_global.nc
 WATERUSE_PARAMETERS				parameters/wu_params_global.nc
 IRRIGATION_PARAMETERS			parameters/irr_params_MIRCA2000_global.nc
 DAMS_PARAMETERS					parameters/dam_params_global.nc
-
-REMOTE_WITHDRAWAL               TRUE
-FORCE_PUMPING_CAPACITY          TRUE
-COMPENSATION_WITHDRAWAL         TRUE
-NONRENEWABLE_WITHDRAWAL         FALSE
+CROP_PARAMETERS 			    parameters/crop_params_VICWOFOST_global.nc
+WOFOST_TEXT_PARAMETERS 		    parameters/wofost_params_VICWOFOST_global.txt
 
 #######################################################################
 # Output Options
@@ -234,53 +232,44 @@ OUTFILE							fluxes_global
 
 OUT_FORMAT						NETCDF4
 COMPRESS						9
-AGGFREQ							NMONTHS	1
+AGGFREQ							NYEARS	1
 
-# Water balance
-OUTVAR							OUT_PREC
-OUTVAR							OUT_BASEFLOW
-OUTVAR							OUT_RUNOFF
-OUTVAR							OUT_EVAP
-OUTVAR							OUT_EVAP_BARE
-OUTVAR							OUT_EVAP_CANOP
-OUTVAR							OUT_TRANSP_VEG
-OUTVAR							OUT_SOIL_MOIST
-OUTVAR                          OUT_WDEW
-OUTVAR                          OUT_SNOW_CANOPY
-OUTVAR							OUT_SWE
-OUTVAR							OUT_WATER_ERROR
-# Additional
-OUTVAR							OUT_LAI
-OUTVAR							OUT_FCANOPY 
-OUTVAR							OUT_PET
-OUTVAR							OUT_SOIL_EFF_SAT
-OUTVAR							OUT_RECHARGE
-# Routing balance
-OUTVAR							OUT_STREAM_INFLOW
-OUTVAR							OUT_STREAM_MOIST
+## VIC
+# fluxes
 OUTVAR							OUT_DISCHARGE
-OUTVAR							OUT_WITHDRAWN
-OUTVAR							OUT_RETURNED
-OUTVAR							OUT_ROUTING_ERROR
-OUTVAR                          OUT_GDAM_STORAGE
-OUTVAR                          OUT_GDAM_INFLOW
-OUTVAR                          OUT_GDAM_RELEASE
-OUTVAR                          OUT_GDAM_DEMAND
-# Additional
-OUTVAR							OUT_NONREN_DEFICIT
-OUTVAR							OUT_AVAILABLE
-OUTVAR							OUT_DEMAND
-OUTVAR                          OUT_LDAM_STORAGE
-OUTVAR                          OUT_LDAM_INFLOW
-OUTVAR                          OUT_LDAM_RELEASE
+OUTVAR							OUT_BASEFLOW
+
+## IRRIGATION
+# states
 OUTVAR							OUT_SHORTAGE
-OUTVAR							OUT_LEFTOVER
-OUTVAR							OUT_APPLIED
+OUTVAR							OUT_REQUIREMENT
+
+## WATER-USE
+# fluxes
+OUTVAR							OUT_AV_GW_SECT
+OUTVAR							OUT_AV_SURF_SECT
+OUTVAR							OUT_AV_REM_SECT
+OUTVAR							OUT_AV_DAM_SECT
+OUTVAR							OUT_DE_GW_SECT
+OUTVAR							OUT_DE_SURF_SECT
+OUTVAR							OUT_DE_REM_SECT
 OUTVAR							OUT_WI_GW_SECT
 OUTVAR							OUT_WI_SURF_SECT
-OUTVAR							OUT_WI_DAM_SECT
-OUTVAR							OUT_WI_COMP_SECT
 OUTVAR							OUT_WI_REM_SECT
-OUTVAR							OUT_WI_NREN_SECT
+OUTVAR							OUT_WI_DAM_SECT
+
+# WOFOST
+# fluxes
+OUTVAR                          			OUT_CROP_GROW
+OUTVAR							OUT_CROP_EVAP
+OUTVAR							OUT_CROP_DVS
+OUTVAR							OUT_CROP_WLV
+OUTVAR							OUT_CROP_WST
+OUTVAR							OUT_CROP_WSO
+OUTVAR							OUT_CROP_WRT
+OUTVAR							OUT_CROP_LAI
+OUTVAR							OUT_CROP_WSTRESS
+OUTVAR							OUT_CROP_NSTRESS
+OUTVAR							OUT_CROP_NUPT
 
 ```

@@ -28,10 +28,12 @@
 #define PLUGIN_H
 
 #include <plugin_driver_shared_image.h>
+#include <landuse.h>
 #include <routing.h>
 #include <efr.h>
 #include <dams.h>
 #include <wateruse.h>
 #include <irrigation.h>
+#include <crop.h>
 
 #endif /* PLUGIN_H */

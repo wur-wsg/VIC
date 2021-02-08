@@ -69,20 +69,26 @@ typedef struct {
     double available_gw;            /**< available groundwater resources [mm] */
     double available_surf;          /**< available surface water resources [mm] */
     double available_dam;           /**< available dam reservoir resources [mm] */
-    double available_comp;        /**< available compensation resources [mm] */
-    double available_remote;        /**< available remote resources [mm] */
+    double available_tremote;       /**< available remote resources (for this cell) [mm] */
+    double available_remote;        /**< available remote resources (for other cells) [mm] */
+    double available_nonrenew;      /**< available non-renewable resources [mm] */
     double demand_gw;               /**< demand for groundwater resources [mm] */
     double demand_surf;             /**< demand for surface water resources [mm] */
-    double demand_comp;             /**< demand for compensation resources [mm] */
-    double demand_remote;           /**< demand for remote resources [mm] */
+    double demand_tremote;          /**< demand for remote resources (for this cell) [mm] */
+    double demand_remote;           /**< demand for remote resources (for other cells) [mm] */
+    double demand_nonrenew;         /**< demand for non-renewable resources [mm] */
     double withdrawn_gw;            /**< withdrawn groundwater resources [mm] */
     double withdrawn_surf;          /**< withdrawn surface water resources [mm] */
     double withdrawn_dam;           /**< withdrawn dam reservoir resources [mm] */
-    double withdrawn_comp;          /**< withdrawn compensation resources [mm] */
-    double withdrawn_remote;        /**< withdrawn remote resources [mm] */
+    double withdrawn_tremote;       /**< withdrawn remote resources (for this cell) [mm] */
+    double withdrawn_remote;        /**< withdrawn remote resources (for other cells) [mm] */
     double withdrawn_nonrenew;      /**< withdrawn non-renewable resources [mm] */
     double returned;                /**< returned water resources [mm] */
     double consumed;                /**< consumed water resources [mm] */
+
+    double available_remote_tmp;    /**< available remote resources (temporary) [mm] */
+    double demand_remote_tmp;       /**< demand for remote resources (temporary) [mm] */
+    double withdrawn_remote_tmp;    /**< withdrawn remote resources (temporary) [mm] */
 } wu_var_struct;
 
 /******************************************************************************
@@ -108,6 +114,8 @@ wu_var_struct    **wu_var;
  *****************************************************************************/
 bool wu_get_global_param(char *);
 void wu_validate_global_param(void);
+bool wu_get_parameters(char *);
+void wu_validate_parameters(void);
 
 void wu_start(void);
 
@@ -127,6 +135,8 @@ void wu_put_data(size_t);
 void wu_update_step_vars(size_t);
 void wu_forcing(void);
 void wu_run(size_t);
+void wu_remote(size_t);
+void wu_nonrenew(size_t);
 
 void wu_finalize(void);
 

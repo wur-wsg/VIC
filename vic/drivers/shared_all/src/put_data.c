@@ -707,6 +707,7 @@ collect_wb_terms(cell_data_struct cell,
                                              AreaFactor;
     }
     out_data[OUT_SOIL_WET][0] += cell.wetness * AreaFactor;
+    out_data[OUT_SOIL_WSTRESS][0] += cell.water_stress * AreaFactor;
     out_data[OUT_ROOTMOIST][0] += cell.rootmoist * AreaFactor;
 
     /** record water table position **/

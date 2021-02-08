@@ -6,9 +6,9 @@ This is the list of changes to VIC between each release. For full details and/or
 
 ## Latest
 
-## VIC-WUR 2.1.0
+## VIC-WOFOST 1.0.0
 
-Updated human impacted VIC simulations. Includes non-renewable water withdrawals and maximum pumping capacity. Includes major bug fixes.
+VIC simulations with crop growth (following WOFOST).
 
 ## VIC-WUR 2.0.0
 

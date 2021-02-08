@@ -37,6 +37,8 @@ plugin_get_global_param(char cmdstr[MAXSTRING])
     }
     else if (rout_get_global_param(cmdstr)) {
     }
+    else if (lu_get_global_param(cmdstr)) {
+    }
     else if (efr_get_global_param(cmdstr)) {
     }
     else if (dam_get_global_param(cmdstr)) {
@@ -44,6 +46,8 @@ plugin_get_global_param(char cmdstr[MAXSTRING])
     else if (wu_get_global_param(cmdstr)) {
     }
     else if (irr_get_global_param(cmdstr)) {
+    }
+    else if (crop_get_global_param(cmdstr)) {
     }
     else {
         return false;
@@ -76,6 +80,9 @@ plugin_validate_global_param(void)
     if (plugin_options.IRRIGATION) {
         irr_validate_global_param();
     }
+    if (plugin_options.WOFOST) {
+        crop_validate_global_param();
+    }
 }
 
 /******************************************
@@ -87,6 +94,8 @@ plugin_get_parameters(char cmdstr[MAXSTRING])
     if (dam_get_parameters(cmdstr)) {
     }
     else if (irr_get_parameters(cmdstr)) {
+    }
+    else if (wu_get_parameters(cmdstr)) {
     }
     else {
         return false;
@@ -109,6 +118,9 @@ plugin_validate_parameters(void)
     if (plugin_options.IRRIGATION) {
         irr_validate_parameters();
     }
+    if (plugin_options.WATERUSE) {
+        wu_validate_parameters();
+    }
 }
 
 /******************************************
@@ -123,6 +135,9 @@ plugin_start(void)
     if (plugin_options.ROUTING) {
         rout_start();
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_start();
+    }
     if (plugin_options.DAMS) {
         dam_start();
     }
@@ -131,6 +146,9 @@ plugin_start(void)
     }
     if (plugin_options.IRRIGATION) {
         irr_start();
+    }
+    if (plugin_options.WOFOST) {
+        crop_start();
     }
 }
 
@@ -151,6 +169,9 @@ plugin_alloc(void)
     if (plugin_options.ROUTING) {
         rout_alloc();
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_alloc();
+    }
     if (plugin_options.EFR) {
         efr_alloc();
     }
@@ -159,6 +180,9 @@ plugin_alloc(void)
     }
     if (plugin_options.WATERUSE) {
         wu_alloc();
+    }
+    if (plugin_options.WOFOST) {
+        crop_alloc();
     }
 }
 
@@ -183,6 +207,9 @@ plugin_init(void)
     if (plugin_options.IRRIGATION) {
         irr_late_alloc();
         irr_init();
+    }
+    if (plugin_options.WOFOST) {
+        crop_init();
     }
 
     plugin_set_state_meta_data_info();
@@ -275,6 +302,9 @@ plugin_finalize(void)
     if (plugin_options.ROUTING) {
         rout_finalize();
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_finalize();
+    }
     if (plugin_options.EFR) {
         efr_finalize();
     }
@@ -286,6 +316,9 @@ plugin_finalize(void)
     }
     if (plugin_options.IRRIGATION) {
         irr_finalize();
+    }
+    if (plugin_options.WOFOST) {
+        crop_finalize();
     }
 
     free(plugin_save_data);
