@@ -182,7 +182,7 @@ distribute_water_balance_terms(size_t  iCell,
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -203,7 +203,7 @@ distribute_water_balance_terms(size_t  iCell,
     }
 
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
             Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change[iVeg];
             pack_water += snow[iVeg][iBand].pack_water * -Cv_change[iVeg];
             surf_water += snow[iVeg][iBand].surf_water * -Cv_change[iVeg];
@@ -223,20 +223,22 @@ distribute_water_balance_terms(size_t  iCell,
 
     before_moist = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        before_moist += veg_var[iVeg][iBand].Wdew * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].pack_water * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].surf_water * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].swq * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].snow_canopy * Cv_old[iVeg];
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            before_moist += cell[iVeg][iBand].layer[iLayer].moist *
-                            Cv_old[iVeg];
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            before_moist += veg_var[iVeg][iBand].Wdew * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].pack_water * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].surf_water * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].swq * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].snow_canopy * Cv_old[iVeg];
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                before_moist += cell[iVeg][iBand].layer[iLayer].moist *
+                                Cv_old[iVeg];
+            }
         }
     }
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -263,46 +265,63 @@ distribute_water_balance_terms(size_t  iCell,
 
             veg_class = veg_con[iCell][iVeg].veg_class;
             if (!veg_lib[iCell][veg_class].overstory ||
-                veg_var[iVeg][iBand].LAI <= 0.) {
+                veg_var[iVeg][iBand].LAI <= 0. ||
+                veg_class == options.NVEGTYPES) {
                 // Remove intercepted canopy snow for vegetation without overstory or leaves
                 snow[iVeg][iBand].swq += snow[iVeg][iBand].snow_canopy;
                 snow[iVeg][iBand].snow_canopy = 0.;
             }
 
-            if (veg_var[iVeg][iBand].LAI <= 0.) {
+            if (veg_var[iVeg][iBand].LAI <= 0. ||
+                veg_class == options.NVEGTYPES) {
                 // Remove intercepted canopy water for vegetation without leaves
-                inflow = veg_var[iVeg][iBand].Wdew;
+                cell[iVeg][iBand].layer[0].moist += veg_var[iVeg][iBand].Wdew;
+                veg_var[iVeg][iBand].Wdew = 0.;
+            }
+            
+            // Gather excess soil moisture
+            inflow = 0.0;
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                if (cell[iVeg][iBand].layer[iLayer].moist >
+                    soil_con[iCell].max_moist[iLayer]) {
+                    inflow += cell[iVeg][iBand].layer[iLayer].moist -
+                              soil_con[iCell].max_moist[iLayer];
+                }
+            }
+            
+            if(inflow > 0) {
+                // Redistribute excess soil moisture
                 for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                     cell[iVeg][iBand].layer[iLayer].moist += inflow;
+                    inflow = 0.0;
                     if (cell[iVeg][iBand].layer[iLayer].moist >
                         soil_con[iCell].max_moist[iLayer]) {
                         inflow = cell[iVeg][iBand].layer[iLayer].moist -
                                  soil_con[iCell].max_moist[iLayer];
                     }
-                    else {
-                        inflow = 0.;
+                    if(inflow == 0.){
                         break;
                     }
                 }
                 if (inflow != 0.) {
-                    log_warn("Could not redistribute (part of) "
-                             "intercepted canopy water [%.4f] since soil is full",
+                    log_warn("Could not redistribute (part of) water balance [%.4f mm] since soil is full",
                              inflow);
                 }
-                veg_var[iVeg][iBand].Wdew = 0.;
             }
         }
     }
 
     after_moist = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        after_moist += veg_var[iVeg][iBand].Wdew * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].pack_water * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].surf_water * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].swq * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].snow_canopy * Cv_new[iVeg];
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            after_moist += cell[iVeg][iBand].layer[iLayer].moist * Cv_new[iVeg];
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            after_moist += veg_var[iVeg][iBand].Wdew * Cv_new[iVeg];
+            after_moist += snow[iVeg][iBand].pack_water * Cv_new[iVeg];
+            after_moist += snow[iVeg][iBand].surf_water * Cv_new[iVeg];
+            after_moist += snow[iVeg][iBand].swq * Cv_new[iVeg];
+            after_moist += snow[iVeg][iBand].snow_canopy * Cv_new[iVeg];
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                after_moist += cell[iVeg][iBand].layer[iLayer].moist * Cv_new[iVeg];
+            }
         }
     }
 
@@ -391,7 +410,7 @@ distribute_carbon_balance_terms(size_t  iCell,
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -405,7 +424,7 @@ distribute_carbon_balance_terms(size_t  iCell,
     CInter = 0.0;
     CSlow = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
             AnnualNPP += veg_var[iVeg][iBand].AnnualNPP * -Cv_change[iVeg];
             AnnualNPPPrev += veg_var[iVeg][iBand].AnnualNPPPrev *
                              -Cv_change[iVeg];
@@ -417,16 +436,18 @@ distribute_carbon_balance_terms(size_t  iCell,
 
     before_carbon = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        before_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_old[iVeg];
-        before_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_old[iVeg];
-        before_carbon += cell[iVeg][iBand].CLitter * Cv_old[iVeg];
-        before_carbon += cell[iVeg][iBand].CInter * Cv_old[iVeg];
-        before_carbon += cell[iVeg][iBand].CSlow * Cv_old[iVeg];
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            before_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_old[iVeg];
+            before_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_old[iVeg];
+            before_carbon += cell[iVeg][iBand].CLitter * Cv_old[iVeg];
+            before_carbon += cell[iVeg][iBand].CInter * Cv_old[iVeg];
+            before_carbon += cell[iVeg][iBand].CSlow * Cv_old[iVeg];
+        }
     }
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -446,11 +467,13 @@ distribute_carbon_balance_terms(size_t  iCell,
 
     after_carbon = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        after_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_new[iVeg];
-        after_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_new[iVeg];
-        after_carbon += cell[iVeg][iBand].CLitter * Cv_new[iVeg];
-        after_carbon += cell[iVeg][iBand].CInter * Cv_new[iVeg];
-        after_carbon += cell[iVeg][iBand].CSlow * Cv_new[iVeg];
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            after_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_new[iVeg];
+            after_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_new[iVeg];
+            after_carbon += cell[iVeg][iBand].CLitter * Cv_new[iVeg];
+            after_carbon += cell[iVeg][iBand].CInter * Cv_new[iVeg];
+            after_carbon += cell[iVeg][iBand].CSlow * Cv_new[iVeg];
+        }
     }
 
     // Check water balance
@@ -698,7 +721,7 @@ distribute_energy_balance_terms(size_t   iCell,
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -712,7 +735,7 @@ distribute_energy_balance_terms(size_t   iCell,
         TEnergy[iNode] = 0.0;
     }
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
             surf_tempEnergy += orig_surf_tempEnergy[iVeg] * -Cv_change[iVeg];
             pack_tempEnergy += orig_pack_tempEnergy[iVeg] * -Cv_change[iVeg];
             for (iNode = 0; iNode < options.Nnode; iNode++) {
@@ -723,16 +746,18 @@ distribute_energy_balance_terms(size_t   iCell,
 
     before_energy = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        before_energy += orig_surf_tempEnergy[iVeg] * Cv_old[iVeg];
-        before_energy += orig_pack_tempEnergy[iVeg] * Cv_old[iVeg];
-        for (iNode = 0; iNode < options.Nnode; iNode++) {
-            before_energy += orig_TEnergy[iVeg][iNode] * Cv_old[iVeg];
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            before_energy += orig_surf_tempEnergy[iVeg] * Cv_old[iVeg];
+            before_energy += orig_pack_tempEnergy[iVeg] * Cv_old[iVeg];
+            for (iNode = 0; iNode < options.Nnode; iNode++) {
+                before_energy += orig_TEnergy[iVeg][iNode] * Cv_old[iVeg];
+            }
         }
     }
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -756,10 +781,12 @@ distribute_energy_balance_terms(size_t   iCell,
 
     after_energy = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        after_energy += new_surf_tempEnergy[iVeg] * Cv_new[iVeg];
-        after_energy += new_pack_tempEnergy[iVeg] * Cv_new[iVeg];
-        for (iNode = 0; iNode < options.Nnode; iNode++) {
-            after_energy += new_TEnergy[iVeg][iNode] * Cv_new[iVeg];
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            after_energy += new_surf_tempEnergy[iVeg] * Cv_new[iVeg];
+            after_energy += new_pack_tempEnergy[iVeg] * Cv_new[iVeg];
+            for (iNode = 0; iNode < options.Nnode; iNode++) {
+                after_energy += new_TEnergy[iVeg][iNode] * Cv_new[iVeg];
+            }
         }
     }
 

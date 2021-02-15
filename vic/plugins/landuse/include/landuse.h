@@ -27,6 +27,9 @@
 #ifndef LANDUSE_H
 #define LANDUSE_H
 
+/***** Define minimum values for model parameters *****/
+#define MINCOVERAGECHANGE    0.0001  /**< Minimum vegetation coverage change with which model can work (-) */
+
 /******************************************************************************
  * @brief   Landuse forcing
  *****************************************************************************/
