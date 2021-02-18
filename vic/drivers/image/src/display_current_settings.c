@@ -352,6 +352,15 @@ display_current_settings(int mode)
     else if (options.BCO2_SRC == FROM_VEGLIB) {
         fprintf(LOG_DEST, "BCO2_SRC\t\tFROM_VEGLIB\n");
     }
+    if (options.WFC_SRC == FROM_VEGHIST) {
+        fprintf(LOG_DEST, "WFC_SRC\t\tFROM_VEGHIST\n");
+    }
+    else if (options.WFC_SRC == FROM_VEGPARAM) {
+        fprintf(LOG_DEST, "WFC_SRC\t\tFROM_VEGPARAM\n");
+    }
+    else if (options.WFC_SRC == FROM_VEGLIB) {
+        fprintf(LOG_DEST, "WFC_SRC\t\tFROM_VEGLIB\n");
+    }
 
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "Input Elevation Data:\n");

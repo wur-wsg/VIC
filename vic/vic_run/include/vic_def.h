@@ -282,6 +282,8 @@ typedef struct {
                                           FROM_VEGPARAM = use LAI values from the veg param file */
     unsigned short int BCO2_SRC;       /**< FROM_VEGLIB = use b_co2 values from veg library file
                                           FROM_VEGPARAM = use b_co2 values from the veg param file */
+    unsigned short int WFC_SRC;        /**< FROM_VEGLIB = use albedo values from veg library file
+                                          FROM_VEGPARAM = use albedo values from the veg param file */
     bool LAKE_PROFILE;   /**< TRUE = user-specified lake/area profile */
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 

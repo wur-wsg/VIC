@@ -284,7 +284,6 @@ typedef struct {
     double DAM_BETA;                    /**< dam correction exponent [-] */
     double DAM_GAMMA;                   /**< dam correction period [d-1] */
     double NREN_LIM;                    /**< non-renewable withdrawal limit [mm] */
-    double Wfc_fract;                   /**< field capacity fraction (of critical soil moisture) [-] */
     double Ksat_expt;                   /**< paddy saturated irrigation conductivity exponent [-] */
 } plugin_parameters_struct;
 

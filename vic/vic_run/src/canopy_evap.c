@@ -352,7 +352,7 @@ transpiration(layer_data_struct *layer,
 
                 layertransp[i] = transp * gsm_inv * (double) root[i];
                 root_sum -= root[i];
-                spare_transp = transp * (double) root[i] * (1.0 - gsm_inv);
+                spare_transp += transp * (double) root[i] * (1.0 - gsm_inv);
             }
         }
 

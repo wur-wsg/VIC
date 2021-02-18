@@ -184,12 +184,12 @@ vic_init(void)
 
     // default value for b_co2
     for (j = 0; j < options.NVEGTYPES; j++) {
-        if (options.BCO2_SRC == FROM_DEFAULT) {
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                veg_lib[i][j].b_co2 = 0.0;
-            }
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            veg_lib[i][j].b_co2 = 0.0;
         }
-        else if (options.BCO2_SRC == FROM_VEGLIB || options.BCO2_SRC == FROM_VEGPARAM) {
+    }
+    if (options.BCO2_SRC == FROM_VEGLIB || options.BCO2_SRC == FROM_VEGPARAM) {
+        for (j = 0; j < options.NVEGTYPES; j++) {
             d3start[0] = j;
             get_scatter_nc_field_double(&(filenames.params), "b_co2",
                                         d3start, d3count, dvar);
@@ -657,6 +657,16 @@ vic_init(void)
                                  0.7;
         }
     }
+    if (options.WFC_SRC == FROM_VEGLIB || options.WFC_SRC == FROM_VEGPARAM) {
+        for (j = 0; j < options.Nlayer; j++) {
+            d3start[0] = j;
+            get_scatter_nc_field_double(&(filenames.params), "Wfc_FRACT",
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                soil_con[i].Wfc[j] = (double) dvar[i];
+            }
+        }
+    }
 
     // rough: soil roughness
     get_scatter_nc_field_double(&(filenames.params), "rough",
@@ -784,6 +794,15 @@ vic_init(void)
             soil_con[i].Wfc[j] *= soil_con[i].max_moist[j];
             soil_con[i].Wcr[j] *= soil_con[i].max_moist[j];
             soil_con[i].Wpwp[j] *= soil_con[i].max_moist[j];
+            if (soil_con[i].Wcr[j] > soil_con[i].Wfc[j]) {
+                sprint_location(locstr, &(local_domain.locations[i]));
+                log_err("Calculated critical point moisture (%f mm) is "
+                        "greater than calculated field capacity moisture "
+                        "(%f mm) for layer %zd."
+                        "\n\tIn the soil parameter file, "
+                        "Wcr_FRACT MUST be <= Wfc_FRACT.\n%s",
+                        soil_con[i].Wcr[j], soil_con[i].Wfc[j], j, locstr);
+            }
             if (soil_con[i].Wpwp[j] > soil_con[i].Wcr[j]) {
                 sprint_location(locstr, &(local_domain.locations[i]));
                 log_err("Calculated wilting point moisture (%f mm) is "

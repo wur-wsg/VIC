@@ -363,7 +363,7 @@ distribute_water_balance_terms(size_t  iCell,
             fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
                     iLayer, moist[iLayer]);
         }
-        log_err("\nWater balance error for cell %zu:\n"
+        log_info("\nWater balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                 iCell,
                 before_moist,
@@ -478,7 +478,7 @@ distribute_carbon_balance_terms(size_t  iCell,
 
     // Check water balance
     if (abs(before_carbon - after_carbon) > DBL_EPSILON) {
-        log_err("\nCarbon balance error for cell %zu:\n"
+        log_info("\nCarbon balance error for cell %zu:\n"
                 "Initial carbon content [%.4f gC m-2]\tFinal water content [%.4f gC m-2]",
                 iCell,
                 before_carbon,
@@ -855,7 +855,7 @@ distribute_energy_balance_terms(size_t   iCell,
             fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J m-2]\n",
                     iNode, TEnergy[iNode]);
         }
-        log_err("\nEnergy balance error for cell %zu:\n"
+        log_info("\nEnergy balance error for cell %zu:\n"
                 "Initial energy content [%.4f J m-2]\tFinal energy content [%.4f J m-2]\n"
                 "",
                 iCell,

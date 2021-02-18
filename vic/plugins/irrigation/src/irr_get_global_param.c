@@ -89,10 +89,7 @@ irr_get_parameters(char *cmdstr)
 
     sscanf(cmdstr, "%s", optstr);
 
-    if (strcasecmp("Wfc_fract", optstr) == 0) {
-        sscanf(cmdstr, "%*s %lf", &plugin_param.Wfc_fract);
-    }
-    else if (strcasecmp("Ksat_expt", optstr) == 0) {
+    if (strcasecmp("Ksat_expt", optstr) == 0) {
         sscanf(cmdstr, "%*s %lf", &plugin_param.Ksat_expt);
     }
     else {
@@ -110,9 +107,6 @@ irr_validate_parameters(void)
 {
     extern plugin_parameters_struct plugin_param;
 
-    if (!(plugin_param.Wfc_fract >= 0 && plugin_param.Wfc_fract <= 1)) {
-        log_err("Wfc_fract must be defined on the interval [0,1] (-)");
-    }
     if (!(plugin_param.Ksat_expt >= 0)) {
         log_err("Ksat_expt must be defined on the interval [0,inf] (-)");
     }

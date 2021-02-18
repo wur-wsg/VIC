@@ -492,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 54;
+    nitems = 55;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -704,6 +704,10 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // unsigned short BCO2_SRC;
     offsets[i] = offsetof(option_struct, BCO2_SRC);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned short WFC_SRC;
+    offsets[i] = offsetof(option_struct, WFC_SRC);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // bool LAKE_PROFILE;

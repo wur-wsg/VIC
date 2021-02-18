@@ -84,6 +84,7 @@ initialize_options()
     options.JULY_TAVG_SUPPLIED = false;
     options.LAI_SRC = FROM_VEGLIB;
     options.BCO2_SRC = FROM_DEFAULT;
+    options.WFC_SRC = FROM_DEFAULT;
     options.ORGANIC_FRACT = false;
     options.VEGLIB_FCAN = false;
     options.VEGLIB_PHOTO = false;
