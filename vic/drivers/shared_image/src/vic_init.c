@@ -888,10 +888,10 @@ vic_init(void)
                 soil_con[i].dz_node[1] = soil_con[i].depth[0];
                 soil_con[i].dz_node[2] = soil_con[i].depth[0];
                 soil_con[i].Zsum_node[0] = 0;
-                soil_con[i].Zsum_node[1] = soil_con[0].depth[0];
-                Zsum = 2. * soil_con[0].depth[0];
+                soil_con[i].Zsum_node[1] = soil_con[i].depth[0];
+                Zsum = 2. * soil_con[i].depth[0];
                 soil_con[i].Zsum_node[2] = Zsum;
-                tmpdp = dp - soil_con[0].depth[0] * 2.5;
+                tmpdp = dp - soil_con[i].depth[0] * 2.5;
                 tmpadj = 3.5;
                 for (j = 3; j < Nnodes - 1; j++) {
                     soil_con[i].dz_node[j] = tmpdp /
