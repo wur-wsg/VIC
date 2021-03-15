@@ -33,11 +33,11 @@
 bool
 irr_get_global_param(char *cmdstr)
 {
-    extern plugin_option_struct       plugin_options;
-    extern plugin_filenames_struct    plugin_filenames;
+    extern plugin_option_struct    plugin_options;
+    extern plugin_filenames_struct plugin_filenames;
 
-    char                              optstr[MAXSTRING];
-    char                              flgstr[MAXSTRING];
+    char                           optstr[MAXSTRING];
+    char                           flgstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
@@ -65,14 +65,14 @@ irr_get_global_param(char *cmdstr)
 void
 irr_validate_global_param(void)
 {
-    extern option_struct options;
-    extern plugin_filenames_struct    plugin_filenames;
-    
+    extern option_struct           options;
+    extern plugin_filenames_struct plugin_filenames;
+
     // Parameters
     if (strcasecmp(plugin_filenames.irrigation.nc_filename, MISSING_S) == 0) {
         log_err("IRRIGATION = TRUE but file is missing");
     }
-    if(!options.SHARE_LAYER_MOIST){
+    if (!options.SHARE_LAYER_MOIST) {
         log_err("IRRIGATION not yet implemented without SHARE_LAYER_MOIST");
     }
 }
@@ -83,12 +83,12 @@ irr_validate_global_param(void)
 bool
 irr_get_parameters(char *cmdstr)
 {
-    extern plugin_parameters_struct   plugin_param;
+    extern plugin_parameters_struct plugin_param;
 
-    char                              optstr[MAXSTRING];
+    char                            optstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
-    
+
     if (strcasecmp("Wfc_fract", optstr) == 0) {
         sscanf(cmdstr, "%*s %lf", &plugin_param.Wfc_fract);
     }
@@ -108,8 +108,8 @@ irr_get_parameters(char *cmdstr)
 void
 irr_validate_parameters(void)
 {
-    extern plugin_parameters_struct    plugin_param;
-    
+    extern plugin_parameters_struct plugin_param;
+
     if (!(plugin_param.Wfc_fract >= 0 && plugin_param.Wfc_fract <= 1)) {
         log_err("Wfc_fract must be defined on the interval [0,1] (-)");
     }

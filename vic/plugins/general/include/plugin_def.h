@@ -57,14 +57,20 @@ enum {
  * @brief   Output Variable Type
  *****************************************************************************/
 enum {
+    // water balance
+    OUT_ROUTING_ERROR,                  /**< routing budget error [mm] */
     // routing
+    OUT_STREAM_INFLOW,                  /**< river (inflow) discharge [m3 s-1] */
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
+    OUT_NONREN_DEFICIT,                 /**< non-renewable storage deficit [mm] */
+    // land-use
+    OUT_CV,                             /**< vegetation coverage fraction [-] */
     // efr
     OUT_EFR_DISCHARGE,                  /**< environmental river discharge [m3 s-1] */
     OUT_EFR_BASEFLOW,                   /**< environmental baseflow [mm] */
     OUT_EFR_MOIST,                      /**< environmental third-layer soil-moisture [mm] */
-    //dams
+    // dams
     OUT_LDAM_INFLOW,                    /**< local dam inflow [hm3] */
     OUT_LDAM_DEMAND,                    /**< local dam water demand [hm3] */
     OUT_LDAM_EFR,                       /**< local dam environmental requirements [hm3] */
@@ -86,35 +92,56 @@ enum {
     OUT_GDAM_OP_RELEASE,                /**< global dam calculated release [hm3] */
     OUT_GDAM_OP_STORAGE,                /**< global dam calculated storage [hm3] */
     // water-use
-    OUT_AV_GW_SECT,                     /**< available groundwater resources per sector [mm] */
-    OUT_AV_SURF_SECT,                   /**< available surface water resources per sector [mm] */
-    OUT_AV_DAM_SECT,                    /**< available dam reservoir resources per sector [mm] */
-    OUT_AV_REM_SECT,                    /**< available remote resources per sector [mm] */
     OUT_DE_GW_SECT,                     /**< demand for groundwater resources per sector [mm] */
-    OUT_DE_SURF_SECT,                   /**< demand for surface water  resources per sector [mm] */
-    OUT_DE_REM_SECT,                    /**< demand for remote resources per sector [mm] */
+    OUT_DE_SURF_SECT,                   /**< demand for surface water resources per sector [mm] */
+    OUT_DE_NREN_SECT,                   /**< demand for non-renewable resources per sector [mm] */
+    OUT_DE_REM_SECT,                    /**< demand for remote resources per sector (from this cell) [mm] */
+    OUT_DE_TREM_SECT,                   /**< demand for remote resources per sector (for this cell) [mm] */
     OUT_WI_GW_SECT,                     /**< withdrawn groundwater resources per sector [mm] */
     OUT_WI_SURF_SECT,                   /**< withdrawn surface water resources per sector [mm] */
     OUT_WI_DAM_SECT,                    /**< withdrawn dam reservoir resources per sector [mm] */
-    OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector [mm] */
-    OUT_AV_GW,                          /**< available groundwater resources [mm] */
-    OUT_AV_SURF,                        /**< available surface water resources [mm] */
-    OUT_AV_DAM,                         /**< available dam reservoir resources [mm] */
-    OUT_AV_REM,                         /**< available remote resources [mm] */
-    OUT_DE_GW,                          /**< demand for groundwater resources [mm] */
-    OUT_DE_SURF,                        /**< demand for surface water resources [mm] */
-    OUT_DE_REM,                         /**< demand for remote resources [mm] */
-    OUT_WI_GW,                          /**< withdrawn groundwater resources [mm] */
-    OUT_WI_SURF,                        /**< withdrawn surface water resources [mm] */
-    OUT_WI_DAM,                         /**< withdrawn dam reservoir resources [mm] */
-    OUT_WI_REM,                         /**< withdrawn remote resources [mm] */
-    OUT_AVAILABLE,                      /**< available water resources [mm] */
+    OUT_WI_REM_SECT,                    /**< withdrawn remote resources per sector (from this cell) [mm] */
+    OUT_WI_TREM_SECT,                   /**< withdrawn remote resources per sector (for this cell) [mm] */
+    OUT_WI_NREN_SECT,                   /**< withdrawn non-renewable resources per sector [mm] */
     OUT_DEMAND,                         /**< demand for water resources [mm] */
     OUT_WITHDRAWN,                      /**< withdrawn water resources [mm] */
     OUT_RETURNED,                       /**< returned water resources [mm] */
+    OUT_CONSUMED,                       /**< consumed water resources [mm] */
     // irrigation
     OUT_SHORTAGE,                       /**< average irrigation shortage (below critical soil moisture point) [mm] */
     OUT_REQUIREMENT,                    /**< average irrigation requirement (between field capacity and critical soil moisture point) [mm] */
+    OUT_RECEIVED,                       /**< irrigation water received [mm] */
+    OUT_LEFTOVER,                       /**< irrigation water leftover [mm] */
+    OUT_APPLIED,                        /**< irrigation water applied [mm] */
+    // crop
+    OUT_CROP_CULTIVATE,                 /**< crop cultivate days [day] */
+    OUT_CROP_GROW,                      /**< crop growing days [day] */
+    OUT_CROP_EVAP,                      /**< crop total net evaporation [mm] */
+    OUT_CROP_EVAP_BARE,                 /**< crop net evaporation from bare soil [mm] */
+    OUT_CROP_EVAP_CANOP,                /**< crop net evaporation from canopy interception [mm] */
+    OUT_CROP_TRANSP_VEG,                /**< crop net transpiration from vegetation [mm] */
+    OUT_CROP_DVS,                       /**< crop development stage [-] */
+    OUT_CROP_WLV,                       /**< crop leafs dry matter [kg ha-1] */
+    OUT_CROP_WST,                       /**< crop stems dry matter [kg ha-1] */
+    OUT_CROP_WSO,                       /**< crop storage organs dry matter [kg ha-1] */
+    OUT_CROP_WRT,                       /**< crop roots dry matter [kg ha-1] */
+    OUT_CROP_LAI,                       /**< crop leaf area index [m2 m-2] */
+    OUT_CROP_NNI,                       /**< crop nitrogen index [kg kg-1] */
+    OUT_CROP_PNI,                       /**< crop phosphorous index [kg kg-1] */
+    OUT_CROP_KNI,                       /**< crop potassium index [kg kg-1] */
+    OUT_CROP_NPKI,                      /**< crop nutrient index [kg kg-1] */
+    OUT_CROP_WSTRESS,                   /**< crop water stress [-] */
+    OUT_CROP_NSTRESS,                   /**< crop nutrient stress [-] */
+    OUT_CROP_NSOIL,                     /**< crop soil nitrogen [kg ha-1] */
+    OUT_CROP_PSOIL,                     /**< crop soil phosporous [kg ha-1] */
+    OUT_CROP_KSOIL,                     /**< crop soil potassium [kg ha-1] */
+    OUT_CROP_NUPT,                      /**< crop nitrogen uptake [kg ha-1] */
+    OUT_CROP_PUPT,                      /**< crop phosporous uptake [kg ha-1] */
+    OUT_CROP_KUPT,                      /**< crop potassium uptake [kg ha-1] */
+    OUT_CROP_NDEM,                      /**< crop nitrogen demand [kg ha-1] */
+    OUT_CROP_PDEM,                      /**< crop phosporous demand [kg ha-1] */
+    OUT_CROP_KDEM,                      /**< crop potassium demand [kg ha-1] */
+    OUT_CROP_ROOTDEPTH,                 /**< crop root depth [cm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_OUTVAR_TYPES               /**< used as a loop counter*/
@@ -126,10 +153,13 @@ enum {
 enum {
     // routing
     FORCING_DISCHARGE,                  /**< river (inflow) discharge [m3 s-1] */
+    // landuse
+    FORCING_CV, /**< vegetation coverage [-] */
     // efr
     FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
     FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
     // water-use
+    FORCING_PUMPING_CAP,                /**< pumping capacity [mm day-1] */
     FORCING_IRR_DEMAND,                 /**< irrigation demand [mm] */
     FORCING_IRR_GROUNDWATER,            /**< irrigation groundwater fraction [-] */
     FORCING_IRR_CONSUMPTION,            /**< irrigation consumption fraction [-] */
@@ -145,6 +175,12 @@ enum {
     FORCING_ENE_DEMAND,                 /**< energy demand [mm] */
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
+    // crops
+    FORCING_CO2,                        /**< CO2 concentration [ppm] */
+    FORCING_FERT_DVS,                   /**< Fertilizer application DVS point [-] */
+    FORCING_FERT_N,                     /**< Fertilizer application N amount [kg ha-1] */
+    FORCING_FERT_P,                     /**< Fertilizer application P amount [kg ha-1] */
+    FORCING_FERT_K,                     /**< Fertilizer application K amount [kg ha-1] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/
@@ -158,6 +194,7 @@ enum
     FORCE_STEP,                         /**< model step forcing frequency */
     FORCE_DAY,                          /**< daily forcing frequency */
     FORCE_MONTH,                        /**< monthly forcing frequency */
+    FORCE_YEAR,                         /**< yearly forcing frequency */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCE_FREQS                /**< Number of force frequencies */
@@ -187,9 +224,11 @@ typedef struct {
     bool DAMS;                          /**< dam module flag */
     bool WATERUSE;                      /**< water-use module flag */
     bool IRRIGATION;                    /**< irrigation module flag */
+    bool WOFOST;                        /**< wofost module flag */
 
     short unsigned int UH_LENGTH;       /**< routing sub-step (unit-hydrograph) length */
     bool FORCE_ROUTING;                 /**< routing (inflow) forcing flag */
+    bool FORCE_LANDUSE; /**< landuse forcing flag */
     short unsigned int NDAMTYPES;       /**< maximum number of dams per cell */
     short unsigned int NDAMSERVICE;     /**< maximum number of dam service per dam */
     short unsigned int NWUTYPES;        /**< number of water-use sectors */
@@ -197,6 +236,21 @@ typedef struct {
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
+    bool FORCE_PUMP_CAP;                /**< pumping capacity forcing flag */
+    bool COMP_WITH;                     /**< compensation water abstractions flag */
+    bool REMOTE_WITH;                   /**< remote water abstractions flag */
+    bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
+    bool NONRENEW_RUNOFF;               /**< non-renewable water abstractions flag */
+    bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
+    bool WOFOST_PFERT;                  /**< potential fertilization for wofost module flag */
+    bool WOFOST_DIST_SEASON;            /**< distributed seasons for wofost module flag */
+    bool WOFOST_DIST_TSUM;              /**< distributed tsums for wofost module flag */
+    bool WOFOST_DIST_FERT;              /**< distributed fertilization for wofost module flag */
+    bool WOFOST_DIST_MIN;               /**< distributed mineralization for wofost module flag */
+    bool WOFOST_CONTINUE;               /**< continue on end land-use for wofost module flag */
+    bool WOFOST_FORCE_FERT;             /**< distributed fertilizer forcing for wofost module flag */
+    short unsigned int NCROPTYPES;      /**< number of crop types */
+    short unsigned int NFERTTIMES;      /**< number of fertilizer occations */
 } plugin_option_struct;
 
 /******************************************************************************
@@ -205,6 +259,8 @@ typedef struct {
 typedef struct {
     size_t rout_steps_per_day;          /**< number of routing steps [d-1] */
     double rout_dt;                     /**< routing time step [s] */
+    size_t wofost_steps_per_day;        /**< number of wofost steps [d-1] */
+    double wofost_dt;                   /**< wofost time step [s] */
     size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];        /**< number of forcing steps [d-1] */
     double force_dt[PLUGIN_N_FORCING_TYPES];                    /**< forcing time step [s] */
     unsigned int forcesec[PLUGIN_N_FORCING_TYPES];              /**< seconds since midnight when forcing files starts */
@@ -224,6 +280,7 @@ typedef struct {
     double DAM_ALPHA;                   /**< dam preferred maximum storage fraction [-] */
     double DAM_BETA;                    /**< dam correction exponent [-] */
     double DAM_GAMMA;                   /**< dam correction period [d-1] */
+    double NREN_LIM;                    /**< non-renewable withdrawal limit [mm] */
     double Wfc_fract;                   /**< field capacity fraction (of critical soil moisture) [-] */
     double Ksat_expt;                   /**< paddy saturated irrigation conductivity exponent [-] */
 } plugin_parameters_struct;
@@ -278,6 +335,7 @@ void plugin_get_forcing_file_info(short unsigned int);
 void plugin_get_forcing_file_skip(short unsigned int);
 void plugin_start_forcing(void);
 void plugin_end_forcing(void);
+void plugin_update_step_vars(void);
 void plugin_run(void);
 
 #endif /* PLUGIN_H */

@@ -287,8 +287,10 @@ copy_domain_info(domain_struct *domain_from,
     snprintf(domain_to->info.x_dim, MAXSTRING, "%s", domain_from->info.x_dim);
     snprintf(domain_to->info.y_dim, MAXSTRING, "%s", domain_from->info.y_dim);
 
-    snprintf(domain_to->info.lon_var, MAXSTRING, "%s", domain_from->info.lon_var);
-    snprintf(domain_to->info.lat_var, MAXSTRING, "%s", domain_from->info.lat_var);
+    snprintf(domain_to->info.lon_var, MAXSTRING, "%s",
+             domain_from->info.lon_var);
+    snprintf(domain_to->info.lat_var, MAXSTRING, "%s",
+             domain_from->info.lat_var);
 
     domain_to->n_nx = domain_from->n_nx;
     domain_to->n_ny = domain_from->n_ny;
@@ -331,6 +333,7 @@ initialize_location(location_struct *location)
     location->area = MISSING;
     location->frac = MISSING;
     location->nveg = MISSING_USI;
+    location->ncrop = MISSING_USI;
     location->global_idx = MISSING_USI;
     location->io_idx = MISSING_USI;
     location->local_idx = MISSING_USI;

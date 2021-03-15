@@ -61,10 +61,15 @@ vic_store(dmy_struct *dmy_state,
     set_nc_state_file_info(&nc_state_file);
 
     // create netcdf file for storing model state
-    snprintf(filename, MAXSTRING, "%s.%04i%02i%02i_%05u.nc",
-             filenames.statefile, dmy_state->year,
-             dmy_state->month, dmy_state->day,
-             dmy_state->dayseconds);
+    status = snprintf(filename, MAXSTRING, "%s.%04i%02i%02i_%05u.nc",
+                      filenames.statefile, dmy_state->year,
+                      dmy_state->month, dmy_state->day,
+                      dmy_state->dayseconds);
+    if (status >= MAXSTRING) {
+        log_warn("State file name %s was too large [%d] "
+                 "and is truncated to size [%d]",
+                 filename, status, MAXSTRING);
+    }
 
     initialize_state_file(filename, &nc_state_file, dmy_state);
 
@@ -1620,8 +1625,13 @@ initialize_state_file(char           *filename,
         // adding units attribute to time variable
         str_from_time_units(global_param.time_units, unit_str);
 
-        snprintf(str, sizeof(str), "%s since %s", unit_str,
-                 global_param.time_origin_str);
+        status = snprintf(str, sizeof(str), "%s since %s", unit_str,
+                          global_param.time_origin_str);
+        if (status >= MAXSTRING) {
+            log_warn("Time attribute name %s is too large [%d] "
+                     "and is truncated to size [%d]",
+                     str, status, MAXSTRING);
+        }
 
         status = nc_put_att_text(nc_state_file->nc_id,
                                  nc_state_file->time_varid,
