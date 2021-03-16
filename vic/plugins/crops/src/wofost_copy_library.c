@@ -378,6 +378,7 @@ copy_wofost_parameters(Parameters *from,
     to->MinStomatalResistance = from->MinStomatalResistance;
     to->MaxArchitecturalResistance = from->MaxArchitecturalResistance;
     to->Fcanopy = from->Fcanopy;
+    to->TranslocationFrac = from->TranslocationFrac;
 }
 
 void

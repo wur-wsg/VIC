@@ -273,6 +273,8 @@ crop_run(size_t iCell)
                     }
                     
                     if (plugin_options.WOFOST_CALC_MIN) {
+                        // Calculated following Sattari et al. (2014)
+                        // Crop yield response to soil fertility and N, P, K inputs in different environments: Testing and improving the QUEFTS model
                         fN = 0.25 * (soil_con[iCell].ph - 3);
                         if(soil_con[iCell].ph > 7.0){
                             fN = 1;

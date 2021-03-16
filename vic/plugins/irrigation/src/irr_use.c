@@ -116,6 +116,7 @@ void
 irr_return_leftover(size_t iCell)
 {
     extern option_struct       options;
+    extern plugin_option_struct       plugin_options;
     extern domain_struct       local_domain;
     extern global_param_struct global_param;
     extern irr_con_map_struct *irr_con_map;
@@ -164,7 +165,7 @@ irr_return_leftover(size_t iCell)
         }
     }
 
-    if (leftover > 0.) {
+    if (leftover > 0. && plugin_options.ROUTING) {
         available_discharge_tmp = 0.;
         for (iStep = rout_steps_per_dt;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
@@ -677,5 +678,5 @@ irr_get_withdrawn(size_t iCell)
         }
     }
     
-    // irr_return_leftover(iCell);
+    irr_return_leftover(iCell);
 }
