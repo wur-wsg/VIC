@@ -271,18 +271,18 @@ CalcBlowingSnow(double   Dt,
  *****************************************************************************/
 double
 qromb(double (*funcd)(),
-      double   es,
-      double   Wind,
-      double   AirDens,
-      double   ZO,
-      double   EactAir,
-      double   F,
-      double   hsalt,
-      double   phi_r,
-      double   ushear,
-      double   Zrh,
-      double   a,
-      double   b)
+      double es,
+      double Wind,
+      double AirDens,
+      double ZO,
+      double EactAir,
+      double F,
+      double hsalt,
+      double phi_r,
+      double ushear,
+      double Zrh,
+      double a,
+      double b)
 {
     extern parameters_struct param;
 
@@ -363,19 +363,19 @@ polint(double  xa[],
  *****************************************************************************/
 double
 trapzd(double (*funcd)(),
-       double   es,
-       double   Wind,
-       double   AirDens,
-       double   ZO,
-       double   EactAir,
-       double   F,
-       double   hsalt,
-       double   phi_r,
-       double   ushear,
-       double   Zrh,
-       double   a,
-       double   b,
-       int      n)
+       double es,
+       double Wind,
+       double AirDens,
+       double ZO,
+       double EactAir,
+       double F,
+       double hsalt,
+       double phi_r,
+       double ushear,
+       double Zrh,
+       double a,
+       double b,
+       int    n)
 {
     double x, tnm, sum, del;
     int    it, j;
@@ -526,12 +526,12 @@ sub_with_height(double z,
     UNUSED(Zrh);
 
     /* Local variables */
-    double                   Rrz, ALPHAz, Mz;
-    double                   Rmean, terminal_v, fluctuat_v;
-    double                   Vtz, Re, Nu;
-    double                   sigz, dMdt;
-    double                   temp;
-    double                   psi_t, phi_t;
+    double Rrz, ALPHAz, Mz;
+    double Rmean, terminal_v, fluctuat_v;
+    double Vtz, Re, Nu;
+    double sigz, dMdt;
+    double temp;
+    double psi_t, phi_t;
 
 
     // Calculate sublimation loss rate (1/s)
@@ -729,14 +729,14 @@ CalcSubFlux(double  EactAir,
     UNUSED(Tair);
 
     /* Local variables */
-    double                   b, undersat_2;
-    double                   SubFlux;
-    double                   Qsalt, hsalt;
-    double                   phi_s, psi_s;
-    double                   T, ztop;
-    double                   particle;
-    double                   saltation_transport;
-    double                   suspension_transport;
+    double b, undersat_2;
+    double SubFlux;
+    double Qsalt, hsalt;
+    double phi_s, psi_s;
+    double T, ztop;
+    double particle;
+    double saltation_transport;
+    double suspension_transport;
 
     SubFlux = 0.0;
     particle = utshear * 2.8;
@@ -840,9 +840,9 @@ transport_with_height(double z,
     UNUSED(Zrh);
 
     /* Local variables */
-    double                   u_z;
-    double                   temp;
-    double                   phi_t;
+    double u_z;
+    double temp;
+    double phi_t;
 
     // Find wind speed at current height
 

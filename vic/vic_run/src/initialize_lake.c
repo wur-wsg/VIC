@@ -205,6 +205,7 @@ initialize_lake(lake_var_struct  *lake,
     lake->soil.runoff = 0.0;
     lake->soil.rootmoist = 0.0;
     lake->soil.wetness = 1.0;
+    lake->soil.water_stress = 1.0;
     for (i = 0; i < 2; i++) {
         lake->soil.aero_resist[i] = 0.0;
     }
@@ -216,6 +217,7 @@ initialize_lake(lake_var_struct  *lake,
         lake->soil.layer[i].moist = soil_con->porosity[i] * soil_con->depth[i] *
                                     MM_PER_M;
         lake->soil.layer[i].phi = cell->layer[i].phi;
+        lake->soil.layer[i].water_stress = cell->layer[i].water_stress;
         for (j = 0; j < options.Nfrost; j++) {
             lake->soil.layer[i].ice[j] = 0.0;
         }

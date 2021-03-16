@@ -222,7 +222,6 @@ vic_run(force_data_struct   *force,
             for (band = 0; band < Nbands; band++) {
                 /** Solve band only if coverage greater than 0% **/
                 if (soil_con->AreaFract[band] > 0) {
-
                     /* Set local pointers */
                     cell = &(all_vars->cell[iveg][band]);
                     veg_var = &(all_vars->veg_var[iveg][band]);
@@ -230,10 +229,13 @@ vic_run(force_data_struct   *force,
                     energy = &(all_vars->energy[iveg][band]);
 
                     // Convert LAI from global to local
-                    veg_var->LAI /= veg_var->fcanopy;
-                    veg_var->Wdew /= veg_var->fcanopy;
-                    veg_var->Wdmax = veg_var->LAI * param.VEG_LAI_WATER_FACTOR;
-                    snow->snow_canopy /= veg_var->fcanopy;
+                    if (veg_var->fcanopy > 0) {
+                        veg_var->LAI /= veg_var->fcanopy;
+                        veg_var->Wdew /= veg_var->fcanopy;
+                        veg_var->Wdmax = veg_var->LAI *
+                                         param.VEG_LAI_WATER_FACTOR;
+                        snow->snow_canopy /= veg_var->fcanopy;
+                    }
 
                     /******************************************
                        Initialize Band-dependent Model Parameters

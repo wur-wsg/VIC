@@ -28,31 +28,68 @@
 #include <plugin.h>
 
 /******************************************
+* @brief   Setup pumping capacity
+******************************************/
+void
+wu_set_info(void)
+{
+    extern global_param_struct     global_param;
+    extern domain_struct           local_domain;
+    extern domain_struct           global_domain;
+    extern plugin_filenames_struct plugin_filenames;
+    extern wu_con_struct          *wu_con;
+
+    double                        *dvar;
+
+    size_t                         i;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
+
+    d2start[0] = 0;
+    d2start[1] = 0;
+    d2count[0] = global_domain.n_ny;
+    d2count[1] = global_domain.n_nx;
+
+    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+    check_alloc_status(dvar, "Memory allocation error.");
+
+    get_scatter_nc_field_double(&(plugin_filenames.wateruse),
+                                "pumping_capacity", d2start, d2count, dvar);
+
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        wu_con[i].pumping_capacity = dvar[i] / global_param.model_steps_per_day;
+    }
+
+    free(dvar);
+}
+
+/******************************************
 * @brief   Setup remote mapping
 ******************************************/
 void
 wu_set_receiving(void)
 {
-    extern domain_struct    global_domain;
-    extern domain_struct    local_domain;
+    extern domain_struct           global_domain;
+    extern domain_struct           local_domain;
     extern plugin_filenames_struct plugin_filenames;
-    extern wu_con_struct *wu_con;
+    extern wu_con_struct          *wu_con;
 
-    int                    *ivar;
-    int                    *receiving_id;
-    int                    *adjustment;
-    size_t                  error_count;
-    
-    bool                    found;
+    int                           *ivar;
+    int                           *receiving_id;
+    int                           *adjustment;
+    size_t                         error_count;
 
-    size_t                  i;
-    size_t                  k;
-    size_t                  l;
+    bool                           found;
 
-    size_t                  d2count[2];
-    size_t                  d2start[2];
-    size_t                  d3count[3];
-    size_t                  d3start[3];
+    size_t                         i;
+    size_t                         k;
+    size_t                         l;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
+    size_t                         d3count[3];
+    size_t                         d3start[3];
 
     ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
@@ -73,22 +110,22 @@ wu_set_receiving(void)
     d3count[1] = global_domain.n_ny;
     d3count[2] = global_domain.n_nx;
 
-    get_scatter_nc_field_int(&(plugin_filenames.wateruse), "receiving_id", 
+    get_scatter_nc_field_int(&(plugin_filenames.wateruse), "receiving_id",
                              d2start, d2count, receiving_id);
-    
+
     error_count = 0;
-    for(i = 0; i < local_domain.ncells_active; i++){
+    for (i = 0; i < local_domain.ncells_active; i++) {
         adjustment[i] = 0;
     }
-    
-    for(k = 0; k < plugin_options.NWURECEIVING; k++){
+
+    for (k = 0; k < plugin_options.NWURECEIVING; k++) {
         d3start[0] = k;
-            
-        get_scatter_nc_field_int(&(plugin_filenames.wateruse), "receiving", 
+
+        get_scatter_nc_field_int(&(plugin_filenames.wateruse), "receiving",
                                  d3start, d3count, ivar);
 
         for (i = 0; i < local_domain.ncells_active; i++) {
-            if(k - adjustment[i] < wu_con[i].nreceiving){
+            if (k - adjustment[i] < wu_con[i].nreceiving) {
                 found = false;
                 for (l = 0; l < local_domain.ncells_active; l++) {
                     if (ivar[i] == receiving_id[l]) {
@@ -97,7 +134,7 @@ wu_set_receiving(void)
                     }
                 }
 
-                if(!found){
+                if (!found) {
                     error_count++;
                     wu_con[i].nreceiving--;
                     adjustment[i]++;
@@ -105,13 +142,13 @@ wu_set_receiving(void)
             }
         }
     }
-    
-    if(error_count > 0){
+
+    if (error_count > 0) {
         log_warn("No receiving cell was found for %zu cells; "
-                "Probably the ID was outside of the mask or "
-                "the ID was not set; "
-                "Removing receiving cells",
-                error_count);
+                 "Probably the ID was outside of the mask or "
+                 "the ID was not set; "
+                 "Removing receiving cells",
+                 error_count);
     }
 
     free(adjustment);
@@ -126,9 +163,9 @@ void
 wu_init(void)
 {
     extern plugin_filenames_struct plugin_filenames;
-    extern int              mpi_rank;
+    extern int                     mpi_rank;
 
-    int                     status;
+    int                            status;
 
     // open parameter file
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -137,8 +174,11 @@ wu_init(void)
         check_nc_status(status, "Error opening %s",
                         plugin_filenames.wateruse.nc_filename);
     }
-    
-    wu_set_receiving();
+
+    wu_set_info();
+    if (plugin_options.REMOTE_WITH) {
+        wu_set_receiving();
+    }
 
     // close parameter file
     if (mpi_rank == VIC_MPI_ROOT) {

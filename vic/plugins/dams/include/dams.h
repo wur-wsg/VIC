@@ -46,11 +46,11 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     size_t dam_class;               /**< dam class id number */
-    
+
     unsigned short int year;        /**< build year [year] */
     double capacity;                /**< capacity [hm3] */
     double inflow_frac;             /**< fraction of runoff/discharge used as inflow [-] */
-    
+
     size_t nservice;                /**< number of service cells */
     size_t *service;                /**< service cell id */
     double *service_frac;           /**< sercive cell demand fraction used for operation [-] */
@@ -61,7 +61,7 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     bool active;                    /**< active flag */
-    
+
     double inflow;                  /**< inflow [hm3] */
     double demand;                  /**< water demand [hm3] */
     double efr;                     /**< environmental requirments [hm3] */
@@ -107,6 +107,7 @@ void dam_initialize_local_structures(void);
 
 void dam_init(void);
 void dam_generate_default_state(void);
+void dam_compute_derived_state_vars(void);
 
 void dam_set_output_met_data_info(void);
 void dam_initialize_nc_file(nc_file_struct *);
@@ -124,7 +125,8 @@ void dam_corr_opt_release(double *, double *, size_t, double, double);
 double dam_corr_release(double, double, double);
 double dam_calc_k_factor(double, double);
 double dam_calc_c_factor(double *, double, size_t, size_t *);
-void dam_calc_opt_storage(double *, double *, double *, size_t, size_t*, double);
+void dam_calc_opt_storage(double *, double *, double *, size_t, size_t*,
+                          double);
 double dam_area(double, double, double, double);
 double dam_height(double, double);
 void local_dam_run(size_t);

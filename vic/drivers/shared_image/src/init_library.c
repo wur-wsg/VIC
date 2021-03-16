@@ -86,6 +86,7 @@ initialize_soil_con(soil_con_struct *soil_con)
         soil_con->soil_dens_org[i] = 0.;
         soil_con->Wcr[i] = 0.;
         soil_con->Wpwp[i] = 0.;
+        soil_con->Wfc[i] = 0.;
     }
 
     for (i = 0; i < MAX_NODES; i++) {

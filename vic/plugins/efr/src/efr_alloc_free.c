@@ -33,14 +33,14 @@
 void
 efr_alloc(void)
 {
-    extern domain_struct              local_domain;
-    extern option_struct options;
-    extern veg_con_map_struct       *veg_con_map;
-    extern efr_force_struct         *efr_force;
+    extern domain_struct       local_domain;
+    extern option_struct       options;
+    extern veg_con_map_struct *veg_con_map;
+    extern efr_force_struct   *efr_force;
 
-    size_t                            i;
-    size_t                            j;
-    
+    size_t                     i;
+    size_t                     j;
+
     efr_force = malloc(local_domain.ncells_active * sizeof(*efr_force));
     check_alloc_status(efr_force, "Memory allocation error");
 
@@ -49,15 +49,15 @@ efr_alloc(void)
             malloc(veg_con_map[i].nv_active * sizeof(*efr_force[i].moist));
         check_alloc_status(efr_force[i].moist,
                            "Memory allocation error");
-        
-        for(j = 0; j < veg_con_map[i].nv_active; j++){
+
+        for (j = 0; j < veg_con_map[i].nv_active; j++) {
             efr_force[i].moist[j] =
                 malloc(options.SNOW_BAND * sizeof(*efr_force[i].moist[j]));
             check_alloc_status(efr_force[i].moist[j],
                                "Memory allocation error");
         }
     }
-    
+
     efr_initialize_local_structures();
 }
 
@@ -67,15 +67,15 @@ efr_alloc(void)
 void
 efr_finalize(void)
 {
-    extern domain_struct        local_domain;
-    extern veg_con_map_struct       *veg_con_map;
+    extern domain_struct       local_domain;
+    extern veg_con_map_struct *veg_con_map;
     extern efr_force_struct   *efr_force;
 
-    size_t                      i;
-    size_t                      j;
-    
+    size_t                     i;
+    size_t                     j;
+
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < veg_con_map[i].nv_active; j++){
+        for (j = 0; j < veg_con_map[i].nv_active; j++) {
             free(efr_force[i].moist[j]);
         }
         free(efr_force[i].moist);

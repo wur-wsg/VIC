@@ -42,7 +42,7 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 12;
+    nitems = 14;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -62,6 +62,12 @@ plugin_create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_AINT;
     // double rout_dt;
     offsets[i] = offsetof(plugin_global_param_struct, rout_dt);
+    mpi_types[i++] = MPI_DOUBLE;
+    // size_t wofost_steps_per_day;
+    offsets[i] = offsetof(plugin_global_param_struct, wofost_steps_per_day);
+    mpi_types[i++] = MPI_AINT;
+    // double wofost_dt;
+    offsets[i] = offsetof(plugin_global_param_struct, wofost_dt);
     mpi_types[i++] = MPI_DOUBLE;
     // size_t force_steps_per_year[PLUGIN_N_FORCING_TYPES];
     offsets[i] = offsetof(plugin_global_param_struct, force_steps_per_year);
@@ -135,7 +141,7 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 2;
+    nitems = 3;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -150,6 +156,9 @@ plugin_create_MPI_filenames_struct_type(MPI_Datatype *mpi_type)
     }
     i = 0;
 
+    // char wofost_text[MAXSTRING]
+    offsets[i] = offsetof(plugin_filenames_struct, wofost_text);
+    mpi_types[i++] = MPI_CHAR;
     // char f_path_pfx[PLUGIN_N_FORCING_TYPES][MAXSTRING];
     offsets[i] = offsetof(plugin_filenames_struct, f_path_pfx);
     blocklengths[i] *= PLUGIN_N_FORCING_TYPES;
@@ -190,7 +199,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 15;
+    nitems = 32;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -223,11 +232,17 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool IRRIGATION;
     offsets[i] = offsetof(plugin_option_struct, IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST);
+    mpi_types[i++] = MPI_C_BOOL;
     // short unsigned int UH_LENGTH;
     offsets[i] = offsetof(plugin_option_struct, UH_LENGTH);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
     // bool FORCE_ROUTING;
     offsets[i] = offsetof(plugin_option_struct, FORCE_ROUTING);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool FORCE_LANDUSE;
+    offsets[i] = offsetof(plugin_option_struct, FORCE_LANDUSE);
     mpi_types[i++] = MPI_C_BOOL;
     // short unsigned int NDAMTYPES;
     offsets[i] = offsetof(plugin_option_struct, NDAMTYPES);
@@ -251,6 +266,51 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool POTENTIAL_IRRIGATION;
     offsets[i] = offsetof(plugin_option_struct, POTENTIAL_IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
+    // bool FORCE_PUMP_CAP;
+    offsets[i] = offsetof(plugin_option_struct, FORCE_PUMP_CAP);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool COMP_WITH;
+    offsets[i] = offsetof(plugin_option_struct, COMP_WITH);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool REMOTE_WITH;
+    offsets[i] = offsetof(plugin_option_struct, REMOTE_WITH);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool NONRENEW_WITH;
+    offsets[i] = offsetof(plugin_option_struct, NONRENEW_WITH);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool NONRENEW_RUNOFF;
+    offsets[i] = offsetof(plugin_option_struct, NONRENEW_RUNOFF);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_PIRR;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_PIRR);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_PFERT;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_PFERT);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_DIST_SEASON;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_SEASON);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_DIST_TSUM;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_TSUM);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_DIST_FERT;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_FERT);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_DIST_MIN;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_MIN);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_CONTINUE;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_CONTINUE);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_FORCE_FERT;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_FORCE_FERT);
+    mpi_types[i++] = MPI_C_BOOL;
+    // short unsigned int NCROPTYPES;
+    offsets[i] = offsetof(plugin_option_struct, NCROPTYPES);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // short unsigned int NFERTTIMES;
+    offsets[i] = offsetof(plugin_option_struct, NFERTTIMES);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // make sure that the we have the right number of elements
     if (i != (size_t) nitems) {
@@ -283,7 +343,7 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 5;
+    nitems = 6;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -297,7 +357,7 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
         blocklengths[i] = 1;
     }
     i = 0;
-    
+
     // double DAM_ALPHA;
     offsets[i] = offsetof(plugin_parameters_struct, DAM_ALPHA);
     mpi_types[i++] = MPI_DOUBLE;
@@ -306,6 +366,9 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_DOUBLE;
     // double DAM_GAMMA;
     offsets[i] = offsetof(plugin_parameters_struct, DAM_GAMMA);
+    mpi_types[i++] = MPI_DOUBLE;
+    // double NREN_LIM;
+    offsets[i] = offsetof(plugin_parameters_struct, NREN_LIM);
     mpi_types[i++] = MPI_DOUBLE;
     // double Wfc_fract;
     offsets[i] = offsetof(plugin_parameters_struct, Wfc_fract);

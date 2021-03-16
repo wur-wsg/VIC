@@ -36,8 +36,8 @@ dam_get_global_param(char *cmdstr)
     extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
 
-    char                    optstr[MAXSTRING];
-    char                    flgstr[MAXSTRING];
+    char                           optstr[MAXSTRING];
+    char                           flgstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
@@ -62,7 +62,7 @@ void
 dam_validate_global_param(void)
 {
     extern plugin_filenames_struct plugin_filenames;
-    
+
     // Parameters
     if (strcasecmp(plugin_filenames.dams.nc_filename, MISSING_S) == 0) {
         log_err("DAMS = TRUE but file is missing");
@@ -75,18 +75,20 @@ dam_validate_global_param(void)
 bool
 dam_get_parameters(char *cmdstr)
 {
-    extern plugin_parameters_struct    plugin_param;
+    extern plugin_parameters_struct plugin_param;
 
-    char                    optstr[MAXSTRING];
+    char                            optstr[MAXSTRING];
 
     sscanf(cmdstr, "%s", optstr);
 
     if (strcasecmp("DAM_ALPHA", optstr) == 0) {
-                sscanf(cmdstr, "%*s %lf", &plugin_param.DAM_ALPHA);
-    } else if (strcasecmp("DAM_BETA", optstr) == 0) {
-                sscanf(cmdstr, "%*s %lf", &plugin_param.DAM_BETA);
-    } else if (strcasecmp("DAM_GAMMA", optstr) == 0) {
-                sscanf(cmdstr, "%*s %lf", &plugin_param.DAM_GAMMA);
+        sscanf(cmdstr, "%*s %lf", &plugin_param.DAM_ALPHA);
+    }
+    else if (strcasecmp("DAM_BETA", optstr) == 0) {
+        sscanf(cmdstr, "%*s %lf", &plugin_param.DAM_BETA);
+    }
+    else if (strcasecmp("DAM_GAMMA", optstr) == 0) {
+        sscanf(cmdstr, "%*s %lf", &plugin_param.DAM_GAMMA);
     }
     else {
         return false;
@@ -101,8 +103,8 @@ dam_get_parameters(char *cmdstr)
 void
 dam_validate_parameters(void)
 {
-    extern plugin_parameters_struct    plugin_param;
-    
+    extern plugin_parameters_struct plugin_param;
+
     if (!(plugin_param.DAM_ALPHA >= 0 && plugin_param.DAM_ALPHA <= 1)) {
         log_err("DAM_ALPHA must be defined on the interval [0,1] (-)");
     }

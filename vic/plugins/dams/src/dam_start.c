@@ -36,8 +36,8 @@ dam_start(void)
     extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
 
-    int                     status;
-    
+    int                            status;
+
     // Check domain & get dimensions
     status = nc_open(plugin_filenames.dams.nc_filename, NC_NOWRITE,
                      &(plugin_filenames.dams.nc_id));
@@ -45,9 +45,9 @@ dam_start(void)
                     plugin_filenames.dams.nc_filename);
 
     plugin_options.NDAMTYPES = get_nc_dimension(&(plugin_filenames.dams),
-                                           "dam_class");
+                                                "dam_class");
     plugin_options.NDAMSERVICE = get_nc_dimension(&(plugin_filenames.dams),
-                                           "dam_service");
+                                                  "dam_service");
     compare_ncdomain_with_global_domain(&plugin_filenames.dams);
 
     status = nc_close(plugin_filenames.dams.nc_id);

@@ -33,6 +33,7 @@
 void
 initialize_wu_force(wu_force_struct *wu_force)
 {
+    wu_force->pumping_capacity = 0.0;
     wu_force->consumption_frac = 0.0;
     wu_force->groundwater_frac = 0.0;
     wu_force->demand = 0.0;
@@ -48,15 +49,25 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->available_surf = 0.0;
     wu_var->available_dam = 0.0;
     wu_var->available_remote = 0.0;
+    wu_var->available_tremote = 0.0;
+    wu_var->available_nonrenew = 0.0;
     wu_var->demand_gw = 0.0;
     wu_var->demand_surf = 0.0;
     wu_var->demand_remote = 0.0;
+    wu_var->demand_tremote = 0.0;
+    wu_var->demand_nonrenew = 0.0;
     wu_var->withdrawn_gw = 0.0;
     wu_var->withdrawn_surf = 0.0;
     wu_var->withdrawn_dam = 0.0;
     wu_var->withdrawn_remote = 0.0;
+    wu_var->withdrawn_tremote = 0.0;
+    wu_var->withdrawn_nonrenew = 0.0;
     wu_var->returned = 0.0;
     wu_var->consumed = 0.0;
+
+    wu_var->available_remote_tmp = 0.0;
+    wu_var->demand_remote_tmp = 0.0;
+    wu_var->withdrawn_remote_tmp = 0.0;
 }
 
 /******************************************
@@ -65,9 +76,10 @@ initialize_wu_var(wu_var_struct *wu_var)
 void
 initialize_wu_con(wu_con_struct *wu_con)
 {
-    size_t               i;
-    
-    for(i = 0; i < wu_con->nreceiving; i++){
+    size_t i;
+
+    wu_con->pumping_capacity = 0.0;
+    for (i = 0; i < wu_con->nreceiving; i++) {
         wu_con->receiving[i] = MISSING_USI;
     }
 }
@@ -78,23 +90,23 @@ initialize_wu_con(wu_con_struct *wu_con)
 void
 wu_initialize_local_structures(void)
 {
-    extern domain_struct    local_domain;
+    extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
-    extern wu_con_map_struct *wu_con_map;
-    extern wu_var_struct **wu_var;
-    extern wu_con_struct *wu_con;
-    extern wu_force_struct **wu_force;
+    extern wu_con_map_struct   *wu_con_map;
+    extern wu_var_struct      **wu_var;
+    extern wu_con_struct       *wu_con;
+    extern wu_force_struct    **wu_force;
 
-    size_t                  i;
-    size_t                  j;
-    int                  iSector;
+    size_t                      i;
+    size_t                      j;
+    int                         iSector;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         initialize_wu_con(&wu_con[i]);
-        
-        for(j = 0; j < plugin_options.NWUTYPES; j++){
+
+        for (j = 0; j < plugin_options.NWUTYPES; j++) {
             iSector = wu_con_map[i].sidx[j];
-            if(iSector != NODATA_WU){
+            if (iSector != NODATA_WU) {
                 initialize_wu_var(&(wu_var[i][iSector]));
                 initialize_wu_force(&(wu_force[i][iSector]));
             }

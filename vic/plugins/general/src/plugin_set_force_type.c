@@ -59,11 +59,17 @@ plugin_set_force_type(char *cmdstr)
     if (strcasecmp("DISCHARGE", nctype) == 0) {
         type = FORCING_DISCHARGE;
     }
+    else if (strcasecmp("CV", nctype) == 0) {
+        type = FORCING_CV;
+    }
     else if (strcasecmp("EFR_DISCHARGE", nctype) == 0) {
         type = FORCING_EFR_DISCHARGE;
     }
     else if (strcasecmp("EFR_BASEFLOW", nctype) == 0) {
         type = FORCING_EFR_BASEFLOW;
+    }
+    else if (strcasecmp("PUMPING_CAP", nctype) == 0) {
+        type = FORCING_PUMPING_CAP;
     }
     else if (strcasecmp("IRR_DEMAND", nctype) == 0) {
         type = FORCING_IRR_DEMAND;
@@ -110,6 +116,21 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("ENE_CONSUMPTION", nctype) == 0) {
         type = FORCING_ENE_CONSUMPTION;
     }
+    else if (strcasecmp("CO2", nctype) == 0) {
+        type = FORCING_CO2;
+    }
+    else if (strcasecmp("FERT_DVS", nctype) == 0) {
+        type = FORCING_FERT_DVS;
+    }
+    else if (strcasecmp("FERT_N", nctype) == 0) {
+        type = FORCING_FERT_N;
+    }
+    else if (strcasecmp("FERT_P", nctype) == 0) {
+        type = FORCING_FERT_P;
+    }
+    else if (strcasecmp("FERT_K", nctype) == 0) {
+        type = FORCING_FERT_K;
+    }
     /** Undefined variable type **/
     else {
         log_err("Undefined forcing variable type %s in forcing file.",
@@ -124,6 +145,9 @@ plugin_set_force_type(char *cmdstr)
     }
     else if (strcasecmp("MONTH", ncfreq) == 0) {
         freq = FORCE_MONTH;
+    }
+    else if (strcasecmp("YEAR", ncfreq) == 0) {
+        freq = FORCE_YEAR;
     }
     /** Undefined variable frequency **/
     else {

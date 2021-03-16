@@ -53,6 +53,7 @@ print_cell_data(cell_data_struct *cell,
     }
     fprintf(LOG_DEST, "\trootmoist   : %f\n", cell->rootmoist);
     fprintf(LOG_DEST, "\twetness     : %f\n", cell->wetness);
+    fprintf(LOG_DEST, "\twater_stress: %f\n", cell->water_stress);
     fprintf(LOG_DEST, "\tzwt         : %f\n", cell->zwt);
     fprintf(LOG_DEST, "\tzwt_lumped  : %f\n", cell->zwt_lumped);
 
@@ -261,7 +262,7 @@ print_global_param(global_param_struct *gp)
     fprintf(LOG_DEST, "\tendday              : %hu\n", gp->endday);
     fprintf(LOG_DEST, "\tendmonth            : %hu\n", gp->endmonth);
     fprintf(LOG_DEST, "\tendyear             : %hu\n", gp->endyear);
-    for (i = 0; i < 1; i++) {
+    for (i = 0; i < MAX_FORCE_FILES; i++) {
         fprintf(LOG_DEST, "\tforceday[%zd]        : %hu\n", i, gp->forceday[i]);
         fprintf(LOG_DEST, "\tforcesec[%zd]        : %u\n", i, gp->forcesec[i]);
         fprintf(LOG_DEST, "\tforcemonth[%zd]      : %hu\n", i,
@@ -400,18 +401,19 @@ print_layer_data_states(layer_data_struct *ldata,
     size_t i;
 
     fprintf(LOG_DEST, "layer_data (states):\n");
-    fprintf(LOG_DEST, "\tCs   : %f\n", ldata->Cs);
-    fprintf(LOG_DEST, "\tT    : %f\n", ldata->T);
-    fprintf(LOG_DEST, "\tice  :");
+    fprintf(LOG_DEST, "\tCs          : %f\n", ldata->Cs);
+    fprintf(LOG_DEST, "\tT           : %f\n", ldata->T);
+    fprintf(LOG_DEST, "\tice         :");
     for (i = 0; i < nfrost; i++) {
         fprintf(LOG_DEST, "\t%f", ldata->ice[i]);
     }
     fprintf(LOG_DEST, "\n");
-    fprintf(LOG_DEST, "\tkappa: %f\n", ldata->kappa);
-    fprintf(LOG_DEST, "\tmoist: %f\n", ldata->moist);
-    fprintf(LOG_DEST, "\teff_sat: %f\n", ldata->eff_sat);
-    fprintf(LOG_DEST, "\tphi  : %f\n", ldata->phi);
-    fprintf(LOG_DEST, "\tzwt  : %f\n", ldata->zwt);
+    fprintf(LOG_DEST, "\tkappa       : %f\n", ldata->kappa);
+    fprintf(LOG_DEST, "\tmoist       : %f\n", ldata->moist);
+    fprintf(LOG_DEST, "\teff_sat     : %f\n", ldata->eff_sat);
+    fprintf(LOG_DEST, "\tphi         : %f\n", ldata->phi);
+    fprintf(LOG_DEST, "\tzwt         : %f\n", ldata->zwt);
+    fprintf(LOG_DEST, "\twater_stress: %f\n", ldata->water_stress);
 }
 
 void
@@ -495,8 +497,6 @@ print_option(option_struct *option)
             option->SPATIAL_SNOW ? "true" : "false");
     fprintf(LOG_DEST, "\tTFALLBACK            : %s\n",
             option->TFALLBACK ? "true" : "false");
-    fprintf(LOG_DEST, "\tMATRIC               : %s\n",
-            option->MATRIC ? "true" : "false");
     fprintf(LOG_DEST, "\tBASEFLOW             : %d\n", option->BASEFLOW);
     fprintf(LOG_DEST, "\tGRID_DECIMAL         : %d\n", option->GRID_DECIMAL);
     fprintf(LOG_DEST, "\tVEGLIB_PHOTO         : %s\n",
@@ -635,17 +635,11 @@ print_param_set(param_set_struct *param_set)
     fprintf(LOG_DEST, "param_set:\n");
     for (i = 0; i < N_FORCING_TYPES; i++) {
         print_force_type(&(param_set->TYPE[i]));
-    }
-    for (i = 0; i < MAX_FORCE_FILES; i++) {
         fprintf(LOG_DEST, "\tFORCE_DT    : %.4f\n", param_set->FORCE_DT[i]);
         fprintf(LOG_DEST, "\tFORCE_ENDIAN: %d\n", param_set->FORCE_ENDIAN[i]);
         fprintf(LOG_DEST, "\tFORCE_FORMAT: %d\n", param_set->FORCE_FORMAT[i]);
-        fprintf(LOG_DEST, "\tFORCE_INDEX :\n");
-        fprintf(LOG_DEST, "\t\t%zd: %d\n", i, param_set->FORCE_INDEX[i]);
-    }
-    fprintf(LOG_DEST, "\tVAR_INDEX :\n");
-    for (i = 0; i < N_FORCING_TYPES; i++) {
-        fprintf(LOG_DEST, "\t\t%zd: %d\n", i, param_set->VAR_INDEX[i]);
+        fprintf(LOG_DEST, "\tFORCE_INDEX : %d\n", param_set->FORCE_INDEX[i]);
+        fprintf(LOG_DEST, "\tN_TYPES     : %zu\n", param_set->N_TYPES[i]);
     }
 }
 

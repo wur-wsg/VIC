@@ -845,6 +845,7 @@ eddy(int     freezeflag,
     /**********************************************************************
     * Avoid too low wind speeds for computational stability.
     **********************************************************************/
+
     else {
         if (wind < 1.0) {
             wind = 1.0;

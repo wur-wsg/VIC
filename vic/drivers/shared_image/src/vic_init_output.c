@@ -230,33 +230,40 @@ initialize_history_file(nc_file_struct *nc,
     switch (stream->agg_alarm.freq) {
     // If FREQ_NDAYS -- filename = result_dir/prefix.YYYY-MM-DD.nc
     case FREQ_NDAYS:
-        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d-%02d.nc",
-                 filenames.result_dir,
-                 stream->prefix, stream->time_bounds[0].year,
-                 stream->time_bounds[0].month,
-                 stream->time_bounds[0].day);
+        status = snprintf(stream->filename, MAXSTRING,
+                          "%s/%s.%04d-%02d-%02d.nc",
+                          filenames.result_dir,
+                          stream->prefix, stream->time_bounds[0].year,
+                          stream->time_bounds[0].month,
+                          stream->time_bounds[0].day);
         break;
     case FREQ_NMONTHS:
         // If FREQ_NMONTHS -- filename = result_dir/prefix.YYYY-MM.nc
-        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d.nc",
-                 filenames.result_dir,
-                 stream->prefix, stream->time_bounds[0].year,
-                 stream->time_bounds[0].month);
+        status = snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d.nc",
+                          filenames.result_dir,
+                          stream->prefix, stream->time_bounds[0].year,
+                          stream->time_bounds[0].month);
         break;
     case FREQ_NYEARS:
         // If FREQ_NYEARS -- filename = result_dir/prefix.YYYY.nc
-        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d.nc",
-                 filenames.result_dir,
-                 stream->prefix, stream->time_bounds[0].year);
+        status = snprintf(stream->filename, MAXSTRING, "%s/%s.%04d.nc",
+                          filenames.result_dir,
+                          stream->prefix, stream->time_bounds[0].year);
         break;
     default:
         // For all other cases -- filename = result_dir/prefix.YYYY-MM-DD-SSSSS.nc
-        snprintf(stream->filename, MAXSTRING, "%s/%s.%04d-%02d-%02d-%05u.nc",
-                 filenames.result_dir,
-                 stream->prefix, stream->time_bounds[0].year,
-                 stream->time_bounds[0].month,
-                 stream->time_bounds[0].day,
-                 stream->time_bounds[0].dayseconds);
+        status = snprintf(stream->filename, MAXSTRING,
+                          "%s/%s.%04d-%02d-%02d-%05u.nc",
+                          filenames.result_dir,
+                          stream->prefix, stream->time_bounds[0].year,
+                          stream->time_bounds[0].month,
+                          stream->time_bounds[0].day,
+                          stream->time_bounds[0].dayseconds);
+    }
+    if (status >= MAXSTRING) {
+        log_warn("Output file name %s was too large [%d] "
+                 "and is truncated to size [%d]",
+                 stream->filename, status, MAXSTRING);
     }
 
     // open the netcdf file
@@ -342,8 +349,13 @@ initialize_history_file(nc_file_struct *nc,
     // adding units attribute to time variable
     str_from_time_units(global_param.time_units, unit_str);
 
-    snprintf(str, sizeof(str), "%s since %s", unit_str,
-             global_param.time_origin_str);
+    status = snprintf(str, sizeof(str), "%s since %s", unit_str,
+                      global_param.time_origin_str);
+    if (status >= MAXSTRING) {
+        log_warn("Time attribute name %s is too large [%d] "
+                 "and is truncated to size [%d]",
+                 str, status, MAXSTRING);
+    }
 
     status = nc_put_att_text(nc->nc_id, nc->time_varid, "units",
                              strlen(str), str);
