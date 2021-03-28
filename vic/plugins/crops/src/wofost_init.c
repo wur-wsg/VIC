@@ -343,7 +343,7 @@ wofost_set_data(void)
                                 iGrid = iGrid->next;
                             }
                             
-                            iGrid->mng->NRecoveryFrac = 1. / 120.;
+                            iGrid->mng->NRecoveryFrac = 1. / 30.;
                         }
                     }
                 }

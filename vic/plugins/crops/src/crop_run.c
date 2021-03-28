@@ -284,6 +284,7 @@ crop_run(size_t iCell)
                         aN = 2 * pow(2, (cgrid->met->Temp - 9.0) / 9.0);
                         
                         cgrid->mng->N_Mins = fN * aN * soil_con[iCell].carbon;
+                        cgrid->ste->st_N_mins = cgrid->mng->N_Mins;
                     }
                     
                     wofost_run(cgrid);

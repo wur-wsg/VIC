@@ -589,10 +589,6 @@ irr_wofost(size_t iCell)
                         cgrid = cgrid->next;
                     }
                     
-                    if(received_tmp > 0){
-                        log_info("test");
-                    }
-                    
                     irr_apply(iCell, iVeg, iBand,
                               received_tmp,
                              &cirr_var->applied,
