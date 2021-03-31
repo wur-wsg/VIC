@@ -349,7 +349,7 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 5;
+    nitems = 6;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -379,6 +379,9 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     // double Ksat_expt;
     offsets[i] = offsetof(plugin_parameters_struct, Ksat_expt);
     mpi_types[i++] = MPI_DOUBLE;
+    // int MINER_PERIOD;
+    offsets[i] = offsetof(plugin_parameters_struct, MINER_PERIOD);
+    mpi_types[i++] = MPI_INT;
 
     // make sure that the we have the right number of elements
     if (i != (size_t) nitems) {

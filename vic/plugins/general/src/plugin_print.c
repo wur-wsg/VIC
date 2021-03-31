@@ -146,4 +146,5 @@ plugin_print_parameters(plugin_parameters_struct *pa)
     fprintf(LOG_DEST, "\tDAM_GAMMA            : %.4f\n", pa->DAM_GAMMA);
     fprintf(LOG_DEST, "\tNREN_LIM             : %.4f\n", pa->NREN_LIM);
     fprintf(LOG_DEST, "\tKsat_expt            : %.4f\n", pa->Ksat_expt);
+    fprintf(LOG_DEST, "\tMINER_PERIOD         : %d\n", pa->MINER_PERIOD);
 }

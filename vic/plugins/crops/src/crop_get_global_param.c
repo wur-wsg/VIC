@@ -140,7 +140,11 @@ crop_get_parameters(char *cmdstr)
 
     sscanf(cmdstr, "%s", optstr);
 
-    UNUSED(plugin_param);
+    if (strcasecmp("MINER_PERIOD", optstr) == 0) {
+        sscanf(cmdstr, "%*s %d", &plugin_param.MINER_PERIOD);
+    } else {
+        return false;
+    }
 
     return true;
 }
@@ -150,5 +154,7 @@ crop_validate_parameters(void)
 {
     extern plugin_parameters_struct plugin_param;
 
-    UNUSED(plugin_param);
+    if (!(plugin_param.MINER_PERIOD > 0 && plugin_param.DAM_ALPHA <= 366)) {
+        log_err("MINER_PERIOD must be defined on the interval [1,366] (days)");
+    }
 }

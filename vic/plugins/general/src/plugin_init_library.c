@@ -110,6 +110,7 @@ plugin_initialize_parameters(plugin_parameters_struct *plugin_param)
     plugin_param->DAM_GAMMA = 5;
     plugin_param->NREN_LIM = INFINITY;
     plugin_param->Ksat_expt = 0.33;
+    plugin_param->MINER_PERIOD = 120;
 }
 
 /******************************************

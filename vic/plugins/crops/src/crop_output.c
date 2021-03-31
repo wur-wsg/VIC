@@ -570,8 +570,10 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_PDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_KDEM:
     case  N_OUTVAR_TYPES + OUT_CROP_ROOTDEPTH:
-    case  N_OUTVAR_TYPES + OUT_CROP_LAI:
         (*agg_type) = AGG_TYPE_SUM;
+        break;
+    case  N_OUTVAR_TYPES + OUT_CROP_LAI:
+        (*agg_type) = AGG_TYPE_MAX;
         break;
     }
 }
@@ -1024,6 +1026,5 @@ crop_put_rate_data(size_t iCell)
 void
 crop_put_data(size_t iCell)
 {
-    crop_put_state_data(iCell);
-    //crop_put_state_data(iCell);
+    crop_put_rate_data(iCell);
 }

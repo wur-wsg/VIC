@@ -285,6 +285,7 @@ typedef struct {
     double DAM_GAMMA;                   /**< dam correction period [d-1] */
     double NREN_LIM;                    /**< non-renewable withdrawal limit [mm] */
     double Ksat_expt;                   /**< paddy saturated irrigation conductivity exponent [-] */
+    int MINER_PERIOD;                   /**< mineralization reference period [days] */
 } plugin_parameters_struct;
 
 /******************************************************************************
