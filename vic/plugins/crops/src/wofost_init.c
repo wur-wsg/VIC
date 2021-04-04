@@ -101,6 +101,7 @@ wofost_set_data(void)
     extern global_param_struct     global_param;
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
+    extern plugin_parameters_struct   plugin_param;
     extern soil_con_struct         *soil_con;
     extern crop_con_map_struct    *crop_con_map;
     extern crop_con_struct       **crop_con;
@@ -343,7 +344,7 @@ wofost_set_data(void)
                                 iGrid = iGrid->next;
                             }
                             
-                            iGrid->mng->NRecoveryFrac = 1. / 120.;
+                            iGrid->mng->NRecoveryFrac = 1. / plugin_param.MINER_PERIOD;
                         }
                     }
                 }

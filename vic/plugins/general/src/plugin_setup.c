@@ -97,6 +97,8 @@ plugin_get_parameters(char cmdstr[MAXSTRING])
     }
     else if (wu_get_parameters(cmdstr)) {
     }
+    else if (crop_get_parameters(cmdstr)) {
+    }
     else {
         return false;
     }
@@ -120,6 +122,9 @@ plugin_validate_parameters(void)
     }
     if (plugin_options.WATERUSE) {
         wu_validate_parameters();
+    }
+    if (plugin_options.WOFOST) {
+        crop_validate_parameters();
     }
 }
 
