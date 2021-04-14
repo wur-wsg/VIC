@@ -125,6 +125,9 @@ enum {
     OUT_CROP_WST,                       /**< crop stems dry matter [kg ha-1] */
     OUT_CROP_WSO,                       /**< crop storage organs dry matter [kg ha-1] */
     OUT_CROP_WRT,                       /**< crop roots dry matter [kg ha-1] */
+    OUT_CROP_WDLV,                       /**< crop dead leafs dry matter [kg ha-1] */
+    OUT_CROP_WDST,                       /**< crop dead stems dry matter [kg ha-1] */
+    OUT_CROP_WDRT,                       /**< crop dead roots dry matter [kg ha-1] */
     OUT_CROP_LAI,                       /**< crop leaf area index [m2 m-2] */
     OUT_CROP_NNI,                       /**< crop nitrogen index [kg kg-1] */
     OUT_CROP_PNI,                       /**< crop phosphorous index [kg kg-1] */

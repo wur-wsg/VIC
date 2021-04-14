@@ -329,6 +329,7 @@ copy_wofost_parameters(Parameters *from,
     to->RelRespiStorage = from->RelRespiStorage;
     to->RelRespiRoots = from->RelRespiRoots;
     to->RelRespiStems = from->RelRespiStems;
+    to->CritLAIFactor = from->CritLAIFactor;
     to->MaxRelDeathRate = from->MaxRelDeathRate;
     to->CorrectionTransp = from->CorrectionTransp;
     to->CropGroupNumber = from->CropGroupNumber;

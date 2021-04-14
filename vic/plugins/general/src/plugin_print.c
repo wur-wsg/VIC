@@ -99,15 +99,15 @@ plugin_print_options(plugin_option_struct *op)
             op->WOFOST_DIST_SEASON ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_DIST_TSUM     : %s\n",
             op->WOFOST_DIST_TSUM ? "true" : "false");
-    fprintf(LOG_DEST, "\tDIST_FERT            : %s\n",
+    fprintf(LOG_DEST, "\tDWOFOST_IST_FERT     : %s\n",
             op->WOFOST_DIST_FERT ? "true" : "false");
-    fprintf(LOG_DEST, "\tDIST_MIN             : %s\n",
+    fprintf(LOG_DEST, "\tDWOFOST_IST_MIN      : %s\n",
             op->WOFOST_DIST_MIN ? "true" : "false");
-    fprintf(LOG_DEST, "\tCALC_MIN             : %s\n",
+    fprintf(LOG_DEST, "\tWOFOST_CALC_MIN      : %s\n",
             op->WOFOST_CALC_MIN ? "true" : "false");
-    fprintf(LOG_DEST, "\tCONTINUE             : %s\n",
+    fprintf(LOG_DEST, "\tCWOFOST_ONTINUE      : %s\n",
             op->WOFOST_CONTINUE ? "true" : "false");
-    fprintf(LOG_DEST, "\tFOREC_FERT           : %s\n",
+    fprintf(LOG_DEST, "\tWOFOST_FOREC_FERT    : %s\n",
             op->WOFOST_FORCE_FERT ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",
             op->WOFOST_PIRR ? "true" : "false");

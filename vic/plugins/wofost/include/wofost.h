@@ -3,7 +3,7 @@
 #ifndef WOFOST_H
 #define WOFOST_H
 
-#define NR_VARIABLES_CRP        76
+#define NR_VARIABLES_CRP        77
 #define NR_TABLES_CRP           22
 #define NR_VARIABLES_SITE       12
 #define NR_TABLES_SITE          1
@@ -120,6 +120,7 @@ typedef struct PARAMETERS {
     float RelRespiStems;
 
     /** Death Rates  **/
+    float CritLAIFactor;
     float MaxRelDeathRate;
 
     /** Water Use  **/

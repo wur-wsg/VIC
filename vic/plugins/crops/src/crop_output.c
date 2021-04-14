@@ -168,6 +168,39 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WRT].description,
              MAXSTRING, "%s", "crop root dry matter");
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].varname, MAXSTRING,
+             "%s", "OUT_CROP_WDLV");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].long_name, MAXSTRING,
+             "%s", "dead_leaf_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].standard_name,
+             MAXSTRING, "%s", "crop_dead_leaf_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].description,
+             MAXSTRING, "%s", "crop dead leaf dry matter");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].varname, MAXSTRING,
+             "%s", "OUT_CROP_WDST");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].long_name, MAXSTRING,
+             "%s", "dead_stem_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].standard_name,
+             MAXSTRING, "%s", "crop_dead_stem_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].description,
+             MAXSTRING, "%s", "crop dead stem dry matter");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].varname, MAXSTRING,
+             "%s", "OUT_CROP_WDRT");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].long_name, MAXSTRING,
+             "%s", "dead_root_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].standard_name,
+             MAXSTRING, "%s", "crop_dead_root_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].description,
+             MAXSTRING, "%s", "crop dead root dry matter");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].varname, MAXSTRING,
              "%s", "OUT_CROP_LAI");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].long_name, MAXSTRING,
@@ -382,6 +415,12 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_WRT].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_WDLV].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_WDST].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_WDRT].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_LAI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NNI].nelem = plugin_options.NCROPTYPES;
@@ -465,6 +504,9 @@ crop_set_nc_var_info(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_WST:
     case N_OUTVAR_TYPES + OUT_CROP_WSO:
     case N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case N_OUTVAR_TYPES + OUT_CROP_WDLV:
+    case N_OUTVAR_TYPES + OUT_CROP_WDST:
+    case N_OUTVAR_TYPES + OUT_CROP_WDRT:
     case N_OUTVAR_TYPES + OUT_CROP_LAI:
     case N_OUTVAR_TYPES + OUT_CROP_NNI:
     case N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -510,6 +552,9 @@ crop_set_nc_var_dimids(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_WST:
     case N_OUTVAR_TYPES + OUT_CROP_WSO:
     case N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case N_OUTVAR_TYPES + OUT_CROP_WDLV:
+    case N_OUTVAR_TYPES + OUT_CROP_WDST:
+    case N_OUTVAR_TYPES + OUT_CROP_WDRT:
     case N_OUTVAR_TYPES + OUT_CROP_LAI:
     case N_OUTVAR_TYPES + OUT_CROP_NNI:
     case N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -560,6 +605,9 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_WST:
     case  N_OUTVAR_TYPES + OUT_CROP_WSO:
     case  N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case  N_OUTVAR_TYPES + OUT_CROP_WDLV:
+    case  N_OUTVAR_TYPES + OUT_CROP_WDST:
+    case  N_OUTVAR_TYPES + OUT_CROP_WDRT:
     case  N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -679,6 +727,19 @@ crop_put_state_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_WRT][crop_class] +=
                     cgrid->crp->st.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDLV][crop_class] +=
+                    cgrid->crp->dst.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDST][crop_class] +=
+                    cgrid->crp->dst.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDRT][crop_class] +=
+                    cgrid->crp->dst.roots * area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSOIL][crop_class] +=
@@ -874,6 +935,19 @@ crop_put_rate_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_WRT][crop_class] +=
                     cgrid->crp->rt.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDLV][crop_class] +=
+                    cgrid->crp->drt.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDST][crop_class] +=
+                    cgrid->crp->drt.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDRT][crop_class] +=
+                    cgrid->crp->drt.roots * area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSOIL][crop_class] +=

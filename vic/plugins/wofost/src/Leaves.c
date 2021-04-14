@@ -16,7 +16,7 @@ DyingLeaves(SimUnit *Grid)
     Green *wipe;
 
     /* Dying rate of leaves due to water stress or high LAI */
-    CriticalLAI = 3.2 /
+    CriticalLAI = Grid->crp->prm.CritLAIFactor /
                   Afgen(Grid->crp->prm.KDiffuseTb,
                         &(Grid->crp->st.Development));
     Death1 = Grid->crp->st.leaves * (1. - Grid->soil->WaterStress) *

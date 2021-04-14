@@ -224,6 +224,7 @@ initialize_wofost_parameters(Parameters *prm)
     prm->RelRespiStorage = 0.;
     prm->RelRespiRoots = 0.;
     prm->RelRespiStems = 0.;
+    prm->CritLAIFactor = 0.;
     prm->MaxRelDeathRate = 0.;
     prm->CorrectionTransp = 0.;
     prm->CropGroupNumber = 0.;
