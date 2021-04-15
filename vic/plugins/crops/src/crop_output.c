@@ -201,6 +201,50 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].description,
              MAXSTRING, "%s", "crop dead root dry matter");
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].varname, MAXSTRING,
+             "%s", "OUT_CROP_NLV");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].long_name, MAXSTRING,
+             "%s", "leaf_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].standard_name,
+             MAXSTRING, "%s", "crop_leaf_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].description,
+             MAXSTRING, "%s", "crop leaf nitrogen content");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].varname, MAXSTRING,
+             "%s", "OUT_CROP_NST");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].long_name, MAXSTRING,
+             "%s", "stem_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].standard_name,
+             MAXSTRING, "%s", "crop_stem_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].description,
+             MAXSTRING, "%s", "crop stem nitrogen content");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].varname, MAXSTRING,
+             "%s", "OUT_CROP_NSO");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].long_name, MAXSTRING,
+             "%s", "storage_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].standard_name,
+             MAXSTRING, "%s", "crop_storage_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].description,
+             MAXSTRING, "%s", "crop storage organ nitrogen content");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].varname, MAXSTRING,
+             "%s", "OUT_CROP_NRT");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].long_name, MAXSTRING,
+             "%s", "root_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].standard_name,
+             MAXSTRING, "%s", "crop_root_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].description,
+             MAXSTRING, "%s", "crop root nitrogen content");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].varname, MAXSTRING,
              "%s", "OUT_CROP_LAI");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].long_name, MAXSTRING,
@@ -421,6 +465,14 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_WDRT].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NLV].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NST].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NSO].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NRT].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_LAI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NNI].nelem = plugin_options.NCROPTYPES;
@@ -507,6 +559,10 @@ crop_set_nc_var_info(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_WDLV:
     case N_OUTVAR_TYPES + OUT_CROP_WDST:
     case N_OUTVAR_TYPES + OUT_CROP_WDRT:
+    case N_OUTVAR_TYPES + OUT_CROP_NLV:
+    case N_OUTVAR_TYPES + OUT_CROP_NST:
+    case N_OUTVAR_TYPES + OUT_CROP_NSO:
+    case N_OUTVAR_TYPES + OUT_CROP_NRT:
     case N_OUTVAR_TYPES + OUT_CROP_LAI:
     case N_OUTVAR_TYPES + OUT_CROP_NNI:
     case N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -555,6 +611,10 @@ crop_set_nc_var_dimids(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_WDLV:
     case N_OUTVAR_TYPES + OUT_CROP_WDST:
     case N_OUTVAR_TYPES + OUT_CROP_WDRT:
+    case N_OUTVAR_TYPES + OUT_CROP_NLV:
+    case N_OUTVAR_TYPES + OUT_CROP_NST:
+    case N_OUTVAR_TYPES + OUT_CROP_NSO:
+    case N_OUTVAR_TYPES + OUT_CROP_NRT:
     case N_OUTVAR_TYPES + OUT_CROP_LAI:
     case N_OUTVAR_TYPES + OUT_CROP_NNI:
     case N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -608,6 +668,10 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_WDLV:
     case  N_OUTVAR_TYPES + OUT_CROP_WDST:
     case  N_OUTVAR_TYPES + OUT_CROP_WDRT:
+    case  N_OUTVAR_TYPES + OUT_CROP_NLV:
+    case  N_OUTVAR_TYPES + OUT_CROP_NST:
+    case  N_OUTVAR_TYPES + OUT_CROP_NSO:
+    case  N_OUTVAR_TYPES + OUT_CROP_NRT:
     case  N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -742,6 +806,24 @@ crop_put_state_data(size_t iCell)
                     cgrid->crp->dst.roots * area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NLV][crop_class] +=
+                    cgrid->crp->N_st.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NST][crop_class] +=
+                    cgrid->crp->N_st.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NSO][crop_class] +=
+                    cgrid->crp->N_st.storage *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NRT][crop_class] +=
+                    cgrid->crp->N_st.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSOIL][crop_class] +=
                     cgrid->ste->st_N_tot *
                     area_fract *
@@ -851,6 +933,13 @@ crop_put_rate_data(size_t iCell)
     double                     area_fract;
     double                     cc_fract;
     float                      tmp_develop;
+    float                      tmp_dw_leaf;
+    float                      tmp_dw_stem;
+    float                      tmp_dw_root;
+    float                      tmp_dw_storage;
+    float                      tmp_Nmax_leaf;
+    float                      tmp_Nmax_stem;
+    float                      tmp_Nmax_root;
 
     size_t                     iBand;
     size_t                     iVeg;
@@ -950,6 +1039,24 @@ crop_put_rate_data(size_t iCell)
                     cgrid->crp->drt.roots * area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NLV][crop_class] +=
+                    cgrid->crp->N_rt.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NST][crop_class] +=
+                    cgrid->crp->N_rt.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NSO][crop_class] +=
+                    cgrid->crp->N_rt.storage *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NRT][crop_class] +=
+                    cgrid->crp->N_rt.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSOIL][crop_class] +=
                     cgrid->ste->rt_N_tot *
                     area_fract *
@@ -1004,35 +1111,50 @@ crop_put_rate_data(size_t iCell)
                 if (cgrid->crp->GrowthDay == 2) {
                     tmp_develop = cgrid->crp->st.Development -
                                   cgrid->crp->rt.Development;
+                    
+                    tmp_dw_root = cgrid->crp->prm.InitialDryWeight *
+                            Afgen(cgrid->crp->prm.Roots, &tmp_develop);
+                    tmp_dw_leaf = cgrid->crp->prm.InitialDryWeight *
+                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                        Afgen(cgrid->crp->prm.Leaves, &tmp_develop);
+                    tmp_dw_stem = cgrid->crp->prm.InitialDryWeight *
+                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                        Afgen(cgrid->crp->prm.Stems, &tmp_develop);
+                    tmp_dw_storage = cgrid->crp->prm.InitialDryWeight *
+                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                        Afgen(cgrid->crp->prm.Storage, &tmp_develop);
+                    
+                    tmp_Nmax_leaf = Afgen(cgrid->crp->prm.N_MaxLeaves, &tmp_develop);
+                    tmp_Nmax_stem = cgrid->crp->prm.N_MaxStems * tmp_Nmax_leaf;
+                    tmp_Nmax_root = cgrid->crp->prm.N_MaxRoots * tmp_Nmax_leaf;
 
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_DVS][crop_class] +=
                         cgrid->crp->prm.InitialDVS *
-                        area_fract
-                        * cgrid->
-                        growing;
+                        area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WLV][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Leaves, &tmp_develop) *
-                        area_fract * cgrid->growing;
+                        tmp_dw_leaf * area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WST][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Stems, &tmp_develop) *
-                        area_fract * cgrid->growing;
+                        tmp_dw_stem * area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WSO][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Storage, &tmp_develop) *
-                        area_fract * cgrid->growing;
+                        tmp_dw_storage * area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WRT][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *Afgen(
-                            cgrid->crp->prm.Roots, &tmp_develop) *
+                        tmp_dw_root * area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_CROP_NLV][crop_class] +=
+                        tmp_Nmax_leaf * tmp_dw_leaf *
+                        area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_CROP_NST][crop_class] +=
+                        tmp_Nmax_stem * tmp_dw_stem *
+                        area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_CROP_NRT][crop_class] +=
+                        tmp_Nmax_root * tmp_dw_root *
                         area_fract * cgrid->growing;
 
                     out_data[iCell][N_OUTVAR_TYPES +
