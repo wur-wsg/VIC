@@ -101,7 +101,6 @@ wofost_set_data(void)
     extern global_param_struct     global_param;
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
-    extern plugin_parameters_struct   plugin_param;
     extern soil_con_struct         *soil_con;
     extern crop_con_map_struct    *crop_con_map;
     extern crop_con_struct       **crop_con;
@@ -335,6 +334,11 @@ wofost_set_data(void)
             }
             
             for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
+
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "mineralization_period", d3start, d3count, dvar);
+                
                 for (i = 0; i < local_domain.ncells_active; i++) {
                     iCrop = crop_con_map[i].cidx[j];
                     if (iCrop != NODATA_VEG) {
@@ -344,7 +348,7 @@ wofost_set_data(void)
                                 iGrid = iGrid->next;
                             }
                             
-                            iGrid->mng->NRecoveryFrac = 1. / plugin_param.MINER_PERIOD;
+                            iGrid->mng->NRecoveryFrac = 1. / dvar[i];
                         }
                     }
                 }
