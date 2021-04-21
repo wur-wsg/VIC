@@ -54,7 +54,6 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     }
     plugin_options->NIRRTYPES = 0;
     plugin_options->POTENTIAL_IRRIGATION = false;
-    plugin_options->FORCE_PUMP_CAP = false;
     plugin_options->COMP_WITH = false;
     plugin_options->REMOTE_WITH = false;
     plugin_options->NONRENEW_WITH = false;
@@ -110,7 +109,6 @@ plugin_initialize_parameters(plugin_parameters_struct *plugin_param)
     plugin_param->DAM_GAMMA = 5;
     plugin_param->NREN_LIM = INFINITY;
     plugin_param->Ksat_expt = 0.33;
-    plugin_param->MINER_PERIOD = 120;
 }
 
 /******************************************

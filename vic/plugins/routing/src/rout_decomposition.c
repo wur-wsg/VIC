@@ -76,7 +76,7 @@ set_basins_downstream(size_t *downstream_basin)
         if (!found) {
             log_warn("No downstream cell was found; "
                      "Probably the ID was outside of the mask or "
-                     "the ID was not set;"
+                     "the ID was not set; "
                      "Setting cell as outflow point");
             downstream_basin[i] = i;
         }

@@ -166,7 +166,6 @@ enum {
     FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
     FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
     // water-use
-    FORCING_PUMPING_CAP,                /**< pumping capacity [mm day-1] */
     FORCING_IRR_DEMAND,                 /**< irrigation demand [mm] */
     FORCING_IRR_GROUNDWATER,            /**< irrigation groundwater fraction [-] */
     FORCING_IRR_CONSUMPTION,            /**< irrigation consumption fraction [-] */
@@ -244,7 +243,6 @@ typedef struct {
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
-    bool FORCE_PUMP_CAP;                /**< pumping capacity forcing flag */
     bool COMP_WITH;                     /**< compensation water abstractions flag */
     bool REMOTE_WITH;                   /**< remote water abstractions flag */
     bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
@@ -292,7 +290,6 @@ typedef struct {
     double DAM_GAMMA;                   /**< dam correction period [d-1] */
     double NREN_LIM;                    /**< non-renewable withdrawal limit [mm] */
     double Ksat_expt;                   /**< paddy saturated irrigation conductivity exponent [-] */
-    int MINER_PERIOD;                   /**< mineralization reference period [days] */
 } plugin_parameters_struct;
 
 /******************************************************************************

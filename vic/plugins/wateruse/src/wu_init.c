@@ -28,43 +28,6 @@
 #include <plugin.h>
 
 /******************************************
-* @brief   Setup pumping capacity
-******************************************/
-void
-wu_set_info(void)
-{
-    extern global_param_struct     global_param;
-    extern domain_struct           local_domain;
-    extern domain_struct           global_domain;
-    extern plugin_filenames_struct plugin_filenames;
-    extern wu_con_struct          *wu_con;
-
-    double                        *dvar;
-
-    size_t                         i;
-
-    size_t                         d2count[2];
-    size_t                         d2start[2];
-
-    d2start[0] = 0;
-    d2start[1] = 0;
-    d2count[0] = global_domain.n_ny;
-    d2count[1] = global_domain.n_nx;
-
-    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
-    check_alloc_status(dvar, "Memory allocation error.");
-
-    get_scatter_nc_field_double(&(plugin_filenames.wateruse),
-                                "pumping_capacity", d2start, d2count, dvar);
-
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        wu_con[i].pumping_capacity = dvar[i] / global_param.model_steps_per_day;
-    }
-
-    free(dvar);
-}
-
-/******************************************
 * @brief   Setup remote mapping
 ******************************************/
 void
@@ -175,7 +138,6 @@ wu_init(void)
                         plugin_filenames.wateruse.nc_filename);
     }
 
-    wu_set_info();
     if (plugin_options.REMOTE_WITH) {
         wu_set_receiving();
     }

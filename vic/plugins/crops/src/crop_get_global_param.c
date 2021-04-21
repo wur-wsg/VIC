@@ -130,31 +130,3 @@ crop_validate_global_param(void)
         }
     }
 }
-
-bool
-crop_get_parameters(char *cmdstr)
-{
-    extern plugin_parameters_struct plugin_param;
-
-    char                            optstr[MAXSTRING];
-
-    sscanf(cmdstr, "%s", optstr);
-
-    if (strcasecmp("MINER_PERIOD", optstr) == 0) {
-        sscanf(cmdstr, "%*s %d", &plugin_param.MINER_PERIOD);
-    } else {
-        return false;
-    }
-
-    return true;
-}
-
-void
-crop_validate_parameters(void)
-{
-    extern plugin_parameters_struct plugin_param;
-
-    if (!(plugin_param.MINER_PERIOD > 0 && plugin_param.DAM_ALPHA <= 366)) {
-        log_err("MINER_PERIOD must be defined on the interval [1,366] (days)");
-    }
-}

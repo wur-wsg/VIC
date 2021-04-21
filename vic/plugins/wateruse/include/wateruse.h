@@ -57,7 +57,6 @@ typedef struct {
  * @brief   Water-use Constants
  *****************************************************************************/
 typedef struct {
-    double pumping_capacity;        /**< pumping capacity [mm day-1] */
     size_t nreceiving;              /**< number of receiving cells */
     size_t *receiving;              /**< receiving cell id */
 } wu_con_struct;
@@ -95,7 +94,6 @@ typedef struct {
  * @brief   Water-use Forcing
  *****************************************************************************/
 typedef struct {
-    double pumping_capacity;       /**< pumping capacity [mm day-1] */
     double demand;                 /**< water demand [mm] */
     double consumption_frac;       /**< water groundwater fraction [-] */
     double groundwater_frac;       /**< water consumption fraction [-] */
