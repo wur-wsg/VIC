@@ -262,7 +262,7 @@ dam_set_info(void)
             dam_index = dam_con_map[i].didx[j];
             
             if (dam_index != NODATA_DAM) {
-                dam_con[i][dam_index].capacity = dvar[i];
+                dam_con[i][dam_index].capacity = dvar[j];
             }
         }
     }
@@ -279,7 +279,7 @@ dam_set_info(void)
             dam_index = dam_con_map[i].didx[j];
             
             if (dam_index != NODATA_DAM) {
-                dam_con[i][dam_index].inflow_frac = dvar[i];
+                dam_con[i][dam_index].inflow_frac = dvar[j];
             }
         }
     }
