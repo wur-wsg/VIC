@@ -35,10 +35,8 @@ dam_set_mapping(void)
 {
     extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
-    extern dam_con_struct     **local_dam_con;
-    extern dam_con_map_struct  *local_dam_con_map;
-    extern dam_con_struct     **global_dam_con;
-    extern dam_con_map_struct  *global_dam_con_map;
+    extern dam_con_struct     **dam_con;
+    extern dam_con_map_struct  *dam_con_map;
 
     size_t                      i;
     size_t                      j;
@@ -47,17 +45,10 @@ dam_set_mapping(void)
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-            dam_index = local_dam_con_map[i].didx[j];
+            dam_index = dam_con_map[i].didx[j];
 
             if (dam_index != NODATA_DAM) {
-                local_dam_con[i][dam_index].dam_class = j;
-            }
-        }
-        for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-            dam_index = global_dam_con_map[i].didx[j];
-
-            if (dam_index != NODATA_DAM) {
-                global_dam_con[i][dam_index].dam_class = j;
+                dam_con[i][dam_index].dam_class = j;
             }
         }
     }
@@ -73,160 +64,116 @@ dam_set_service(void)
     extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
-    extern dam_con_map_struct     *local_dam_con_map;
-    extern dam_con_struct        **local_dam_con;
-    extern dam_con_map_struct     *global_dam_con_map;
-    extern dam_con_struct        **global_dam_con;
+    extern dam_con_map_struct     *dam_con_map;
+    extern dam_con_struct        **dam_con;
 
-    int                           *service_id;
-    int                          **adjustment;
+    int                           *id_map;
     int                           *ivar;
     double                        *dvar;
+    size_t                        *nservicing_tmp;
 
     size_t                         error_count;
-    bool                           done;
 
     size_t                         i;
     size_t                         j;
     size_t                         k;
-    size_t                         l;
+    int                            dam_index;
 
     size_t                         d2count[2];
     size_t                         d2start[2];
-    size_t                         d4count[4];
-    size_t                         d4start[4];
+    size_t                         d3count[3];
+    size_t                         d3start[3];
 
     d2start[0] = 0;
     d2start[1] = 0;
     d2count[0] = global_domain.n_ny;
     d2count[1] = global_domain.n_nx;
+    d3start[0] = 0;
+    d3start[1] = 0;
+    d3start[2] = 0;
+    d3count[0] = 1;
+    d3count[1] = global_domain.n_ny;
+    d3count[2] = global_domain.n_nx;
 
-    d4start[0] = 0;
-    d4start[1] = 0;
-    d4start[2] = 0;
-    d4start[3] = 0;
-    d4count[0] = 1;
-    d4count[1] = 1;
-    d4count[2] = global_domain.n_ny;
-    d4count[3] = global_domain.n_nx;
-
+    id_map = malloc(local_domain.ncells_active * sizeof(*id_map));
+    check_alloc_status(id_map, "Memory allocation error.");
     ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
-    service_id = malloc(local_domain.ncells_active * sizeof(*service_id));
-    check_alloc_status(service_id, "Memory allocation error.");
-
-    adjustment = malloc(local_domain.ncells_active * sizeof(*adjustment));
-    check_alloc_status(adjustment, "Memory allocation error.");
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        adjustment[i] =
-            malloc(plugin_options.NDAMTYPES * sizeof(*adjustment[i]));
-        check_alloc_status(adjustment[i], "Memory allocation error.");
-    }
+    nservicing_tmp = malloc(plugin_options.NDAMTYPES * sizeof(*nservicing_tmp));
+    check_alloc_status(nservicing_tmp, "Memory allocation error.");
 
     get_scatter_nc_field_int(&(plugin_filenames.dams),
-                             "service_id", d2start, d2count, service_id);
+                             "id_map", d2start, d2count, id_map);
 
     error_count = 0;
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-            adjustment[i][j] = 0;
-        }
-    }
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-        d4start[0] = j;
+        nservicing_tmp[j] = 0;
+    }
+    
+    for (j = 0; j < plugin_options.NDAMTYPES; j++) {
+        d3start[0] = j;
 
-        for (k = 0; k < plugin_options.NDAMSERVICE; k++) {
-            d4start[1] = k;
+        get_scatter_nc_field_int(&(plugin_filenames.dams),
+                                 "service", d3start, d3count, ivar);
+        get_scatter_nc_field_double(&(plugin_filenames.dams),
+                                    "service_fraction", d3start, d3count, dvar);
 
-            get_scatter_nc_field_int(&(plugin_filenames.dams),
-                                     "service_local", d4start, d4count, ivar);
-            get_scatter_nc_field_double(&(plugin_filenames.dams),
-                                        "service_fraction_local", d4start,
-                                        d4count, dvar);
-
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                if (local_dam_con_map[i].didx[j] != NODATA_DAM &&
-                    k - adjustment[i][j] < local_dam_con[i][j].nservice) {
-                    done = false;
-                    for (l = 0; l < local_domain.ncells_active; l++) {
-                        if (ivar[i] == service_id[l]) {
-                            local_dam_con[i][j].service[k -
-                                                        adjustment[i][j]] = l;
-                            local_dam_con[i][j].service_frac[k -
-                                                             adjustment[i][j]] =
-                                dvar[i];
-                            done = true;
-                        }
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            if(ivar[i] > 0){
+                for(k = 0; k < local_domain.ncells_active; k++){
+                    if(ivar[i] != id_map[k]){
+                        continue;
                     }
-
-                    if (!done) {
-                        error_count++;
-                        local_dam_con[i][j].nservice--;
-                        adjustment[i][j]++;
+                    
+                    dam_index = dam_con_map[k].didx[j];
+                    if(dam_index == NODATA_DAM){
+                        log_warn("Servicing cell %zu is references a dam (%zu)"
+                                 " that does not exit",
+                                 i, k);
+                        continue;
                     }
+                    
+                    if(nservicing_tmp[j] >= dam_con[k][dam_index].nservice){
+                        log_err("number of servicing cells (%zu) is larger "
+                                "than specified in the parameter file (%zu)",
+                                nservicing_tmp[j], dam_con[k][dam_index].nservice);
+                    }
+                    
+                    dam_con[k][dam_index].service[nservicing_tmp[j]] = i;
+                    dam_con[k][dam_index].service_frac[nservicing_tmp[j]] = dvar[i];
+                    nservicing_tmp[j]++;
                 }
             }
         }
     }
-
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-            adjustment[i][j] = 0;
-        }
-    }
+     
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-        d4start[0] = j;
-
-        for (k = 0; k < (size_t)plugin_options.NDAMSERVICE; k++) {
-            d4start[1] = k;
-
-            get_scatter_nc_field_int(&(plugin_filenames.dams),
-                                     "service_global", d4start, d4count, ivar);
-            get_scatter_nc_field_double(&(plugin_filenames.dams),
-                                        "service_fraction_global", d4start,
-                                        d4count, dvar);
-
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                if (global_dam_con_map[i].didx[j] != NODATA_DAM &&
-                    k - adjustment[i][j] < global_dam_con[i][j].nservice) {
-                    done = false;
-                    for (l = 0; l < local_domain.ncells_active; l++) {
-                        if (ivar[i] == service_id[l]) {
-                            global_dam_con[i][j].service[k -
-                                                         adjustment[i][j]] = l;
-                            global_dam_con[i][j].service_frac[k -
-                                                              adjustment[i][j]]
-                                = dvar[i];
-                            done = true;
-                        }
-                    }
-
-                    if (!done) {
-                        error_count++;
-                        global_dam_con[i][j].nservice--;
-                        adjustment[i][j]++;
-                    }
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            dam_index = dam_con_map[i].didx[j];
+            
+            if(dam_index != NODATA_DAM){
+                if (nservicing_tmp[j] != dam_con[i][dam_index].nservice) {
+                    error_count++;
                 }
+                dam_con[i][dam_index].nservice = nservicing_tmp[j];
             }
         }
     }
 
     if (error_count > 0) {
-        log_warn("Dams service cell id not found for %zu cells; "
+        log_warn("Several servicing cells were not found for %zu dams; "
                  "Probably the ID was outside of the mask or "
                  "the ID was not set; "
-                 "Removing from dam service", error_count);
+                 "Removing servicing cells",
+                 error_count);
     }
 
+    free(id_map);
     free(ivar);
     free(dvar);
-    free(service_id);
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        free(adjustment[i]);
-    }
-    free(adjustment);
+    free(nservicing_tmp);
 }
 
 /******************************************
@@ -236,29 +183,26 @@ void
 dam_set_info(void)
 {
     extern domain_struct           local_domain;
-    extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
-    extern dam_con_map_struct     *local_dam_con_map;
-    extern dam_con_struct        **local_dam_con;
-    extern dam_con_map_struct     *global_dam_con_map;
-    extern dam_con_struct        **global_dam_con;
+    extern dam_con_map_struct     *dam_con_map;
+    extern dam_con_struct        **dam_con;
+    extern MPI_Comm                MPI_COMM_VIC;
+    extern int                     mpi_rank;
 
     int                           *ivar;
     double                        *dvar;
 
+    int                            status;
     size_t                         i;
     size_t                         j;
+    int                            dam_index;
 
-    size_t                         d3count[3];
-    size_t                         d3start[3];
+    size_t                         d1count[1];
+    size_t                         d1start[1];
 
-    d3start[0] = 0;
-    d3start[1] = 0;
-    d3start[2] = 0;
-    d3count[0] = 1;
-    d3count[1] = global_domain.n_ny;
-    d3count[2] = global_domain.n_nx;
+    d1start[0] = 0;
+    d1count[0] = plugin_options.NDAMTYPES;
 
     ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
@@ -266,55 +210,76 @@ dam_set_info(void)
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
 
+    if (mpi_rank == VIC_MPI_ROOT) {
+        get_nc_field_int(&(plugin_filenames.dams), "type", d1start, d1count, ivar);
+    }
+    status = MPI_Bcast(ivar, plugin_options.NDAMTYPES, MPI_INT,
+                       VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+    
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-        get_scatter_nc_field_int(&(plugin_filenames.dams),
-                                 "year_local", d3start, d3count, ivar);
         for (i = 0; i < local_domain.ncells_active; i++) {
-            if (local_dam_con_map[i].didx[j] != NODATA_DAM) {
-                local_dam_con[i][j].year = ivar[i];
+            dam_index = dam_con_map[i].didx[j];
+            
+            if (dam_index != NODATA_DAM) {
+                if(ivar[j] == 0){
+                    dam_con[i][dam_index].type = DAM_LOCAL;
+                } else if(ivar[j] == 1){
+                    dam_con[i][dam_index].type = DAM_GLOBAL;
+                } else {
+                    log_err("Unknown dam type %d", ivar[j]);
+                }
             }
         }
-
-        get_scatter_nc_field_double(&(plugin_filenames.dams),
-                                    "capacity_local", d3start, d3count, dvar);
+    }
+    
+    if (mpi_rank == VIC_MPI_ROOT) {
+        get_nc_field_int(&(plugin_filenames.dams), "year", d1start, d1count, ivar);
+    }
+    status = MPI_Bcast(ivar, plugin_options.NDAMTYPES, MPI_INT,
+                       VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+    
+    for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
-            if (local_dam_con_map[i].didx[j] != NODATA_DAM) {
-                local_dam_con[i][j].capacity = dvar[i];
+            dam_index = dam_con_map[i].didx[j];
+            
+            if (dam_index != NODATA_DAM) {
+                dam_con[i][dam_index].year = ivar[j];
             }
         }
+    }
 
-        get_scatter_nc_field_double(&(plugin_filenames.dams),
-                                    "inflow_fraction_local", d3start, d3count,
-                                    dvar);
+    if (mpi_rank == VIC_MPI_ROOT) {
+        get_nc_field_double(&(plugin_filenames.dams), "capacity", d1start, d1count, dvar);
+    }
+    status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_INT,
+                       VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+    
+    for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
-            if (local_dam_con_map[i].didx[j] != NODATA_DAM) {
-                local_dam_con[i][j].inflow_frac = dvar[i];
+            dam_index = dam_con_map[i].didx[j];
+            
+            if (dam_index != NODATA_DAM) {
+                dam_con[i][dam_index].capacity = dvar[i];
             }
         }
+    }
 
-
-        get_scatter_nc_field_int(&(plugin_filenames.dams),
-                                 "year_global", d3start, d3count, ivar);
+    if (mpi_rank == VIC_MPI_ROOT) {
+        get_nc_field_double(&(plugin_filenames.dams), "inflow_fraction", d1start, d1count, dvar);
+    }
+    status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_INT,
+                       VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+    
+    for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
-            if (global_dam_con_map[i].didx[j] != NODATA_DAM) {
-                global_dam_con[i][j].year = ivar[i];
-            }
-        }
-
-        get_scatter_nc_field_double(&(plugin_filenames.dams),
-                                    "capacity_global", d3start, d3count, dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            if (global_dam_con_map[i].didx[j] != NODATA_DAM) {
-                global_dam_con[i][j].capacity = dvar[i];
-            }
-        }
-
-        get_scatter_nc_field_double(&(plugin_filenames.dams),
-                                    "inflow_fraction_global", d3start, d3count,
-                                    dvar);
-        for (i = 0; i < local_domain.ncells_active; i++) {
-            if (global_dam_con_map[i].didx[j] != NODATA_DAM) {
-                global_dam_con[i][j].inflow_frac = dvar[i];
+            dam_index = dam_con_map[i].didx[j];
+            
+            if (dam_index != NODATA_DAM) {
+                dam_con[i][dam_index].inflow_frac = dvar[i];
             }
         }
     }

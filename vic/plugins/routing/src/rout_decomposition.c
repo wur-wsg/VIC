@@ -38,6 +38,7 @@ set_basins_downstream(size_t *downstream_basin)
 
     int                           *id;
     int                           *downstream;
+    size_t                         error_count;
 
     bool                           found;
 
@@ -63,6 +64,7 @@ set_basins_downstream(size_t *downstream_basin)
     get_active_nc_field_int(&(plugin_filenames.routing), "downstream",
                             d2start, d2count, downstream);
 
+    error_count = 0;
     for (i = 0; i < global_domain.ncells_active; i++) {
         found = false;
 
@@ -74,12 +76,17 @@ set_basins_downstream(size_t *downstream_basin)
         }
 
         if (!found) {
-            log_warn("No downstream cell was found; "
-                     "Probably the ID was outside of the mask or "
-                     "the ID was not set; "
-                     "Setting cell as outflow point");
+            error_count++;
             downstream_basin[i] = i;
         }
+    }
+
+    if (error_count > 0) {
+        log_warn("No downstream cell was found for %zu cells; "
+                 "Probably the ID was outside of the mask or "
+                 "the ID was not set; "
+                 "Setting cell as outflow point",
+                 error_count);
     }
 
     free(downstream);

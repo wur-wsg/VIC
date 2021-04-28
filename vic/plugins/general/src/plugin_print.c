@@ -118,8 +118,6 @@ plugin_print_options(plugin_option_struct *op)
             op->UH_LENGTH);
     fprintf(LOG_DEST, "\tNDAMTYPES            : %d\n",
             op->NDAMTYPES);
-    fprintf(LOG_DEST, "\tNDAMSERVICE          : %d\n",
-            op->NDAMSERVICE);
     fprintf(LOG_DEST, "\tNWUTYPES             : %d\n",
             op->NWUTYPES);
     fprintf(LOG_DEST, "\tNWURECEIVING         : %d\n",

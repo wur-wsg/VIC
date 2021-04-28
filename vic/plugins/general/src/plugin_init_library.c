@@ -46,7 +46,6 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->FORCE_ROUTING = false;
     plugin_options->FORCE_LANDUSE = false;
     plugin_options->NDAMTYPES = 0;
-    plugin_options->NDAMSERVICE = 0;
     plugin_options->NWUTYPES = WU_NSECTORS;
     plugin_options->NWURECEIVING = 0;
     for (i = 0; i < WU_NSECTORS; i++) {

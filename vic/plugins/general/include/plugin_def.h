@@ -237,7 +237,6 @@ typedef struct {
     bool FORCE_ROUTING;                 /**< routing (inflow) forcing flag */
     bool FORCE_LANDUSE; /**< landuse forcing flag */
     short unsigned int NDAMTYPES;       /**< maximum number of dams per cell */
-    short unsigned int NDAMSERVICE;     /**< maximum number of dam service per dam */
     short unsigned int NWUTYPES;        /**< number of water-use sectors */
     short unsigned int NWURECEIVING;    /**< maximum number of remote water-users per cell */
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */

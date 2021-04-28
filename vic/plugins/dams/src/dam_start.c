@@ -46,8 +46,6 @@ dam_start(void)
 
     plugin_options.NDAMTYPES = get_nc_dimension(&(plugin_filenames.dams),
                                                 "dam_class");
-    plugin_options.NDAMSERVICE = get_nc_dimension(&(plugin_filenames.dams),
-                                                  "dam_service");
     compare_ncdomain_with_global_domain(&plugin_filenames.dams);
 
     status = nc_close(plugin_filenames.dams.nc_id);

@@ -127,8 +127,9 @@ calculate_availability(size_t   iCell,
     extern soil_con_struct           *soil_con;
     extern veg_con_map_struct        *veg_con_map;
     extern veg_con_struct           **veg_con;
-    extern dam_con_map_struct        *local_dam_con_map;
-    extern dam_var_struct           **local_dam_var;
+    extern dam_con_map_struct        *dam_con_map;
+    extern dam_con_struct           **dam_con;
+    extern dam_var_struct           **dam_var;
 
     double                            resid_moist;
     double                            ice;
@@ -205,11 +206,11 @@ calculate_availability(size_t   iCell,
 
     // dam
     if (plugin_options.DAMS) {
-        for (iDam = 0; iDam < local_dam_con_map[iCell].nd_active; iDam++) {
+        for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
             av_dam[iDam] = 0;
 
-            if (local_dam_var[iCell][iDam].active) {
-                av_dam[iDam] = local_dam_var[iCell][iDam].storage * M3_PER_HM3 /
+            if (dam_var[iCell][iDam].active && dam_con[iCell][iDam].type == DAM_LOCAL) {
+                av_dam[iDam] = dam_var[iCell][iDam].storage * M3_PER_HM3 /
                                local_domain.locations[iCell].area * MM_PER_M;
                 (*available_dam) += av_dam[iDam];
             }
@@ -417,8 +418,9 @@ calculate_hydrology(size_t   iCell,
     extern soil_con_struct           *soil_con;
     extern veg_con_map_struct        *veg_con_map;
     extern veg_con_struct           **veg_con;
-    extern dam_con_map_struct        *local_dam_con_map;
-    extern dam_var_struct           **local_dam_var;
+    extern dam_con_map_struct        *dam_con_map;
+    extern dam_con_struct           **dam_con;
+    extern dam_var_struct           **dam_var;
     extern rout_var_struct           *rout_var;
 
     double                            ice;
@@ -530,17 +532,17 @@ calculate_hydrology(size_t   iCell,
     // dam
     if (withdrawn_dam > 0.) {
         if (plugin_options.DAMS) {
-            for (iDam = 0; iDam < local_dam_con_map[iCell].nd_active; iDam++) {
-                if (local_dam_var[iCell][iDam].active) {
-                    local_dam_var[iCell][iDam].storage -=
+            for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
+                if (dam_var[iCell][iDam].active && dam_con[iCell][iDam].type == DAM_LOCAL) {
+                    dam_var[iCell][iDam].storage -=
                         withdrawn_dam *
                         (av_dam[iDam] / available_dam) /
                         MM_PER_M *
                         local_domain.locations[iCell].area /
                         M3_PER_HM3;
 
-                    if (local_dam_var[iCell][iDam].storage < 0) {
-                        local_dam_var[iCell][iDam].storage = 0.;
+                    if (dam_var[iCell][iDam].storage < 0) {
+                        dam_var[iCell][iDam].storage = 0.;
                     }
                 }
             }
@@ -668,7 +670,7 @@ wu_run(size_t iCell)
     }
 
     if (plugin_options.DAMS) {
-        av_dam = malloc(local_dam_con_map[iCell].nd_active * sizeof(*av_dam));
+        av_dam = malloc(dam_con_map[iCell].nd_active * sizeof(*av_dam));
         check_alloc_status(av_dam, "Memory allocation error.");
     }
 
