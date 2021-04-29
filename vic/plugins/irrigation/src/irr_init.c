@@ -166,6 +166,16 @@ irr_set_info(void)
             }
         }
     }
+    
+    get_scatter_nc_field_double(&(plugin_filenames.irrigation),
+                                "application_efficiency", d2start, d2count,
+                                dvar);
+    
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        for (j = 0; j < irr_con_map[i].ni_active; j++) {
+            irr_con[i][j].application_efficiency = dvar[i];
+        }   
+    }
 
     free(dvar);
 }

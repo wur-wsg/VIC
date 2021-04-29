@@ -86,20 +86,23 @@ irr_set_demand(size_t iCell)
                         }
                         consumed += demand_crop;
                         demand += demand_crop * 
-                                cirr_con->irrigation_efficiency;
+                                (1 / cirr_con->irrigation_efficiency);
                         groundwater += demand_crop * 
-                                cirr_con->irrigation_efficiency * 
+                                (1 / cirr_con->irrigation_efficiency) * 
                                 cirr_con->groundwater_fraction;
+                        efficiency += demand_crop * 
+                                (1 / cirr_con->irrigation_efficiency) *
+                                cirr_con->application_efficiency;
                     }
                 }
             }
         }
     }
     if (demand > 0) {
-        efficiency = consumed / demand;
         groundwater = groundwater / demand;
+        efficiency = efficiency / demand;
+        demand *= (1 / efficiency);
     }
-    // efficiency = 1.0;
 
     if (irr_con_map[iCell].ni_active > 0) {
         iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
@@ -384,8 +387,9 @@ irr_wateruse(size_t iCell)
     extern soil_con_struct    *soil_con;
     extern wu_con_map_struct  *wu_con_map;
 
-    double received_tmp;
+    double                     received_tmp;
     double                     demand;
+    double                     demand_crop;
     double                     available;
     double                     received;
     double                     applied;
@@ -433,12 +437,13 @@ irr_wateruse(size_t iCell)
                 if (area_fract > 0) {
                     
                     if (cirr_var->flag_req) {
-                        demand += cirr_var->requirement * veg_fract *
+                        demand_crop = cirr_var->requirement * veg_fract *
                                   area_fract;
                         if (cirr_con->paddy) {
-                            demand += PADDY_FLOOD_HEIGHT * veg_fract *
+                            demand_crop += PADDY_FLOOD_HEIGHT * veg_fract *
                                       area_fract;
                         }
+                        demand += demand_crop;
                     }
                 }
             }
@@ -503,12 +508,11 @@ irr_wateruse(size_t iCell)
     }
     
     // check water balance
-    if (received - demand > WU_BALANCE_ERROR_THRESH ||
-        (applied - prev_applied) + (leftover - prev_leftover) - received >
+    if ((applied - prev_applied) + (leftover - prev_leftover) - received >
         WU_BALANCE_ERROR_THRESH ||
         received - (applied - prev_applied) - (leftover - prev_leftover) >
         WU_BALANCE_ERROR_THRESH) {
-        log_err("Irrigation water balance error for cell %zu: "
+        log_err("Irrigation water balance error for cell %zu: \n"
                 "demand is %.10f mm\t%.10f is available\n"
                 "%.10f mm is received\t%10f mm is applied\t%10f mm is leftover",
                 iCell,
@@ -674,5 +678,5 @@ irr_get_withdrawn(size_t iCell)
         }
     }
     
-    irr_return_leftover(iCell);
+    //irr_return_leftover(iCell);
 }
