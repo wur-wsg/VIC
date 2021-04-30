@@ -163,7 +163,7 @@ plugin_run(void)
 * @brief    Write plugins
 ******************************************/
 void
-plugin_put_data(void)
+plugin_put_data_all(void)
 {
     extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
@@ -173,30 +173,41 @@ plugin_put_data(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-        if (plugin_options.ROUTING) {
-            rout_put_data(i);
-        }
-        if (plugin_options.FORCE_LANDUSE) {
-            lu_put_data(i);
-        }
-        if (plugin_options.EFR) {
-            efr_put_data(i);
-        }
-        if (plugin_options.DAMS) {
-            dam_put_data(i);
-        }
-        if (plugin_options.WATERUSE) {
-            wu_put_data(i);
-        }
-        if (plugin_options.IRRIGATION) {
-            irr_put_data(i);
-        }
-        if (plugin_options.WOFOST) {
-            crop_put_data(i);
-        }
-
-        plugin_store_error(i);
+        plugin_put_data(i);
     }
+}
+
+/******************************************
+* @brief    Write plugins single
+******************************************/
+void
+plugin_put_data(size_t iCell)
+{
+    extern plugin_option_struct plugin_options;
+
+    if (plugin_options.ROUTING) {
+        rout_put_data(iCell);
+    }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_put_data(iCell);
+    }
+    if (plugin_options.EFR) {
+        efr_put_data(iCell);
+    }
+    if (plugin_options.DAMS) {
+        dam_put_data(iCell);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_put_data(iCell);
+    }
+    if (plugin_options.IRRIGATION) {
+        irr_put_data(iCell);
+    }
+    if (plugin_options.WOFOST) {
+        crop_put_data(iCell);
+    }
+
+    plugin_store_error(iCell);
 }
 
 /******************************************

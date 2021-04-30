@@ -114,7 +114,6 @@ void dam_initialize_local_structures(void);
 
 void dam_init(void);
 void dam_generate_default_state(void);
-void dam_compute_derived_state_vars(void);
 
 void dam_set_output_met_data_info(void);
 void dam_initialize_nc_file(nc_file_struct *);

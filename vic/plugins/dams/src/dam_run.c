@@ -146,6 +146,10 @@ local_dam_run(size_t iCell)
             if (dam_var[iCell][iDam].active) {
                 local_dam_operate(&dam_con[iCell][iDam],
                                   &dam_var[iCell][iDam], iCell);
+            } else {
+                dam_var[iCell][iDam].inflow = 0.;
+                dam_var[iCell][iDam].demand = 0.;
+                dam_var[iCell][iDam].efr = 0.;
             }
         }
     }
@@ -171,6 +175,10 @@ global_dam_run(size_t iCell)
             if (dam_var[iCell][iDam].active) {
                 global_dam_operate(&dam_con[iCell][iDam],
                                    &dam_var[iCell][iDam], iCell);
+            } else {
+                dam_var[iCell][iDam].inflow = 0.;
+                dam_var[iCell][iDam].demand = 0.;
+                dam_var[iCell][iDam].efr = 0.;
             }
         }
     }
