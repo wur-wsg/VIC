@@ -425,7 +425,9 @@ calculate_hydrology(size_t   iCell,
 
     double                            ice;
     double                            withdrawn_discharge_tmp;
+    double                            returned_nonrenew_tmp;
     double                            available_discharge_tmp;
+    double                            available_nonrenew_tmp;
 
     size_t                            rout_steps_per_dt;
     size_t                            iStep;
@@ -479,6 +481,31 @@ calculate_hydrology(size_t   iCell,
         }
     }
 
+    // non-renewable returns
+    if (returned > 0. && false){
+        // get available nonrenewable requirements
+        available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
+        
+        // add returned resources to nonrenewable
+        returned_nonrenew_tmp = min(available_nonrenew_tmp, returned);
+        if(available_nonrenew_tmp > 0) {
+            rout_var[iCell].nonrenew_deficit -= 
+                    returned_nonrenew_tmp *
+                    (rout_var[iCell].nonrenew_deficit /
+                     available_nonrenew_tmp);
+
+            if(rout_var[iCell].nonrenew_deficit < 0){
+                rout_var[iCell].nonrenew_deficit = 0;
+            }
+        }
+        
+        // decrease returned
+        returned -= returned_nonrenew_tmp;
+        if(returned < 0){
+            returned = 0;
+        }
+    }
+    
     // surface
     if (withdrawn_surf - returned != 0.) {
         available_discharge_tmp = 0.;

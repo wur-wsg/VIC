@@ -300,16 +300,55 @@ calculate_hydrology_remote(size_t iCell,
     extern global_param_struct        global_param;
     extern domain_struct              local_domain;
     extern rout_var_struct           *rout_var;
+    extern wu_con_struct             *wu_con;
 
     double                            withdrawn_discharge_tmp;
+    double                            returned_nonrenew_tmp;
     double                            available_discharge_tmp;
+    double                            available_nonrenew_tmp;
 
-    size_t                            rout_steps_per_dt;
     size_t                            iStep;
+    size_t                            rout_steps_per_dt;
+    size_t                            i;
+    size_t                            iCell2;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
 
+    // non-renewable returns
+    if (returned > 0. && false){
+        // get available nonrenewable requirements
+        available_nonrenew_tmp = 0.;
+        for (i = 0; i < wu_con[iCell].nreceiving; i++) {
+            iCell2 = wu_con[iCell].receiving[i];
+            
+            available_nonrenew_tmp += rout_var[iCell2].nonrenew_deficit;
+        }
+        
+        // add returned resources to nonrenewable
+        returned_nonrenew_tmp = min(available_nonrenew_tmp, returned);
+        if(available_nonrenew_tmp > 0) {
+            for (i = 0; i < wu_con[iCell].nreceiving; i++) {
+                iCell2 = wu_con[iCell].receiving[i];
+
+                rout_var[iCell2].nonrenew_deficit -= 
+                        returned_nonrenew_tmp *
+                        (rout_var[iCell2].nonrenew_deficit /
+                         available_nonrenew_tmp);
+                
+                if(rout_var[iCell2].nonrenew_deficit < 0){
+                    rout_var[iCell2].nonrenew_deficit = 0;
+                }
+            }
+        }
+        
+        // decrease returned
+        returned -= returned_nonrenew_tmp;
+        if(returned < 0){
+            returned = 0;
+        }
+    }
+    
     // remote
     if (withdrawn_remote - returned != 0.) {
         available_discharge_tmp = 0.;
