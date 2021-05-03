@@ -415,6 +415,7 @@ calculate_hydrology(size_t   iCell,
     extern domain_struct              local_domain;
     extern all_vars_struct           *all_vars;
     extern option_struct              options;
+    extern plugin_option_struct       plugin_options;
     extern soil_con_struct           *soil_con;
     extern veg_con_map_struct        *veg_con_map;
     extern veg_con_struct           **veg_con;
@@ -436,6 +437,7 @@ calculate_hydrology(size_t   iCell,
     size_t                            iFrost;
     size_t                            iLayer;
     size_t                            iDam;
+    int                               iSector;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
@@ -482,27 +484,31 @@ calculate_hydrology(size_t   iCell,
     }
 
     // non-renewable returns
-    if (returned > 0. && false){
-        // get available nonrenewable requirements
-        available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
+    if (returned > 0.){
+        iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
         
-        // add returned resources to nonrenewable
-        returned_nonrenew_tmp = min(available_nonrenew_tmp, returned);
-        if(available_nonrenew_tmp > 0) {
-            rout_var[iCell].nonrenew_deficit -= 
-                    returned_nonrenew_tmp *
-                    (rout_var[iCell].nonrenew_deficit /
-                     available_nonrenew_tmp);
+        if (iSector != NODATA_WU) {
+            // get available nonrenewable requirements
+            available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
 
-            if(rout_var[iCell].nonrenew_deficit < 0){
-                rout_var[iCell].nonrenew_deficit = 0;
+            // get returned irrigation withdrawals
+            returned_nonrenew_tmp = wu_var[iCell][iSector].returned;
+
+            // add returned resources to nonrenewable
+            returned_nonrenew_tmp = min(available_nonrenew_tmp, returned_nonrenew_tmp);
+            if(available_nonrenew_tmp > 0) {
+                rout_var[iCell].nonrenew_deficit -= returned_nonrenew_tmp;
+
+                if(rout_var[iCell].nonrenew_deficit < 0){
+                    rout_var[iCell].nonrenew_deficit = 0;
+                }
             }
-        }
-        
-        // decrease returned
-        returned -= returned_nonrenew_tmp;
-        if(returned < 0){
-            returned = 0;
+
+            // decrease returned
+            returned -= returned_nonrenew_tmp;
+            if(returned < 0){
+                returned = 0;
+            }
         }
     }
     
@@ -540,12 +546,12 @@ calculate_hydrology(size_t   iCell,
             }
         }
 
+        // Recalculate discharge and stream moisture
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-            // Recalculate discharge and stream moisture
             if (iStep < rout_steps_per_dt) {
                 rout_var[iCell].discharge +=
                     rout_var[iCell].dt_discharge[iStep];

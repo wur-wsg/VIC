@@ -53,7 +53,6 @@ initialize_irr_con(irr_con_struct *irr_con)
     irr_con->veg_index = MISSING_USI;
     irr_con->groundwater_fraction = 0.0;
     irr_con->irrigation_efficiency = 0.0;
-    irr_con->application_efficiency = 0.0;
 }
 
 /******************************************

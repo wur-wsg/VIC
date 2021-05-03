@@ -193,9 +193,13 @@ calculate_hydrology_nonrenew(size_t iCell,
     extern rout_var_struct    *rout_var;
 
     double                     available_discharge_tmp;
+    double                     returned_discharge_tmp;
+    double                     available_nonrenew_tmp;
+    double                     returned_nonrenew_tmp;
 
     size_t                     rout_steps_per_dt;
     size_t                     iStep;
+    int                        iSector;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
@@ -208,7 +212,39 @@ calculate_hydrology_nonrenew(size_t iCell,
             rout_var[iCell].nonrenew_deficit = 0;
         }
     }
+    
+    // non-renewable returns
+    if (returned > 0.) {
+        iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
+        
+        if (iSector != NODATA_WU) {
+            // get available nonrenewable requirements
+            available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
 
+            // get returned irrigation withdrawals
+            returned_nonrenew_tmp = 
+                    wu_var[iCell][iSector].withdrawn_nonrenew *
+                    (1 - wu_force[iCell][iSector].consumption_frac);
+
+            // add returned resources to nonrenewable
+            returned_nonrenew_tmp = min(available_nonrenew_tmp, returned_nonrenew_tmp);
+            if(available_nonrenew_tmp > 0) {
+                rout_var[iCell].nonrenew_deficit -= returned_nonrenew_tmp;
+
+                if(rout_var[iCell].nonrenew_deficit < 0){
+                    rout_var[iCell].nonrenew_deficit = 0;
+                }
+            }
+
+            // decrease returned
+            returned -= returned_nonrenew_tmp;
+            if(returned < 0){
+                returned = 0;
+            }
+        }
+    }
+
+    // surface returns
     if (returned > 0.) {
         // surface
         available_discharge_tmp = 0.;
@@ -218,7 +254,7 @@ calculate_hydrology_nonrenew(size_t iCell,
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
         }
 
-        returned =
+        returned_discharge_tmp =
             returned /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
@@ -228,27 +264,26 @@ calculate_hydrology_nonrenew(size_t iCell,
             if (available_discharge_tmp > 0) {
                 // Scale withdrawal proportionally to availability
                 rout_var[iCell].dt_discharge[iStep] +=
-                    returned *
+                    returned_discharge_tmp *
                     (rout_var[iCell].dt_discharge[iStep] /
                      available_discharge_tmp);
             }
             else {
                 // Scale withdrawal proportionally to length
                 rout_var[iCell].dt_discharge[iStep] +=
-                    returned / (plugin_options.UH_LENGTH - 1);
+                    returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
             }
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }
         }
 
-
+        // Recalculate discharge and stream moisture
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-            // Recalculate discharge and stream moisture
             if (iStep < rout_steps_per_dt) {
                 rout_var[iCell].discharge +=
                     rout_var[iCell].dt_discharge[iStep];

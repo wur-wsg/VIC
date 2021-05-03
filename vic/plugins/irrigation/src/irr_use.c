@@ -85,14 +85,11 @@ irr_set_demand(size_t iCell)
                                       area_fract;
                         }
                         consumed += demand_crop;
-                        demand += demand_crop * 
-                                (1 / cirr_con->irrigation_efficiency);
-                        groundwater += demand_crop * 
-                                (1 / cirr_con->irrigation_efficiency) * 
+                        demand += demand_crop;
+                        groundwater += demand_crop *
                                 cirr_con->groundwater_fraction;
-                        efficiency += demand_crop * 
-                                (1 / cirr_con->irrigation_efficiency) *
-                                cirr_con->application_efficiency;
+                        efficiency += demand_crop *
+                                cirr_con->irrigation_efficiency;
                     }
                 }
             }
@@ -463,7 +460,7 @@ irr_wateruse(size_t iCell)
     else {
         avail_frac = 0;
     }
-
+    
     // do irrigation
     if (available > 0) {
         for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {

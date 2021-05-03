@@ -158,23 +158,8 @@ irr_set_info(void)
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < irr_con_map[i].ni_active; j++) {
-            if (irr_con[i][j].paddy) {
-                irr_con[i][j].irrigation_efficiency = 1.0;
-            }
-            else {
-                irr_con[i][j].irrigation_efficiency = dvar[i];
-            }
+            irr_con[i][j].irrigation_efficiency = dvar[i];
         }
-    }
-    
-    get_scatter_nc_field_double(&(plugin_filenames.irrigation),
-                                "application_efficiency", d2start, d2count,
-                                dvar);
-    
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < irr_con_map[i].ni_active; j++) {
-            irr_con[i][j].application_efficiency = dvar[i];
-        }   
     }
 
     free(dvar);

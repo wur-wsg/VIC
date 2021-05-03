@@ -942,6 +942,137 @@ calculate_derived_energy_states(size_t  iCell,
 }
 
 /******************************************
+* @brief   Distribute irrigation balance variables
+******************************************/
+void
+distribute_irrigation_balance_terms(size_t  iCell,
+                                    size_t  iBand,
+                                    double *Cv_change,
+                                    double *Cv_old,
+                                    double *Cv_new)
+{
+    extern global_param_struct        global_param;
+    extern domain_struct              local_domain;
+    extern veg_con_map_struct *veg_con_map;
+    extern irr_con_map_struct *irr_con_map;
+    extern irr_con_struct    **irr_con;
+    extern irr_var_struct   ***irr_var;
+
+    double                     Cv_avail;
+    double                     before_moist;
+    double                     after_moist;
+
+    double             leftover;
+    double             leftover_discharge_tmp;
+
+    irr_var_struct   **irr;
+
+    size_t             iVeg;
+    size_t             iIrr;
+    size_t             iStep;
+    size_t                            rout_steps_per_dt;
+
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
+    
+    irr = irr_var[iCell];
+
+    // Get available area to redistribute
+    Cv_avail = 0.0;
+    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_avail += Cv_change[iVeg];
+        }
+    }
+
+    /* WATER-BALANCE */
+
+    // get
+    leftover = 0.0;
+
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            leftover += irr[iIrr][iBand].leftover * Cv_old[iVeg];
+        }
+    }
+
+    before_moist = 0.0;
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            before_moist += irr[iIrr][iBand].leftover * Cv_old[iVeg];
+        }
+    }
+    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+        before_moist += rout_var[iCell].dt_discharge[iStep] * global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+    }
+
+    // set
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            irr[iIrr][iBand].leftover = 0.0;
+        }
+    }
+    
+    leftover_discharge_tmp = leftover / MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+    for (iStep = rout_steps_per_dt; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+        // Scale leftover proportionally to length
+        rout_var[iCell].dt_discharge[iStep] += leftover_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+        if (rout_var[iCell].dt_discharge[iStep] < 0) {
+            rout_var[iCell].dt_discharge[iStep] = 0.;
+        }
+    }
+        
+    after_moist = 0.0;
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            after_moist += irr[iIrr][iBand].leftover * Cv_new[iVeg];
+        }
+    }
+    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+        after_moist += rout_var[iCell].dt_discharge[iStep] * global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+    }
+
+    // Recalculate discharge and stream moisture
+    rout_var[iCell].discharge = 0.;
+    rout_var[iCell].stream = 0.;
+    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+        if (iStep < rout_steps_per_dt) {
+            rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+        }
+        else {
+            rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
+        }
+    }
+
+    // Check water balance
+    if (abs(before_moist - after_moist) > DBL_EPSILON) {
+        for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+            iVeg = irr_con[iCell][iIrr].veg_index;
+            
+            fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
+                    "\t\tAfter:\n"
+                    "Cv\t\t[%.8f]\t[%.8f]\t[%.16f]\n"
+                    "leftover\t[%.4f mm]\n",
+                    iBand, iVeg,
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
+                    irr[iVeg][iIrr].leftover);
+        }
+        fprintf(LOG_DEST, "\n\t\tTotals:\n"
+                "leftover\t[%.4f mm]\n",
+                leftover);
+        log_info("\nWater balance error for cell %zu:\n"
+                "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
+                iCell,
+                before_moist,
+                after_moist);
+    }
+}
+
+/******************************************
 * @brief   Apply land-use vegetation fractions
 ******************************************/
 void
@@ -949,6 +1080,7 @@ lu_apply(void)
 {
     extern domain_struct       local_domain;
     extern option_struct       options;
+    extern plugin_option_struct       plugin_options;
     extern veg_con_map_struct *veg_con_map;
     extern veg_con_struct    **veg_con;
     extern lu_force_struct    *lu_force;
@@ -1097,6 +1229,12 @@ lu_apply(void)
                                                 new_TEnergy);
                 calculate_derived_energy_states(iCell, iBand,
                                                 snow_surf_capacity);
+                
+                if(plugin_options.IRRIGATION) {
+                    // Irrigation
+                    distribute_irrigation_balance_terms(iCell, iBand,
+                                                   Cv_change, Cv_old, Cv_new);
+                }
             }
         }
     }

@@ -88,6 +88,8 @@ typedef struct {
     double available_remote_tmp;    /**< available remote resources (temporary) [mm] */
     double demand_remote_tmp;       /**< demand for remote resources (temporary) [mm] */
     double withdrawn_remote_tmp;    /**< withdrawn remote resources (temporary) [mm] */
+    double returned_remote_tmp;     /**< returned remote resources (temporary) [mm] */
+    double consumed_remote_tmp;     /**< consumed remote resources (temporary) [mm] */
 } wu_var_struct;
 
 /******************************************************************************

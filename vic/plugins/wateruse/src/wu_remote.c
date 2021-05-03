@@ -62,6 +62,7 @@ reset_wu_remote(size_t iCell)
             wu_var[iCell2][iSector2].demand_remote_tmp = 0.;
             wu_var[iCell2][iSector2].withdrawn_remote_tmp = 0.;
             wu_var[iCell2][iSector2].available_remote_tmp = 0.;
+            wu_var[iCell2][iSector2].returned_remote_tmp = 0.;
         }
     }
 }
@@ -268,22 +269,26 @@ calculate_use_remote(size_t  iCell,
             else {
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp = 0;
             }
-
-            wu_var[iCell2][iSector2].consumed +=
+            wu_var[iCell2][iSector2].returned_remote_tmp = 
+                wu_var[iCell2][iSector2].withdrawn_remote_tmp *
+                (1 - wu_force[iCell2][iSector2].consumption_frac);
+            wu_var[iCell2][iSector2].consumed_remote_tmp = 
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp *
                 wu_force[iCell2][iSector2].consumption_frac;
+            
+            // total accounting
+            wu_var[iCell2][iSector2].consumed +=
+                wu_var[iCell2][iSector2].consumed_remote_tmp;
 
             wu_var[iCell][iSector].withdrawn_remote +=
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp;
             (*withdrawn_remote) +=
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp;
 
-            wu_var[iCell][iSector].returned +=
-                wu_var[iCell2][iSector2].withdrawn_remote_tmp *
-                (1 - wu_force[iCell2][iSector2].consumption_frac);
+            wu_var[iCell2][iSector2].returned +=
+                wu_var[iCell2][iSector2].returned_remote_tmp;
             (*returned) +=
-                wu_var[iCell2][iSector2].withdrawn_remote_tmp *
-                (1 - wu_force[iCell2][iSector2].consumption_frac);
+                wu_var[iCell2][iSector2].returned_remote_tmp;
         }
     }
 }
@@ -293,8 +298,7 @@ calculate_use_remote(size_t  iCell,
 ******************************************/
 void
 calculate_hydrology_remote(size_t iCell,
-                           double withdrawn_remote,
-                           double returned)
+                           double withdrawn_remote)
 {
     extern plugin_global_param_struct plugin_global_param;
     extern global_param_struct        global_param;
@@ -302,55 +306,112 @@ calculate_hydrology_remote(size_t iCell,
     extern rout_var_struct           *rout_var;
     extern wu_con_struct             *wu_con;
 
-    double                            withdrawn_discharge_tmp;
-    double                            returned_nonrenew_tmp;
     double                            available_discharge_tmp;
+    double                            withdrawn_discharge_tmp;
+    double                            returned_discharge_tmp;
     double                            available_nonrenew_tmp;
+    double                            returned_nonrenew_tmp;
+    double                            returned;
 
     size_t                            iStep;
     size_t                            rout_steps_per_dt;
     size_t                            i;
     size_t                            iCell2;
+    int                               iSector2;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
-
-    // non-renewable returns
-    if (returned > 0. && false){
-        // get available nonrenewable requirements
-        available_nonrenew_tmp = 0.;
-        for (i = 0; i < wu_con[iCell].nreceiving; i++) {
-            iCell2 = wu_con[iCell].receiving[i];
-            
-            available_nonrenew_tmp += rout_var[iCell2].nonrenew_deficit;
+    
+    // returns
+    for (i = 0; i < wu_con[iCell].nreceiving; i++) {
+        iCell2 = wu_con[iCell].receiving[i];
+        
+        returned = 0.;
+        for(iSector2 = 0; iSector2 < (int) wu_con_map[iCell2].ns_active; iSector2++){
+            returned += wu_var[iCell2][iSector2].returned_remote_tmp;
         }
         
-        // add returned resources to nonrenewable
-        returned_nonrenew_tmp = min(available_nonrenew_tmp, returned);
-        if(available_nonrenew_tmp > 0) {
-            for (i = 0; i < wu_con[iCell].nreceiving; i++) {
-                iCell2 = wu_con[iCell].receiving[i];
+        // non-renewable returns
+        if(returned > 0.) {
+            iSector2 = wu_con_map[iCell2].sidx[WU_IRRIGATION];
 
-                rout_var[iCell2].nonrenew_deficit -= 
-                        returned_nonrenew_tmp *
-                        (rout_var[iCell2].nonrenew_deficit /
-                         available_nonrenew_tmp);
-                
-                if(rout_var[iCell2].nonrenew_deficit < 0){
-                    rout_var[iCell2].nonrenew_deficit = 0;
+            if (iSector2 != NODATA_WU) {
+                // get available nonrenewable requirements
+                available_nonrenew_tmp = rout_var[iCell2].nonrenew_deficit;
+
+                // get returned irrigation withdrawals
+                returned_nonrenew_tmp = wu_var[iCell2][iSector2].returned_remote_tmp;
+
+                // add returned resources to nonrenewable
+                returned_nonrenew_tmp = min(available_nonrenew_tmp, returned_nonrenew_tmp);
+                if(available_nonrenew_tmp > 0) {
+                    rout_var[iCell2].nonrenew_deficit -= returned_nonrenew_tmp;
+
+                    if(rout_var[iCell2].nonrenew_deficit < 0){
+                        rout_var[iCell2].nonrenew_deficit = 0;
+                    }
+                }
+
+                // decrease returned
+                returned -= returned_nonrenew_tmp;
+                if(returned < 0){
+                    returned = 0;
                 }
             }
         }
         
-        // decrease returned
-        returned -= returned_nonrenew_tmp;
-        if(returned < 0){
-            returned = 0;
+        // surface returns
+        if(returned > 0.) {
+            available_discharge_tmp = 0.;
+            for (iStep = rout_steps_per_dt;
+                 iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
+                 iStep++) {
+                available_discharge_tmp += rout_var[iCell2].dt_discharge[iStep];
+            }
+
+            returned_discharge_tmp =
+                returned /
+                MM_PER_M * local_domain.locations[iCell2].area / global_param.dt;
+
+            for (iStep = rout_steps_per_dt;
+                 iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
+                 iStep++) {
+                if (available_discharge_tmp > 0) {
+                    // Scale withdrawal proportionally to availability
+                    rout_var[iCell2].dt_discharge[iStep] +=
+                        returned_discharge_tmp *
+                        (rout_var[iCell2].dt_discharge[iStep] /
+                         available_discharge_tmp);
+                }
+                else {
+                    // Scale withdrawal proportionally to length
+                    rout_var[iCell2].dt_discharge[iStep] +=
+                        returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                }
+                if (rout_var[iCell2].dt_discharge[iStep] < 0) {
+                    rout_var[iCell2].dt_discharge[iStep] = 0.;
+                }
+            }
+
+            // Recalculate discharge and stream moisture
+            rout_var[iCell2].discharge = 0.;
+            rout_var[iCell2].stream = 0.;
+            for (iStep = 0;
+                 iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
+                 iStep++) {
+                if (iStep < rout_steps_per_dt) {
+                    rout_var[iCell2].discharge +=
+                        rout_var[iCell2].dt_discharge[iStep];
+                }
+                else {
+                    rout_var[iCell2].stream += rout_var[iCell2].dt_discharge[iStep];
+                }
+            }
         }
     }
-    
+
     // remote
-    if (withdrawn_remote - returned != 0.) {
+    if (withdrawn_remote > 0.) {
         available_discharge_tmp = 0.;
         for (iStep = rout_steps_per_dt;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
@@ -359,7 +420,7 @@ calculate_hydrology_remote(size_t iCell,
         }
 
         withdrawn_discharge_tmp =
-            (withdrawn_remote - returned) /
+            withdrawn_remote /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
         for (iStep = rout_steps_per_dt;
@@ -382,12 +443,12 @@ calculate_hydrology_remote(size_t iCell,
             }
         }
 
+        // Recalculate discharge and stream moisture
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-            // Recalculate discharge and stream moisture
             if (iStep < rout_steps_per_dt) {
                 rout_var[iCell].discharge +=
                     rout_var[iCell].dt_discharge[iStep];
@@ -594,8 +655,7 @@ wu_remote(size_t iCell)
        Return
     ******************************************/
     calculate_hydrology_remote(iCell,
-                               withdrawn_remote,
-                               returned);
+                               withdrawn_remote);
 
     /******************************************
        Check balance

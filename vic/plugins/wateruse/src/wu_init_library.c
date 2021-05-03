@@ -67,6 +67,8 @@ initialize_wu_var(wu_var_struct *wu_var)
     wu_var->available_remote_tmp = 0.0;
     wu_var->demand_remote_tmp = 0.0;
     wu_var->withdrawn_remote_tmp = 0.0;
+    wu_var->returned_remote_tmp = 0.0;
+    wu_var->consumed_remote_tmp = 0.0;
 }
 
 /******************************************

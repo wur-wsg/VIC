@@ -51,7 +51,6 @@ typedef struct {
     bool paddy;                     /**< paddy irrigation flag */
     double groundwater_fraction;    /**< irrigation groundwater fraction [-] */
     double irrigation_efficiency;   /**< irrigation efficiency [mm mm-1] */
-    double application_efficiency;  /**< application efficiency [mm mm-1] */
 } irr_con_struct;
 
 /******************************************************************************
