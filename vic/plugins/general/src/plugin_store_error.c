@@ -57,9 +57,8 @@ plugin_store_error(size_t iCell)
                   global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     }
     if(plugin_options.DAMS){
-        inflow += (out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_INFLOW][0] +
-                   out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_INFLOW][0]) *
-                   M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+        inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_INFLOW][0] *
+                  M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
     }
     if(plugin_options.IRRIGATION){
         inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_RECEIVED][0];
@@ -75,9 +74,8 @@ plugin_store_error(size_t iCell)
                    global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     }
     if(plugin_options.DAMS){
-        outflow += (out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_RELEASE][0] +
-                    out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_RELEASE][0]) *
-                    M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+        outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_RELEASE][0] *
+                   M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
     }
     if(plugin_options.IRRIGATION){
         outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
