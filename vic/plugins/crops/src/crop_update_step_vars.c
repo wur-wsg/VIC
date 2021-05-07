@@ -228,8 +228,7 @@ crop_update_step_vars(size_t iCell)
 
                     /* If crop area LAI < 1, adjust fcanopy for partial crop coverage */
                     if (cveg_hist->LAI[NR] / cveg_hist->fcanopy[NR] < 1.) {
-                        cveg_hist->fcanopy[NR] *= cveg_hist->LAI[NR] /
-                                                  cveg_hist->fcanopy[NR];
+                        cveg_hist->fcanopy[NR] = cveg_hist->LAI[NR];
                     }
                     cveg_hist->albedo[NR] =
                         cveg_hist->fcanopy[NR] * cveg_hist->albedo[NR] +

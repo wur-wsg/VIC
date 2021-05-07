@@ -260,7 +260,7 @@ OUTVAR							OUT_WI_DAM_SECT
 
 # WOFOST
 # fluxes
-OUTVAR                          OUT_CROP_GROW
+OUTVAR                          			OUT_CROP_GROW
 OUTVAR							OUT_CROP_EVAP
 OUTVAR							OUT_CROP_DVS
 OUTVAR							OUT_CROP_WLV
