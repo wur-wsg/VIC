@@ -952,6 +952,7 @@ distribute_irrigation_balance_terms(size_t  iCell,
                                     double *Cv_new)
 {
     extern global_param_struct        global_param;
+    extern plugin_global_param_struct        plugin_global_param;
     extern domain_struct              local_domain;
     extern veg_con_map_struct *veg_con_map;
     extern irr_con_map_struct *irr_con_map;
@@ -1230,7 +1231,7 @@ lu_apply(void)
                 calculate_derived_energy_states(iCell, iBand,
                                                 snow_surf_capacity);
                 
-                if(plugin_options.IRRIGATION) {
+                if(plugin_options.IRRIGATION && plugin_options.ROUTING) {
                     // Irrigation
                     distribute_irrigation_balance_terms(iCell, iBand,
                                                    Cv_change, Cv_old, Cv_new);
