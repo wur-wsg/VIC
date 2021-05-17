@@ -686,6 +686,7 @@ wu_run(size_t iCell)
 
     size_t                     iVeg;
     size_t                     iBand;
+    size_t                     iDam;
 
     /******************************************
        Alloc
@@ -695,11 +696,6 @@ wu_run(size_t iCell)
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
         av_gw[iVeg] = malloc(options.SNOW_BAND * sizeof(*av_gw[iVeg]));
         check_alloc_status(av_gw[iVeg], "Memory allocation error.");
-    }
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-            av_gw[iVeg][iBand] = 0.0;
-        }
     }
 
     if (plugin_options.DAMS) {
@@ -719,6 +715,15 @@ wu_run(size_t iCell)
     withdrawn_surf = 0.;
     withdrawn_dam = 0.;
     returned = 0.;
+    
+    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+            av_gw[iVeg][iBand] = 0.0;
+        }
+    }
+    for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
+        av_dam[iDam] = 0.0;
+    }
 
     reset_wu(iCell);
 
