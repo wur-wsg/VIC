@@ -85,6 +85,8 @@ plugin_print_options(plugin_option_struct *op)
             op->FORCE_LANDUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
             op->POTENTIAL_IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tEFFICIENT_IRRIGATION : %s\n",
+            op->EFFICIENT_IRRIGATION ? "true" : "false");
     fprintf(LOG_DEST, "\tCOMP_WITH            : %s\n",
             op->COMP_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tREMOTE_WITH          : %s\n",

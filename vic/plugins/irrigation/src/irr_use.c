@@ -226,6 +226,7 @@ irr_apply(size_t iCell,
           double *applied, 
           double *leftover)
 {
+    extern plugin_option_struct plugin_options;
     extern soil_con_struct    *soil_con;
     extern all_vars_struct    *all_vars;
     
@@ -239,7 +240,11 @@ irr_apply(size_t iCell,
     csoil_con = &(soil_con[iCell]);
     ccell_var = &(all_vars[iCell].cell[iVeg][iBand]);
     
-    max_added = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
+    if (plugin_options.EFFICIENT_IRRIGATION) {
+        max_added = csoil_con->Wfc[1] - ccell_var->layer[1].moist;
+    } else {
+        max_added = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
+    }
     if (received < max_added) {
         applied_tmp = received;
     }
@@ -248,7 +253,11 @@ irr_apply(size_t iCell,
     }
     leftover_tmp = received - applied_tmp;
 
-    ccell_var->layer[0].moist += applied_tmp;
+    if (plugin_options.EFFICIENT_IRRIGATION) {
+        ccell_var->layer[1].moist += applied_tmp;
+    } else {
+        ccell_var->layer[0].moist += applied_tmp;
+    }
     
     (*applied) += applied_tmp;
     (*leftover) += leftover_tmp;

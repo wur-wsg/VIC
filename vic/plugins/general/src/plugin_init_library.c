@@ -53,6 +53,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     }
     plugin_options->NIRRTYPES = 0;
     plugin_options->POTENTIAL_IRRIGATION = false;
+    plugin_options->EFFICIENT_IRRIGATION = false;
     plugin_options->COMP_WITH = false;
     plugin_options->REMOTE_WITH = false;
     plugin_options->NONRENEW_WITH = false;
