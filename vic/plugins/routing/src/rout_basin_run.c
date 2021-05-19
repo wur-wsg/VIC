@@ -140,7 +140,7 @@ rout_basin_run(size_t iCell)
 
     // Convolute current inflow
     convolve(dt_inflow, rout_steps_per_dt,
-             rout_con[iCell].runoff_uh, plugin_options.UH_LENGTH,
+             rout_con[iCell].inflow_uh, plugin_options.UH_LENGTH,
              convoluted);
     for (i = 0; i < rout_steps_per_dt + plugin_options.UH_LENGTH - 1; i++) {
         rout_var[iCell].dt_discharge[i] += convoluted[i];
