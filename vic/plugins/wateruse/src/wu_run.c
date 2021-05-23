@@ -426,8 +426,10 @@ calculate_hydrology(size_t   iCell,
 
     double                            ice;
     double                            withdrawn_discharge_tmp;
+    double                            returned_stream_tmp;
     double                            returned_nonrenew_tmp;
     double                            available_discharge_tmp;
+    double                            available_stream_tmp;
     double                            available_nonrenew_tmp;
 
     size_t                            rout_steps_per_dt;
@@ -513,34 +515,55 @@ calculate_hydrology(size_t   iCell,
     }
     
     // surface
-    if (withdrawn_surf - returned != 0.) {
+    if (withdrawn_surf > 0. || returned > 0.) {
         available_discharge_tmp = 0.;
+        available_stream_tmp = 0.;
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
+            if (iStep >= rout_steps_per_dt) {
+                available_stream_tmp += rout_var[iCell].dt_discharge[iStep];
+            }
         }
 
-        withdrawn_discharge_tmp =
-            (withdrawn_surf - returned) /
+        withdrawn_discharge_tmp = withdrawn_surf /
+            MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+        returned_stream_tmp = returned /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
+            
+            // Discharge withdrawals
             if (available_discharge_tmp > 0) {
-                // Scale withdrawal proportionally to availability
+                // Scale withdrawal proportionally to discharge availability
                 rout_var[iCell].dt_discharge[iStep] -=
                     withdrawn_discharge_tmp *
                     (rout_var[iCell].dt_discharge[iStep] /
                      available_discharge_tmp);
             }
             else {
-                // Scale withdrawal proportionally to length
-                rout_var[iCell].dt_discharge[iStep] -=
-                    withdrawn_discharge_tmp /
-                    (plugin_options.UH_LENGTH + rout_steps_per_dt - 1);
+                log_err("Wateruse discharge withdrawn while no discharge is available");
             }
+            
+            // Stream returns
+            if (iStep >= rout_steps_per_dt) {
+                if (available_stream_tmp > 0) {
+                    // Scale returns proportionally to stream availability
+                        rout_var[iCell].dt_discharge[iStep] +=
+                            returned_stream_tmp *
+                        (rout_var[iCell].dt_discharge[iStep] /
+                         available_stream_tmp);
+                }
+                else {
+                    // Scale returns proportionally to stream length
+                    rout_var[iCell].dt_discharge[iStep] +=
+                        returned_stream_tmp / (plugin_options.UH_LENGTH - 1);
+                }
+            }
+            
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }

@@ -142,7 +142,7 @@ calculate_availability_remote(size_t  iCell,
                         global_param.model_steps_per_day;
 
     // surface water
-    for (iStep = rout_steps_per_dt;
+    for (iStep = 0;
          iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
          iStep++) {
         (*available_remote) += rout_var[iCell].dt_discharge[iStep] *
@@ -305,8 +305,9 @@ calculate_hydrology_remote(size_t iCell,
     extern wu_con_struct             *wu_con;
 
     double                            available_discharge_tmp;
+    double                            available_stream_tmp;
     double                            withdrawn_discharge_tmp;
-    double                            returned_discharge_tmp;
+    double                            returned_stream_tmp;
     double                            available_nonrenew_tmp;
     double                            returned_nonrenew_tmp;
     double                            returned;
@@ -360,31 +361,32 @@ calculate_hydrology_remote(size_t iCell,
         
         // surface returns
         if(returned > 0.) {
-            available_discharge_tmp = 0.;
+            available_stream_tmp = 0.;
             for (iStep = rout_steps_per_dt;
                  iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
                  iStep++) {
-                available_discharge_tmp += rout_var[iCell2].dt_discharge[iStep];
+                available_stream_tmp += rout_var[iCell2].dt_discharge[iStep];
             }
 
-            returned_discharge_tmp =
-                returned /
+            returned_stream_tmp = returned /
                 MM_PER_M * local_domain.locations[iCell2].area / global_param.dt;
 
             for (iStep = rout_steps_per_dt;
                  iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
                  iStep++) {
-                if (available_discharge_tmp > 0) {
-                    // Scale withdrawal proportionally to availability
+                
+                // Stream returns
+                if (available_stream_tmp > 0) {
+                    // Scale returns proportionally to stream availability
                     rout_var[iCell2].dt_discharge[iStep] +=
-                        returned_discharge_tmp *
+                        returned_stream_tmp *
                         (rout_var[iCell2].dt_discharge[iStep] /
-                         available_discharge_tmp);
+                         available_stream_tmp);
                 }
                 else {
-                    // Scale withdrawal proportionally to length
+                    // Scale returns proportionally to stream length
                     rout_var[iCell2].dt_discharge[iStep] +=
-                        returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                        returned_stream_tmp / (plugin_options.UH_LENGTH - 1);
                 }
                 if (rout_var[iCell2].dt_discharge[iStep] < 0) {
                     rout_var[iCell2].dt_discharge[iStep] = 0.;
@@ -411,31 +413,31 @@ calculate_hydrology_remote(size_t iCell,
     // remote
     if (withdrawn_remote > 0.) {
         available_discharge_tmp = 0.;
-        for (iStep = rout_steps_per_dt;
+        for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
         }
 
-        withdrawn_discharge_tmp =
-            withdrawn_remote /
+        withdrawn_discharge_tmp = withdrawn_remote /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
-        for (iStep = rout_steps_per_dt;
+        for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
+            
+            // Discharge withdrawals
             if (available_discharge_tmp > 0) {
-                // Scale withdrawal proportionally to availability
+                // Scale withdrawal proportionally to discharge availability
                 rout_var[iCell].dt_discharge[iStep] -=
                     withdrawn_discharge_tmp *
                     (rout_var[iCell].dt_discharge[iStep] /
                      available_discharge_tmp);
             }
             else {
-                // Scale withdrawal proportionally to length
-                rout_var[iCell].dt_discharge[iStep] -=
-                    withdrawn_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                log_err("Wateruse discharge withdrawn while no discharge is available");
             }
+            
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }

@@ -933,6 +933,8 @@ typedef struct {
     double Wdew;                /**< dew trapped on vegetation (mm) */
     double Wdmax;               /**< current maximum dew holding capacity
                                    (mm) */
+    double root[MAX_LAYERS];    /**< current percent of roots in each soil layer
+                                   (fraction) */
 
     // Fluxes
     double canopyevap;          /**< evaporation from canopy (mm/TS) */

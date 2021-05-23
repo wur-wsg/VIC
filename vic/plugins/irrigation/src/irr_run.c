@@ -41,6 +41,8 @@ irr_run_requirement(size_t iCell)
     extern soil_con_struct         *soil_con;
     extern veg_con_struct         **veg_con;
     extern plugin_parameters_struct plugin_param;
+    extern dmy_struct              *dmy;
+    extern size_t                   current;
 
     double                          moist[MAX_LAYERS];
     double                          total_moist;
@@ -59,6 +61,7 @@ irr_run_requirement(size_t iCell)
     soil_con_struct                *csoil_con;
     veg_con_struct                 *cveg_con;
     cell_data_struct               *ccell_var;
+    veg_var_struct                 *cveg_var;
 
     csoil_con = &soil_con[iCell];
 
@@ -79,10 +82,26 @@ irr_run_requirement(size_t iCell)
 
         veg_fract = cveg_con->Cv;
 
+        if(current == 0 || dmy[current].day_in_year != dmy[current - 1].day_in_year) {
+            for (j = 0; j < options.SNOW_BAND; j++) {
+                cirr_var = &irr_var[iCell][i][j];
+
+                // Assume a new irrigation season starts 
+                // when the vegetation coverage changes
+                if(veg_fract != cirr_var->prev_Cv){
+                    cirr_var->offset = 0;
+                } else if (cirr_var->offset < cirr_con->offset){
+                    cirr_var->offset++;
+                }
+                cirr_var->prev_Cv = veg_fract;
+            }
+        }
+    
         if (veg_fract > 0) {
             for (j = 0; j < options.SNOW_BAND; j++) {
                 cirr_var = &irr_var[iCell][i][j];
                 ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
+                cveg_var = &all_vars[iCell].veg_var[cirr_con->veg_index][j];
                 area_fract = csoil_con->AreaFract[j];
 
                 if (area_fract > 0) {
@@ -112,7 +131,7 @@ irr_run_requirement(size_t iCell)
                                         csoil_con->frost_fract[l];
                         }
 
-                        if (cveg_con->root[k] > 0.) {
+                        if (cveg_var->root[k] > 0.) {
                             total_moist += moist[k];
                             total_wcr += ccell_var->layer[k].Wcr;
                             total_wfc += csoil_con->Wfc[k];
@@ -143,13 +162,15 @@ irr_run_requirement(size_t iCell)
                     **********************************************************************/
                     // Calculate whether irrigation water is required to
                     // prevent suboptimal evapotranspiration
-                    if (cirr_con->paddy && cirr_var->requirement > 0) {
-                        cirr_var->flag_req = true;
-                    }
-                    else if (total_wcr -
-                             (total_moist + cirr_var->leftover) > 0 &&
-                             cirr_var->requirement > 0) {
-                        cirr_var->flag_req = true;
+                    if(cirr_var->offset >= cirr_con->offset){
+                        if (cirr_con->paddy && cirr_var->requirement > 0) {
+                            cirr_var->flag_req = true;
+                        }
+                        else if (total_wcr -
+                                 (total_moist + cirr_var->leftover) > 0 &&
+                                 cirr_var->requirement > 0) {
+                            cirr_var->flag_req = true;
+                        }
                     }
                 }
             }
@@ -189,6 +210,7 @@ irr_run_shortage(size_t iCell)
     irr_var_struct            *cirr_var;
     soil_con_struct           *csoil_con;
     veg_con_struct            *cveg_con;
+    veg_var_struct            *cveg_var;
     cell_data_struct          *ccell_var;
 
     csoil_con = &soil_con[iCell];
@@ -210,6 +232,7 @@ irr_run_shortage(size_t iCell)
             for (j = 0; j < options.SNOW_BAND; j++) {
                 cirr_var = &irr_var[iCell][i][j];
                 ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
+                cveg_var = &all_vars[iCell].veg_var[cirr_con->veg_index][j];
                 area_fract = csoil_con->AreaFract[j];
 
                 if (area_fract > 0) {
@@ -234,7 +257,7 @@ irr_run_shortage(size_t iCell)
                         }
 
                         if (k < options.Nlayer - 1) {
-                            if (cveg_con->root[k] > 0.) {
+                            if (cveg_var->root[k] > 0.) {
                                 total_moist += moist[k];
                                 total_wcr += ccell_var->layer[k].Wcr;
                             }
@@ -243,7 +266,7 @@ irr_run_shortage(size_t iCell)
                             // Lowest layer
                             lower_moist += moist[k];
                             lower_wcr += ccell_var->layer[k].Wcr;
-                            lower_root += cveg_con->root[k];
+                            lower_root += cveg_var->root[k];
                         }
                     }
 
@@ -297,8 +320,7 @@ irr_run_shortage(size_t iCell)
                     ccell_var->water_stress = 0;
                     for (k = 0; k < options.Nlayer; k++) {
                         ccell_var->water_stress +=
-                            ccell_var->layer[k].water_stress *
-                            cveg_con->root[k];
+                            ccell_var->layer[k].water_stress * cveg_var->root[k];
                     }
                 }
             }

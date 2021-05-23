@@ -51,6 +51,7 @@ typedef struct {
     bool paddy;                     /**< paddy irrigation flag */
     double groundwater_fraction;    /**< irrigation groundwater fraction [-] */
     double irrigation_efficiency;   /**< irrigation efficiency [mm mm-1] */
+    int offset;                     /**< irrigation offset [days] */
 } irr_con_struct;
 
 /******************************************************************************
@@ -64,6 +65,8 @@ typedef struct {
     double shortage;                /**< shortage (below critical soil moisture point) [mm] */
     double requirement;             /**< requirement (between field capacity and critical soil moisture point) [mm] */
     bool flag_req;                  /**< requires irrigation flag */
+    int offset;                     /**< irrigation offset [days] */
+    double prev_Cv;                 /**< previous vegetation coverage [-] */
 } irr_var_struct;
 
 /******************************************************************************

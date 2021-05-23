@@ -192,7 +192,7 @@ calculate_hydrology_nonrenew(size_t iCell,
     extern domain_struct       local_domain;
     extern rout_var_struct    *rout_var;
 
-    double                     available_discharge_tmp;
+    double                     available_stream_tmp;
     double                     returned_discharge_tmp;
     double                     available_nonrenew_tmp;
     double                     returned_nonrenew_tmp;
@@ -247,32 +247,34 @@ calculate_hydrology_nonrenew(size_t iCell,
     // surface returns
     if (returned > 0.) {
         // surface
-        available_discharge_tmp = 0.;
+        available_stream_tmp = 0.;
         for (iStep = rout_steps_per_dt;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-            available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
+            available_stream_tmp += rout_var[iCell].dt_discharge[iStep];
         }
 
-        returned_discharge_tmp =
-            returned /
+        returned_discharge_tmp = returned /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
         for (iStep = rout_steps_per_dt;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-            if (available_discharge_tmp > 0) {
-                // Scale withdrawal proportionally to availability
+            
+            // Stream returns
+            if (available_stream_tmp > 0) {
+                // Scale returns proportionally to stream availability
                 rout_var[iCell].dt_discharge[iStep] +=
                     returned_discharge_tmp *
                     (rout_var[iCell].dt_discharge[iStep] /
-                     available_discharge_tmp);
+                     available_stream_tmp);
             }
             else {
-                // Scale withdrawal proportionally to length
+                // Scale returns proportionally to stream length
                 rout_var[iCell].dt_discharge[iStep] +=
                     returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
             }
+            
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }

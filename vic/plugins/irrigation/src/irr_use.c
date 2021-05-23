@@ -611,7 +611,6 @@ irr_wofost(size_t iCell)
     
     // Check wofost crop that are not irrigated
     for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-        cirr_var = &(irr_var[iCell][iIrr][iBand]);
         area_fract = csoil_con->AreaFract[iBand];
         cgrid = Grid[iCell][iBand];
 

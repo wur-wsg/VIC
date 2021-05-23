@@ -1631,6 +1631,8 @@ vic_init(void)
                         soil_con[i].Ksat[m];
                     all_vars[i].cell[j][k].layer[m].Wcr =
                         soil_con[i].Wcr[m];
+                    all_vars[i].veg_var[j][k].root[m] = 
+                        veg_con[i][j].root[m];
                 }
             }
         }

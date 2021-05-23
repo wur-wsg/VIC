@@ -123,6 +123,7 @@ irr_set_info(void)
     extern irr_con_struct        **irr_con;
 
     double                        *dvar;
+    int                        *ivar;
 
     size_t                         i;
     size_t                         j;
@@ -137,6 +138,8 @@ irr_set_info(void)
 
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
+    ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
+    check_alloc_status(ivar, "Memory allocation error.");
 
     get_scatter_nc_field_double(&(plugin_filenames.irrigation),
                                 "groundwater_fraction", d2start, d2count, dvar);
@@ -162,7 +165,20 @@ irr_set_info(void)
         }
     }
 
+    if(plugin_options.OFFSET_IRRIGATION){
+        get_scatter_nc_field_int(&(plugin_filenames.irrigation),
+                                    "irrigation_offset", d2start, d2count,
+                                    ivar);
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            for (j = 0; j < irr_con_map[i].ni_active; j++) {
+                irr_con[i][j].offset = ivar[i];
+            }
+        }
+    }
+
     free(dvar);
+    free(ivar);
 }
 
 /******************************************

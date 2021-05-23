@@ -126,6 +126,138 @@ wu_set_receiving(void)
 }
 
 /******************************************
+* @brief   Set the upstream-downstream order for water use
+******************************************/
+void
+wu_set_routing_order()
+{
+    extern domain_struct    local_domain;
+    extern rout_con_struct *rout_con;
+    extern wu_con_struct *wu_con;
+    extern size_t          *routing_order;
+
+    bool                    *done_tmp;
+    bool                    *done_fin;
+    size_t                  rank;
+    bool                    has_upstream;
+    bool                    has_command;
+
+    size_t                  i;
+    size_t                  j;
+
+    done_tmp = malloc(local_domain.ncells_active * sizeof(*done_tmp));
+    check_alloc_status(done_tmp, "Memory allocation error.");
+    done_fin = malloc(local_domain.ncells_active * sizeof(*done_fin));
+    check_alloc_status(done_fin, "Memory allocation error.");
+    
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        done_tmp[i] = false;
+        done_fin[i] = false;
+    }
+
+    // Set cell_order_local for node
+    rank = 0;
+    while (rank < local_domain.ncells_active) {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            if (done_fin[i]) {
+                continue;
+            }
+
+            // count number of upstream cells that are not processed yet
+            has_upstream = false;
+            for (j = 0; j < rout_con[i].Nupstream; j++) {
+                if (!done_fin[rout_con[i].upstream[j]]) {
+                    has_upstream = true;
+                    break;
+                }
+            }
+
+            if (has_upstream) {
+                continue;
+            }
+            
+            has_command = false;
+            for(j = 0; j < wu_con[i].nreceiving; j++){
+                if (!done_fin[wu_con[i].receiving[j]]) {
+                    has_command = true;
+                    break;
+                }
+            }
+
+            if (has_command) {
+                continue;
+            }
+
+            // if no upstream, add as next order
+            routing_order[rank] = i;
+            done_tmp[i] = true;
+            rank++;
+
+            if (rank > local_domain.ncells_active) {
+                log_err("Error in ordering and ranking cells");
+            }
+        }
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            if (done_tmp[i] == true) {
+                done_fin[i] = true;
+            }
+        }
+    }
+    
+    free(done_tmp);
+    free(done_fin);
+}
+
+/******************************************
+* @brief   Check the upstream-downstream order for water use
+******************************************/
+void
+wu_check_routing_order()
+{
+    extern domain_struct    local_domain;
+    extern rout_con_struct *rout_con;
+    extern wu_con_struct   *wu_con;
+    extern size_t          *routing_order;
+
+    size_t                 *inverse_order;
+
+    size_t                  i;
+    size_t                  j;
+    size_t                  iDownstream;
+    size_t                  iReceiving;
+
+    inverse_order = malloc(local_domain.ncells_active * sizeof(*inverse_order));
+    check_alloc_status(inverse_order, "Memory allocation error.");
+    
+    for(i = 0; i < local_domain.ncells_active; i++){
+        inverse_order[routing_order[i]] = i;
+    }
+    
+    for(i = 0; i < local_domain.ncells_active; i++) {
+        iDownstream = rout_con[i].downstream;
+        
+        for(j = 0; j < wu_con[i].nreceiving; j++){
+            iReceiving = wu_con[i].receiving[j];
+            
+            if(inverse_order[iReceiving] >= inverse_order[iDownstream]){
+                log_err("Error in routing order for water-use. "
+                        "Receiving cell %zu of source cell %zu "
+                        "has a greater or equal order "
+                        "than the source downstream cell %zu "
+                        "(%zu >= %zu)",
+                        iReceiving, i, iDownstream, 
+                        inverse_order[iReceiving], 
+                        inverse_order[iDownstream]
+                        )
+            }
+        }
+    }
+    
+    
+    free(inverse_order);
+}
+
+/******************************************
 * @brief   Setup the water-use module
 ******************************************/
 void
@@ -146,6 +278,8 @@ wu_init(void)
 
     if (plugin_options.REMOTE_WITH) {
         wu_set_receiving();
+        wu_set_routing_order();
+        wu_check_routing_order();
     }
 
     // close parameter file

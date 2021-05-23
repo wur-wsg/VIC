@@ -512,6 +512,7 @@ calculate_derived_water_states(size_t iCell,
     layer_data_struct          layer[MAX_LAYERS];
 
     cell_data_struct         **cell;
+    veg_var_struct         **veg;
     snow_data_struct         **snow;
     energy_bal_struct        **energy;
 
@@ -520,6 +521,7 @@ calculate_derived_water_states(size_t iCell,
     size_t                     iLayer;
 
     cell = all_vars[iCell].cell;
+    veg = all_vars[iCell].veg;
     snow = all_vars[iCell].snow;
     energy = all_vars[iCell].energy;
 
@@ -548,7 +550,7 @@ calculate_derived_water_states(size_t iCell,
             max_moist = soil_con[iCell].porosity[iLayer] *
                         soil_con[iCell].depth[iLayer] * MM_PER_M;
 
-            if (veg_con[iCell][iVeg].root[iLayer] > 0) {
+            if (veg[iVeg][iBand].root[iLayer] > 0) {
                 cell[iVeg][iBand].rootmoist +=
                     cell[iVeg][iBand].layer[iLayer].moist;
                 cell[iVeg][iBand].wetness +=

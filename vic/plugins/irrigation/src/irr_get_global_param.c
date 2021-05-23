@@ -53,6 +53,10 @@ irr_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.EFFICIENT_IRRIGATION = str_to_bool(flgstr);
     }
+    else if (strcasecmp("OFFSET_IRRIGATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.OFFSET_IRRIGATION = str_to_bool(flgstr);
+    }
     else if (strcasecmp("IRRIGATION_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.irrigation.nc_filename);
     }

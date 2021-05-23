@@ -34,6 +34,7 @@ crop_update_step_vars(size_t iCell)
     veg_lib_struct             *cveg_lib;
     veg_hist_struct            *cveg_hist;
     veg_con_struct             *cveg_con;
+    veg_var_struct             *cveg_var;
     soil_con_struct            *csoil_con;
     cell_data_struct           *ccell_data;
 
@@ -61,15 +62,13 @@ crop_update_step_vars(size_t iCell)
                     cveg_lib->rad_atten = 0.;
                     cveg_lib->RGL = 0.;
 
-                    for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                        cveg_con->root[iLayer] = 0.;
-                    }
-
                     for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                         ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+                        cveg_var = &(all_vars[iCell].veg_var[iVeg][iBand]);
 
                         for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                             ccell_data->layer[iLayer].Wcr = 0.;
+                            cveg_var->root[iLayer] = 0.;
                         }
                     }
 
@@ -98,6 +97,7 @@ crop_update_step_vars(size_t iCell)
             cveg_con = &(veg_con[iCell][iVeg]);
             cveg_hist = &(veg_hist[iCell][iVeg]);
             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+            cveg_var = &(all_vars[iCell].veg_var[iVeg][iBand]);
 
             Cc = crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
             area_fract = Cc * csoil_con->AreaFract[iBand];
@@ -127,14 +127,14 @@ crop_update_step_vars(size_t iCell)
             cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * area_fract;
 
             if (cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
-                cveg_con->root[0] +=
+                cveg_var->root[0] +=
                     (csoil_con->depth[0] * CM_PER_M /
                      cgrid->crp->st.RootDepth) *
                     area_fract;
-                cveg_con->root[1] += (1 - cveg_con->root[0]) * area_fract;
+                cveg_var->root[1] += (1 - cveg_var->root[0]) * area_fract;
             }
             else {
-                cveg_con->root[0] += area_fract;
+                cveg_var->root[0] += area_fract;
             }
 
             Wcr_FRAC =
@@ -142,7 +142,7 @@ crop_update_step_vars(size_t iCell)
                  sweaf(cgrid->crp->prm.CropGroupNumber,
                        cgrid->met->PotEvaptrans));
             for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                if (cveg_con->root[iLayer] > 0.) {
+                if (cveg_var->root[iLayer] > 0.) {
                     ccell_data->layer[iLayer].Wcr += (csoil_con->Wpwp[iLayer] +
                                                       (csoil_con->Wfc[iLayer] -
                                                        csoil_con->Wpwp[iLayer])
@@ -175,7 +175,7 @@ crop_update_step_vars(size_t iCell)
                         ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
 
                         for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                            if (cveg_con->root[iLayer] > 0.) {
+                            if (cveg_var->root[iLayer] > 0.) {
                                 if (cveg_hist->fcanopy[NR] == 0 ||
                                     cveg_hist->LAI[NR] == 0) {
                                     ccell_data->layer[iLayer].Wcr =
@@ -202,8 +202,8 @@ crop_update_step_vars(size_t iCell)
                         cveg_hist->displacement[NR] = csoil_con->rough;
                         cveg_hist->roughness[NR] = csoil_con->rough;
 
-                        cveg_con->root[0] = 1.0;
-                        cveg_con->root[1] = 0.0;
+                        cveg_var->root[0] = cveg_con->root[0];
+                        cveg_var->root[1] = cveg_con->root[1];
                     }
                     else {
                         cveg_lib->rarc /= cveg_hist->fcanopy[NR];
@@ -219,10 +219,10 @@ crop_update_step_vars(size_t iCell)
 
                         root_sum = 0.;
                         for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                            root_sum += cveg_con->root[iLayer];
+                            root_sum += cveg_var->root[iLayer];
                         }
                         for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                            cveg_con->root[iLayer] /= root_sum;
+                            cveg_var->root[iLayer] /= root_sum;
                         }
                     }
 

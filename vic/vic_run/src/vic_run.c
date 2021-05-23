@@ -322,7 +322,7 @@ vic_run(force_data_struct   *force,
                                                &out_snow[band],
                                                ref_height, roughness,
                                                &snow_inflow[band],
-                                               tmp_wind, veg_con[iveg].root,
+                                               tmp_wind, veg_var->root,
                                                options.Nlayer, Nveg, band, dp,
                                                iveg, force, dmy,
                                                energy, gp, cell, snow,
@@ -348,7 +348,7 @@ vic_run(force_data_struct   *force,
                     cell->rootmoist = 0;
                     cell->wetness = 0;
                     for (l = 0; l < options.Nlayer; l++) {
-                        if (veg_con[iveg].root[l] > 0) {
+                        if (veg_var->root[l] > 0) {
                             cell->rootmoist += cell->layer[l].moist;
                         }
                         cell->wetness +=
