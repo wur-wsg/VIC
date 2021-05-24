@@ -521,7 +521,7 @@ calculate_derived_water_states(size_t iCell,
     size_t                     iLayer;
 
     cell = all_vars[iCell].cell;
-    veg = all_vars[iCell].veg;
+    veg = all_vars[iCell].veg_var;
     snow = all_vars[iCell].snow;
     energy = all_vars[iCell].energy;
 
