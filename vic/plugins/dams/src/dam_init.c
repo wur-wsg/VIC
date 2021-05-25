@@ -204,10 +204,10 @@ dam_set_info(void)
     d1start[0] = 0;
     d1count[0] = plugin_options.NDAMTYPES;
 
-    ivar = malloc(local_domain.ncells_active * sizeof(*ivar));
+    ivar = malloc(plugin_options.NDAMTYPES * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
 
-    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+    dvar = malloc(plugin_options.NDAMTYPES * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
 
     if (mpi_rank == VIC_MPI_ROOT) {

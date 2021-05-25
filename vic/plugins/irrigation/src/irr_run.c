@@ -51,8 +51,8 @@ irr_run_requirement(size_t iCell)
     double                          veg_fract;
     double                          area_fract;
 
-    size_t                          i;
-    size_t                          j;
+    size_t                          iIrr;
+    size_t                          iBand;
     size_t                          k;
     size_t                          l;
 
@@ -63,15 +63,15 @@ irr_run_requirement(size_t iCell)
     cell_data_struct               *ccell_var;
     veg_var_struct                 *cveg_var;
 
-    csoil_con = &soil_con[iCell];
+    csoil_con = &(soil_con[iCell]);
 
-    for (i = 0; i < irr_con_map[iCell].ni_active; i++) {
-        cirr_con = &irr_con[iCell][i];
-        cveg_con = &veg_con[iCell][cirr_con->veg_index];
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        cirr_con = &(irr_con[iCell][iIrr]);
+        cveg_con = &(veg_con[iCell][cirr_con->veg_index]);
 
-        for (j = 0; j < options.SNOW_BAND; j++) {
-            cirr_var = &irr_var[iCell][i][j];
-            ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
+        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+            cirr_var = &(irr_var[iCell][iIrr][iBand]);
+            ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
 
             // Reset values
             cirr_var->requirement = 0.0;
@@ -83,14 +83,15 @@ irr_run_requirement(size_t iCell)
         veg_fract = cveg_con->Cv;
 
         if(current == 0 || dmy[current].day_in_year != dmy[current - 1].day_in_year) {
-            for (j = 0; j < options.SNOW_BAND; j++) {
-                cirr_var = &irr_var[iCell][i][j];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                cirr_var = &(irr_var[iCell][iIrr][iBand]);
 
                 // Assume a new irrigation season starts 
                 // when the vegetation coverage changes
                 if(veg_fract != cirr_var->prev_Cv){
                     cirr_var->offset = 0;
-                } else if (cirr_var->offset < cirr_con->offset){
+                } 
+                if (cirr_var->offset < cirr_con->offset){
                     cirr_var->offset++;
                 }
                 cirr_var->prev_Cv = veg_fract;
@@ -98,11 +99,11 @@ irr_run_requirement(size_t iCell)
         }
     
         if (veg_fract > 0) {
-            for (j = 0; j < options.SNOW_BAND; j++) {
-                cirr_var = &irr_var[iCell][i][j];
-                ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
-                cveg_var = &all_vars[iCell].veg_var[cirr_con->veg_index][j];
-                area_fract = csoil_con->AreaFract[j];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                cirr_var = &(irr_var[iCell][iIrr][iBand]);
+                ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
+                cveg_var = &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
+                area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {
                     /**********************************************************************
@@ -131,7 +132,7 @@ irr_run_requirement(size_t iCell)
                                         csoil_con->frost_fract[l];
                         }
 
-                        if (cveg_var->root[k] > 0.) {
+                        if (cveg_con->root[k] > 0.) {
                             total_moist += moist[k];
                             total_wcr += ccell_var->layer[k].Wcr;
                             total_wfc += csoil_con->Wfc[k];
@@ -146,8 +147,8 @@ irr_run_requirement(size_t iCell)
                         // With ponding the moisture of the top layer should
                         // always be saturated
                         cirr_var->requirement =
-                            csoil_con->max_moist[0] -
-                            (moist[0] + cirr_var->leftover);
+                            (csoil_con->max_moist[0] + PADDY_FLOOD_HEIGHT)
+                                - (moist[0] + cirr_var->leftover);
                     }
                     else {
                         // Without ponding the moisture should be at
@@ -163,7 +164,11 @@ irr_run_requirement(size_t iCell)
                     // Calculate whether irrigation water is required to
                     // prevent suboptimal evapotranspiration
                     if(cirr_var->offset >= cirr_con->offset){
-                        if (cirr_con->paddy && cirr_var->requirement > 0) {
+                        
+                        if (cirr_con->paddy && 
+                                csoil_con->max_moist[0]
+                                - (moist[0] + cirr_var->leftover) > 0 &&
+                                cirr_var->requirement > 0) {
                             cirr_var->flag_req = true;
                         }
                         else if (total_wcr -
@@ -201,8 +206,8 @@ irr_run_shortage(size_t iCell)
     double                     veg_fract;
     double                     area_fract;
 
-    size_t                     i;
-    size_t                     j;
+    size_t                     iIrr;
+    size_t                     iBand;
     size_t                     k;
     size_t                     l;
 
@@ -213,14 +218,14 @@ irr_run_shortage(size_t iCell)
     veg_var_struct            *cveg_var;
     cell_data_struct          *ccell_var;
 
-    csoil_con = &soil_con[iCell];
+    csoil_con = &(soil_con[iCell]);
 
-    for (i = 0; i < irr_con_map[iCell].ni_active; i++) {
-        cirr_con = &irr_con[iCell][i];
-        cveg_con = &veg_con[iCell][cirr_con->veg_index];
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        cirr_con = &(irr_con[iCell][iIrr]);
+        cveg_con = &(veg_con[iCell][cirr_con->veg_index]);
 
-        for (j = 0; j < options.SNOW_BAND; j++) {
-            cirr_var = &irr_var[iCell][i][j];
+        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+            cirr_var = &(irr_var[iCell][iIrr][iBand]);
 
             // Reset values
             cirr_var->shortage = 0.0;
@@ -229,11 +234,11 @@ irr_run_shortage(size_t iCell)
         veg_fract = cveg_con->Cv;
 
         if (veg_fract > 0) {
-            for (j = 0; j < options.SNOW_BAND; j++) {
-                cirr_var = &irr_var[iCell][i][j];
-                ccell_var = &all_vars[iCell].cell[cirr_con->veg_index][j];
-                cveg_var = &all_vars[iCell].veg_var[cirr_con->veg_index][j];
-                area_fract = csoil_con->AreaFract[j];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                cirr_var = &(irr_var[iCell][iIrr][iBand]);
+                ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
+                cveg_var = &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
+                area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {
                     /**********************************************************************

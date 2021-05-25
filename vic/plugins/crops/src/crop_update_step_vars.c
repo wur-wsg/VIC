@@ -142,12 +142,10 @@ crop_update_step_vars(size_t iCell)
                  sweaf(cgrid->crp->prm.CropGroupNumber,
                        cgrid->met->PotEvaptrans));
             for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                if (cveg_var->root[iLayer] > 0.) {
-                    ccell_data->layer[iLayer].Wcr += (csoil_con->Wpwp[iLayer] +
-                                                      (csoil_con->Wfc[iLayer] -
-                                                       csoil_con->Wpwp[iLayer])
-                                                      * Wcr_FRAC) * area_fract;
-                }
+                ccell_data->layer[iLayer].Wcr += (csoil_con->Wpwp[iLayer] +
+                                                  (csoil_con->Wfc[iLayer] -
+                                                   csoil_con->Wpwp[iLayer])
+                                                  * Wcr_FRAC) * area_fract;
             }
 
             cgrid = cgrid->next;
@@ -171,26 +169,9 @@ crop_update_step_vars(size_t iCell)
                      * NOTE: LAI and albedo are assumed to be cell averages (including bare soil)
                      * all other parameters are assumed to be vegetation specific. */
 
-                    for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-                        ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
-
-                        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                            if (cveg_var->root[iLayer] > 0.) {
-                                if (cveg_hist->fcanopy[NR] == 0 ||
-                                    cveg_hist->LAI[NR] == 0) {
-                                    ccell_data->layer[iLayer].Wcr =
-                                        soil_con[iCell].Wcr[iLayer];
-                                }
-                                else {
-                                    ccell_data->layer[iLayer].Wcr /=
-                                        cveg_hist->fcanopy[NR];
-                                }
-                            }
-                        }
-                    }
-
                     if (cveg_hist->fcanopy[NR] == 0 ||
                         cveg_hist->LAI[NR] == 0) {
+                        // No crop is growing
                         cveg_lib->rarc = param.SOIL_RARC;
                         cveg_lib->trunk_ratio = 0.0;
                         cveg_lib->wind_atten = 0.5;
@@ -202,10 +183,18 @@ crop_update_step_vars(size_t iCell)
                         cveg_hist->displacement[NR] = csoil_con->rough;
                         cveg_hist->roughness[NR] = csoil_con->rough;
 
-                        cveg_var->root[0] = cveg_con->root[0];
-                        cveg_var->root[1] = cveg_con->root[1];
+                        cveg_var->root[0] = 1.0;
+                        cveg_var->root[1] = 0.0;
+                        
+                        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                            ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+                            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                                ccell_data->layer[iLayer].Wcr = soil_con[iCell].Wcr[iLayer];
+                            }
+                        }
                     }
-                    else {
+                    else {                        
+                        // Partial to full crop coverage
                         cveg_lib->rarc /= cveg_hist->fcanopy[NR];
                         cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
                         cveg_lib->wind_atten /= cveg_hist->fcanopy[NR];
@@ -223,6 +212,13 @@ crop_update_step_vars(size_t iCell)
                         }
                         for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                             cveg_var->root[iLayer] /= root_sum;
+                        }
+                        
+                        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                            ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
+                            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                                ccell_data->layer[iLayer].Wcr /= cveg_hist->fcanopy[NR];
+                            }
                         }
                     }
 

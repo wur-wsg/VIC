@@ -51,8 +51,8 @@ irr_set_demand(size_t iCell)
     double                     veg_fract;
 
     size_t                     iSector;
-    size_t                     i;
-    size_t                     j;
+    size_t                     iIrr;
+    size_t                     iBand;
 
     irr_con_struct            *cirr_con;
     irr_var_struct            *cirr_var;
@@ -66,24 +66,20 @@ irr_set_demand(size_t iCell)
     consumed = 0.0;
     
     csoil_con = &(soil_con[iCell]);
-    for (i = 0; i < irr_con_map[iCell].ni_active; i++) {
-        cirr_con = &(irr_con[iCell][i]);
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        cirr_con = &(irr_con[iCell][iIrr]);
         cveg_con = &(veg_con[iCell][cirr_con->veg_index]);
         veg_fract = cveg_con->Cv;
 
         if (veg_fract > 0) {
-            for (j = 0; j < options.SNOW_BAND; j++) {
-                cirr_var = &(irr_var[iCell][i][j]);
-                area_fract = csoil_con->AreaFract[j];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                cirr_var = &(irr_var[iCell][iIrr][iBand]);
+                area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {
                     if (cirr_var->flag_req) {
                         demand_crop = cirr_var->requirement * veg_fract *
                                   area_fract;
-                        if (cirr_con->paddy) {
-                            demand_crop += PADDY_FLOOD_HEIGHT * veg_fract *
-                                      area_fract;
-                        }
                         consumed += demand_crop;
                         demand += demand_crop;
                         groundwater += demand_crop *
@@ -363,9 +359,6 @@ irr_potential(size_t iCell)
                     received_tmp = 0.0;
                     if(cirr_var->flag_req){
                         received_tmp = cirr_var->requirement;
-                        if (cirr_con->paddy) {
-                            received_tmp += PADDY_FLOOD_HEIGHT;
-                        }
                         
                         irr_apply(iCell, iVeg, iBand, 
                                   received_tmp, 
@@ -445,10 +438,6 @@ irr_wateruse(size_t iCell)
                     if (cirr_var->flag_req) {
                         demand_crop = cirr_var->requirement * veg_fract *
                                   area_fract;
-                        if (cirr_con->paddy) {
-                            demand_crop += PADDY_FLOOD_HEIGHT * veg_fract *
-                                      area_fract;
-                        }
                         demand += demand_crop;
                     }
                 }
@@ -489,10 +478,6 @@ irr_wateruse(size_t iCell)
                         if (cirr_var->flag_req && avail_frac > 0) {
                             received_tmp = cirr_var->requirement *
                                                  avail_frac;
-                            if (cirr_con->paddy) {
-                                received_tmp += PADDY_FLOOD_HEIGHT *
-                                                      avail_frac;
-                            }
                             
                             prev_leftover += cirr_var->leftover * veg_fract * area_fract;
                             prev_applied += cirr_var->applied * veg_fract * area_fract;
