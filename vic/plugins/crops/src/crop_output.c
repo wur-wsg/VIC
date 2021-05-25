@@ -280,6 +280,30 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].description,
              MAXSTRING, "%s", "crop nutrient stress");
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].varname, MAXSTRING,
+             "%s", "OUT_CROP_TMAXSTRESS");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].long_name,
+             MAXSTRING,
+             "%s", "max_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].standard_name,
+             MAXSTRING, "%s", "crop_max_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].units, MAXSTRING,
+             "%s", "-");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].description,
+             MAXSTRING, "%s", "crop maximum temperature stress");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].varname, MAXSTRING,
+             "%s", "OUT_CROP_TMINSTRESS");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].long_name,
+             MAXSTRING,
+             "%s", "min_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].standard_name,
+             MAXSTRING, "%s", "crop_min_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].units, MAXSTRING,
+             "%s", "-");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].description,
+             MAXSTRING, "%s", "crop minimum temperature stress");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].varname, MAXSTRING,
              "%s", "OUT_CROP_NPKI");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].long_name, MAXSTRING,
@@ -487,6 +511,10 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NSTRESS].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_TMAXSTRESS].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_TMINSTRESS].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NSOIL].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_PSOIL].nelem = plugin_options.NCROPTYPES;
@@ -570,6 +598,8 @@ crop_set_nc_var_info(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_NPKI:
     case N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -622,6 +652,8 @@ crop_set_nc_var_dimids(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_NPKI:
     case N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -652,6 +684,8 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
+    case  N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS:
+    case  N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_NNI:
     case  N_OUTVAR_TYPES + OUT_CROP_PNI:
     case  N_OUTVAR_TYPES + OUT_CROP_KNI:
@@ -906,6 +940,16 @@ crop_put_state_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSTRESS][crop_class] +=
                     cgrid->crp->NutrientStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMAXSTRESS][crop_class] +=
+                    cgrid->met->TmaxStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMINSTRESS][crop_class] +=
+                    cgrid->met->TminStress *
                     area_fract *
                     cgrid->growing;
 
@@ -1207,6 +1251,16 @@ crop_put_rate_data(size_t iCell)
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSTRESS][crop_class] +=
                     cgrid->crp->NutrientStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMAXSTRESS][crop_class] +=
+                    cgrid->met->TmaxStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMINSTRESS][crop_class] +=
+                    cgrid->met->TminStress *
                     area_fract *
                     cgrid->growing;
 

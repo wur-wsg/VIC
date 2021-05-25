@@ -10,7 +10,6 @@ crop_update_step_vars(size_t iCell)
     extern crop_con_map_struct *crop_con_map;
     extern all_vars_struct     *all_vars;
     extern veg_lib_struct     **veg_lib;
-    extern veg_con_struct     **veg_con;
     extern veg_hist_struct    **veg_hist;
     extern soil_con_struct     *soil_con;
     extern dmy_struct          *dmy;
@@ -33,7 +32,6 @@ crop_update_step_vars(size_t iCell)
     SimUnit                    *cgrid;
     veg_lib_struct             *cveg_lib;
     veg_hist_struct            *cveg_hist;
-    veg_con_struct             *cveg_con;
     veg_var_struct             *cveg_var;
     soil_con_struct            *csoil_con;
     cell_data_struct           *ccell_data;
@@ -46,7 +44,6 @@ crop_update_step_vars(size_t iCell)
         cveg_lib = &(veg_lib[iCell][veg_class]);
 
         if (iVeg != NODATA_VEG) {
-            cveg_con = &(veg_con[iCell][iVeg]);
             cveg_hist = &(veg_hist[iCell][iVeg]);
 
             for (crop_class = 0;
@@ -94,7 +91,6 @@ crop_update_step_vars(size_t iCell)
             iVeg = veg_con_map[iCell].vidx[veg_class];
 
             cveg_lib = &(veg_lib[iCell][veg_class]);
-            cveg_con = &(veg_con[iCell][iVeg]);
             cveg_hist = &(veg_hist[iCell][iVeg]);
             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
             cveg_var = &(all_vars[iCell].veg_var[iVeg][iBand]);
@@ -158,7 +154,6 @@ crop_update_step_vars(size_t iCell)
         cveg_lib = &(veg_lib[iCell][veg_class]);
 
         if (iVeg != NODATA_VEG) {
-            cveg_con = &(veg_con[iCell][iVeg]);
             cveg_hist = &(veg_hist[iCell][iVeg]);
 
             for (crop_class = 0;

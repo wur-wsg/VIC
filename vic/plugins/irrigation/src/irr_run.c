@@ -61,7 +61,6 @@ irr_run_requirement(size_t iCell)
     soil_con_struct                *csoil_con;
     veg_con_struct                 *cveg_con;
     cell_data_struct               *ccell_var;
-    veg_var_struct                 *cveg_var;
 
     csoil_con = &(soil_con[iCell]);
 
@@ -102,7 +101,6 @@ irr_run_requirement(size_t iCell)
             for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                 cirr_var = &(irr_var[iCell][iIrr][iBand]);
                 ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
-                cveg_var = &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
                 area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {

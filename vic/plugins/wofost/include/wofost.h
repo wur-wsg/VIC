@@ -434,6 +434,8 @@ typedef struct METEO {
     float CosLD;
     float DiffRadPP;
     float DSinBE;
+    float TmaxStress;
+    float TminStress;
 } Meteo;
 
 /* Place holder for a simulation unit */

@@ -139,6 +139,8 @@ enum {
     OUT_CROP_NPKI,                      /**< crop nutrient index [kg kg-1] */
     OUT_CROP_WSTRESS,                   /**< crop water stress [-] */
     OUT_CROP_NSTRESS,                   /**< crop nutrient stress [-] */
+    OUT_CROP_TMAXSTRESS,                /**< crop maximum temperature stress [-] */
+    OUT_CROP_TMINSTRESS,                /**< crop minimum temperature stress [-] */
     OUT_CROP_NSOIL,                     /**< crop soil nitrogen [kg ha-1] */
     OUT_CROP_PSOIL,                     /**< crop soil phosporous [kg ha-1] */
     OUT_CROP_KSOIL,                     /**< crop soil potassium [kg ha-1] */

@@ -106,7 +106,9 @@ DailyTotalAssimilation(SimUnit *Grid)
     /* Correction for the atmospheric CO2 concentration */
     EFF = EFF * Factor;
 
-    AssimMax = Afgen(Grid->crp->prm.FactorAssimRateTemp, &Grid->met->DayTemp) *
+    Grid->met->TmaxStress = Afgen(Grid->crp->prm.FactorAssimRateTemp, 
+                                 &Grid->met->DayTemp);
+    AssimMax = Grid->met->TmaxStress *
                Afgen(Grid->crp->prm.MaxAssimRate,
                      &(Grid->crp->st.Development)) *
                Afgen(Grid->crp->prm.CO2AMAXTB, &Grid->met->CO2);
@@ -159,7 +161,7 @@ Correct(SimUnit *Grid,
     }
 
     TminLowAvg = TminLowAvg / Counter;
-    return (Assimilation *
-            Afgen(Grid->crp->prm.FactorGrossAssimTemp,
-                  &TminLowAvg) * 30. / 44.);
+    Grid->met->TminStress = Afgen(Grid->crp->prm.FactorGrossAssimTemp, 
+                                 &TminLowAvg);
+    return (Assimilation * Grid->met->TminStress * 30. / 44.);
 }
