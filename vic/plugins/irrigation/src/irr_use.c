@@ -216,6 +216,7 @@ irr_return_leftover(size_t iCell)
 ******************************************/
 void
 irr_apply(size_t iCell, 
+          size_t iIrr,
           size_t iVeg, 
           size_t iBand,
           double received, 
@@ -223,6 +224,7 @@ irr_apply(size_t iCell,
           double *leftover)
 {
     extern plugin_option_struct plugin_options;
+    extern irr_con_struct     **irr_con;
     extern soil_con_struct    *soil_con;
     extern all_vars_struct    *all_vars;
     
@@ -230,17 +232,33 @@ irr_apply(size_t iCell,
     double                     leftover_tmp;
     double                     max_added;
 
+    irr_con_struct            *cirr_con;
     soil_con_struct           *csoil_con;
     cell_data_struct          *ccell_var;
+    veg_var_struct            *cveg_var;
     
+    cirr_con = &(irr_con[iCell][iIrr]);
     csoil_con = &(soil_con[iCell]);
     ccell_var = &(all_vars[iCell].cell[iVeg][iBand]);
+    cveg_var = &(all_vars[iCell].veg_var[iVeg][iBand]);
     
-    if (plugin_options.EFFICIENT_IRRIGATION) {
-        max_added = csoil_con->Wfc[1] - ccell_var->layer[1].moist;
+    if(received <= 0.){
+        return;
+    }
+    
+    if (plugin_options.EFFICIENT_IRRIGATION && !cirr_con->paddy) {
+        if(cveg_var->root[1] > 0){
+            max_added = csoil_con->Wfc[1] - ccell_var->layer[1].moist;
+        } else if(cveg_var->root[0] > 0) {
+            max_added = csoil_con->Wfc[0] - ccell_var->layer[0].moist;
+        } else {
+            log_err("Roots should be in soil layer 1 or 2");
+        }
     } else {
         max_added = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
     }
+    max_added = max(0., max_added);
+    
     if (received < max_added) {
         applied_tmp = received;
     }
@@ -249,8 +267,14 @@ irr_apply(size_t iCell,
     }
     leftover_tmp = received - applied_tmp;
 
-    if (plugin_options.EFFICIENT_IRRIGATION) {
-        ccell_var->layer[1].moist += applied_tmp;
+    if (plugin_options.EFFICIENT_IRRIGATION && !cirr_con->paddy) {
+        if(cveg_var->root[1] > 0){
+            ccell_var->layer[1].moist += applied_tmp;
+        } else if(cveg_var->root[0] > 0) {
+            ccell_var->layer[0].moist += applied_tmp;
+        } else {
+            log_err("Roots should be in soil layer 1 or 2");
+        }
     } else {
         ccell_var->layer[0].moist += applied_tmp;
     }
@@ -304,7 +328,7 @@ irr_leftover(size_t iCell)
                         leftover_tmp = cirr_var->leftover;
                         cirr_var->leftover = 0.0;
                         
-                        irr_apply(iCell, iVeg, iBand,
+                        irr_apply(iCell, iIrr, iVeg, iBand,
                                   leftover_tmp,
                                 &(cirr_var->applied),
                                 &(cirr_var->leftover));
@@ -360,7 +384,7 @@ irr_potential(size_t iCell)
                     if(cirr_var->flag_req){
                         received_tmp = cirr_var->requirement;
                         
-                        irr_apply(iCell, iVeg, iBand, 
+                        irr_apply(iCell, iIrr, iVeg, iBand, 
                                   received_tmp, 
                                 &(cirr_var->applied), 
                                 &(cirr_var->leftover));
@@ -482,7 +506,7 @@ irr_wateruse(size_t iCell)
                             prev_leftover += cirr_var->leftover * veg_fract * area_fract;
                             prev_applied += cirr_var->applied * veg_fract * area_fract;
                             
-                            irr_apply(iCell, iVeg, iBand,
+                            irr_apply(iCell, iIrr, iVeg, iBand,
                                     received_tmp,
                                     &(cirr_var->applied),
                                     &(cirr_var->leftover));
@@ -584,7 +608,7 @@ irr_wofost(size_t iCell)
                         cgrid = cgrid->next;
                     }
                     
-                    irr_apply(iCell, iVeg, iBand,
+                    irr_apply(iCell, iIrr, iVeg, iBand,
                               received_tmp,
                              &cirr_var->applied,
                              &cirr_var->leftover);
