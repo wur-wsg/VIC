@@ -60,6 +60,7 @@ irr_run_requirement(size_t iCell)
     irr_var_struct                 *cirr_var;
     soil_con_struct                *csoil_con;
     veg_con_struct                 *cveg_con;
+    veg_var_struct                 *cveg_var;
     cell_data_struct               *ccell_var;
 
     csoil_con = &(soil_con[iCell]);
@@ -101,6 +102,7 @@ irr_run_requirement(size_t iCell)
             for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                 cirr_var = &(irr_var[iCell][iIrr][iBand]);
                 ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
+                cveg_var = &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
                 area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {
@@ -130,7 +132,7 @@ irr_run_requirement(size_t iCell)
                                         csoil_con->frost_fract[l];
                         }
 
-                        if (cveg_con->root[k] > 0.) {
+                        if (cveg_var->root[k] > 0.) {
                             total_moist += moist[k];
                             total_wcr += ccell_var->layer[k].Wcr;
                             total_wfc += csoil_con->Wfc[k];
@@ -278,7 +280,7 @@ irr_run_shortage(size_t iCell)
                     **********************************************************************/
                     // Calculate shortage - suboptimal evapotranspiration
                     // (based on VIC equations for evapotranspiration)
-                    if (total_moist < total_wcr) {
+                    if (total_moist < total_wcr && cirr_var->flag_req) {
                         cirr_var->shortage = total_wcr - total_moist;
                     }
 
