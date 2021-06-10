@@ -41,7 +41,7 @@ free_all_vars(all_vars_struct *all_vars,
     int                  i, j, Nitems;
     size_t               k;
 
-    Nitems = Nveg + 1;
+    Nitems = Nveg + options.Nbare;
 
     for (j = 0; j < Nitems; j++) {
         free((char *) all_vars[0].cell[j]);

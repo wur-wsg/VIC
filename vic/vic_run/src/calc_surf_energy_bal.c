@@ -169,7 +169,7 @@ calc_surf_energy_bal(double             Le,
         Tnew_fbcount[nidx] = 0;
     }
 
-    if (iveg != Nveg) {
+    if (iveg < Nveg) {
         if (veg_var->fcanopy > 0.0 && veg_var->LAI > 0.0) {
             VEG = true;
         }
@@ -607,7 +607,7 @@ calc_surf_energy_bal(double             Le,
 
     /** Store precipitation that reaches the surface */
     if (!snow->snow && !INCLUDE_SNOW) {
-        if (iveg != Nveg) {
+        if (iveg < Nveg) {
             *ppt = veg_var->throughfall;
         }
         else {

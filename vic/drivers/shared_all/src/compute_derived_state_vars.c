@@ -47,7 +47,7 @@ compute_derived_state_vars(all_vars_struct *all_vars,
     size_t                     lidx;
     size_t                     band;
     size_t                     tmpMshape[] = {
-        options.NVEGTYPES + 1, options.SNOW_BAND,
+        options.NVEGTYPES + options.Nbare, options.SNOW_BAND,
         options.Nlayer
     };
     size_t                     tmpTshape[] = {
@@ -84,7 +84,7 @@ compute_derived_state_vars(all_vars_struct *all_vars,
     /******************************************
        Compute derived soil layer vars
     ******************************************/
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         // Initialize soil for existing vegetation types
         Cv = veg_con[veg].Cv;
 
@@ -111,7 +111,7 @@ compute_derived_state_vars(all_vars_struct *all_vars,
     /******************************************
        Compute derived soil snow state vars
     ******************************************/
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         for (band = 0; band < options.SNOW_BAND; band++) {
             if (snow[veg][band].density > 0.) {
                 snow[veg][band].depth = CONST_RHOFW * snow[veg][band].swq /
@@ -124,7 +124,7 @@ compute_derived_state_vars(all_vars_struct *all_vars,
        Compute soil thermal node properties
     ******************************************/
     FIRST_VEG = true;
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         // Initialize soil for existing vegetation types
         Cv = veg_con[veg].Cv;
 

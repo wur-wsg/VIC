@@ -282,7 +282,7 @@ vic_init(void)
         if (options.FCAN_SRC == FROM_DEFAULT) {
             for (k = 0; k < MONTHS_PER_YEAR; k++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
-                    if (j < options.NVEGTYPES - 1) {
+                    if (j < options.NVEGTYPES - options.Nbare) {
                         veg_lib[i][j].fcanopy[k] = 1.0;
                     }
                     // Assuming the last type is bare soil
@@ -1127,7 +1127,7 @@ vic_init(void)
     // for above-treeline vegetation in some cases
     // TODO: handle above treeline vegetation tile
     for (i = 0; i < local_domain.ncells_active; i++) {
-        nveg = veg_con_map[i].nv_active - 1;
+        nveg = veg_con_map[i].nv_active - options.Nbare;
         for (j = 0; j < veg_con_map[i].nv_active; j++) {
             veg_con[i][j].vegetat_type_num = (int) nveg;
         }
@@ -1183,10 +1183,10 @@ vic_init(void)
             }
         }
         // check the number of nonzero veg tiles
-        if (k > local_domain.locations[i].nveg + 1) {
+        if (k > local_domain.locations[i].nveg + options.Nbare) {
             sprint_location(locstr, &(local_domain.locations[i]));
-            log_err("Number of veg tiles with nonzero area (%zu) > nveg + 1 "
-                    "(%zu).\n%s", k, local_domain.locations[i].nveg,
+            log_err("Number of veg tiles with nonzero area (%zu) > nveg + Nbare "
+                    "(%zu).\n%s", k, local_domain.locations[i].nveg + options.Nbare,
                     locstr);
         }
         else if (k < local_domain.locations[i].nveg) {
@@ -1236,9 +1236,9 @@ vic_init(void)
 
     // Run some checks and corrections for vegetation
     for (i = 0; i < local_domain.ncells_active; i++) {
-        // Only run to options.NVEGTYPES - 1, assuming bare soil
+        // Only run to options.NVEGTYPES - options.Nbare, assuming bare soil
         // is the last type
-        for (j = 0; j < options.NVEGTYPES - 1; j++) {
+        for (j = 0; j < options.NVEGTYPES - options.Nbare; j++) {
             vidx = veg_con_map[i].vidx[j];
             if (vidx != NODATA_VEG) {
                 sum = 0;
@@ -1286,9 +1286,11 @@ vic_init(void)
         }
 
         // handle the bare soil portion of the tile
-        vidx = veg_con_map[i].vidx[options.NVEGTYPES - 1];
-        if (vidx != NODATA_VEG) {
-            Cv_sum[i] += veg_con[i][vidx].Cv;
+        for (j = options.NVEGTYPES - options.Nbare; j < options.NVEGTYPES ; j++) {
+            vidx = veg_con_map[i].vidx[j];
+            if (vidx != NODATA_VEG) {
+                Cv_sum[i] += veg_con[i][vidx].Cv;
+            }
         }
 
         // TODO: handle bare soil adjustment for compute treeline option
@@ -1624,7 +1626,7 @@ vic_init(void)
         }
         initialize_energy(all_vars[i].energy, nveg);
 
-        for (j = 0; j <= nveg; j++) {
+        for (j = 0; j < nveg + options.Nbare; j++) {
             for (k = 0; k < options.SNOW_BAND; k++) {
                 for (m = 0; m < options.Nlayer; m++) {
                     all_vars[i].cell[j][k].layer[m].Ksat =

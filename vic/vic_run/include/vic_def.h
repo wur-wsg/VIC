@@ -234,6 +234,7 @@ typedef struct {
     size_t Nlakenode;    /**< Number of lake thermal nodes in the model. */
     size_t Nlayer;       /**< Number of layers in model */
     size_t Nnode;        /**< Number of soil thermal nodes in the model */
+    size_t Nbare;        /**< Number of bare soil types in the model */
     bool NOFLUX;         /**< TRUE = Use no flux lower bondary when computing
                             soil thermal fluxes */
     size_t NVEGTYPES;    /**< number of vegetation types in veg_param file */

@@ -179,6 +179,23 @@ distribute_water_balance_terms(size_t  iCell,
     cell = all_vars[iCell].cell;
     snow = all_vars[iCell].snow;
 
+    /* WATER-BALANCE */
+
+    before_moist = 0.0;
+    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            before_moist += veg_var[iVeg][iBand].Wdew * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].pack_water * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].surf_water * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].swq * Cv_old[iVeg];
+            before_moist += snow[iVeg][iBand].snow_canopy * Cv_old[iVeg];
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                before_moist += cell[iVeg][iBand].layer[iLayer].moist *
+                                Cv_old[iVeg];
+            }
+        }
+    }
+
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
@@ -186,8 +203,6 @@ distribute_water_balance_terms(size_t  iCell,
             Cv_avail += Cv_change[iVeg];
         }
     }
-
-    /* WATER-BALANCE */
 
     // get
     Wdew = 0.0;
@@ -217,21 +232,6 @@ distribute_water_balance_terms(size_t  iCell,
                         cell[iVeg][iBand].layer[iLayer].ice[iFrost] *
                         -Cv_change[iVeg];
                 }
-            }
-        }
-    }
-
-    before_moist = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
-            before_moist += veg_var[iVeg][iBand].Wdew * Cv_old[iVeg];
-            before_moist += snow[iVeg][iBand].pack_water * Cv_old[iVeg];
-            before_moist += snow[iVeg][iBand].surf_water * Cv_old[iVeg];
-            before_moist += snow[iVeg][iBand].swq * Cv_old[iVeg];
-            before_moist += snow[iVeg][iBand].snow_canopy * Cv_old[iVeg];
-            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                before_moist += cell[iVeg][iBand].layer[iLayer].moist *
-                                Cv_old[iVeg];
             }
         }
     }

@@ -132,7 +132,7 @@ vic_run(force_data_struct   *force,
        Solve Energy and/or Water Balance for Each
        Vegetation Tile
     **************************************************/
-    for (iveg = 0; iveg <= Nveg; iveg++) {
+    for (iveg = 0; iveg < Nveg + options.Nbare; iveg++) {
         /** Solve Veg Tile only if Coverage Greater than 0% **/
         if (veg_con[iveg].Cv > 0.0) {
             Cv = veg_con[iveg].Cv;
@@ -247,7 +247,7 @@ vic_run(force_data_struct   *force,
                                                        veg_var->LAI);
 
                     /** Bare (free of snow) Albedo **/
-                    if (iveg != Nveg) {
+                    if (iveg < Nveg) {
                         bare_albedo = veg_var->albedo;
                     }
                     else {
@@ -383,7 +383,7 @@ vic_run(force_data_struct   *force,
         sum_runoff = sum_baseflow = 0;
 
         // Loop through all vegetation tiles
-        for (iveg = 0; iveg <= Nveg; iveg++) {
+        for (iveg = 0; iveg < Nveg + options.Nbare; iveg++) {
             /** Solve Veg Tile only if Coverage Greater than 0% **/
             if (veg_con[iveg].Cv > 0.) {
                 Cv = veg_con[iveg].Cv;

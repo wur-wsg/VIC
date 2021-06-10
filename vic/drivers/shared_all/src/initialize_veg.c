@@ -37,7 +37,7 @@ initialize_veg(veg_var_struct **veg_var,
 
     size_t               i, j, k;
 
-    for (i = 0; i < Nveg; i++) {
+    for (i = 0; i < Nveg + options.Nbare; i++) {
         for (j = 0; j < options.SNOW_BAND; j++) {
             // Prognostic states
             veg_var[i][j].albedo = 0.0;

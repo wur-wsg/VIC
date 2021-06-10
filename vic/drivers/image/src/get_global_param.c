@@ -73,6 +73,9 @@ get_global_param(FILE *gp)
             if (strcasecmp("NODES", optstr) == 0) {
                 sscanf(cmdstr, "%*s %zu", &options.Nnode);
             }
+            if (strcasecmp("NBARE", optstr) == 0) {
+                sscanf(cmdstr, "%*s %zu", &options.Nbare);
+            }
             else if (strcasecmp("MODEL_STEPS_PER_DAY", optstr) == 0) {
                 sscanf(cmdstr, "%*s %zu", &global_param.model_steps_per_day);
             }

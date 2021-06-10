@@ -74,6 +74,7 @@ initialize_options()
     options.Nfrost = 1;
     options.Nlayer = 3;
     options.Nnode = 3;
+    options.Nbare = 1;
     options.ROOT_ZONES = 0;
     options.SNOW_BAND = 1;
     // input options
