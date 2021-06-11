@@ -35,7 +35,8 @@ distribute_paddy_balance_terms(size_t  iCell,
                                size_t  iBand,
                                double *Cv_change,
                                double *Cv_old,
-                               double *Cv_new)
+                               double *Cv_new,
+                               double *Cv_change_tmp)
 {
     extern option_struct       options;
     extern plugin_option_struct       plugin_options;
@@ -49,8 +50,6 @@ distribute_paddy_balance_terms(size_t  iCell,
     double                     Cv_avail;
     double                     red_frac;
     double                     add_frac;
-    double                     before_moist;
-    double                     after_moist;
     double                     inflow;
 
     // water-balance
@@ -91,8 +90,11 @@ distribute_paddy_balance_terms(size_t  iCell,
     nVegs = 0;
     for(iIrr = 0; iIrr < plugin_options.NIRRTYPES; iIrr++){
         if(irr_con[iCell][iIrr].paddy){
-            iVegs[nVegs] = irr_con[iCell][iIrr].veg_index;
-            nVegs++;
+            if (Cv_change[irr_con[iCell][iIrr].veg_index] < -MINCOVERAGECHANGE || 
+                    Cv_change[irr_con[iCell][iIrr].veg_index] > MINCOVERAGECHANGE) {
+                iVegs[nVegs] = irr_con[iCell][iIrr].veg_index;
+                nVegs++;
+            }
         }
     }
     
@@ -105,8 +107,6 @@ distribute_paddy_balance_terms(size_t  iCell,
 
     iVegs[nVegs] = iVeg_bare;
     nVegs++;
-    
-    before_moist = calculate_total_water(iCell, iBand, Cv_old, Cv_change);
 
     // Get available area to redistribute
     Cv_avail = 0.0;
@@ -222,51 +222,9 @@ distribute_paddy_balance_terms(size_t  iCell,
             }
         }
     }
-
-    after_moist = calculate_total_water(iCell, iBand, Cv_new, Cv_change);
     
     for (i = 0; i < nVegs; i++) {
-        Cv_old[iVegs[i]] = Cv_new[iVegs[i]];
-    }
-    
-    // Check water balance
-    if (abs(before_moist - after_moist) > DBL_EPSILON) {
-        for (i = 0; i < nVegs; i++) {
-            fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
-                    "\t\tAfter:\n"
-                    "Cv\t\t[%.8f]\t[%.8f]\t[%.16f]\n"
-                    "Wdew\t[%.4f mm]\n"
-                    "pack_water\t[%.4f mm]\n"
-                    "surf_water\t[%.4f mm]\n"
-                    "swq\t[%.4f mm]\n"
-                    "snow_canopy\t[%.4f mm]\n",
-                    iBand, iVegs[i],
-                    Cv_old[iVegs[i]], Cv_new[iVegs[i]], Cv_change[iVegs[i]],
-                    veg_var[iVegs[i]][iBand].Wdew,
-                    snow[iVegs[i]][iBand].pack_water,
-                    snow[iVegs[i]][iBand].surf_water,
-                    snow[iVegs[i]][iBand].swq,
-                    snow[iVegs[i]][iBand].snow_canopy);
-            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
-                        iLayer, cell[iVegs[i]][iBand].layer[iLayer].moist);
-            }
-        }
-        fprintf(LOG_DEST, "\n\t\tTotals:\n"
-                "Wdew\t[%.4f mm]\n"
-                "pack_water\t[%.4f mm]\n"
-                "surf_water\t[%.4f mm]\n"
-                "swq\t[%.4f mm]\n"
-                "snow_canopy\t[%.4f mm]\n",
-                Wdew,
-                pack_water,
-                surf_water,
-                swq,
-                snow_canopy);
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
-                    iLayer, moist[iLayer]);
-        }
+        Cv_change_tmp[iVegs[i]] = 0.;
     }
     
     free(iVegs);
@@ -289,6 +247,7 @@ distribute_water_balance_terms(size_t  iCell,
     extern veg_con_struct    **veg_con;
     extern all_vars_struct    *all_vars;
 
+    double                    *Cv_change_tmp;
     double                     Cv_avail;
     double                     red_frac;
     double                     add_frac;
@@ -321,15 +280,28 @@ distribute_water_balance_terms(size_t  iCell,
     cell = all_vars[iCell].cell;
     snow = all_vars[iCell].snow;
 
+    Cv_change_tmp = malloc(options.NVEGTYPES * sizeof(*Cv_change_tmp));
+    check_alloc_status(Cv_change, "Memory allocation error");
+    
     /* WATER-BALANCE */
 
     before_moist = calculate_total_water(iCell, iBand, Cv_old, Cv_change);
+    
+    // Do paddy changes
+    for(iVeg = 0; iVeg < options.NVEGTYPES; iVeg++){
+        Cv_change_tmp[iVeg] = Cv_change[iVeg];
+    }
+    if(plugin_options.IRRIGATION){
+        // Paddy
+        distribute_paddy_balance_terms(iCell, iBand, 
+                Cv_change, Cv_old, Cv_new, Cv_change_tmp);
+    }
 
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
-            Cv_avail += Cv_change[iVeg];
+        if (Cv_change_tmp[iVeg] > MINCOVERAGECHANGE) {
+            Cv_avail += Cv_change_tmp[iVeg];
         }
     }
 
@@ -347,19 +319,19 @@ distribute_water_balance_terms(size_t  iCell,
     }
 
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
-            Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change[iVeg];
-            pack_water += snow[iVeg][iBand].pack_water * -Cv_change[iVeg];
-            surf_water += snow[iVeg][iBand].surf_water * -Cv_change[iVeg];
-            swq += snow[iVeg][iBand].swq * -Cv_change[iVeg];
-            snow_canopy += snow[iVeg][iBand].snow_canopy * -Cv_change[iVeg];
+        if (Cv_change_tmp[iVeg] < -MINCOVERAGECHANGE) {
+            Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change_tmp[iVeg];
+            pack_water += snow[iVeg][iBand].pack_water * -Cv_change_tmp[iVeg];
+            surf_water += snow[iVeg][iBand].surf_water * -Cv_change_tmp[iVeg];
+            swq += snow[iVeg][iBand].swq * -Cv_change_tmp[iVeg];
+            snow_canopy += snow[iVeg][iBand].snow_canopy * -Cv_change_tmp[iVeg];
             for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                 moist[iLayer] += cell[iVeg][iBand].layer[iLayer].moist *
-                                 -Cv_change[iVeg];
+                                 -Cv_change_tmp[iVeg];
                 for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
                     ice[iLayer][iFrost] +=
                         cell[iVeg][iBand].layer[iLayer].ice[iFrost] *
-                        -Cv_change[iVeg];
+                        -Cv_change_tmp[iVeg];
                 }
             }
         }
@@ -367,9 +339,9 @@ distribute_water_balance_terms(size_t  iCell,
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change_tmp[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
-            add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
+            add_frac = (Cv_change_tmp[iVeg] / Cv_avail) / Cv_new[iVeg];
 
             veg_var[iVeg][iBand].Wdew = veg_var[iVeg][iBand].Wdew * red_frac +
                                         Wdew * add_frac;
@@ -454,7 +426,7 @@ distribute_water_balance_terms(size_t  iCell,
                     "swq\t[%.4f mm]\n"
                     "snow_canopy\t[%.4f mm]\n",
                     iBand, iVeg,
-                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change_tmp[iVeg],
                     veg_var[iVeg][iBand].Wdew,
                     snow[iVeg][iBand].pack_water,
                     snow[iVeg][iBand].surf_water,
@@ -1050,11 +1022,6 @@ lu_apply(void)
                                     orig_TEnergy, Cv_old, Cv_change);
 
                 // Water
-                //if(plugin_options.IRRIGATION){
-                    // Paddy
-                    //distribute_paddy_balance_terms(iCell, iBand, 
-                    //        Cv_change, Cv_old, Cv_new);
-                //}
                 distribute_water_balance_terms(iCell, iBand,
                                                Cv_change, Cv_old, Cv_new);
                 calculate_derived_water_states(iCell, iBand);
