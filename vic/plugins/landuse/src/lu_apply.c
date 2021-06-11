@@ -45,6 +45,7 @@ distribute_paddy_balance_terms(size_t  iCell,
     extern veg_con_map_struct *veg_con_map;
     extern veg_con_struct    **veg_con;
     extern all_vars_struct    *all_vars;
+    extern irr_con_map_struct    *irr_con_map;
     extern irr_con_struct    **irr_con;
 
     double                     Cv_avail;
@@ -88,7 +89,7 @@ distribute_paddy_balance_terms(size_t  iCell,
     
     iVeg_bare = veg_con_map[iCell].vidx[plugin_options.Pbare - 1];
     nVegs = 0;
-    for(iIrr = 0; iIrr < plugin_options.NIRRTYPES; iIrr++){
+    for(iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++){
         if(irr_con[iCell][iIrr].paddy){
             if (Cv_change[irr_con[iCell][iIrr].veg_index] < -MINCOVERAGECHANGE || 
                     Cv_change[irr_con[iCell][iIrr].veg_index] > MINCOVERAGECHANGE) {
