@@ -116,5 +116,7 @@ free_force(force_data_struct *force)
         free(force->coszen);
         free(force->fdir);
         free(force->par);
+    } else {
+        free(force->Catm);
     }
 }
