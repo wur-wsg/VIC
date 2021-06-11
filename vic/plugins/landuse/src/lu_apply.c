@@ -291,7 +291,8 @@ distribute_water_balance_terms(size_t  iCell,
     for(iVeg = 0; iVeg < options.NVEGTYPES; iVeg++){
         Cv_change_tmp[iVeg] = Cv_change[iVeg];
     }
-    if(plugin_options.IRRIGATION){
+    if(plugin_options.IRRIGATION && 
+            plugin_options.Pbare != options.NVEGTYPES){
         // Paddy
         distribute_paddy_balance_terms(iCell, iBand, 
                 Cv_change, Cv_old, Cv_new, Cv_change_tmp);
