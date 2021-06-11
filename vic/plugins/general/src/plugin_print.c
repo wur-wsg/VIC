@@ -89,6 +89,8 @@ plugin_print_options(plugin_option_struct *op)
             op->EFFICIENT_IRRIGATION ? "true" : "false");
     fprintf(LOG_DEST, "\tOFFSET_IRRIGATION    : %s\n",
             op->OFFSET_IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tPbare                : %zu\n",
+            op->Pbare);
     fprintf(LOG_DEST, "\tCOMP_WITH            : %s\n",
             op->COMP_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tREMOTE_WITH          : %s\n",

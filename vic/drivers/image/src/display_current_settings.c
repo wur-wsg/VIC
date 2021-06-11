@@ -227,6 +227,7 @@ display_current_settings(int mode)
     }
     fprintf(LOG_DEST, "WIND_H\t\t\t%f\n", global_param.wind_h);
     fprintf(LOG_DEST, "NODES\t\t\t%zu\n", options.Nnode);
+    fprintf(LOG_DEST, "NBARE\t\t\t%zu\n", options.Nbare);
     if (options.CARBON) {
         fprintf(LOG_DEST, "CARBON\t\tTRUE\n");
     }

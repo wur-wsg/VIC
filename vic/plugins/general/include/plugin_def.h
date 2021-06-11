@@ -246,6 +246,7 @@ typedef struct {
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
     bool EFFICIENT_IRRIGATION;          /**< efficient irrigation flag */
     bool OFFSET_IRRIGATION;             /**< efficient irrigation flag */
+    size_t Pbare;                       /**< paddy irrigation bare soil band */
     bool COMP_WITH;                     /**< compensation water abstractions flag */
     bool REMOTE_WITH;                   /**< remote water abstractions flag */
     bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */

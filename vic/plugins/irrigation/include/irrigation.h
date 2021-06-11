@@ -27,6 +27,9 @@
 #ifndef IRRIGATION_H
 #define IRRIGATION_H
 
+// Default snow band setting
+#define PADDY_BARE_TRUE_BUT_UNSET 99999
+
 #define PADDY_FLOOD_HEIGHT 0 // 0 cm paddy flooding
 
 /******************************************************************************
