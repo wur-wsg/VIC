@@ -46,7 +46,7 @@ irr_start(void)
     if(plugin_options.Pbare > options.NVEGTYPES || 
             plugin_options.Pbare <= options.NVEGTYPES - options.Nbare){
         log_err("Paddy bare type (%zu) is not within bare types (%zu - %zu).", 
-                plugin_options.Pbare, options.NVEGTYPES - options.Nbare, 
+                plugin_options.Pbare, options.NVEGTYPES - options.Nbare + 1, 
                 options.NVEGTYPES);
     }
     
