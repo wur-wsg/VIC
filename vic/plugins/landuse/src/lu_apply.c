@@ -758,6 +758,7 @@ distribute_irrigation_balance_terms(size_t  iCell,
 {
     extern global_param_struct        global_param;
     extern plugin_global_param_struct        plugin_global_param;
+    extern plugin_save_data_struct *plugin_save_data;
     extern domain_struct              local_domain;
     extern veg_con_map_struct *veg_con_map;
     extern irr_con_map_struct *irr_con_map;
@@ -783,6 +784,10 @@ distribute_irrigation_balance_terms(size_t  iCell,
     
     irr = irr_var[iCell];
 
+    /* WATER-BALANCE */
+    
+    before_moist = calculate_total_irrigation(iCell, iBand, Cv_old, Cv_change);
+
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
@@ -791,11 +796,8 @@ distribute_irrigation_balance_terms(size_t  iCell,
         }
     }
 
-    /* WATER-BALANCE */
-
     // get
     leftover = 0.0;
-
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         iVeg = irr_con[iCell][iIrr].veg_index;
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
@@ -803,16 +805,6 @@ distribute_irrigation_balance_terms(size_t  iCell,
         }
     }
 
-    before_moist = 0.0;
-    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
-        iVeg = irr_con[iCell][iIrr].veg_index;
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
-            before_moist += irr[iIrr][iBand].leftover * Cv_old[iVeg];
-        }
-    }
-    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-        before_moist += rout_var[iCell].dt_discharge[iStep] * global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
-    }
 
     // set
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
@@ -830,17 +822,6 @@ distribute_irrigation_balance_terms(size_t  iCell,
             rout_var[iCell].dt_discharge[iStep] = 0.;
         }
     }
-        
-    after_moist = 0.0;
-    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
-        iVeg = irr_con[iCell][iIrr].veg_index;
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
-            after_moist += irr[iIrr][iBand].leftover * Cv_new[iVeg];
-        }
-    }
-    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-        after_moist += rout_var[iCell].dt_discharge[iStep] * global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
-    }
 
     // Recalculate discharge and stream moisture
     rout_var[iCell].discharge = 0.;
@@ -853,7 +834,11 @@ distribute_irrigation_balance_terms(size_t  iCell,
             rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
         }
     }
+        
+    after_moist = calculate_total_irrigation(iCell, iBand, Cv_new, Cv_change);
 
+    plugin_save_data[iCell].total_moist_storage += leftover;
+    
     // Check water balance
     if (abs(before_moist - after_moist) > DBL_EPSILON) {
         for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
@@ -870,7 +855,7 @@ distribute_irrigation_balance_terms(size_t  iCell,
         fprintf(LOG_DEST, "\n\t\tTotals:\n"
                 "leftover\t[%.4f mm]\n",
                 leftover);
-        log_info("\nWater balance error for cell %zu:\n"
+        log_err("\nIrrigation balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                 iCell,
                 before_moist,

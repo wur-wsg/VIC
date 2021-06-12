@@ -61,6 +61,7 @@ void calculate_derived_energy_states(size_t, size_t, double *);
 double calculate_total_water(size_t, size_t, double *, double *);
 double calculate_total_carbon(size_t, size_t, double *, double *);
 double calculate_total_energy(size_t, double *, double *, double **, double *, double *);
+double calculate_total_irrigation(size_t, size_t, double *, double *);
 void get_energy_terms(size_t, size_t, double *, double *, double **, double *,
                  double *, double **);
 

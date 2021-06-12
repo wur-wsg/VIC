@@ -431,6 +431,7 @@ calculate_hydrology(size_t   iCell,
     double                            available_discharge_tmp;
     double                            available_stream_tmp;
     double                            available_nonrenew_tmp;
+    double                            discharge_dt;
 
     size_t                            rout_steps_per_dt;
     size_t                            iStep;
@@ -536,13 +537,14 @@ calculate_hydrology(size_t   iCell,
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
             
+            discharge_dt = rout_var[iCell].dt_discharge[iStep];
+                    
             // Discharge withdrawals
             if (available_discharge_tmp > 0) {
                 // Scale withdrawal proportionally to discharge availability
                 rout_var[iCell].dt_discharge[iStep] -=
                     withdrawn_discharge_tmp *
-                    (rout_var[iCell].dt_discharge[iStep] /
-                     available_discharge_tmp);
+                    (discharge_dt / available_discharge_tmp);
             }
             else {
                 log_err("Wateruse discharge withdrawn while no discharge is available");
@@ -554,8 +556,7 @@ calculate_hydrology(size_t   iCell,
                     // Scale returns proportionally to stream availability
                         rout_var[iCell].dt_discharge[iStep] +=
                             returned_stream_tmp *
-                        (rout_var[iCell].dt_discharge[iStep] /
-                         available_stream_tmp);
+                        (discharge_dt / available_stream_tmp);
                 }
                 else {
                     // Scale returns proportionally to stream length
@@ -744,8 +745,10 @@ wu_run(size_t iCell)
             av_gw[iVeg][iBand] = 0.0;
         }
     }
-    for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
-        av_dam[iDam] = 0.0;
+    if (plugin_options.DAMS) {
+        for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
+            av_dam[iDam] = 0.0;
+        }
     }
 
     reset_wu(iCell);

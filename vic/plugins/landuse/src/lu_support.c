@@ -449,7 +449,6 @@ calculate_total_energy(size_t   iCell,
 {
     extern option_struct       options;
     extern veg_con_map_struct *veg_con_map;
-    extern all_vars_struct    *all_vars;
 
     double                     total;
 
@@ -465,6 +464,50 @@ calculate_total_energy(size_t   iCell,
                 total += TEnergy[iVeg][iNode] * Cv[iVeg];
             }
         }
+    }
+    
+    return(total);
+}
+
+/******************************************
+* @brief   Calculate total energy
+******************************************/
+double
+calculate_total_irrigation(size_t   iCell,
+                           size_t iBand,
+                           double  *Cv,
+                           double *Cv_change)
+{
+    extern global_param_struct        global_param;
+    extern plugin_global_param_struct        plugin_global_param;
+    extern domain_struct              local_domain;
+    extern irr_con_map_struct *irr_con_map;
+    extern irr_con_struct    **irr_con;
+    extern irr_var_struct   ***irr_var;
+
+    double                     total;
+
+    irr_var_struct   **irr;
+
+    size_t             iVeg;
+    size_t             iIrr;
+    size_t             iStep;
+    size_t                            rout_steps_per_dt;
+
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
+    
+    irr = irr_var[iCell];
+
+    total = 0.0;
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            total += irr[iIrr][iBand].leftover * Cv[iVeg];
+        }
+    }
+    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
+        total += rout_var[iCell].dt_discharge[iStep] * global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     }
     
     return(total);

@@ -193,9 +193,10 @@ calculate_hydrology_nonrenew(size_t iCell,
     extern rout_var_struct    *rout_var;
 
     double                     available_stream_tmp;
-    double                     returned_discharge_tmp;
+    double                     returned_stream_tmp;
     double                     available_nonrenew_tmp;
     double                     returned_nonrenew_tmp;
+    double                     discharge_dt;
 
     size_t                     rout_steps_per_dt;
     size_t                     iStep;
@@ -254,25 +255,26 @@ calculate_hydrology_nonrenew(size_t iCell,
             available_stream_tmp += rout_var[iCell].dt_discharge[iStep];
         }
 
-        returned_discharge_tmp = returned /
+        returned_stream_tmp = returned /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
         for (iStep = rout_steps_per_dt;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
             
+            discharge_dt = rout_var[iCell].dt_discharge[iStep];
+            
             // Stream returns
             if (available_stream_tmp > 0) {
                 // Scale returns proportionally to stream availability
                 rout_var[iCell].dt_discharge[iStep] +=
-                    returned_discharge_tmp *
-                    (rout_var[iCell].dt_discharge[iStep] /
-                     available_stream_tmp);
+                    returned_stream_tmp *
+                    (discharge_dt / available_stream_tmp);
             }
             else {
                 // Scale returns proportionally to stream length
                 rout_var[iCell].dt_discharge[iStep] +=
-                    returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                    returned_stream_tmp / (plugin_options.UH_LENGTH - 1);
             }
             
             if (rout_var[iCell].dt_discharge[iStep] < 0) {

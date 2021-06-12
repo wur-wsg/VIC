@@ -311,6 +311,7 @@ calculate_hydrology_remote(size_t iCell,
     double                            available_nonrenew_tmp;
     double                            returned_nonrenew_tmp;
     double                            returned;
+    double                            discharge_dt;
 
     size_t                            iStep;
     size_t                            rout_steps_per_dt;
@@ -375,13 +376,13 @@ calculate_hydrology_remote(size_t iCell,
                  iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
                  iStep++) {
                 
+                discharge_dt = rout_var[iCell2].dt_discharge[iStep];
                 // Stream returns
                 if (available_stream_tmp > 0) {
                     // Scale returns proportionally to stream availability
                     rout_var[iCell2].dt_discharge[iStep] +=
                         returned_stream_tmp *
-                        (rout_var[iCell2].dt_discharge[iStep] /
-                         available_stream_tmp);
+                        (discharge_dt / available_stream_tmp);
                 }
                 else {
                     // Scale returns proportionally to stream length
@@ -425,14 +426,15 @@ calculate_hydrology_remote(size_t iCell,
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
+                
+            discharge_dt = rout_var[iCell].dt_discharge[iStep];
             
             // Discharge withdrawals
             if (available_discharge_tmp > 0) {
                 // Scale withdrawal proportionally to discharge availability
                 rout_var[iCell].dt_discharge[iStep] -=
                     withdrawn_discharge_tmp *
-                    (rout_var[iCell].dt_discharge[iStep] /
-                     available_discharge_tmp);
+                    (discharge_dt / available_discharge_tmp);
             }
             else {
                 log_err("Wateruse discharge withdrawn while no discharge is available");
