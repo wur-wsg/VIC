@@ -103,6 +103,7 @@ distribute_paddy_balance_terms(size_t  iCell,
         if(nVegs != 0){
             log_err("Paddy vegetation type but no paddy bare vegetation type?");
         }
+        free(iVegs);
         return;
     }
 
@@ -455,6 +456,8 @@ distribute_water_balance_terms(size_t  iCell,
                     iLayer, moist[iLayer]);
         }
     }
+    
+    free(Cv_change_tmp);
 }
 
 /******************************************
