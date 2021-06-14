@@ -409,7 +409,7 @@ distribute_water_balance_terms(size_t  iCell,
                 }
                 if (inflow != 0.) {
                     log_warn("Could not redistribute (part of) water balance [%.4f mm] since soil is full",
-                             inflow);
+                             inflow * Cv_new[iVeg]);
                 }
             }
         }
