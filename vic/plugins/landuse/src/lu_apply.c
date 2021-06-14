@@ -902,6 +902,9 @@ lu_apply(void)
     double after_water;
     double after_carbon;
     double after_energy;
+    double max_water;
+    double max_carbon;
+    double max_energy;
 
     size_t                     iCell;
     size_t                     iVeg;
@@ -1036,13 +1039,13 @@ lu_apply(void)
                                                 new_surf_tempEnergy,
                                                 new_pack_tempEnergy,
                                                 new_TEnergy);
-                calculate_derived_energy_states(iCell, iBand,
-                                                snow_surf_capacity);
                 get_energy_terms(iCell, iBand,
                                  snow_surf_capacity, snow_pack_capacity,
                                  node_capacity,
                                  new_surf_tempEnergy, new_pack_tempEnergy,
                                  new_TEnergy);
+                calculate_derived_energy_states(iCell, iBand,
+                                                snow_surf_capacity);
                 
                 // Gather final states
                 after_water = calculate_total_water(iCell, iBand, Cv_new, Cv_change);
@@ -1051,17 +1054,29 @@ lu_apply(void)
                                     new_surf_tempEnergy, new_pack_tempEnergy,
                                     new_TEnergy, Cv_new, Cv_change);
                 
-                if (abs(before_water - after_water) > DBL_EPSILON) {
+                max_water = max(before_water, after_water);
+                max_carbon = max(before_carbon, after_carbon);
+                max_energy = max(before_energy, after_energy);
+                max_water = max(max_water, DBL_EPSILON);
+                max_carbon = max(max_carbon, DBL_EPSILON);
+                max_energy = max(max_energy, DBL_EPSILON);
+                if (abs(before_water - after_water) > 
+                        max_water * veg_con_map[iCell].nv_active * 
+                        MINCOVERAGECHANGE) {
                     log_err("\nWater balance error for cell %zu:\n"
                             "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                             iCell, before_water, after_water);
                 }
-                if (abs(before_carbon - after_carbon) > DBL_EPSILON) {
+                if (abs(before_carbon - after_carbon) > 
+                        max_carbon * veg_con_map[iCell].nv_active * 
+                        MINCOVERAGECHANGE) {
                     log_err("\nCarbon balance error for cell %zu:\n"
                             "Initial carbon content [%.4f mm]\tFinal carbon content [%.4f mm]",
                             iCell, before_carbon, after_carbon);
                 }
-                if (abs(before_energy - after_energy) > DBL_EPSILON) {
+                if (abs(before_energy - after_energy) > 
+                        max_energy * veg_con_map[iCell].nv_active * 
+                        MINCOVERAGECHANGE) {
                     log_err("\nEnergy balance error for cell %zu:\n"
                             "Initial energy content [%.4f mm]\tFinal energy content [%.4f mm]",
                             iCell, before_energy, after_energy);
