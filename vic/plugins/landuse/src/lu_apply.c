@@ -1054,9 +1054,9 @@ lu_apply(void)
                                     new_surf_tempEnergy, new_pack_tempEnergy,
                                     new_TEnergy, Cv_new, Cv_change);
                 
-                max_water = max(before_water, after_water);
-                max_carbon = max(before_carbon, after_carbon);
-                max_energy = max(before_energy, after_energy);
+                max_water = max(abs(before_water), abs(after_water));
+                max_carbon = max(abs(before_carbon), abs(after_carbon));
+                max_energy = max(abs(before_energy), abs(after_energy));
                 max_water = max(max_water, DBL_EPSILON);
                 max_carbon = max(max_carbon, DBL_EPSILON);
                 max_energy = max(max_energy, DBL_EPSILON);
