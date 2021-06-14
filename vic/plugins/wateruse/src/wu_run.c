@@ -426,10 +426,9 @@ calculate_hydrology(size_t   iCell,
 
     double                            ice;
     double                            withdrawn_discharge_tmp;
-    double                            returned_stream_tmp;
+    double                            returned_discharge_tmp;
     double                            returned_nonrenew_tmp;
     double                            available_discharge_tmp;
-    double                            available_stream_tmp;
     double                            available_nonrenew_tmp;
     double                            discharge_dt;
 
@@ -486,7 +485,7 @@ calculate_hydrology(size_t   iCell,
         }
     }
 
-    // non-renewable returns
+    // non-renewable
     if (returned > 0.){
         iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
         
@@ -518,19 +517,15 @@ calculate_hydrology(size_t   iCell,
     // surface
     if (withdrawn_surf > 0. || returned > 0.) {
         available_discharge_tmp = 0.;
-        available_stream_tmp = 0.;
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
             available_discharge_tmp += rout_var[iCell].dt_discharge[iStep];
-            if (iStep >= rout_steps_per_dt) {
-                available_stream_tmp += rout_var[iCell].dt_discharge[iStep];
-            }
         }
 
         withdrawn_discharge_tmp = withdrawn_surf /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
-        returned_stream_tmp = returned /
+        returned_discharge_tmp = returned /
             MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
 
         for (iStep = 0;
@@ -551,18 +546,16 @@ calculate_hydrology(size_t   iCell,
             }
             
             // Stream returns
-            if (iStep >= rout_steps_per_dt) {
-                if (available_stream_tmp > 0) {
-                    // Scale returns proportionally to stream availability
-                        rout_var[iCell].dt_discharge[iStep] +=
-                            returned_stream_tmp *
-                        (discharge_dt / available_stream_tmp);
-                }
-                else {
-                    // Scale returns proportionally to stream length
+            if (available_discharge_tmp > 0) {
+                // Scale returns proportionally to stream availability
                     rout_var[iCell].dt_discharge[iStep] +=
-                        returned_stream_tmp / (plugin_options.UH_LENGTH - 1);
-                }
+                        returned_discharge_tmp *
+                    (discharge_dt / available_discharge_tmp);
+            }
+            else {
+                // Scale returns proportionally to stream length
+                rout_var[iCell].dt_discharge[iStep] +=
+                    returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
             }
             
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
