@@ -77,7 +77,6 @@ irr_run_requirement(size_t iCell)
             cirr_var->requirement = 0.0;
             cirr_var->flag_req = false;
             ccell_var->layer[0].Ksat = csoil_con->Ksat[0];
-            ccell_var->layer[1].Ksat = csoil_con->Ksat[1];
         }
 
         veg_fract = cveg_con->Cv;
@@ -112,8 +111,6 @@ irr_run_requirement(size_t iCell)
                     // Reduce Ksat
                     if (cirr_con->paddy) {
                         ccell_var->layer[0].Ksat = pow(csoil_con->Ksat[0],
-                                                       plugin_param.Ksat_expt);
-                        ccell_var->layer[1].Ksat = pow(csoil_con->Ksat[1],
                                                        plugin_param.Ksat_expt);
                     }
 

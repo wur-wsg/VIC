@@ -455,6 +455,7 @@ distribute_water_balance_terms(size_t  iCell,
             fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
                     iLayer, moist[iLayer]);
         }
+        log_err("Water balance error");
     }
     
     free(Cv_change_tmp);
@@ -577,6 +578,7 @@ distribute_carbon_balance_terms(size_t  iCell,
                 CLitter,
                 CInter,
                 CSlow);
+        log_err("Carbon balance error");
     }
 }
 
@@ -746,6 +748,7 @@ distribute_energy_balance_terms(size_t   iCell,
             fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J m-2]\n",
                     iNode, TEnergy[iNode]);
         }
+        log_err("Energy balance error");
     }
 }
 
@@ -761,7 +764,6 @@ distribute_irrigation_balance_terms(size_t  iCell,
 {
     extern global_param_struct        global_param;
     extern plugin_global_param_struct        plugin_global_param;
-    extern plugin_save_data_struct *plugin_save_data;
     extern domain_struct              local_domain;
     extern veg_con_map_struct *veg_con_map;
     extern irr_con_map_struct *irr_con_map;
@@ -839,8 +841,6 @@ distribute_irrigation_balance_terms(size_t  iCell,
     }
         
     after_moist = calculate_total_irrigation(iCell, iBand, Cv_new, Cv_change);
-
-    plugin_save_data[iCell].total_moist_storage += leftover;
     
     // Check water balance
     if (abs(before_moist - after_moist) > DBL_EPSILON) {
@@ -858,7 +858,7 @@ distribute_irrigation_balance_terms(size_t  iCell,
         fprintf(LOG_DEST, "\n\t\tTotals:\n"
                 "leftover\t[%.4f mm]\n",
                 leftover);
-        log_err("\nIrrigation balance error for cell %zu:\n"
+        log_warn("\nIrrigation balance error for cell %zu:\n"
                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                 iCell,
                 before_moist,
@@ -1063,21 +1063,21 @@ lu_apply(void)
                 if (abs(before_water - after_water) > 
                         max_water * veg_con_map[iCell].nv_active * 
                         MINCOVERAGECHANGE) {
-                    log_err("\nWater balance error for cell %zu:\n"
+                    log_warn("\nWater balance error for cell %zu:\n"
                             "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
                             iCell, before_water, after_water);
                 }
                 if (abs(before_carbon - after_carbon) > 
                         max_carbon * veg_con_map[iCell].nv_active * 
                         MINCOVERAGECHANGE) {
-                    log_err("\nCarbon balance error for cell %zu:\n"
+                    log_warn("\nCarbon balance error for cell %zu:\n"
                             "Initial carbon content [%.4f mm]\tFinal carbon content [%.4f mm]",
                             iCell, before_carbon, after_carbon);
                 }
                 if (abs(before_energy - after_energy) > 
                         max_energy * veg_con_map[iCell].nv_active * 
                         MINCOVERAGECHANGE) {
-                    log_err("\nEnergy balance error for cell %zu:\n"
+                    log_warn("\nEnergy balance error for cell %zu:\n"
                             "Initial energy content [%.4f mm]\tFinal energy content [%.4f mm]",
                             iCell, before_energy, after_energy);
                 }
