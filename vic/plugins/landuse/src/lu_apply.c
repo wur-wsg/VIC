@@ -218,8 +218,8 @@ distribute_paddy_balance_terms(size_t  iCell,
                     }
                 }
                 if (inflow != 0.) {
-                    log_warn("Could not redistribute (part of) water balance [%.4f mm] since soil is full",
-                             inflow);
+                    log_warn("Could not redistribute (part of) water balance [%.4f mm] in cell [%zu], since soil is full",
+                             inflow, iCell);
                 }
             }
         }
@@ -1054,32 +1054,29 @@ lu_apply(void)
                                     new_surf_tempEnergy, new_pack_tempEnergy,
                                     new_TEnergy, Cv_new, Cv_change);
                 
-                max_water = max(abs(before_water), abs(after_water));
-                max_carbon = max(abs(before_carbon), abs(after_carbon));
-                max_energy = max(abs(before_energy), abs(after_energy));
+                max_water = max(fabs(before_water), fabs(after_water));
+                max_carbon = max(fabs(before_carbon), fabs(after_carbon));
+                max_energy = max(fabs(before_energy), fabs(after_energy));
                 max_water = max(max_water, DBL_EPSILON);
                 max_carbon = max(max_carbon, DBL_EPSILON);
                 max_energy = max(max_energy, DBL_EPSILON);
-                if (abs(before_water - after_water) > 
+                if (fabs(before_water - after_water) > 
                         max_water * veg_con_map[iCell].nv_active * 
                         MINCOVERAGECHANGE) {
-                    log_warn("\nWater balance error for cell %zu:\n"
-                            "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
-                            iCell, before_water, after_water);
+                    log_warn("Water balance error [%.4f out of %.4f mm] for cell [%zu]",
+                            fabs(before_water - max_water), after_water, iCell);
                 }
-                if (abs(before_carbon - after_carbon) > 
+                if (fabs(before_carbon - after_carbon) > 
                         max_carbon * veg_con_map[iCell].nv_active * 
                         MINCOVERAGECHANGE) {
-                    log_warn("\nCarbon balance error for cell %zu:\n"
-                            "Initial carbon content [%.4f mm]\tFinal carbon content [%.4f mm]",
-                            iCell, before_carbon, after_carbon);
+                    log_warn("Carbon balance error [%.4f out of %.4f g m-2] for cell [%zu]",
+                            fabs(before_carbon - after_carbon), max_carbon, iCell);
                 }
-                if (abs(before_energy - after_energy) > 
+                if (fabs(before_energy - after_energy) > 
                         max_energy * veg_con_map[iCell].nv_active * 
                         MINCOVERAGECHANGE) {
-                    log_warn("\nEnergy balance error for cell %zu:\n"
-                            "Initial energy content [%.4f mm]\tFinal energy content [%.4f mm]",
-                            iCell, before_energy, after_energy);
+                    log_warn("Energy balance error [%.4f out of %.4f J m-3] for cell [%zu]",
+                            fabs(before_energy - after_energy), max_energy, iCell);
                 }
                 
                 if(plugin_options.IRRIGATION && plugin_options.ROUTING) {
