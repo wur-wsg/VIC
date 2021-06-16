@@ -11,7 +11,6 @@ crop_set_mapping(void)
     extern plugin_option_struct    plugin_options;
     extern crop_con_map_struct    *crop_con_map;
     extern veg_con_map_struct     *veg_con_map;
-    extern veg_con_struct     **veg_con;
 
     int                           *ivar;
     double                        *dvar;
@@ -127,18 +126,6 @@ crop_set_mapping(void)
                     "(%zu).\n%s", k, local_domain.locations[i].ncrop,
                     locstr);
         }
-    }
-        
-    // Reset crop fcanopy
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            if(crop_con_map[i].cidx[j] == NODATA_VEG){
-                continue;
-            }
-            for (k = 0; k < MONTHS_PER_YEAR; k++) {
-                veg_con[i][veg_con_map[i].vidx[crop_con_map[i].veg_class[j]]].fcanopy[k] = 1.;
-            }
-        }   
     }
 
     free(dvar);

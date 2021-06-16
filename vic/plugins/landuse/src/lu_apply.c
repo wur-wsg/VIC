@@ -99,16 +99,10 @@ distribute_paddy_balance_terms(size_t  iCell,
         }
     }
     
-    if(iVeg_bare == NODATA_VEG || nVegs == 0){
-        if(nVegs != 0){
-            log_err("Paddy vegetation type but no paddy bare vegetation type?");
-        }
-        free(iVegs);
-        return;
+    if(iVeg_bare != NODATA_VEG){
+        iVegs[nVegs] = iVeg_bare;
+        nVegs++;
     }
-
-    iVegs[nVegs] = iVeg_bare;
-    nVegs++;
 
     // Get available area to redistribute
     Cv_avail = 0.0;
