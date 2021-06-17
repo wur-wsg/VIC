@@ -194,6 +194,8 @@ distribute_paddy_balance_terms(size_t  iCell,
                     soil_con[iCell].max_moist[iLayer]) {
                     inflow += cell[iVegs[i]][iBand].layer[iLayer].moist -
                               soil_con[iCell].max_moist[iLayer];
+                    cell[iVegs[i]][iBand].layer[iLayer].moist = 
+                              soil_con[iCell].max_moist[iLayer];
                 }
             }
             
@@ -201,11 +203,14 @@ distribute_paddy_balance_terms(size_t  iCell,
                 // Redistribute excess soil moisture
                 for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                     cell[iVegs[i]][iBand].layer[iLayer].moist += inflow;
+                    
                     inflow = 0.0;
                     if (cell[iVegs[i]][iBand].layer[iLayer].moist >
                         soil_con[iCell].max_moist[iLayer]) {
                         inflow = cell[iVegs[i]][iBand].layer[iLayer].moist -
                                  soil_con[iCell].max_moist[iLayer];
+                        cell[iVegs[i]][iBand].layer[iLayer].moist = 
+                                  soil_con[iCell].max_moist[iLayer];
                     }
                     if(inflow == 0.){
                         break;
@@ -384,6 +389,8 @@ distribute_water_balance_terms(size_t  iCell,
                     soil_con[iCell].max_moist[iLayer]) {
                     inflow += cell[iVeg][iBand].layer[iLayer].moist -
                               soil_con[iCell].max_moist[iLayer];
+                    cell[iVeg][iBand].layer[iLayer].moist = 
+                              soil_con[iCell].max_moist[iLayer];
                 }
             }
             
@@ -391,11 +398,14 @@ distribute_water_balance_terms(size_t  iCell,
                 // Redistribute excess soil moisture
                 for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                     cell[iVeg][iBand].layer[iLayer].moist += inflow;
+                    
                     inflow = 0.0;
                     if (cell[iVeg][iBand].layer[iLayer].moist >
                         soil_con[iCell].max_moist[iLayer]) {
                         inflow = cell[iVeg][iBand].layer[iLayer].moist -
                                  soil_con[iCell].max_moist[iLayer];
+                    cell[iVeg][iBand].layer[iLayer].moist = 
+                              soil_con[iCell].max_moist[iLayer];
                     }
                     if(inflow == 0.){
                         break;
