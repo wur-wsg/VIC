@@ -99,9 +99,6 @@ plugin_run(void)
     for (i = 0; i < local_domain.ncells_active; i++) {
         if (plugin_options.IRRIGATION) {
             irr_run_requirement(i);
-            if (plugin_options.WOFOST) {
-                crop_adjust_requirement(i);
-            }
             if (plugin_options.WATERUSE) {
                 irr_set_demand(i);
             }
