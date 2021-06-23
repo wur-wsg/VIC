@@ -314,6 +314,7 @@ calculate_hydrology_remote(size_t iCell,
 
     size_t                            iStep;
     size_t                            rout_steps_per_dt;
+    size_t                            j;
     size_t                            i;
     size_t                            iCell2;
     int                               iSector;
@@ -322,16 +323,22 @@ calculate_hydrology_remote(size_t iCell,
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
     
-    iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
-            
     // non-renewable
-    for (i = 0; i < wu_con[iCell].nreceiving; i++) {
-        iCell2 = wu_con[iCell].receiving[i];
-        
-        if(returned > 0.) {
-            iSector2 = wu_con_map[iCell2].sidx[WU_IRRIGATION];
+    if(returned > 0.) {
+        for (i = 0; i < plugin_options.NWUTYPES; i++) {
+            iSector = wu_con_map[iCell].sidx[i];
+            if (iSector == NODATA_WU) {
+                continue;
+            }
 
-            if (iSector2 != NODATA_WU) {
+            for (j = 0; j < wu_con[iCell].nreceiving; j++) {
+                iCell2 = wu_con[iCell].receiving[j];
+                
+                iSector2 = wu_con_map[iCell2].sidx[i];
+                if (iSector2 == NODATA_WU) {
+                    continue;
+                }
+                
                 // get available nonrenewable requirements
                 available_nonrenew_tmp = rout_var[iCell2].nonrenew_deficit;
 
@@ -346,7 +353,7 @@ calculate_hydrology_remote(size_t iCell,
                     if(rout_var[iCell2].nonrenew_deficit < 0){
                         rout_var[iCell2].nonrenew_deficit = 0;
                     }
-                    
+
                     wu_var[iCell][iSector].returned -= returned_nonrenew_tmp;
                     wu_var[iCell2][iSector2].returned += returned_nonrenew_tmp;
                 }

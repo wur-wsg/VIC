@@ -199,6 +199,7 @@ calculate_hydrology_nonrenew(size_t iCell,
     double                     discharge_dt;
 
     size_t                     rout_steps_per_dt;
+    size_t                     i;
     size_t                     iStep;
     int                        iSector;
 
@@ -216,9 +217,12 @@ calculate_hydrology_nonrenew(size_t iCell,
     
     // non-renewable returns
     if (returned > 0.) {
-        iSector = wu_con_map[iCell].sidx[WU_IRRIGATION];
-        
-        if (iSector != NODATA_WU) {
+        for (i = 0; i < plugin_options.NWUTYPES; i++) {
+            iSector = wu_con_map[iCell].sidx[i];
+            if (iSector == NODATA_WU) {
+                continue;
+            }
+            
             // get available nonrenewable requirements
             available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
 
