@@ -388,27 +388,31 @@ calculate_hydrology_remote(size_t iCell,
             discharge_dt = rout_var[iCell].dt_discharge[iStep];
             
             // Discharge withdrawals
-            if (available_discharge_tmp > 0) {
-                // Scale withdrawal proportionally to discharge availability
-                rout_var[iCell].dt_discharge[iStep] -=
-                    withdrawn_discharge_tmp *
-                    (discharge_dt / available_discharge_tmp);
-            }
-            else {
-                log_err("Wateruse discharge withdrawn while no discharge is available");
+            if(withdrawn_discharge_tmp > 0.) {
+                if (available_discharge_tmp > 0) {
+                    // Scale withdrawal proportionally to discharge availability
+                    rout_var[iCell].dt_discharge[iStep] -=
+                        withdrawn_discharge_tmp *
+                        (discharge_dt / available_discharge_tmp);
+                }
+                else {
+                    log_err("Wateruse discharge withdrawn while no discharge is available");
+                }
             }
             
             // Stream returns
-            if (available_discharge_tmp > 0) {
-                // Scale returns proportionally to stream availability
+            if(returned_discharge_tmp > 0.) {
+                if (available_discharge_tmp > 0) {
+                    // Scale returns proportionally to stream availability
+                        rout_var[iCell].dt_discharge[iStep] +=
+                            returned_discharge_tmp *
+                        (discharge_dt / available_discharge_tmp);
+                }
+                else {
+                    // Scale returns proportionally to stream length
                     rout_var[iCell].dt_discharge[iStep] +=
-                        returned_discharge_tmp *
-                    (discharge_dt / available_discharge_tmp);
-            }
-            else {
-                // Scale returns proportionally to stream length
-                rout_var[iCell].dt_discharge[iStep] +=
-                    returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                        returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
+                }
             }
             
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
