@@ -54,7 +54,7 @@ calc_gridcell_avg_albedo(double             *albedo,
     swnet = 0;
     *albedo = 0;
 
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         Cv = veg_con[veg].Cv;
         if (Cv > 0) {
             for (band = 0; band < options.SNOW_BAND; band++) {
@@ -75,7 +75,7 @@ calc_gridcell_avg_albedo(double             *albedo,
     }
     else {
         // use vegetation, snow or bare soil albedo
-        for (veg = 0; veg <= Nveg; veg++) {
+        for (veg = 0; veg < Nveg + options.Nbare; veg++) {
             Cv = veg_con[veg].Cv;
             if (Cv > 0) {
                 for (band = 0; band < options.SNOW_BAND; band++) {

@@ -75,7 +75,7 @@
 #define MIN_SNOW_WETFRAC 0.01  /**< Minimum fraction of snow depth to be considered wet */
 
 /***** Define minimum and maximum values for model timesteps *****/
-#define MIN_SUBDAILY_STEPS_PER_DAY  4
+#define MIN_SUBDAILY_STEPS_PER_DAY  1
 #define MAX_SUBDAILY_STEPS_PER_DAY  1440
 
 #ifndef WET
@@ -234,6 +234,7 @@ typedef struct {
     size_t Nlakenode;    /**< Number of lake thermal nodes in the model. */
     size_t Nlayer;       /**< Number of layers in model */
     size_t Nnode;        /**< Number of soil thermal nodes in the model */
+    size_t Nbare;        /**< Number of bare soil types in the model */
     bool NOFLUX;         /**< TRUE = Use no flux lower bondary when computing
                             soil thermal fluxes */
     size_t NVEGTYPES;    /**< number of vegetation types in veg_param file */
@@ -265,8 +266,6 @@ typedef struct {
                             FALSE = when iterations fail to converge, report an error
                                     and abort simulation for current grid cell
                             Default = TRUE */
-    bool MATRIC;         /**< TRUE = use matric potential to calculate drainage
-                            Default = FALSE */
 
     // input options
     unsigned short int BASEFLOW;     /**< ARNO: read Ds, Dm, Ws, c; NIJSSEN2001: read d1, d2, d3, d4 */
@@ -282,6 +281,10 @@ typedef struct {
                                           FROM_VEGPARAM = use fcanopy values from the veg param file */
     unsigned short int LAI_SRC;        /**< FROM_VEGLIB = use LAI values from veg library file
                                           FROM_VEGPARAM = use LAI values from the veg param file */
+    unsigned short int BCO2_SRC;       /**< FROM_VEGLIB = use b_co2 values from veg library file
+                                          FROM_VEGPARAM = use b_co2 values from the veg param file */
+    unsigned short int WFC_SRC;        /**< FROM_VEGLIB = use albedo values from veg library file
+                                          FROM_VEGPARAM = use albedo values from the veg param file */
     bool LAKE_PROFILE;   /**< TRUE = user-specified lake/area profile */
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 
@@ -379,6 +382,7 @@ typedef struct {
     double CANOPY_CLOSURE;  /**< Threshold vapor pressure deficit for stomatal closure (Pa) */
     double CANOPY_RSMAX;  /**< Maximum allowable resistance (s/m) */
     double CANOPY_VPDMINFACTOR;  /**< Minimum allowable vapor pressure deficit factor */
+    double CANOPY_CO2REF;  /**< Reference atmospheric co2 concentration (ppm) */
 
     // Lake Parameters
     double LAKE_TMELT;
@@ -560,6 +564,8 @@ typedef struct {
                                          soil (mm) */
     double Wpwp[MAX_LAYERS];          /**< soil moisture content at permanent
                                          wilting point (mm) */
+    double Wfc[MAX_LAYERS];           /**< soil moisture content at field
+                                         capacity (mm) */
     double Ws;                        /**< fraction of maximum soil moisture */
     double AlbedoPar;                 /**< soil albedo in PAR range (400-700nm) */
     double alpha[MAX_NODES];          /**< thermal solution constant */
@@ -574,6 +580,7 @@ typedef struct {
     double bulk_dens_min[MAX_LAYERS]; /**< bulk density of mineral soil (kg/m^3) */
     double bulk_dens_org[MAX_LAYERS]; /**< bulk density of organic soil (kg/m^3) */
     double c;                         /**< exponent in ARNO baseflow scheme */
+    double carbon;                    /**< organic carbon content in the top 20cm of soil (g/kg) */
     double depth[MAX_LAYERS];         /**< thickness of each soil moisture layer (m) */
     double dp;                        /**< soil thermal damping depth (m) */
     double dz_node[MAX_NODES];        /**< thermal node thickness (m) */
@@ -588,6 +595,7 @@ typedef struct {
     double max_moist[MAX_LAYERS];     /**< maximum moisture content (mm) per layer */
     double max_moist_node[MAX_NODES]; /**< maximum moisture content (mm/mm) per node */
     double max_snow_distrib_slope;    /**< Maximum slope of snow depth distribution [m].  This should equal 2*depth_min, where depth_min = minimum snow pack depth below which coverage < 1.  Comment, ported from user_def.h, with questionable units: SiB uses 0.076; Rosemount data imply 0.155cm depth ~ 0.028mm swq. */
+    double ph;                        /**< soil pH in the top 20cm (-) */
     double phi_s[MAX_LAYERS];         /**< soil moisture diffusion parameter (mm/mm) */
     double porosity[MAX_LAYERS];      /**< porosity (fraction) */
     double quartz[MAX_LAYERS];        /**< quartz content of soil (fraction of mineral soil volume) */
@@ -672,6 +680,7 @@ typedef struct {
                               default = 0.5 (N/A) */
     double rarc;           /**< architectural resistance (s/m) */
     double rmin;           /**< minimum stomatal resistance (s/m) */
+    double b_co2;          /**< stomatal resistance co2 parameter */
     double roughness[MONTHS_PER_YEAR];  /**< vegetation roughness length (m) */
     double trunk_ratio;    /**< ratio of trunk height to tree height,
                               default = 0.2 (fraction) */
@@ -770,7 +779,11 @@ typedef struct {
     double Cs;              /**< average volumetric heat capacity of the
                                current layer (J/m^3/K) */
     double T;               /**< temperature of the unfrozen sublayer (C) */
-    double Ksat;            /**< saturated hydraulic  conductivity (mm/day) */
+    double Wcr;             /**< critical moisture level for soil
+                                         layer, evaporation is no longer
+                                         affected moisture stress in the
+                                         soil (mm) */
+    double Ksat;            /**< saturated hydraulic conductivity (mm/day) */
     double ice[MAX_FROST_AREAS]; /**< ice content of the frozen sublayer (mm) */
     double kappa;           /**< average thermal conductivity of the current
                                layer (W/m/K) */
@@ -783,6 +796,7 @@ typedef struct {
     double esoil;           /**< soil evaporation from soil layer (mm) */
     double evap;            /**< evapotranspiration from soil layer (mm) */
     double transp;          /**< transpiration from soil layer (mm) */
+    double water_stress;    /**< transpiration water stress of the soil layer [mm/mm] */
 } layer_data_struct;
 
 /******************************************************************************
@@ -807,6 +821,9 @@ typedef struct {
                                           in the root zone (mm) */
     double wetness;                    /**< average of
                                           (layer.moist - Wpwp)/(porosity*depth - Wpwp)
+                                          over all layers (fraction) */
+    double water_stress;               /**< average of
+                                          (layer.moist - Wpwp)/(Wcr - Wpwp)
                                           over all layers (fraction) */
     double zwt;                        /**< average water table position [cm] - using lowest unsaturated layer */
     double zwt_lumped;                 /**< average water table position [cm] - lumping all layers' moisture together */
@@ -917,6 +934,8 @@ typedef struct {
     double Wdew;                /**< dew trapped on vegetation (mm) */
     double Wdmax;               /**< current maximum dew holding capacity
                                    (mm) */
+    double root[MAX_LAYERS];    /**< current percent of roots in each soil layer
+                                   (fraction) */
 
     // Fluxes
     double canopyevap;          /**< evaporation from canopy (mm/TS) */

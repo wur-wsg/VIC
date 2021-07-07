@@ -38,7 +38,7 @@ initialize_soil(cell_data_struct **cell,
 
     size_t               veg, band, lindex, frost_area;
 
-    for (veg = 0; veg <= veg_num; veg++) {
+    for (veg = 0; veg < veg_num + options.Nbare; veg++) {
         for (band = 0; band < options.SNOW_BAND; band++) {
             // Prognostic states
             cell[veg][band].aero_resist[0] = 0.0;
@@ -53,14 +53,17 @@ initialize_soil(cell_data_struct **cell,
                      frost_area++) {
                     cell[veg][band].layer[lindex].ice[frost_area] = 0.0;
                 }
+                cell[veg][band].layer[lindex].Wcr = 0.0;
                 cell[veg][band].layer[lindex].Ksat = 0.0;
                 cell[veg][band].layer[lindex].kappa = 0.0;
                 cell[veg][band].layer[lindex].moist = 0.0;
                 cell[veg][band].layer[lindex].eff_sat = 0.0;
                 cell[veg][band].layer[lindex].phi = 0.0;
+                cell[veg][band].layer[lindex].water_stress = 0.0;
             }
             cell[veg][band].rootmoist = 0.0;
             cell[veg][band].wetness = 0.0;
+            cell[veg][band].water_stress = 0.0;
             // Fluxes
             cell[veg][band].pot_evap = 0.0;
             cell[veg][band].recharge = 0.0;

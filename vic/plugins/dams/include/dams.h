@@ -33,6 +33,15 @@
 #define DAM_HIST_YEARS 5            /**< dam history length [years] */
 
 /******************************************************************************
+ * @brief   Dam Types
+ *****************************************************************************/
+enum {
+    DAM_LOCAL,
+    DAM_GLOBAL,
+    NDAM_TYPES
+};
+
+/******************************************************************************
  * @brief   Dam Mapping
  *****************************************************************************/
 typedef struct {
@@ -46,11 +55,12 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     size_t dam_class;               /**< dam class id number */
-    
+
+    unsigned short int type;        /**< type [1 = global, 0 = local] */
     unsigned short int year;        /**< build year [year] */
     double capacity;                /**< capacity [hm3] */
     double inflow_frac;             /**< fraction of runoff/discharge used as inflow [-] */
-    
+
     size_t nservice;                /**< number of service cells */
     size_t *service;                /**< service cell id */
     double *service_frac;           /**< sercive cell demand fraction used for operation [-] */
@@ -61,7 +71,7 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     bool active;                    /**< active flag */
-    
+
     double inflow;                  /**< inflow [hm3] */
     double demand;                  /**< water demand [hm3] */
     double efr;                     /**< environmental requirments [hm3] */
@@ -86,12 +96,9 @@ typedef struct {
 /******************************************************************************
  * @brief   Public structures
  *****************************************************************************/
-dam_con_map_struct *global_dam_con_map;
-dam_var_struct    **global_dam_var;
-dam_con_struct    **global_dam_con;
-dam_con_map_struct *local_dam_con_map;
-dam_var_struct    **local_dam_var;
-dam_con_struct    **local_dam_con;
+dam_con_map_struct *dam_con_map;
+dam_var_struct    **dam_var;
+dam_con_struct    **dam_con;
 
 /******************************************************************************
  * @brief   Functions
@@ -111,11 +118,8 @@ void dam_generate_default_state(void);
 void dam_set_output_met_data_info(void);
 void dam_initialize_nc_file(nc_file_struct *);
 void dam_add_hist_dim(nc_file_struct *, stream_struct *);
-void dam_set_nc_var_info(unsigned int, nc_file_struct *, nc_var_struct *);
-void dam_set_nc_var_dimids(unsigned int, nc_file_struct *, nc_var_struct *);
 void dam_history(unsigned int, unsigned int *);
 void dam_put_data(size_t);
-
 
 void local_dam_register(dam_con_struct *, dam_var_struct *, size_t);
 void global_dam_register(dam_con_struct *, dam_var_struct *, size_t);
@@ -124,7 +128,8 @@ void dam_corr_opt_release(double *, double *, size_t, double, double);
 double dam_corr_release(double, double, double);
 double dam_calc_k_factor(double, double);
 double dam_calc_c_factor(double *, double, size_t, size_t *);
-void dam_calc_opt_storage(double *, double *, double *, size_t, size_t*, double);
+void dam_calc_opt_storage(double *, double *, double *, size_t, size_t*,
+                          double);
 double dam_area(double, double, double, double);
 double dam_height(double, double);
 void local_dam_run(size_t);

@@ -125,7 +125,7 @@ vic_alloc(void)
                                    sizeof(*(veg_con_map[i].Cv)));
         check_alloc_status(veg_con_map[i].Cv, "Memory allocation error.");
 
-        veg_con_map[i].nv_active = (size_t) local_domain.locations[i].nveg + 1;
+        veg_con_map[i].nv_active = (size_t) local_domain.locations[i].nveg + options.Nbare;
         if (options.AboveTreelineVeg >= 0) {
             veg_con_map[i].nv_active += 1;
         }
@@ -158,7 +158,7 @@ vic_alloc(void)
         veg_lib[i] = calloc(options.NVEGTYPES, sizeof(*(veg_lib[i])));
         check_alloc_status(veg_lib[i], "Memory allocation error.");
 
-        all_vars[i] = make_all_vars(veg_con_map[i].nv_active - 1);
+        all_vars[i] = make_all_vars(veg_con_map[i].nv_active - options.Nbare);
 
         // allocate memory for veg_hist
         veg_hist[i] = calloc(veg_con_map[i].nv_active, sizeof(*(veg_hist[i])));

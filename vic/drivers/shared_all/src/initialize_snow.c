@@ -36,7 +36,7 @@ initialize_snow(snow_data_struct **snow,
     extern option_struct options;
     size_t               i, j;
 
-    for (i = 0; i <= veg_num; i++) {
+    for (i = 0; i < veg_num + options.Nbare; i++) {
         for (j = 0; j < options.SNOW_BAND; j++) {
             // Prognostic states
             snow[i][j].albedo = 0.0;

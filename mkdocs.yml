@@ -30,6 +30,7 @@ pages:
 - hidden:
     # About
     - 'DamOperationText': 'Overview/DamOperationText.md'
+    - 'WofostText': 'Overview/WofostText.md'
     
     # Documentation
     - 'ImageDriver': 'Documentation/Drivers/Image/ImageDriver_vicwur.md'
@@ -40,6 +41,8 @@ pages:
     - 'IrrigationParam': 'Documentation/Drivers/Image/IrrigationParam.md'
     - 'DamParam': 'Documentation/Drivers/Image/DamParam.md'
     - 'WateruseParam': 'Documentation/Drivers/Image/WateruseParam.md'
+    - 'CropParam': 'Documentation/Drivers/Image/CropParam.md'
+    - 'WofostParam': 'Documentation/Drivers/Image/WofostParam.md'
     - 'RunVIC': 'Documentation/Drivers/Image/RunVIC_vicwur.md'
     - 'Constants': 'Documentation/Constants_vicwur.md'
     - 'Outputs': 'Documentation/Drivers/Image/Outputs_vicwur.md'

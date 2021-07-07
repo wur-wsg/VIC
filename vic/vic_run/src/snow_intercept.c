@@ -125,17 +125,19 @@ snow_intercept(double             Dt,
     double                   shortwave; //
     double                   Catm; //
 
+    /* Transform variables */
+    double                   Wcr_array[MAX_LAYERS];
+    size_t                   lidex;
+    for (lidex = 0; lidex < options.Nlayer; lidex++) {
+        Wcr_array[lidex] = layer[lidex].Wcr;
+    }
+
     AirDens = force->density[hidx];
     EactAir = force->vp[hidx];
     Press = force->pressure[hidx];
     Vpd = force->vpd[hidx];
     shortwave = force->shortwave[hidx];
-    if (options.CARBON) {
-        Catm = force->Catm[hidx];
-    }
-    else {
-        Catm = MISSING;
-    }
+    Catm = force->Catm[hidx];
 
     /* Initialize Tfoliage_fbflag */
     *Tfoliage_fbflag = 0;
@@ -299,7 +301,7 @@ snow_intercept(double             Dt,
         *NetShortOver = (1. - *AlbedoOver) * ShortOverIn; // net SW in canopy
 
         Qnet = solve_canopy_energy_bal(0., Dt, soil_con->elevation,
-                                       soil_con->max_moist, soil_con->Wcr,
+                                       soil_con->max_moist, &(Wcr_array[0]),
                                        soil_con->Wpwp, soil_con->frost_fract,
                                        AirDens, EactAir, Press, Le, Tcanopy,
                                        Vpd, shortwave, Catm, dryFrac, &Evap,
@@ -341,7 +343,7 @@ snow_intercept(double             Dt,
         *Tfoliage = root_brent(Tlower, Tupper,
                                func_canopy_energy_bal, Dt,
                                soil_con->elevation, soil_con->max_moist,
-                               soil_con->Wcr, soil_con->Wpwp,
+                               &(Wcr_array[0]), soil_con->Wpwp,
                                soil_con->frost_fract,
                                AirDens, EactAir, Press, Le,
                                Tcanopy, Vpd, shortwave, Catm, dryFrac,
@@ -368,7 +370,7 @@ snow_intercept(double             Dt,
                 Qnet = error_calc_canopy_energy_bal(*Tfoliage, band, month, Dt,
                                                     soil_con->elevation,
                                                     soil_con->max_moist,
-                                                    soil_con->Wcr,
+                                                    &(Wcr_array[0]),
                                                     soil_con->Wpwp,
                                                     soil_con->depth,
                                                     soil_con->frost_fract,
@@ -399,7 +401,7 @@ snow_intercept(double             Dt,
         }
 
         Qnet = solve_canopy_energy_bal(*Tfoliage, Dt, soil_con->elevation,
-                                       soil_con->max_moist, soil_con->Wcr,
+                                       soil_con->max_moist, &(Wcr_array[0]),
                                        soil_con->Wpwp, soil_con->frost_fract,
                                        AirDens, EactAir, Press, Le, Tcanopy,
                                        Vpd, shortwave, Catm, dryFrac, &Evap,

@@ -151,6 +151,13 @@ calc_surf_energy_bal(double             Le,
     double                   TmpNetShortSnow;
     double                   old_swq, old_depth;
 
+    /* Transform variables */
+    double                   Wcr_array[MAX_LAYERS];
+    size_t                   lidex;
+    for (lidex = 0; lidex < options.Nlayer; lidex++) {
+        Wcr_array[lidex] = layer[lidex].Wcr;
+    }
+
     /**************************************************
        Set All Variables For Use
     **************************************************/
@@ -162,8 +169,8 @@ calc_surf_energy_bal(double             Le,
         Tnew_fbcount[nidx] = 0;
     }
 
-    if (iveg != Nveg) {
-        if (veg_var->fcanopy > 0.0) {
+    if (iveg < Nveg) {
+        if (veg_var->fcanopy > 0.0 && veg_var->LAI > 0.0) {
             VEG = true;
         }
         else {
@@ -204,12 +211,7 @@ calc_surf_energy_bal(double             Le,
     atmos_density = force->density[hidx];     // atmospheric density
     atmos_pressure = force->pressure[hidx];    // atmospheric pressure
     atmos_shortwave = force->shortwave[hidx];   // incoming shortwave radiation
-    if (options.CARBON) {
-        atmos_Catm = force->Catm[hidx];        // CO2 mixing ratio
-    }
-    else {
-        atmos_Catm = MISSING;
-    }
+    atmos_Catm = force->Catm[hidx];        // CO2 mixing ratio
     emissivity = 1.;        // longwave emissivity
     delta_t = dt;
     max_moist = soil_con->max_moist[0] / (soil_con->depth[0] * MM_PER_M);
@@ -350,7 +352,7 @@ calc_surf_energy_bal(double             Le,
                                                    expt, ice0, kappa1, kappa2,
                                                    soil_con->max_infil,
                                                    max_moist,
-                                                   moist, soil_con->Wcr,
+                                                   moist, &(Wcr_array[0]),
                                                    soil_con->Wpwp,
                                                    soil_con->depth,
                                                    soil_con->resid_moist, root,
@@ -473,7 +475,7 @@ calc_surf_energy_bal(double             Le,
                                                        kappa2,
                                                        soil_con->max_infil,
                                                        max_moist,
-                                                       moist, soil_con->Wcr,
+                                                       moist, &(Wcr_array[0]),
                                                        soil_con->Wpwp,
                                                        soil_con->depth,
                                                        soil_con->resid_moist,
@@ -605,7 +607,7 @@ calc_surf_energy_bal(double             Le,
 
     /** Store precipitation that reaches the surface */
     if (!snow->snow && !INCLUDE_SNOW) {
-        if (iveg != Nveg) {
+        if (iveg < Nveg) {
             *ppt = veg_var->throughfall;
         }
         else {

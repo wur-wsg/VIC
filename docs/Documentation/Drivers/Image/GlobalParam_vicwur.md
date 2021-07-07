@@ -46,6 +46,7 @@ The following options determine the method of resolving the surface energy balan
 | DAMS   | string    | TRUE or FALSE     | Option for computing dam operation. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 | WATERUSE   | string    | TRUE or FALSE     | Option for computing water-use. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 | IRRIGATION   | string    | TRUE or FALSE     | Option for computing irrigation. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
+| WOFOST   | string    | TRUE or FALSE     | Option for computing crops with wofost. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 
 # Define State Files
 
@@ -68,7 +69,7 @@ This section describes how to define the forcing files needed by the VIC-WUR mod
 | Name          | Type                 | Units                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 |---------------|----------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | FORCE_TYPE    | string string string | N/A                      | Defines what forcing types are read from the file, followed by corresponding netCDF variable name (separated by space or tab), followed by the corresponding netCDF file path (separated by space or tab). The required forcing types are: AIR_TEMP, PREC, PRESSURE, SWDOWN, LWDOWN, VP, WIND.                                                                                                                                                                                                              |
-| PLUGIN_FORCE_TYPE    | string string string string | N/A                      | Defines what forcing types are read from the file, followed by corresponding netCDF variable name (separated by space or tab), followed by the forcing aggrigation frequency (STEP, DAY or MONTH; separated by space or tab) by the corresponding netCDF file path (separated by space or tab). Valid forcing types are: DISCHARGE, EFR_DISCHARGE, EFR_BASEFLOW, MUN_DEMAND, MUN_GROUNDWATER, MUN_CONSUMPTION, LIV_DEMAND, LIV_GROUNDWATER, LIV_CONSUMPTION, IRR_DEMAND, IRR_GROUNDWATER, IRR_CONSUMPTION, ENE_DEMAND, ENE_GROUNDWATER, ENE_CONSUMPTION, MAN_DEMAND, MAN_GROUNDWATER, MAN_CONSUMPTION|
+| PLUGIN_FORCE_TYPE    | string string string string | N/A                      | Defines what forcing types are read from the file, followed by corresponding netCDF variable name (separated by space or tab), followed by the forcing aggrigation frequency (STEP, DAY, MONTH, or YEAR; separated by space or tab) by the corresponding netCDF file path (separated by space or tab). Valid forcing types are: DISCHARGE, EFR_DISCHARGE, EFR_BASEFLOW, MUN_DEMAND, MUN_GROUNDWATER, MUN_CONSUMPTION, LIV_DEMAND, LIV_GROUNDWATER, LIV_CONSUMPTION, IRR_DEMAND, IRR_GROUNDWATER, IRR_CONSUMPTION, ENE_DEMAND, ENE_GROUNDWATER, ENE_CONSUMPTION, MAN_DEMAND, MAN_GROUNDWATER, MAN_CONSUMPTION, CO2, CV, FERT_DVS, FERT_N, FERT_P, FERT_K |
 
 # Define Domain File
 
@@ -90,6 +91,8 @@ The following options describe the input parameter files.
 | WATERUSE_PARAMETERS | string | path/filename | Water-use parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | IRRIGATION_PARAMETERS | string | path/filename | Irrigation parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | DAMS_PARAMETERS | string | path/filename | Dam parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| CROP_PARAMETERS | string | path/filename | Crop parameter netCDF file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| WOFOST_PARAMETERS | string | path/filename | Wofost parameter text file path                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 # Define Output Files
 
@@ -152,11 +155,12 @@ EFR							TRUE				# TRUE = calculate enviromental flow requirements;  Default = 
 DAMS						TRUE				# TRUE = calculate dam operation;  Default = FALSE
 WATERUSE					TRUE				# TRUE = calculate water use;  Default = FALSE
 IRRIGATION					TRUE				# TRUE = calculate irrigation;  Default = FALSE
+WOFOST					    TRUE		        # TRUE = calculate crops with wofost;  Default = FALSE
 
 #######################################################################
 # Domain Files and Info
 #######################################################################
-DOMAIN          				parameters/global/domain_global.nc
+DOMAIN          				parameters/domain_global.nc
 DOMAIN_TYPE    	LAT     		lat
 DOMAIN_TYPE    	LON     		lon
 DOMAIN_TYPE    	MASK    		mask
@@ -198,6 +202,15 @@ PLUGIN_FORCE_TYPE	MAN_CONSUMPTION		consumption_fraction	MONTH	forcing/man_consum
 PLUGIN_FORCE_TYPE	ENE_DEMAND			demand					MONTH	forcing/ene_demand_6hourly/ene_demand_6hourly_
 PLUGIN_FORCE_TYPE	ENE_GROUNDWATER		groundwater_fraction	MONTH	forcing/ene_ground_6hourly/ene_ground_6hourly_
 PLUGIN_FORCE_TYPE	ENE_CONSUMPTION		consumption_fraction	MONTH	forcing/ene_consump_6hourly/ene_consump_6hourly_
+# CO2 forcing
+PLUGIN_FORCE_TYPE	CO2 		        co2			            YEAR   forcing/co2_yearly_fixed/co2_yearly_fixed_
+# Fertilizer forcing
+PLUGIN_FORCE_TYPE	FERT_DVS	        DVS_point	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+PLUGIN_FORCE_TYPE	FERT_N	            N_amount	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+PLUGIN_FORCE_TYPE	FERT_P	            P_amount	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+PLUGIN_FORCE_TYPE	FERT_K    	        K_amount	            YEAR   forcing/fertilizer_yearly/fertilizer_yearly_
+# Land-cover forcing
+PLUGIN_FORCE_TYPE	  CV			    coverage                MONTH  forcing/coverage_monthly_VICWOFOST/coverage_monthly_VICWOFOST_
 
 #######################################################################
 # Land Surface Files and Info
@@ -208,6 +221,8 @@ ROUTING_PARAMETERS				parameters/rout_params_global.nc
 WATERUSE_PARAMETERS				parameters/wu_params_global.nc
 IRRIGATION_PARAMETERS			parameters/irr_params_MIRCA2000_global.nc
 DAMS_PARAMETERS					parameters/dam_params_global.nc
+CROP_PARAMETERS 			    parameters/crop_params_VICWOFOST_global.nc
+WOFOST_TEXT_PARAMETERS 		    parameters/wofost_params_VICWOFOST_global.txt
 
 #######################################################################
 # Output Options
@@ -242,5 +257,19 @@ OUTVAR							OUT_WI_GW_SECT
 OUTVAR							OUT_WI_SURF_SECT
 OUTVAR							OUT_WI_REM_SECT
 OUTVAR							OUT_WI_DAM_SECT
+
+# WOFOST
+# fluxes
+OUTVAR                          			OUT_CROP_GROW
+OUTVAR							OUT_CROP_EVAP
+OUTVAR							OUT_CROP_DVS
+OUTVAR							OUT_CROP_WLV
+OUTVAR							OUT_CROP_WST
+OUTVAR							OUT_CROP_WSO
+OUTVAR							OUT_CROP_WRT
+OUTVAR							OUT_CROP_LAI
+OUTVAR							OUT_CROP_WSTRESS
+OUTVAR							OUT_CROP_NSTRESS
+OUTVAR							OUT_CROP_NUPT
 
 ```

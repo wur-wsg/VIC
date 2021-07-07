@@ -81,7 +81,7 @@ generate_default_state(all_vars_struct *all_vars,
             want control over initial moist)
     ************************************************************************/
 
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         Cv = veg_con[veg].Cv;
         if (Cv > 0) {
             for (band = 0; band < options.SNOW_BAND; band++) {
@@ -105,7 +105,7 @@ generate_default_state(all_vars_struct *all_vars,
        Initialize soil temperatures
     ************************************************************************/
 
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         Cv = veg_con[veg].Cv;
         if (Cv > 0) {
             for (band = 0; band < options.SNOW_BAND; band++) {
@@ -136,13 +136,13 @@ generate_default_state(all_vars_struct *all_vars,
     ************************************************************************/
     // vegetation class-weighted albedo over gridcell
     albedo_sum = 0;
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         Cv = veg_con[veg].Cv;
         if (Cv > 0) {
             // TO-DO: account for treeline and lake factors
             AreaFactor = (Cv * TreeAdjustFactor * lakefactor);
 
-            if (veg != Nveg) {
+            if (veg < Nveg) {
                 // cold start, so using climatological albedo for all veg classes
                 // except for bare soil
                 albedo_sum += (AreaFactor *
@@ -160,7 +160,7 @@ generate_default_state(all_vars_struct *all_vars,
        Initialize soil layer ice content
     ************************************************************************/
 
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         Cv = veg_con[veg].Cv;
         if (Cv > 0) {
             for (band = 0; band < options.SNOW_BAND; band++) {

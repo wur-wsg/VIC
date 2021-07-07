@@ -31,6 +31,7 @@
  * @brief   Functions
  *****************************************************************************/
 void convolute(double, double *, double *, size_t, size_t);
+void convolve(const double[], size_t, const double[], size_t, double[]);
 void cshift(double *, int, int, int, int);
 void size_t_sort(size_t *, size_t *, size_t, bool);
 void size_t_sort2(size_t *, int *, size_t, bool);
@@ -38,9 +39,13 @@ void double_flip(double *, size_t);
 void size_t_swap(size_t, size_t, size_t *);
 void int_swap(size_t, size_t, int *);
 void double_swap(size_t, size_t, double *);
+void copy_dmy(dmy_struct *, dmy_struct *);
+void initialize_dmy(dmy_struct *);
 double between_dmy(dmy_struct, dmy_struct, dmy_struct);
 double between_jday(double, double, double);
-unsigned short int days_per_month(unsigned short int, unsigned short int, unsigned short int);
+unsigned short int days_per_month(unsigned short int, unsigned short int,
+                                  unsigned short int);
 double array_average(double *, size_t, size_t, size_t, size_t);
+void dmy_doy(double, unsigned short int, unsigned short int, dmy_struct *);
 
 #endif /* PLUGIN_SUPPORT_H */

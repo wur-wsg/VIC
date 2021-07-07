@@ -52,6 +52,7 @@ initialize_soil_con(soil_con_struct *soil_con)
     soil_con->avgJulyAirTemp = 0.;
     soil_con->b_infilt = 0.;
     soil_con->c = 0.;
+    soil_con->carbon = 0.;
     soil_con->cell_area = 0.;
     soil_con->dp = 0.;
     soil_con->Ds = 0.;
@@ -60,6 +61,7 @@ initialize_soil_con(soil_con_struct *soil_con)
     soil_con->frost_slope = 0.;
     soil_con->max_infil = 0.;
     soil_con->max_snow_distrib_slope = 0.;
+    soil_con->ph = 0.;
     soil_con->rough = 0.;
     soil_con->slope = 0.;
     soil_con->snow_rough = 0.;
@@ -86,6 +88,7 @@ initialize_soil_con(soil_con_struct *soil_con)
         soil_con->soil_dens_org[i] = 0.;
         soil_con->Wcr[i] = 0.;
         soil_con->Wpwp[i] = 0.;
+        soil_con->Wfc[i] = 0.;
     }
 
     for (i = 0; i < MAX_NODES; i++) {

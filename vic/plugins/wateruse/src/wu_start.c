@@ -33,19 +33,25 @@
 void
 wu_start(void)
 {
-    extern plugin_option_struct plugin_options;
+    extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
-    
-    int                     status;
-    
+
+    int                            status;
+
     // Check domain & get dimensions
     status = nc_open(plugin_filenames.wateruse.nc_filename, NC_NOWRITE,
                      &(plugin_filenames.wateruse.nc_id));
     check_nc_status(status, "Error opening %s",
                     plugin_filenames.wateruse.nc_filename);
-    
-    plugin_options.NWURECEIVING = get_nc_dimension(&(plugin_filenames.wateruse),
-                                           "wu_receiving");
+
+    if (plugin_options.REMOTE_WITH) {
+        plugin_options.NWURECEIVING =
+            get_nc_dimension(&(plugin_filenames.wateruse),
+                             "wu_receiving");
+    }
+    else {
+        plugin_options.NWURECEIVING = 0;
+    }
     compare_ncdomain_with_global_domain(&plugin_filenames.wateruse);
 
     status = nc_close(plugin_filenames.wateruse.nc_id);

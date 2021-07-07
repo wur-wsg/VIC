@@ -32,8 +32,7 @@
  *           stores its location in the description of the current forcing file.
  *****************************************************************************/
 void
-set_force_type(char *cmdstr,
-               int   file_num)
+set_force_type(char *cmdstr)
 {
     extern param_set_struct param_set;
     extern filenames_struct filenames;
@@ -118,29 +117,29 @@ set_force_type(char *cmdstr,
     }
     /** Undefined variable type **/
     else {
-        log_err("Undefined forcing variable type %s in file %i.",
-                optstr, file_num + 1);
+        log_err("Undefined forcing variable type %s",
+                optstr);
     }
 
-    param_set.TYPE[type].SUPPLIED = file_num + 1;
-    param_set.FORCE_INDEX[file_num] = type;
-    param_set.VAR_INDEX[type] = file_num;
+    param_set.TYPE[type].SUPPLIED = type;
+    param_set.FORCE_INDEX[type] = type;
 
     if (strcasecmp("MISSING", ncvarname) != 0) {
         snprintf(param_set.TYPE[type].varname, MAXSTRING, "%s", ncvarname);
     }
     else {
         log_err(
-            "Must supply netCDF variable name for %s forcing file number %d",
-            optstr, file_num + 1);
+            "Must supply netCDF variable name for %s",
+            optstr);
     }
 
     if (strcasecmp("MISSING", ncfilename) != 0) {
-        snprintf(filenames.f_path_pfx[file_num], MAXSTRING, "%s", ncfilename);
+        snprintf(filenames.f_path_pfx[type], MAXSTRING, "%s", ncfilename);
     }
     else {
-        log_err("Must supply netCDF file name for %s forcing file number %d",
-            optstr, file_num + 1);
+        log_err(
+            "Must supply netCDF file name for %s",
+            optstr);
     }
 
     param_set.TYPE[type].N_ELEM = 1;

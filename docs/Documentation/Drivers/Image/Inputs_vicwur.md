@@ -12,4 +12,6 @@ To run VIC-wur, several sets of input data are optional:
 *   [Irrigation Parameter File](IrrigationParam.md): File containing irrigation model parameters. By default, VIC-WUR does not simulate irrigation.
 *   [Dam Parameter File](DamParam.md): File containing dam model parameters. By default, VIC-WUR does not simulate routing.
 *   [Water-use Parameter File](WateruseParam.md): File containing water-use model parameters. By default, VIC-WUR does not simulate water-use.
+*   [Crop Parameter File](CropParam.md): File containing crop growth model parameters. By default, VIC-WUR does not simulate crop growth.
+*   [WOFOST Parameter File](WofostParam.md): File containing crop growth model parameters. By default, VIC-WUR does not simulate crop growth.
 *   [Forcing Files](ForcingData_vicwur.md):  Gridded, timeseries of discharge inflow, required discharge, required baseflow, demand, consumption fraction and groundwater fraction as input.

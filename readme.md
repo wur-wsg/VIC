@@ -5,9 +5,9 @@
 ----------
 
 !!! note
-    You are viewing the documentation for VIC-WUR. VIC-WUR extends the VIC model with several modules to simulate the human impact on global water resources. Only VIC-WUR described here, for further descriptions of VIC you are referred to the [VIC github page of UW-Hydro](https://github.com/UW-Hydro/VIC)
+    You are viewing the documentation for VIC-WUR. VIC-WUR extends the VIC model with several modules to simulate the human impact on global water resources and crop growth (using WOFOST). Only VIC-WUR described here, for further descriptions of VIC you are referred to the [VIC github page of UW-Hydro](https://github.com/UW-Hydro/VIC)
     
-VIC-WUR is a macroscale hydrologic model that simulates the human impact on global water resources. VIC-WUR is based on VIC-5, which solves full water and energy balances. 
+VIC-WUR is a macroscale hydrologic model that simulates the human impact on global water resources and crop growth (using WOFOST). VIC-WUR is based on VIC-5, which solves full water and energy balances. 
 
 VIC-WUR is a research model and has been applied globally. The VIC model is distributed under the [GNU GPL v2.0](http://www.gnu.org/licenses/gpl-2.0.html) license. If you make use of this model, please acknowledge the appropriate references listed on the [VIC-WUR documentation website](http://vicwur.readthedocs.org).
 

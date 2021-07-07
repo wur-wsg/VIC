@@ -395,7 +395,7 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in location_struct
-    nitems = 9;
+    nitems = 10;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -435,6 +435,10 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
 
     // size_t nveg;
     offsets[i] = offsetof(location_struct, nveg);
+    mpi_types[i++] = MPI_AINT;
+
+    // size_t ncrop;
+    offsets[i] = offsetof(location_struct, ncrop);
     mpi_types[i++] = MPI_AINT;
 
     // size_t global_idx;
@@ -488,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 54;
+    nitems = 56;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -610,6 +614,10 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(option_struct, Nnode);
     mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
 
+    // size_t Nbare;
+    offsets[i] = offsetof(option_struct, Nbare);
+    mpi_types[i++] = MPI_AINT; // note there is no MPI_SIZE_T equivalent
+
     // bool NOFLUX;
     offsets[i] = offsetof(option_struct, NOFLUX);
     mpi_types[i++] = MPI_C_BOOL;
@@ -658,10 +666,6 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     offsets[i] = offsetof(option_struct, TFALLBACK);
     mpi_types[i++] = MPI_C_BOOL;
 
-    // bool MATRIC;
-    offsets[i] = offsetof(option_struct, MATRIC);
-    mpi_types[i++] = MPI_C_BOOL;
-
     // bool BASEFLOW;
     offsets[i] = offsetof(option_struct, BASEFLOW);
     mpi_types[i++] = MPI_C_BOOL;
@@ -700,6 +704,14 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // unsigned short LAI_SRC;
     offsets[i] = offsetof(option_struct, LAI_SRC);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned short BCO2_SRC;
+    offsets[i] = offsetof(option_struct, BCO2_SRC);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned short WFC_SRC;
+    offsets[i] = offsetof(option_struct, WFC_SRC);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // bool LAKE_PROFILE;
@@ -759,7 +771,7 @@ create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in parameters_struct
-    nitems = 156;
+    nitems = 157;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -859,6 +871,10 @@ create_MPI_param_struct_type(MPI_Datatype *mpi_type)
 
     // double CANOPY_VPDMINFACTOR
     offsets[i] = offsetof(parameters_struct, CANOPY_VPDMINFACTOR);
+    mpi_types[i++] = MPI_DOUBLE;
+
+    // double CANOPY_CO2REF
+    offsets[i] = offsetof(parameters_struct, CANOPY_CO2REF);
     mpi_types[i++] = MPI_DOUBLE;
 
     // double LAKE_TMELT

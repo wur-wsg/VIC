@@ -69,12 +69,12 @@ initialize_options()
     options.SPATIAL_FROST = false;
     options.SPATIAL_SNOW = false;
     options.TFALLBACK = true;
-    options.MATRIC = false;
     // Model dimensions
     options.Ncanopy = 3;
     options.Nfrost = 1;
     options.Nlayer = 3;
     options.Nnode = 3;
+    options.Nbare = 1;
     options.ROOT_ZONES = 0;
     options.SNOW_BAND = 1;
     // input options
@@ -84,6 +84,8 @@ initialize_options()
     options.GRID_DECIMAL = 2;
     options.JULY_TAVG_SUPPLIED = false;
     options.LAI_SRC = FROM_VEGLIB;
+    options.BCO2_SRC = FROM_DEFAULT;
+    options.WFC_SRC = FROM_DEFAULT;
     options.ORGANIC_FRACT = false;
     options.VEGLIB_FCAN = false;
     options.VEGLIB_PHOTO = false;

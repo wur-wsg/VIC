@@ -159,7 +159,7 @@ put_data(all_vars_struct   *all_vars,
         out_data[OUT_PAR][0] = force->par[NR];
     }
     else {
-        out_data[OUT_CATM][0] = MISSING;
+        out_data[OUT_CATM][0] = force->Catm[NR] / PPM_to_MIXRATIO;
         out_data[OUT_FDIR][0] = MISSING;
         out_data[OUT_PAR][0] = MISSING;
     }
@@ -167,7 +167,7 @@ put_data(all_vars_struct   *all_vars,
     /****************************************
        Store Output for all Vegetation Types (except lakes)
     ****************************************/
-    for (veg = 0; veg <= veg_con[0].vegetat_type_num; veg++) {
+    for (veg = 0; veg < veg_con[0].vegetat_type_num + options.Nbare; veg++) {
         Cv = veg_con[veg].Cv;
         Clake = 0;
         Nbands = options.SNOW_BAND;
@@ -703,9 +703,11 @@ collect_wb_terms(cell_data_struct cell,
 
         out_data[OUT_SOIL_LIQ][index] += tmp_moist * AreaFactor;
         out_data[OUT_SOIL_ICE][index] += tmp_ice * AreaFactor;
-        out_data[OUT_SOIL_EFF_SAT][index] += cell.layer[index].eff_sat * AreaFactor;
+        out_data[OUT_SOIL_EFF_SAT][index] += cell.layer[index].eff_sat *
+                                             AreaFactor;
     }
     out_data[OUT_SOIL_WET][0] += cell.wetness * AreaFactor;
+    out_data[OUT_SOIL_WSTRESS][0] += cell.water_stress * AreaFactor;
     out_data[OUT_ROOTMOIST][0] += cell.rootmoist * AreaFactor;
 
     /** record water table position **/

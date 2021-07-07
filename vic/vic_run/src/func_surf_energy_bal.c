@@ -339,10 +339,17 @@ func_surf_energy_bal(double  Ts,
     snow_flux = (double *) va_arg(ap, double *);
     store_error = (double *) va_arg(ap, double *);
 
+    /* Transform variables */
+    double Wcr_array[MAX_LAYERS];
+    size_t lindex;
+    for (lindex = 0; lindex < options.Nlayer; lindex++) {
+        Wcr_array[lindex] = layer[lindex].Wcr;
+    }
+
     /* take additional variables from soil_con structure */
     b_infilt = soil_con->b_infilt;
     Wmax = soil_con->max_moist;
-    Wcr = soil_con->Wcr;
+    Wcr = &(Wcr_array[0]);
     Wpwp = soil_con->Wpwp;
     depth = soil_con->depth;
     resid_moist = soil_con->resid_moist;
@@ -750,7 +757,8 @@ func_surf_energy_bal(double  Ts,
     }
     Evap = 0.;
     if (!SNOWING) {
-        if (VEG && veg_var->fcanopy > 0) {
+        // if VEG is true, then fcanopy > 0 and LAI > 0
+        if (VEG) {
             Evap = canopy_evap(layer, veg_var, veg_lib, true, Wdew,
                                delta_t, NetBareRad, vpd, NetShortBare,
                                Tair, Ra_veg[1], elevation, rainfall,

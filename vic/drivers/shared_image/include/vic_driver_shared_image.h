@@ -34,7 +34,7 @@
 #include <netcdf.h>
 
 #define MAXDIMS 10
-#define AREA_SUM_ERROR_THRESH 1e-10
+#define AREA_SUM_ERROR_THRESH 1e-5
 
 /******************************************************************************
  * @brief   NetCDF file types
@@ -59,6 +59,7 @@ typedef struct {
     double area; /**< area of grid cell */
     double frac; /**< fraction of grid cell that is active */
     size_t nveg; /**< number of vegetation type according to parameter file */
+    size_t ncrop; /**< number of crop type according to parameter file */
     size_t global_idx; /**< index of grid cell in global list of grid cells */
     size_t io_idx; /**< index of cell in 1-D I/O arrays */
     size_t local_idx; /**< index of grid cell in local list of grid cells */
@@ -146,9 +147,11 @@ typedef struct {
     int rdt_dimid;
     int dam_dimid;
     int wu_dimid;
+    int crop_dimid;
     size_t rdt_size;
     size_t dam_size;
     size_t wu_size;
+    size_t crop_size;
 
     bool open;
     nc_var_struct *nc_vars;
@@ -250,7 +253,7 @@ void print_nc_file(nc_file_struct *nc);
 void print_nc_var(nc_var_struct *nc_var);
 void print_veg_con_map(veg_con_map_struct *veg_con_map);
 void put_nc_attr(int nc_id, int var_id, const char *name, const char *value);
-void set_force_type(char *cmdstr, int file_num);
+void set_force_type(char *cmdstr);
 void set_global_nc_attributes(int ncid, unsigned short int file_type);
 void set_state_meta_data_info();
 void set_nc_var_dimids(unsigned int varid, nc_file_struct *nc_hist_file,

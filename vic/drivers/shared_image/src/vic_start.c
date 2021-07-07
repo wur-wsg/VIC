@@ -57,7 +57,6 @@ vic_start(void)
     extern int                 mpi_size;
     extern option_struct       options;
     extern parameters_struct   param;
-    extern param_set_struct    param_set;
     size_t                     j;
 
     status = MPI_Bcast(&filenames, 1, mpi_filenames_struct_type,
@@ -96,7 +95,10 @@ vic_start(void)
                         filenames.domain.nc_filename);
 
         // Validate forcing files and variables
-        for (i = 0; i < param_set.N_FORCE_FILES; i++) {
+        for (i = 0; i < N_FORCING_TYPES; i++) {
+            if (strcmp(filenames.f_path_pfx[i], "MISSING") == 0) {
+                continue;
+            }
             compare_ncdomain_with_global_domain(&filenames.forcing[i]);
         }
 
@@ -132,6 +134,11 @@ vic_start(void)
         options.ROOT_ZONES = get_nc_dimension(&(filenames.params), "root_zone");
         options.Nlayer = get_nc_dimension(&(filenames.params), "nlayer");
         options.NVEGTYPES = get_nc_dimension(&(filenames.params), "veg_class");
+        if(options.Nbare > options.NVEGTYPES){
+            log_err("Number of bare types (%zu) is more than "
+                    "number of vegetation types (%zu).", options.Nbare, 
+                    options.NVEGTYPES);
+        }
         if (options.SNOW_BAND == SNOW_BAND_TRUE_BUT_UNSET) {
             options.SNOW_BAND = get_nc_dimension(&(filenames.params),
                                                  "snow_band");

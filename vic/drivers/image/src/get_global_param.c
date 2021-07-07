@@ -52,7 +52,6 @@ get_global_param(FILE *gp)
     unsigned short int         lastday[MONTHS_PER_YEAR];
 
 
-    file_num = 0;
     /** Read through global control file to find parameters **/
 
     rewind(gp);
@@ -73,6 +72,9 @@ get_global_param(FILE *gp)
             *************************************/
             if (strcasecmp("NODES", optstr) == 0) {
                 sscanf(cmdstr, "%*s %zu", &options.Nnode);
+            }
+            if (strcasecmp("NBARE", optstr) == 0) {
+                sscanf(cmdstr, "%*s %zu", &options.Nbare);
             }
             else if (strcasecmp("MODEL_STEPS_PER_DAY", optstr) == 0) {
                 sscanf(cmdstr, "%*s %zu", &global_param.model_steps_per_day);
@@ -257,10 +259,6 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.TFALLBACK = str_to_bool(flgstr);
             }
-            else if (strcasecmp("MATRIC", optstr) == 0) {
-                sscanf(cmdstr, "%*s %s", flgstr);
-                options.MATRIC = str_to_bool(flgstr);
-            }
             else if (strcasecmp("SHARE_LAYER_MOIST", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.SHARE_LAYER_MOIST = str_to_bool(flgstr);
@@ -341,18 +339,15 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
-
             /*************************************
                Define forcing files
             *************************************/
             else if (strcasecmp("FORCE_TYPE", optstr) == 0) {
-                set_force_type(cmdstr, file_num);
-                file_num++;
+                set_force_type(cmdstr);
             }
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
-
             /*************************************
                Define parameter files
             *************************************/
@@ -469,6 +464,38 @@ get_global_param(FILE *gp)
                             "control file.");
                 }
             }
+            else if (strcasecmp("BCO2_SRC", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                if (strcasecmp("FROM_VEGPARAM", flgstr) == 0) {
+                    options.BCO2_SRC = FROM_VEGPARAM;
+                }
+                else if (strcasecmp("FROM_VEGLIB", flgstr) == 0) {
+                    options.BCO2_SRC = FROM_VEGLIB;
+                }
+                else if (strcasecmp("FROM_DEFAULT", flgstr) == 0) {
+                    options.BCO2_SRC = FROM_DEFAULT;
+                }
+                else {
+                    log_err("Unrecognized value of BCO2_SRC in the global "
+                            "control file.");
+                }
+            }
+            else if (strcasecmp("WFC_SRC", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                if (strcasecmp("FROM_VEGPARAM", flgstr) == 0) {
+                    options.WFC_SRC = FROM_VEGPARAM;
+                }
+                else if (strcasecmp("FROM_VEGLIB", flgstr) == 0) {
+                    options.WFC_SRC = FROM_VEGLIB;
+                }
+                else if (strcasecmp("FROM_DEFAULT", flgstr) == 0) {
+                    options.WFC_SRC = FROM_DEFAULT;
+                }
+                else {
+                    log_err("Unrecognized value of WFC_SRC in the global "
+                            "control file.");
+                }
+            }
             else if (strcasecmp("SNOW_BAND", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 if (str_to_bool(flgstr)) {
@@ -542,8 +569,6 @@ get_global_param(FILE *gp)
         }
         fgets(cmdstr, MAXSTRING, gp);
     }
-
-    param_set.N_FORCE_FILES = file_num;
 
     /******************************************
        Check for undefined required parameters
@@ -768,12 +793,17 @@ get_global_param(FILE *gp)
                 "Make sure that the global file defines a positive integer "
                 "for NRECS.", global_param.nrecs);
     }
-    for (file_num = 0; file_num < param_set.N_FORCE_FILES; file_num++) {
+    for (file_num = 0; file_num < N_FORCING_TYPES; file_num++) {
         // Validate forcing files and variables
         if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
-            log_err(
-                "No forcing file has been defined.  Make sure that the global "
-                "file defines forcing files for each variable.");
+            if (file_num == AIR_TEMP || file_num == LWDOWN ||
+                file_num == PREC ||
+                file_num == PRESSURE || file_num == VP || file_num == SWDOWN ||
+                file_num == WIND) {
+                log_err("No forcing file has been defined.  Make sure that the global "
+                        "file defines forcing files for each variable.");
+            }
+            continue;
         }
 
         // Get information from the forcing file(s)
@@ -883,10 +913,15 @@ get_global_param(FILE *gp)
     }
     // Set the statename here temporarily to compare with INIT_STATE name
     if (options.SAVE_STATE) {
-        snprintf(flgstr2, sizeof(flgstr2), "%s.%04i%02i%02i_%05u.nc",
-                 filenames.statefile, global_param.stateyear,
-                 global_param.statemonth, global_param.stateday,
-                 global_param.statesec);
+        status = snprintf(flgstr2, sizeof(flgstr2), "%s.%04i%02i%02i_%05u.nc",
+                          filenames.statefile, global_param.stateyear,
+                          global_param.statemonth, global_param.stateday,
+                          global_param.statesec);
+        if (status >= MAXSTRING) {
+            log_warn("State file name %s was too large [%d] "
+                     "and is truncated to size [%d]",
+                     flgstr2, status, MAXSTRING);
+        }
     }
     if (options.INIT_STATE && options.SAVE_STATE &&
         (strcmp(filenames.init_state.nc_filename, flgstr2) == 0)) {
