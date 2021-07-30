@@ -181,7 +181,8 @@ plugin_put_data(size_t iCell)
 {
     extern plugin_option_struct plugin_options;
 
-    if (plugin_options.ROUTING) {
+    if (plugin_options.ROUTING || 
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_put_data(iCell);
     }
     if (plugin_options.FORCE_LANDUSE) {

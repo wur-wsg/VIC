@@ -91,7 +91,8 @@ plugin_store_error(size_t iCell)
 
     // Storage
     storage = 0.;
-    if(plugin_options.ROUTING) {
+    if(plugin_options.ROUTING || 
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         storage += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] -
                    out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
     }
