@@ -52,9 +52,9 @@ plugin_store_error(size_t iCell)
     // Inflow
     inflow = 0.;
     if(plugin_options.ROUTING) {
-        inflow += out_data[iCell][OUT_RUNOFF][0] + out_data[iCell][OUT_BASEFLOW][0];
-        inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0] *
-                  global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+        inflow += (out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_RUNOFF][0] +
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0]) *
+                   global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
     }
     if(plugin_options.DAMS){
         inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_INFLOW][0] *

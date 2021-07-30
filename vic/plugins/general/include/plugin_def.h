@@ -60,6 +60,7 @@ enum {
     // water balance
     OUT_ROUTING_ERROR,                  /**< routing budget error [mm] */
     // routing
+    OUT_STREAM_RUNOFF,                  /**< river (runoff) discharge [m3 s-1] */
     OUT_STREAM_INFLOW,                  /**< river (inflow) discharge [m3 s-1] */
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */

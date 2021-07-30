@@ -106,6 +106,10 @@ plugin_run(void)
                 irr_set_demand(i);
             }
         }
+        if(plugin_options.ROUTING ||
+                (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)){
+            rout_run(i);
+        }
     }
 
     if (plugin_options.ROUTING) {
