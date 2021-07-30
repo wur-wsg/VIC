@@ -135,6 +135,7 @@ void wu_put_data(size_t);
 void wu_update_step_vars(size_t);
 void wu_forcing(void);
 void wu_run(size_t);
+void wu_run_local(size_t);
 void wu_remote(size_t);
 void wu_nonrenew(size_t);
 

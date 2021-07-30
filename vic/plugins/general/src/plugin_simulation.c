@@ -106,6 +106,9 @@ plugin_run(void)
                 irr_set_demand(i);
             }
         }
+        if(plugin_options.WATERUSE){
+            wu_run(i);
+        }
         if(plugin_options.ROUTING ||
                 (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)){
             rout_run(i);
@@ -123,7 +126,7 @@ plugin_run(void)
                 }
                 rout_basin_run(iCell);
                 if (plugin_options.WATERUSE &&plugin_options.LOCAL_WITH) {
-                    wu_run(iCell);
+                    wu_run_local(iCell);
                 }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
