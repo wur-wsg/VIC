@@ -57,6 +57,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->OFFSET_IRRIGATION = false;
     plugin_options->Pbare = PADDY_BARE_TRUE_BUT_UNSET;
     plugin_options->COMP_WITH = false;
+    plugin_options->LOCAL_WITH = true;
     plugin_options->REMOTE_WITH = false;
     plugin_options->NONRENEW_WITH = false;
     plugin_options->NONRENEW_RUNOFF = false;

@@ -268,24 +268,24 @@ wu_init(void)
 
     int                            status;
 
-    // open parameter file
-    if (mpi_rank == VIC_MPI_ROOT) {
-        status = nc_open(plugin_filenames.wateruse.nc_filename, NC_NOWRITE,
-                         &(plugin_filenames.wateruse.nc_id));
-        check_nc_status(status, "Error opening %s",
-                        plugin_filenames.wateruse.nc_filename);
-    }
-
     if (plugin_options.REMOTE_WITH) {
+        // open parameter file
+        if (mpi_rank == VIC_MPI_ROOT) {
+            status = nc_open(plugin_filenames.wateruse.nc_filename, NC_NOWRITE,
+                             &(plugin_filenames.wateruse.nc_id));
+            check_nc_status(status, "Error opening %s",
+                            plugin_filenames.wateruse.nc_filename);
+        }
+        
         wu_set_receiving();
         wu_set_routing_order();
         wu_check_routing_order();
-    }
 
-    // close parameter file
-    if (mpi_rank == VIC_MPI_ROOT) {
-        status = nc_close(plugin_filenames.wateruse.nc_id);
-        check_nc_status(status, "Error closing %s",
-                        plugin_filenames.wateruse.nc_filename);
+        // close parameter file
+        if (mpi_rank == VIC_MPI_ROOT) {
+            status = nc_close(plugin_filenames.wateruse.nc_id);
+            check_nc_status(status, "Error closing %s",
+                            plugin_filenames.wateruse.nc_filename);
+        }
     }
 }

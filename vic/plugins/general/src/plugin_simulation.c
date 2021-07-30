@@ -118,7 +118,7 @@ plugin_run(void)
                     local_dam_run(iCell);
                 }
                 rout_basin_run(iCell);
-                if (plugin_options.WATERUSE) {
+                if (plugin_options.WATERUSE &&plugin_options.LOCAL_WITH) {
                     wu_run(iCell);
                 }
                 if (plugin_options.DAMS) {

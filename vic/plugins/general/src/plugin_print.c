@@ -93,6 +93,8 @@ plugin_print_options(plugin_option_struct *op)
             op->Pbare);
     fprintf(LOG_DEST, "\tCOMP_WITH            : %s\n",
             op->COMP_WITH ? "true" : "false");
+    fprintf(LOG_DEST, "\tLOCAL_WITH           : %s\n",
+            op->LOCAL_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tREMOTE_WITH          : %s\n",
             op->REMOTE_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tNONRENEW_WITH        : %s\n",

@@ -169,7 +169,8 @@ plugin_alloc(void)
     if(plugin_options.FORCE_CO2){
         co2_alloc();
     }
-    if (plugin_options.ROUTING) {
+    if (plugin_options.ROUTING || 
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_alloc();
     }
     if (plugin_options.FORCE_LANDUSE) {
@@ -302,7 +303,8 @@ plugin_finalize(void)
     if(plugin_options.FORCE_CO2){
         co2_finalize();
     }
-    if (plugin_options.ROUTING) {
+    if (plugin_options.ROUTING || 
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_finalize();
     }
     if (plugin_options.FORCE_LANDUSE) {

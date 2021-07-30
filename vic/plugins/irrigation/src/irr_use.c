@@ -247,13 +247,7 @@ irr_apply(size_t iCell,
     }
     
     if (plugin_options.EFFICIENT_IRRIGATION && !cirr_con->paddy) {
-        if(cveg_var->root[1] > 0){
-            max_added = csoil_con->Wfc[1] - ccell_var->layer[1].moist;
-        } else if(cveg_var->root[0] > 0) {
-            max_added = csoil_con->Wfc[0] - ccell_var->layer[0].moist;
-        } else {
-            log_err("Roots should be in soil layer 1 or 2");
-        }
+        max_added = csoil_con->Wfc[0] - ccell_var->layer[0].moist;
     } else {
         max_added = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
     }
@@ -267,17 +261,7 @@ irr_apply(size_t iCell,
     }
     leftover_tmp = received - applied_tmp;
 
-    if (plugin_options.EFFICIENT_IRRIGATION && !cirr_con->paddy) {
-        if(cveg_var->root[1] > 0){
-            ccell_var->layer[1].moist += applied_tmp;
-        } else if(cveg_var->root[0] > 0) {
-            ccell_var->layer[0].moist += applied_tmp;
-        } else {
-            log_err("Roots should be in soil layer 1 or 2");
-        }
-    } else {
-        ccell_var->layer[0].moist += applied_tmp;
-    }
+    ccell_var->layer[0].moist += applied_tmp;
     
     (*applied) += applied_tmp;
     (*leftover) += leftover_tmp;
