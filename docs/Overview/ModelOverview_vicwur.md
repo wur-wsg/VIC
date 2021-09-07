@@ -59,7 +59,7 @@ In VIC-WUR a distinction is made between ‘small’ dam reservoirs (with an ups
 The scheme was adjusted slightly to account for monthly varying EFRs and to reduce overflow releases. For more information about the large-dam operation scheme, [click here](DamOperationText.md).
 
 ## Crop growth (following WOFOST)
-Crop growth is modeled following the WOFOST crop model. An arbitrary number of vegetation tiles can be assigned as being simulated by wofost. For each tile WOFOST uses the VIC water stress factor to compute crop growth. In turn, WOFOST provides VIC with the vegetation parameters needed for its simulations (height, LAI, drought resistance, etc.). In order to run WOFOST, extra information is needed such as: WOFOST crop parameters, fertilizer application, mineralization rate and growing season information.
+Crop growth is modeled following the WOFOST crop model. An arbitrary number of vegetation tiles can be assigned as being simulated by wofost. Note that multiple WOFOST crops can be grown on a single vegetation file (area-averaging the crop characteristics over the vegetation tile). For each tile WOFOST uses the VIC water stress factor to compute crop growth. In turn, WOFOST provides VIC with the vegetation parameters needed for its simulations (height, LAI, drought resistance, etc.). In order to run WOFOST, extra information is needed such as: WOFOST crop parameters, fertilizer application, mineralization rate and growing season information.
 
 for more information about the WOFOST crop growth module, [click here](WofostText.md).
 
