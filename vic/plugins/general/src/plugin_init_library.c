@@ -69,6 +69,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->WOFOST_DIST_MIN = false;
     plugin_options->WOFOST_CALC_MIN = false;
     plugin_options->WOFOST_CONTINUE = false;
+    plugin_options->WOFOST_FORCE_TSUM = false;
     plugin_options->WOFOST_FORCE_FERT = false;
     plugin_options->NCROPTYPES = 0;
     plugin_options->NFERTTIMES = 0;

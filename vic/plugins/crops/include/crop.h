@@ -13,6 +13,8 @@ typedef struct {
 } crop_con_map_struct;
 
 typedef struct {
+    double tsum1;
+    double tsum2;
     double *DVS_point;
     double *N_amount;
     double *P_amount;
@@ -20,6 +22,8 @@ typedef struct {
 } crop_con_struct;
 
 typedef struct {
+    double *tsum1;
+    double *tsum2;
     double **DVS_point;
     double **N_amount;
     double **P_amount;

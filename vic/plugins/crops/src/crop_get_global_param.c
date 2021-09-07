@@ -41,6 +41,10 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_DIST_TSUM = str_to_bool(flgstr);
     }
+    else if (strcasecmp("WOFOST_FORCE_TSUM", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_FORCE_TSUM = str_to_bool(flgstr);
+    }
     else if (strcasecmp("WOFOST_DIST_FERTILIZER", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_DIST_FERT = str_to_bool(flgstr);
@@ -56,6 +60,10 @@ crop_get_global_param(char *cmdstr)
     else if (strcasecmp("WOFOST_CONTINUE", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_CONTINUE = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("WOFOST_FORCE_TSUM", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_FORCE_TSUM = str_to_bool(flgstr);
     }
     else if (strcasecmp("WOFOST_FORCE_FERTILIZER", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
@@ -102,6 +110,19 @@ crop_validate_global_param(void)
     // Forcing
     if (!plugin_options.FORCE_CO2) {
         log_err("WOFOST = TRUE but FORCE_CO2 = FALSE");
+    }
+    if (plugin_options.WOFOST_FORCE_TSUM) {
+        if (!plugin_options.WOFOST_DIST_TSUM) {
+            log_err("WOFOST_FORCE_TSUM = TRUE but WOFOST_DIST_TSUM = FALSE");
+        }
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_TSUM_1],
+                       MISSING_S) == 0) {
+            log_err("WOFOST_FORCE_TSUM = TRUE but tsum1 forcing file is missing");
+        }
+        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_TSUM_2],
+                       MISSING_S) == 0) {
+            log_err("WOFOST_FORCE_TSUM = TRUE but tsum2 forcing file is missing");
+        }
     }
     if (plugin_options.WOFOST_FORCE_FERT) {
         if (!plugin_options.WOFOST_DIST_FERT) {

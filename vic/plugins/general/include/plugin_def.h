@@ -185,6 +185,8 @@ enum {
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
     // crops
+    FORCING_TSUM_1,                     /**< TSUM 1 [degree C] */
+    FORCING_TSUM_2,                     /**< TSUM 2 [degree C] */
     FORCING_FERT_DVS,                   /**< Fertilizer application DVS point [-] */
     FORCING_FERT_N,                     /**< Fertilizer application N amount [kg ha-1] */
     FORCING_FERT_P,                     /**< Fertilizer application P amount [kg ha-1] */
@@ -261,6 +263,7 @@ typedef struct {
     bool WOFOST_DIST_MIN;               /**< distributed mineralization for wofost module flag */
     bool WOFOST_CALC_MIN;               /**< calculated mineralization for wofost module flag */
     bool WOFOST_CONTINUE;               /**< continue on end land-use for wofost module flag */
+    bool WOFOST_FORCE_TSUM;             /**< distributed tsums forcing for wofost module flag */
     bool WOFOST_FORCE_FERT;             /**< distributed fertilizer forcing for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */
     short unsigned int NFERTTIMES;      /**< number of fertilizer occations */
