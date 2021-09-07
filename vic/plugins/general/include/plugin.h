@@ -35,5 +35,6 @@
 #include <wateruse.h>
 #include <irrigation.h>
 #include <crop.h>
+#include <co2.h>
 
 #endif /* PLUGIN_H */

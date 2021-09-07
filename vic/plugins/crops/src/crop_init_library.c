@@ -57,7 +57,6 @@ initialize_crop_force(crop_force_struct *crop_force,
     size_t                      iCrop;
     size_t                      iFert;
 
-    crop_force->CO2 = 0.;
     for (iCrop = 0; iCrop < ncrops; iCrop++) {
         for (iFert = 0; iFert < plugin_options.NFERTTIMES; iFert++) {
             crop_force->DVS_point[iCrop][iFert] = 0.;

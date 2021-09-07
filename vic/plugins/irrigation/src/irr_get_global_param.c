@@ -49,6 +49,17 @@ irr_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.POTENTIAL_IRRIGATION = str_to_bool(flgstr);
     }
+    else if (strcasecmp("EFFICIENT_IRRIGATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.EFFICIENT_IRRIGATION = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("OFFSET_IRRIGATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.OFFSET_IRRIGATION = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("PBARE", optstr) == 0) {
+        sscanf(cmdstr, "%*s %zu", &plugin_options.Pbare);
+    }
     else if (strcasecmp("IRRIGATION_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.irrigation.nc_filename);
     }
@@ -89,10 +100,7 @@ irr_get_parameters(char *cmdstr)
 
     sscanf(cmdstr, "%s", optstr);
 
-    if (strcasecmp("Wfc_fract", optstr) == 0) {
-        sscanf(cmdstr, "%*s %lf", &plugin_param.Wfc_fract);
-    }
-    else if (strcasecmp("Ksat_expt", optstr) == 0) {
+    if (strcasecmp("Ksat_expt", optstr) == 0) {
         sscanf(cmdstr, "%*s %lf", &plugin_param.Ksat_expt);
     }
     else {
@@ -110,9 +118,6 @@ irr_validate_parameters(void)
 {
     extern plugin_parameters_struct plugin_param;
 
-    if (!(plugin_param.Wfc_fract >= 0 && plugin_param.Wfc_fract <= 1)) {
-        log_err("Wfc_fract must be defined on the interval [0,1] (-)");
-    }
     if (!(plugin_param.Ksat_expt >= 0)) {
         log_err("Ksat_expt must be defined on the interval [0,inf] (-)");
     }

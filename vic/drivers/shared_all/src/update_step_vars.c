@@ -53,7 +53,7 @@ update_step_vars(all_vars_struct *all_vars,
     Nveg = veg_con[0].vegetat_type_num;
 
     /* Assign current veg characteristics */
-    for (iveg = 0; iveg <= Nveg; iveg++) {
+    for (iveg = 0; iveg < Nveg + options.Nbare; iveg++) {
         for (band = 0; band < Nbands; band++) {
             veg_var[iveg][band].albedo = veg_hist[iveg].albedo[NR];
             veg_var[iveg][band].displacement = veg_hist[iveg].displacement[NR];

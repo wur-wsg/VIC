@@ -101,6 +101,7 @@ wofost_set_data(void)
     extern global_param_struct     global_param;
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
+    extern soil_con_struct         *soil_con;
     extern crop_con_map_struct    *crop_con_map;
     extern crop_con_struct       **crop_con;
     extern SimUnit              ***Grid;
@@ -114,11 +115,17 @@ wofost_set_data(void)
     int                            iCrop;
     SimUnit                       *iGrid;
 
+    size_t                         d2count[2];
+    size_t                         d2start[2];
     size_t                         d3count[3];
     size_t                         d3start[3];
     size_t                         d4count[4];
     size_t                         d4start[4];
 
+    d2start[0] = 0;
+    d2start[1] = 0;
+    d2count[0] = global_domain.n_ny;
+    d2count[1] = global_domain.n_nx;
     d3start[0] = 0;
     d3start[1] = 0;
     d3start[2] = 0;
@@ -309,139 +316,179 @@ wofost_set_data(void)
     }
 
     if (plugin_options.WOFOST_DIST_MIN) {
-        // Set N_Mins
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            d3start[0] = j;
-
+        if (plugin_options.WOFOST_CALC_MIN) {
+            // Set soil carbon
             get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "N_mins", d3start, d3count, dvar);
+                                        "carbon", d2start, d2count, dvar);
 
             for (i = 0; i < local_domain.ncells_active; i++) {
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
-                        }
+                soil_con[i].carbon = dvar[i];
+            }
 
-                        iGrid->mng->N_Mins = dvar[i];
+            // Set soil ph
+            get_scatter_nc_field_double(&plugin_filenames.crop,
+                                        "pH", d2start, d2count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                soil_con[i].ph = dvar[i];
+            }
+            
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
+
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "mineralization_period", d3start, d3count, dvar);
+                
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
+                            
+                            iGrid->mng->NRecoveryFrac = 1. / dvar[i];
+                        }
                     }
                 }
             }
-        }
+        } 
+        else {
+            // Set N_Mins
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
 
-        // Set NRecoveryFrac
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            d3start[0] = j;
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "N_mins", d3start, d3count, dvar);
 
-            get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "N_recovery", d3start, d3count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
 
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
+                            iGrid->mng->N_Mins = dvar[i];
                         }
-
-                        iGrid->mng->NRecoveryFrac = dvar[i];
                     }
                 }
             }
-        }
 
-        // Set P_Mins
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            d3start[0] = j;
+            // Set NRecoveryFrac
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
 
-            get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "P_mins", d3start, d3count, dvar);
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "N_recovery", d3start, d3count, dvar);
 
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
+
+                            iGrid->mng->NRecoveryFrac = dvar[i];
                         }
-
-                        iGrid->mng->P_Mins = dvar[i];
                     }
                 }
             }
-        }
 
-        // Set PRecoveryFrac
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            d3start[0] = j;
+            // Set P_Mins
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
 
-            get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "P_recovery", d3start, d3count, dvar);
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "P_mins", d3start, d3count, dvar);
 
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
+
+                            iGrid->mng->P_Mins = dvar[i];
                         }
-
-                        iGrid->mng->PRecoveryFrac = dvar[i];
                     }
                 }
             }
-        }
 
-        // Set K_Mins
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            d3start[0] = j;
+            // Set PRecoveryFrac
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
 
-            get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "K_mins", d3start, d3count, dvar);
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "P_recovery", d3start, d3count, dvar);
 
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
+
+                            iGrid->mng->PRecoveryFrac = dvar[i];
                         }
-
-                        iGrid->mng->K_Mins = dvar[i];
                     }
                 }
             }
-        }
 
-        // Set KRecoveryFrac
-        for (j = 0; j < plugin_options.NCROPTYPES; j++) {
-            d3start[0] = j;
+            // Set K_Mins
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
 
-            get_scatter_nc_field_double(&plugin_filenames.crop,
-                                        "K_recovery", d3start, d3count, dvar);
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "K_mins", d3start, d3count, dvar);
 
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                iCrop = crop_con_map[i].cidx[j];
-                if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
+
+                            iGrid->mng->K_Mins = dvar[i];
                         }
+                    }
+                }
+            }
 
-                        iGrid->mng->KRecoveryFrac = dvar[i];
+            // Set KRecoveryFrac
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d3start[0] = j;
+
+                get_scatter_nc_field_double(&plugin_filenames.crop,
+                                            "K_recovery", d3start, d3count, dvar);
+
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        for (k = 0; k < options.SNOW_BAND; k++) {
+                            iGrid = Grid[i][k];
+                            for (l = 0; l < (size_t)iCrop; l++) {
+                                iGrid = iGrid->next;
+                            }
+
+                            iGrid->mng->KRecoveryFrac = dvar[i];
+                        }
                     }
                 }
             }
         }
     }
-
+    
     // Set cycle length
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < plugin_options.NCROPTYPES; j++) {

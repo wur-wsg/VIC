@@ -33,6 +33,7 @@
 void
 crop_set_output_met_data_info(void)
 {
+    extern plugin_option_struct plugin_options;
     extern metadata_struct out_metadata[];
 
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].varname,
@@ -167,6 +168,83 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WRT].description,
              MAXSTRING, "%s", "crop root dry matter");
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].varname, MAXSTRING,
+             "%s", "OUT_CROP_WDLV");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].long_name, MAXSTRING,
+             "%s", "dead_leaf_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].standard_name,
+             MAXSTRING, "%s", "crop_dead_leaf_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDLV].description,
+             MAXSTRING, "%s", "crop dead leaf dry matter");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].varname, MAXSTRING,
+             "%s", "OUT_CROP_WDST");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].long_name, MAXSTRING,
+             "%s", "dead_stem_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].standard_name,
+             MAXSTRING, "%s", "crop_dead_stem_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDST].description,
+             MAXSTRING, "%s", "crop dead stem dry matter");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].varname, MAXSTRING,
+             "%s", "OUT_CROP_WDRT");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].long_name, MAXSTRING,
+             "%s", "dead_root_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].standard_name,
+             MAXSTRING, "%s", "crop_dead_root_drymatter");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_WDRT].description,
+             MAXSTRING, "%s", "crop dead root dry matter");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].varname, MAXSTRING,
+             "%s", "OUT_CROP_NLV");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].long_name, MAXSTRING,
+             "%s", "leaf_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].standard_name,
+             MAXSTRING, "%s", "crop_leaf_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NLV].description,
+             MAXSTRING, "%s", "crop leaf nitrogen content");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].varname, MAXSTRING,
+             "%s", "OUT_CROP_NST");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].long_name, MAXSTRING,
+             "%s", "stem_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].standard_name,
+             MAXSTRING, "%s", "crop_stem_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NST].description,
+             MAXSTRING, "%s", "crop stem nitrogen content");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].varname, MAXSTRING,
+             "%s", "OUT_CROP_NSO");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].long_name, MAXSTRING,
+             "%s", "storage_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].standard_name,
+             MAXSTRING, "%s", "crop_storage_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSO].description,
+             MAXSTRING, "%s", "crop storage organ nitrogen content");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].varname, MAXSTRING,
+             "%s", "OUT_CROP_NRT");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].long_name, MAXSTRING,
+             "%s", "root_nitrogen");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].standard_name,
+             MAXSTRING, "%s", "crop_root_nitrogen_content");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].units, MAXSTRING,
+             "%s", "kg ha-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NRT].description,
+             MAXSTRING, "%s", "crop root nitrogen content");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].varname, MAXSTRING,
              "%s", "OUT_CROP_LAI");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_LAI].long_name, MAXSTRING,
@@ -201,6 +279,30 @@ crop_set_output_met_data_info(void)
              "%s", "-");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].description,
              MAXSTRING, "%s", "crop nutrient stress");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].varname, MAXSTRING,
+             "%s", "OUT_CROP_TMAXSTRESS");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].long_name,
+             MAXSTRING,
+             "%s", "max_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].standard_name,
+             MAXSTRING, "%s", "crop_max_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].units, MAXSTRING,
+             "%s", "-");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].description,
+             MAXSTRING, "%s", "crop maximum temperature stress");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].varname, MAXSTRING,
+             "%s", "OUT_CROP_TMINSTRESS");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].long_name,
+             MAXSTRING,
+             "%s", "min_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].standard_name,
+             MAXSTRING, "%s", "crop_min_temperature_stress");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].units, MAXSTRING,
+             "%s", "-");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].description,
+             MAXSTRING, "%s", "crop minimum temperature stress");
 
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NPKI].varname, MAXSTRING,
              "%s", "OUT_CROP_NPKI");
@@ -381,6 +483,20 @@ crop_set_output_met_data_info(void)
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_WRT].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_WDLV].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_WDST].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_WDRT].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NLV].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NST].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NSO].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_NRT].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_LAI].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NNI].nelem = plugin_options.NCROPTYPES;
@@ -394,6 +510,10 @@ crop_set_output_met_data_info(void)
                  OUT_CROP_WSTRESS].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NSTRESS].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_TMAXSTRESS].nelem = plugin_options.NCROPTYPES;
+    out_metadata[N_OUTVAR_TYPES +
+                 OUT_CROP_TMINSTRESS].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_CROP_NSOIL].nelem = plugin_options.NCROPTYPES;
     out_metadata[N_OUTVAR_TYPES +
@@ -464,6 +584,13 @@ crop_set_nc_var_info(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_WST:
     case N_OUTVAR_TYPES + OUT_CROP_WSO:
     case N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case N_OUTVAR_TYPES + OUT_CROP_WDLV:
+    case N_OUTVAR_TYPES + OUT_CROP_WDST:
+    case N_OUTVAR_TYPES + OUT_CROP_WDRT:
+    case N_OUTVAR_TYPES + OUT_CROP_NLV:
+    case N_OUTVAR_TYPES + OUT_CROP_NST:
+    case N_OUTVAR_TYPES + OUT_CROP_NSO:
+    case N_OUTVAR_TYPES + OUT_CROP_NRT:
     case N_OUTVAR_TYPES + OUT_CROP_LAI:
     case N_OUTVAR_TYPES + OUT_CROP_NNI:
     case N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -471,6 +598,8 @@ crop_set_nc_var_info(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_NPKI:
     case N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -509,6 +638,13 @@ crop_set_nc_var_dimids(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_WST:
     case N_OUTVAR_TYPES + OUT_CROP_WSO:
     case N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case N_OUTVAR_TYPES + OUT_CROP_WDLV:
+    case N_OUTVAR_TYPES + OUT_CROP_WDST:
+    case N_OUTVAR_TYPES + OUT_CROP_WDRT:
+    case N_OUTVAR_TYPES + OUT_CROP_NLV:
+    case N_OUTVAR_TYPES + OUT_CROP_NST:
+    case N_OUTVAR_TYPES + OUT_CROP_NSO:
+    case N_OUTVAR_TYPES + OUT_CROP_NRT:
     case N_OUTVAR_TYPES + OUT_CROP_LAI:
     case N_OUTVAR_TYPES + OUT_CROP_NNI:
     case N_OUTVAR_TYPES + OUT_CROP_PNI:
@@ -516,6 +652,8 @@ crop_set_nc_var_dimids(unsigned int    varid,
     case N_OUTVAR_TYPES + OUT_CROP_NPKI:
     case N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS:
+    case N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS:
     case N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -546,6 +684,8 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_GROW:
     case  N_OUTVAR_TYPES + OUT_CROP_WSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_NSTRESS:
+    case  N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS:
+    case  N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS:
     case  N_OUTVAR_TYPES + OUT_CROP_NNI:
     case  N_OUTVAR_TYPES + OUT_CROP_PNI:
     case  N_OUTVAR_TYPES + OUT_CROP_KNI:
@@ -559,6 +699,13 @@ crop_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_CROP_WST:
     case  N_OUTVAR_TYPES + OUT_CROP_WSO:
     case  N_OUTVAR_TYPES + OUT_CROP_WRT:
+    case  N_OUTVAR_TYPES + OUT_CROP_WDLV:
+    case  N_OUTVAR_TYPES + OUT_CROP_WDST:
+    case  N_OUTVAR_TYPES + OUT_CROP_WDRT:
+    case  N_OUTVAR_TYPES + OUT_CROP_NLV:
+    case  N_OUTVAR_TYPES + OUT_CROP_NST:
+    case  N_OUTVAR_TYPES + OUT_CROP_NSO:
+    case  N_OUTVAR_TYPES + OUT_CROP_NRT:
     case  N_OUTVAR_TYPES + OUT_CROP_NSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_PSOIL:
     case  N_OUTVAR_TYPES + OUT_CROP_KSOIL:
@@ -578,10 +725,245 @@ crop_history(int           varid,
 }
 
 /******************************************
-* @brief   Write output
+* @brief   Write daily output
 ******************************************/
 void
-crop_put_data(size_t iCell)
+crop_put_state_data(size_t iCell)
+{
+    extern option_struct       options;
+    extern SimUnit          ***Grid;
+    extern double           ***out_data;
+    extern soil_con_struct    *soil_con;
+    extern all_vars_struct    *all_vars;
+    extern veg_con_map_struct *veg_con_map;
+    extern dmy_struct         *dmy;
+    extern size_t              current;
+
+    double                     area_fract;
+    double                     cc_fract;
+
+    size_t                     iBand;
+    size_t                     iVeg;
+    size_t                     iLayer;
+    size_t                     crop_class;
+    size_t                     veg_class;
+
+    SimUnit                   *cgrid;
+
+    /* Store VIC crop fluxes */
+    for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+        area_fract = soil_con[iCell].AreaFract[iBand];
+        cgrid = Grid[iCell][iBand];
+
+        while (cgrid) {
+            crop_class = cgrid->met->crop_class;
+            veg_class = crop_con_map[iCell].veg_class[crop_class];
+            iVeg = veg_con_map[iCell].vidx[veg_class];
+            cc_fract =
+                crop_con_map[iCell].Cc[crop_class][dmy[current].month - 1];
+
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_EVAP_BARE][crop_class] +=
+                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].esoil *
+                    area_fract * cc_fract * cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TRANSP_VEG][crop_class] +=
+                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].transp *
+                    area_fract * cc_fract * cgrid->growing;
+            }
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP_CANOP][crop_class] +=
+                all_vars[iCell].veg_var[iVeg][iBand].canopyevap *
+                area_fract * cc_fract * cgrid->growing;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_CROP_EVAP][crop_class] +=
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_EVAP_BARE][crop_class] +
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TRANSP_VEG][crop_class] +
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_EVAP_CANOP][crop_class];
+
+            cgrid = cgrid->next;
+        }
+    }
+
+    if (crop_run_flag()) {
+        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+            area_fract = soil_con[iCell].AreaFract[iBand];
+            cgrid = Grid[iCell][iBand];
+
+            while (cgrid) {
+                crop_class = cgrid->met->crop_class;
+
+                /* Store crop fluxes */
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_CULTIVATE][crop_class] +=
+                    cgrid->cultivating *
+                    area_fract;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_GROW][crop_class] += cgrid->growing *
+                                                              area_fract;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_DVS][crop_class] +=
+                    cgrid->crp->st.Development *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WLV][crop_class] +=
+                    cgrid->crp->st.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WST][crop_class] +=
+                    cgrid->crp->st.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WSO][crop_class] +=
+                    cgrid->crp->st.storage *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WRT][crop_class] +=
+                    cgrid->crp->st.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDLV][crop_class] +=
+                    cgrid->crp->dst.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDST][crop_class] +=
+                    cgrid->crp->dst.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDRT][crop_class] +=
+                    cgrid->crp->dst.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NLV][crop_class] +=
+                    cgrid->crp->N_st.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NST][crop_class] +=
+                    cgrid->crp->N_st.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NSO][crop_class] +=
+                    cgrid->crp->N_st.storage *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NRT][crop_class] +=
+                    cgrid->crp->N_st.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NSOIL][crop_class] +=
+                    cgrid->ste->st_N_tot *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_PSOIL][crop_class] +=
+                    cgrid->ste->st_P_tot *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_KSOIL][crop_class] +=
+                    cgrid->ste->st_K_tot *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NUPT][crop_class] +=
+                    cgrid->crp->N_st.Uptake *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_PUPT][crop_class] +=
+                    cgrid->crp->P_st.Uptake *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_KUPT][crop_class] +=
+                    cgrid->crp->K_st.Uptake *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NDEM][crop_class] +=
+                    cgrid->crp->N_st.Demand *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_PDEM][crop_class] +=
+                    cgrid->crp->P_st.Demand *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_KDEM][crop_class] +=
+                    cgrid->crp->K_st.Demand *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_ROOTDEPTH][crop_class] +=
+                    cgrid->crp->st.RootDepth *
+                    area_fract *
+                    cgrid->growing;
+
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_LAI][crop_class] +=
+                    cgrid->crp->st.LAI * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NNI][crop_class] +=
+                    cgrid->crp->N_st.Indx *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_PNI][crop_class] +=
+                    cgrid->crp->P_st.Indx *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_KNI][crop_class] +=
+                    cgrid->crp->K_st.Indx *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NPKI][crop_class] +=
+                    cgrid->crp->NPK_Indx *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WSTRESS][crop_class] +=
+                    cgrid->soil->WaterStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NSTRESS][crop_class] +=
+                    cgrid->crp->NutrientStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMAXSTRESS][crop_class] +=
+                    cgrid->met->TmaxStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMINSTRESS][crop_class] +=
+                    cgrid->met->TminStress *
+                    area_fract *
+                    cgrid->growing;
+
+                cgrid = cgrid->next;
+            }
+        }
+    }
+}
+
+/******************************************
+* @brief   Write multi-day output
+******************************************/
+void
+crop_put_rate_data(size_t iCell)
 {
     extern option_struct       options;
     extern SimUnit          ***Grid;
@@ -595,6 +977,13 @@ crop_put_data(size_t iCell)
     double                     area_fract;
     double                     cc_fract;
     float                      tmp_develop;
+    float                      tmp_dw_leaf;
+    float                      tmp_dw_stem;
+    float                      tmp_dw_root;
+    float                      tmp_dw_storage;
+    float                      tmp_Nmax_leaf;
+    float                      tmp_Nmax_stem;
+    float                      tmp_Nmax_root;
 
     size_t                     iBand;
     size_t                     iVeg;
@@ -681,6 +1070,37 @@ crop_put_data(size_t iCell)
                     cgrid->crp->rt.roots * area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDLV][crop_class] +=
+                    cgrid->crp->drt.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDST][crop_class] +=
+                    cgrid->crp->drt.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_WDRT][crop_class] +=
+                    cgrid->crp->drt.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NLV][crop_class] +=
+                    cgrid->crp->N_rt.leaves *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NST][crop_class] +=
+                    cgrid->crp->N_rt.stems * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NSO][crop_class] +=
+                    cgrid->crp->N_rt.storage *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_NRT][crop_class] +=
+                    cgrid->crp->N_rt.roots * area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_NSOIL][crop_class] +=
                     cgrid->ste->rt_N_tot *
                     area_fract *
@@ -735,35 +1155,50 @@ crop_put_data(size_t iCell)
                 if (cgrid->crp->GrowthDay == 2) {
                     tmp_develop = cgrid->crp->st.Development -
                                   cgrid->crp->rt.Development;
+                    
+                    tmp_dw_root = cgrid->crp->prm.InitialDryWeight *
+                            Afgen(cgrid->crp->prm.Roots, &tmp_develop);
+                    tmp_dw_leaf = cgrid->crp->prm.InitialDryWeight *
+                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                        Afgen(cgrid->crp->prm.Leaves, &tmp_develop);
+                    tmp_dw_stem = cgrid->crp->prm.InitialDryWeight *
+                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                        Afgen(cgrid->crp->prm.Stems, &tmp_develop);
+                    tmp_dw_storage = cgrid->crp->prm.InitialDryWeight *
+                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                        Afgen(cgrid->crp->prm.Storage, &tmp_develop);
+                    
+                    tmp_Nmax_leaf = Afgen(cgrid->crp->prm.N_MaxLeaves, &tmp_develop);
+                    tmp_Nmax_stem = cgrid->crp->prm.N_MaxStems * tmp_Nmax_leaf;
+                    tmp_Nmax_root = cgrid->crp->prm.N_MaxRoots * tmp_Nmax_leaf;
 
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_DVS][crop_class] +=
                         cgrid->crp->prm.InitialDVS *
-                        area_fract *
-                        cgrid->
-                        growing;
+                        area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WLV][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Leaves, &tmp_develop) *
-                        area_fract * cgrid->growing;
+                        tmp_dw_leaf * area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WST][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Stems, &tmp_develop) *
-                        area_fract * cgrid->growing;
+                        tmp_dw_stem * area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WSO][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Storage, &tmp_develop) *
-                        area_fract * cgrid->growing;
+                        tmp_dw_storage * area_fract * cgrid->growing;
                     out_data[iCell][N_OUTVAR_TYPES +
                                     OUT_CROP_WRT][crop_class] +=
-                        cgrid->crp->prm.InitialDryWeight *Afgen(
-                            cgrid->crp->prm.Roots, &tmp_develop) *
+                        tmp_dw_root * area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_CROP_NLV][crop_class] +=
+                        tmp_Nmax_leaf * tmp_dw_leaf *
+                        area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_CROP_NST][crop_class] +=
+                        tmp_Nmax_stem * tmp_dw_stem *
+                        area_fract * cgrid->growing;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_CROP_NRT][crop_class] +=
+                        tmp_Nmax_root * tmp_dw_root *
                         area_fract * cgrid->growing;
 
                     out_data[iCell][N_OUTVAR_TYPES +
@@ -818,9 +1253,28 @@ crop_put_data(size_t iCell)
                     cgrid->crp->NutrientStress *
                     area_fract *
                     cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMAXSTRESS][crop_class] +=
+                    cgrid->met->TmaxStress *
+                    area_fract *
+                    cgrid->growing;
+                out_data[iCell][N_OUTVAR_TYPES +
+                                OUT_CROP_TMINSTRESS][crop_class] +=
+                    cgrid->met->TminStress *
+                    area_fract *
+                    cgrid->growing;
 
                 cgrid = cgrid->next;
             }
         }
     }
+}
+
+/******************************************
+* @brief   Write output
+******************************************/
+void
+crop_put_data(size_t iCell)
+{
+    crop_put_rate_data(iCell);
 }

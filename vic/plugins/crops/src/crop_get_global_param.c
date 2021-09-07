@@ -49,6 +49,10 @@ crop_get_global_param(char *cmdstr)
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_DIST_MIN = str_to_bool(flgstr);
     }
+    else if (strcasecmp("WOFOST_CALC_MINERALIZATION", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.WOFOST_CALC_MIN = str_to_bool(flgstr);
+    }
     else if (strcasecmp("WOFOST_CONTINUE", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.WOFOST_CONTINUE = str_to_bool(flgstr);
@@ -68,6 +72,7 @@ void
 crop_validate_global_param(void)
 {
     extern plugin_global_param_struct plugin_global_param;
+    extern plugin_option_struct       plugin_options;
     extern plugin_filenames_struct    plugin_filenames;
 
     // Validate wofost time step
@@ -95,8 +100,8 @@ crop_validate_global_param(void)
         log_err("WOFOST = TRUE but text file is missing");
     }
     // Forcing
-    if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_CO2], MISSING_S) == 0) {
-        log_err("WOFOST = TRUE but CO2 forcing file is missing");
+    if (!plugin_options.FORCE_CO2) {
+        log_err("WOFOST = TRUE but FORCE_CO2 = FALSE");
     }
     if (plugin_options.WOFOST_FORCE_FERT) {
         if (!plugin_options.WOFOST_DIST_FERT) {
@@ -119,26 +124,9 @@ crop_validate_global_param(void)
             log_err("WOFOST_FORCE_FERT = TRUE but K forcing file is missing");
         }
     }
-}
-
-bool
-crop_get_parameters(char *cmdstr)
-{
-    extern plugin_parameters_struct plugin_param;
-
-    char                            optstr[MAXSTRING];
-
-    sscanf(cmdstr, "%s", optstr);
-
-    UNUSED(plugin_param);
-
-    return true;
-}
-
-void
-crop_validate_parameters(void)
-{
-    extern plugin_parameters_struct plugin_param;
-
-    UNUSED(plugin_param);
+    if (plugin_options.WOFOST_CALC_MIN) {
+        if (!plugin_options.WOFOST_DIST_MIN) {
+            log_err("WOFOST_CALC_MIN = TRUE but WOFOST_DIST_MIN = FALSE");
+        }
+    }
 }

@@ -2421,7 +2421,7 @@ advect_soil_veg_storage(double            lakefrac,
     cell->rootmoist = 0;
     cell->wetness = 0;
     for (lidx = 0; lidx < options.Nlayer; lidx++) {
-        if (veg_con->root[lidx] > 0) {
+        if (veg_var->root[lidx] > 0) {
             cell->rootmoist += cell->layer[lidx].moist;
         }
         cell->wetness +=

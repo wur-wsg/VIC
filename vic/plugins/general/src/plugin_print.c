@@ -85,10 +85,16 @@ plugin_print_options(plugin_option_struct *op)
             op->FORCE_LANDUSE ? "true" : "false");
     fprintf(LOG_DEST, "\tPOTENTIAL_IRRIGATION : %s\n",
             op->POTENTIAL_IRRIGATION ? "true" : "false");
-    fprintf(LOG_DEST, "\tFORCE_PUMP_CAP       : %s\n",
-            op->FORCE_PUMP_CAP ? "true" : "false");
+    fprintf(LOG_DEST, "\tEFFICIENT_IRRIGATION : %s\n",
+            op->EFFICIENT_IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tOFFSET_IRRIGATION    : %s\n",
+            op->OFFSET_IRRIGATION ? "true" : "false");
+    fprintf(LOG_DEST, "\tPbare                : %zu\n",
+            op->Pbare);
     fprintf(LOG_DEST, "\tCOMP_WITH            : %s\n",
             op->COMP_WITH ? "true" : "false");
+    fprintf(LOG_DEST, "\tLOCAL_WITH           : %s\n",
+            op->LOCAL_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tREMOTE_WITH          : %s\n",
             op->REMOTE_WITH ? "true" : "false");
     fprintf(LOG_DEST, "\tNONRENEW_WITH        : %s\n",
@@ -99,25 +105,27 @@ plugin_print_options(plugin_option_struct *op)
             op->WOFOST_DIST_SEASON ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_DIST_TSUM     : %s\n",
             op->WOFOST_DIST_TSUM ? "true" : "false");
-    fprintf(LOG_DEST, "\tDIST_FERT            : %s\n",
+    fprintf(LOG_DEST, "\tWOFOST_DIST_FERT     : %s\n",
             op->WOFOST_DIST_FERT ? "true" : "false");
-    fprintf(LOG_DEST, "\tDIST_MIN             : %s\n",
+    fprintf(LOG_DEST, "\tWOFOST_DIST_MIN      : %s\n",
             op->WOFOST_DIST_MIN ? "true" : "false");
-    fprintf(LOG_DEST, "\tCONTINUE             : %s\n",
+    fprintf(LOG_DEST, "\tWOFOST_CALC_MIN      : %s\n",
+            op->WOFOST_CALC_MIN ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_CONTINUE      : %s\n",
             op->WOFOST_CONTINUE ? "true" : "false");
-    fprintf(LOG_DEST, "\tFOREC_FERT           : %s\n",
+    fprintf(LOG_DEST, "\tWOFOST_FOREC_FERT    : %s\n",
             op->WOFOST_FORCE_FERT ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",
             op->WOFOST_PIRR ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PFERT         : %s\n",
             op->WOFOST_PFERT ? "true" : "false");
+    fprintf(LOG_DEST, "\tFORCE_CO2            : %s\n",
+            op->FORCE_CO2 ? "true" : "false");
 
     fprintf(LOG_DEST, "\tUH_LENGTH            : %d\n",
             op->UH_LENGTH);
     fprintf(LOG_DEST, "\tNDAMTYPES            : %d\n",
             op->NDAMTYPES);
-    fprintf(LOG_DEST, "\tNDAMSERVICE          : %d\n",
-            op->NDAMSERVICE);
     fprintf(LOG_DEST, "\tNWUTYPES             : %d\n",
             op->NWUTYPES);
     fprintf(LOG_DEST, "\tNWURECEIVING         : %d\n",
@@ -141,6 +149,5 @@ plugin_print_parameters(plugin_parameters_struct *pa)
     fprintf(LOG_DEST, "\tDAM_BETA             : %.4f\n", pa->DAM_BETA);
     fprintf(LOG_DEST, "\tDAM_GAMMA            : %.4f\n", pa->DAM_GAMMA);
     fprintf(LOG_DEST, "\tNREN_LIM             : %.4f\n", pa->NREN_LIM);
-    fprintf(LOG_DEST, "\tWfc_fract            : %.4f\n", pa->Wfc_fract);
     fprintf(LOG_DEST, "\tKsat_expt            : %.4f\n", pa->Ksat_expt);
 }

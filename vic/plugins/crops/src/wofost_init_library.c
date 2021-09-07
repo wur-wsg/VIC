@@ -224,6 +224,7 @@ initialize_wofost_parameters(Parameters *prm)
     prm->RelRespiStorage = 0.;
     prm->RelRespiRoots = 0.;
     prm->RelRespiStems = 0.;
+    prm->CritLAIFactor = 0.;
     prm->MaxRelDeathRate = 0.;
     prm->CorrectionTransp = 0.;
     prm->CropGroupNumber = 0.;
@@ -273,6 +274,7 @@ initialize_wofost_parameters(Parameters *prm)
     prm->MinStomatalResistance = 0.;
     prm->MaxArchitecturalResistance = 0.;
     prm->Fcanopy = 0.;
+    prm->TranslocationFrac = 0.;
 }
 
 void
@@ -380,6 +382,8 @@ initialize_wofost_vic(Meteo *met)
     met->CosLD = 0.;
     met->DiffRadPP = 0.;
     met->DSinBE = 0.;
+    met->TmaxStress = 0.;
+    met->TminStress = 0.;
 }
 
 void

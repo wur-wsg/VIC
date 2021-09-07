@@ -1,7 +1,7 @@
 /******************************************************************************
  * @section DESCRIPTION
  *
- * This routine opens files for soil, vegetation, and global parameters.
+ * Irrigation initialization functions
  *
  * @section LICENSE
  *
@@ -24,26 +24,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
-#include <vic_driver_classic.h>
+#include <vic_driver_image.h>
+#include <plugin.h>
 
-/******************************************************************************
- * @brief    This routine opens files for soil, vegetation, and global
- *           parameters.
- *****************************************************************************/
+/******************************************
+* @brief   Initialize the co2 forcing
+******************************************/
 void
-check_files(filep_struct     *filep,
-            filenames_struct *fnames)
+initialize_co2_force(co2_force_struct *co2_force)
 {
-    extern option_struct options;
-    extern FILE          *open_file(char string[], char type[]);
+    co2_force->CO2 = 0.;
+}
 
-    filep->soilparam = open_file(fnames->soil, "r");
-    filep->veglib = open_file(fnames->veglib, "r");
-    filep->vegparam = open_file(fnames->veg, "r");
-    if (options.SNOW_BAND > 1) {
-        filep->snowband = open_file(fnames->snowband, "r");
-    }
-    if (options.LAKES) {
-        filep->lakeparam = open_file(fnames->lakeparam, "r");
+/******************************************
+* @brief   Initialize the irrigation structures
+******************************************/
+void
+co2_initialize_local_structures(void)
+{
+    extern domain_struct        local_domain;
+    extern co2_force_struct    *co2_force;
+
+    size_t                      i;
+
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        initialize_co2_force(&co2_force[i]);
     }
 }

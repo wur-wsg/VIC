@@ -55,8 +55,9 @@ typedef struct {
  * @brief   Routing Variables
  *****************************************************************************/
 typedef struct {
+    double runoff;              /**< river (runoff) discharge [m3 s-1] */
     double inflow;              /**< river (inflow) discharge [m3 s-1] */
-    double stream;              /**< river (in-cell) stream moisture [mm] */
+    double stream;              /**< river (in-cell) stream moisture [m3 s-1] */
     double nonrenew_deficit;    /**< non-renewable storage deficit [mm] */
     double discharge;           /**< river (outflow) discharge [m3 s-1] */
     double *dt_discharge;       /**< routing sub-step discharge [m3 s-1] */
@@ -105,6 +106,7 @@ void rout_compute_derived_state_vars(void);
 
 void rout_history(int, unsigned int *);
 void rout_forcing(void);
+void rout_run(size_t);
 void rout_basin_run(size_t);
 void rout_random_run(void);
 void rout_put_data(size_t);

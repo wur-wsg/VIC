@@ -35,6 +35,18 @@ rout_set_output_met_data_info(void)
 {
     extern metadata_struct out_metadata[];
 
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_RUNOFF].varname,
+             MAXSTRING,
+             "%s", "OUT_STREAM_RUNOFF");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_RUNOFF].long_name,
+             MAXSTRING, "%s", "stream_runoff");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_RUNOFF].standard_name,
+             MAXSTRING, "%s", "stream runoff");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_RUNOFF].units, MAXSTRING,
+             "%s", "m3 s-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_RUNOFF].description,
+             MAXSTRING, "%s", "runoff at the cell");
+
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_STREAM_INFLOW].varname,
              MAXSTRING,
              "%s", "OUT_STREAM_INFLOW");
@@ -80,11 +92,6 @@ rout_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].description,
              MAXSTRING, "%s", "non-renewable deficit");
-
-    out_metadata[N_OUTVAR_TYPES + OUT_STREAM_INFLOW].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_DISCHARGE].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_STREAM_MOIST].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].nelem = 1;
 }
 
 /******************************************
@@ -99,6 +106,7 @@ rout_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_NONREN_DEFICIT:
         (*agg_type) = AGG_TYPE_END;
         break;
+    case  N_OUTVAR_TYPES + OUT_STREAM_RUNOFF:
     case  N_OUTVAR_TYPES + OUT_STREAM_INFLOW:
     case  N_OUTVAR_TYPES + OUT_DISCHARGE:
         (*agg_type) = AGG_TYPE_AVG;
@@ -128,4 +136,6 @@ rout_put_data(size_t iCell)
                     OUT_DISCHARGE][0] = rout_var[iCell].discharge;
     out_data[iCell][N_OUTVAR_TYPES +
                     OUT_STREAM_INFLOW][0] = rout_var[iCell].inflow;
+    out_data[iCell][N_OUTVAR_TYPES +
+                    OUT_STREAM_RUNOFF][0] = rout_var[iCell].runoff;
 }
