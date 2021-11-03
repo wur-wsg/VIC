@@ -434,7 +434,7 @@ typedef struct METEO {
     float CosLD;
     float DiffRadPP;
     float DSinBE;
-    float TmaxStress;
+    float TempStress;
     float TminStress;
 } Meteo;
 

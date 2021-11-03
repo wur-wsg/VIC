@@ -63,6 +63,7 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->NONRENEW_RUNOFF = false;
     plugin_options->WOFOST_PIRR = false;
     plugin_options->WOFOST_PFERT = false;
+    plugin_options->WOFOST_PTEMP = false;
     plugin_options->WOFOST_DIST_SEASON = false;
     plugin_options->WOFOST_DIST_TSUM = false;
     plugin_options->WOFOST_DIST_FERT = false;

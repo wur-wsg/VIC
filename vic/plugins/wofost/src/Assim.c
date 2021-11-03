@@ -97,6 +97,9 @@ DailyTotalAssimilation(SimUnit *Grid)
     float        KDiffuse, EFF, Factor;
     float        Hour, SinB, PAR, PARDiffuse, PARDirect, AssimMax;
     float        DailyTotalAssimilation = 0.;
+    float        tiny = 0.001;
+    float        DayTempTmp;
+    float        TempStressTmp;
 
     KDiffuse = Afgen(Grid->crp->prm.KDiffuseTb, &(Grid->crp->st.Development));
 
@@ -106,9 +109,19 @@ DailyTotalAssimilation(SimUnit *Grid)
     /* Correction for the atmospheric CO2 concentration */
     EFF = EFF * Factor;
 
-    Grid->met->TmaxStress = Afgen(Grid->crp->prm.FactorAssimRateTemp, 
+    Grid->met->TempStress = Afgen(Grid->crp->prm.FactorAssimRateTemp, 
                                  &Grid->met->DayTemp);
-    AssimMax = Grid->met->TmaxStress *
+    if (plugin_options.WOFOST_PTEMP) {
+        DayTempTmp = Grid->met->DayTemp - tiny;
+        TempStressTmp = Afgen(Grid->crp->prm.FactorAssimRateTemp, 
+                                 &DayTempTmp);
+        
+        // Only adjust TempStress if temperature is above optimal (not below)
+        if(TempStressTmp > Grid->met->TempStress){
+            Grid->met->TempStress = 1;
+        }
+    }
+    AssimMax = Grid->met->TempStress *
                Afgen(Grid->crp->prm.MaxAssimRate,
                      &(Grid->crp->st.Development)) *
                Afgen(Grid->crp->prm.CO2AMAXTB, &Grid->met->CO2);

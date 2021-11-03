@@ -944,7 +944,7 @@ crop_put_state_data(size_t iCell)
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_TMAXSTRESS][crop_class] +=
-                    cgrid->met->TmaxStress *
+                    cgrid->met->TempStress *
                     area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
@@ -1255,7 +1255,7 @@ crop_put_rate_data(size_t iCell)
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +
                                 OUT_CROP_TMAXSTRESS][crop_class] +=
-                    cgrid->met->TmaxStress *
+                    cgrid->met->TempStress *
                     area_fract *
                     cgrid->growing;
                 out_data[iCell][N_OUTVAR_TYPES +

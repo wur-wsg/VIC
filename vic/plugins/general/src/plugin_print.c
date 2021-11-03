@@ -121,6 +121,8 @@ plugin_print_options(plugin_option_struct *op)
             op->WOFOST_PIRR ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PFERT         : %s\n",
             op->WOFOST_PFERT ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_PTEMP         : %s\n",
+            op->WOFOST_PTEMP ? "true" : "false");
     fprintf(LOG_DEST, "\tFORCE_CO2            : %s\n",
             op->FORCE_CO2 ? "true" : "false");
 

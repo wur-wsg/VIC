@@ -493,7 +493,7 @@ copy_wofost_vic(Meteo *from,
     to->CosLD = from->CosLD;
     to->DiffRadPP = from->DiffRadPP;
     to->DSinBE = from->DSinBE;
-    to->TmaxStress = from->TmaxStress;
+    to->TempStress = from->TempStress;
     to->TminStress = from->TminStress;
 }
 

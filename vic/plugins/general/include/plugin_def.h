@@ -185,8 +185,8 @@ enum {
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
     // crops
-    FORCING_TSUM_1,                     /**< TSUM 1 [degree C] */
-    FORCING_TSUM_2,                     /**< TSUM 2 [degree C] */
+    FORCING_TSUM_1,                     /**< Temperature sum from emergence to anthesis [degree C] */
+    FORCING_TSUM_2,                     /**< Temperature sum from athesis to maturity [degree C] */
     FORCING_FERT_DVS,                   /**< Fertilizer application DVS point [-] */
     FORCING_FERT_N,                     /**< Fertilizer application N amount [kg ha-1] */
     FORCING_FERT_P,                     /**< Fertilizer application P amount [kg ha-1] */
@@ -257,6 +257,7 @@ typedef struct {
     bool NONRENEW_RUNOFF;               /**< non-renewable water abstractions flag */
     bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
     bool WOFOST_PFERT;                  /**< potential fertilization for wofost module flag */
+    bool WOFOST_PTEMP;                  /**< optimal (maximum) temperatures for wofost module flag */
     bool WOFOST_DIST_SEASON;            /**< distributed seasons for wofost module flag */
     bool WOFOST_DIST_TSUM;              /**< distributed tsums for wofost module flag */
     bool WOFOST_DIST_FERT;              /**< distributed fertilization for wofost module flag */

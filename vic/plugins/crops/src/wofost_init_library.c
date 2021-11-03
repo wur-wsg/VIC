@@ -382,7 +382,7 @@ initialize_wofost_vic(Meteo *met)
     met->CosLD = 0.;
     met->DiffRadPP = 0.;
     met->DSinBE = 0.;
-    met->TmaxStress = 0.;
+    met->TempStress = 0.;
     met->TminStress = 0.;
 }
 
