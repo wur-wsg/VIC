@@ -145,6 +145,18 @@ GetCropData(Plant *CROP,
     CROP->prm.N_MaxLeaves = Table[19];
     CROP->prm.P_MaxLeaves = Table[20];
     CROP->prm.K_MaxLeaves = Table[21];
+    
+    head = CROP->prm.FactorAssimRateTemp;
+    XValue = 0;
+    YValue = 0;
+    while (head) {
+        if(head->y >= YValue){
+            XValue = head->x;
+            YValue = head->y;
+        }
+        head = head->next;
+    }
+    CROP->prm.MaxOptimumTemp = XValue;
 
     CROP->Emergence = 0;
     CROP->TSumEmergence = 0.;

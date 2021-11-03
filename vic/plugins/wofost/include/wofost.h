@@ -77,6 +77,7 @@ typedef struct PARAMETERS {
 
     /**  Phenology  **/
     int IdentifyAnthesis;
+    float MaxOptimumTemp;
     float OptimumDaylength;
     float CriticalDaylength;
     float SatVernRequirement;

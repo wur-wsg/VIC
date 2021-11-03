@@ -307,6 +307,7 @@ copy_wofost_parameters(Parameters *from,
     to->TempEffMax = from->TempEffMax;
     to->TSumEmergence = from->TSumEmergence;
     to->IdentifyAnthesis = from->IdentifyAnthesis;
+    to->MaxOptimumTemp = from->MaxOptimumTemp;
     to->OptimumDaylength = from->OptimumDaylength;
     to->CriticalDaylength = from->CriticalDaylength;
     to->SatVernRequirement = from->SatVernRequirement;
