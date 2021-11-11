@@ -33,27 +33,27 @@
 void
 irr_set_mapping(void)
 {
-    extern domain_struct              local_domain;
-    extern plugin_option_struct       plugin_options;
-    extern veg_con_struct           **veg_con;
-    extern irr_con_struct           **irr_con;
-    extern irr_con_map_struct        *irr_con_map;
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
+    extern veg_con_struct     **veg_con;
+    extern irr_con_struct     **irr_con;
+    extern irr_con_map_struct  *irr_con_map;
 
-    size_t                            i;
-    size_t                            j;
-    int                            irr_index;
-    int                            veg_index;
-    size_t                            veg_class;
-    
-    
+    size_t                      i;
+    size_t                      j;
+    int                         irr_index;
+    int                         veg_index;
+    size_t                      veg_class;
+
+
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < plugin_options.NIRRTYPES; j++){
+        for (j = 0; j < plugin_options.NIRRTYPES; j++) {
             irr_index = irr_con_map[i].iidx[j];
             veg_index = irr_con_map[i].vidx[j];
-            
+
             if (irr_index != NODATA_VEG) {
                 veg_class = veg_con[i][veg_index].veg_class;
-                
+
                 irr_con[i][irr_index].irr_class = j;
                 irr_con[i][irr_index].veg_index = veg_index;
                 irr_con[i][irr_index].veg_class = veg_class;
@@ -68,45 +68,45 @@ irr_set_mapping(void)
 void
 irr_set_paddy(void)
 {
-    extern domain_struct local_domain;
+    extern domain_struct           local_domain;
     extern plugin_filenames_struct plugin_filenames;
-    extern plugin_option_struct       plugin_options;
-    extern irr_con_map_struct  *irr_con_map;
-    extern int mpi_rank;
+    extern plugin_option_struct    plugin_options;
+    extern irr_con_map_struct     *irr_con_map;
+    extern int                     mpi_rank;
     extern MPI_Comm                MPI_COMM_VIC;
-    
-    int *ivar;
-    
-    size_t i;
-    size_t j;
-    int    status;
-    
-    size_t  d1count[1];
-    size_t  d1start[1];
-    
+
+    int                           *ivar;
+
+    size_t                         i;
+    size_t                         j;
+    int                            status;
+
+    size_t                         d1count[1];
+    size_t                         d1start[1];
+
     d1start[0] = 0;
     d1count[0] = plugin_options.NIRRTYPES;
-    
+
     ivar = malloc(plugin_options.NIRRTYPES * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error.");
-    
-    if(mpi_rank == VIC_MPI_ROOT){
-        get_nc_field_int(&(plugin_filenames.irrigation), 
-                "paddy", d1start, d1count, ivar);
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        get_nc_field_int(&(plugin_filenames.irrigation),
+                         "paddy", d1start, d1count, ivar);
     }
-    
+
     status = MPI_Bcast(ivar, plugin_options.NIRRTYPES, MPI_INT,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < irr_con_map[i].ni_active; j++){
-            if(ivar[irr_con[i][j].irr_class] == 1){
+        for (j = 0; j < irr_con_map[i].ni_active; j++) {
+            if (ivar[irr_con[i][j].irr_class] == 1) {
                 irr_con[i][j].paddy = true;
             }
         }
     }
-    
+
     free(ivar);
 }
 
@@ -116,49 +116,57 @@ irr_set_paddy(void)
 void
 irr_set_info(void)
 {
-    extern domain_struct local_domain;
-    extern domain_struct global_domain;
+    extern domain_struct           local_domain;
+    extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
-    extern irr_con_map_struct  *irr_con_map;
-    
-    double *dvar;
-    
-    size_t i;
-    size_t j;
-    
-    size_t  d2count[2];
-    size_t  d2start[2];
-    
+    extern irr_con_map_struct     *irr_con_map;
+    extern irr_con_struct        **irr_con;
+
+    double                        *dvar;
+
+    size_t                         i;
+    size_t                         j;
+
+    size_t                         d2count[2];
+    size_t                         d2start[2];
+
     d2start[0] = 0;
     d2start[1] = 0;
     d2count[0] = global_domain.n_ny;
     d2count[1] = global_domain.n_nx;
-    
+
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
-    
-    get_scatter_nc_field_double(&(plugin_filenames.irrigation), 
-            "groundwater_fraction", d2start, d2count, dvar);
+
+    get_scatter_nc_field_double(&(plugin_filenames.irrigation),
+                                "groundwater_fraction", d2start, d2count, dvar);
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < irr_con_map[i].ni_active; j++){
-            irr_con[i][j].groundwater_fraction = dvar[i];
+        for (j = 0; j < irr_con_map[i].ni_active; j++) {
+            if (irr_con[i][j].paddy) {
+                irr_con[i][j].groundwater_fraction = 0.0;
+            }
+            else {
+                irr_con[i][j].groundwater_fraction = dvar[i];
+            }
         }
     }
-    
-    get_scatter_nc_field_double(&(plugin_filenames.irrigation), 
-            "irrigation_efficiency", d2start, d2count, dvar);
+
+    get_scatter_nc_field_double(&(plugin_filenames.irrigation),
+                                "irrigation_efficiency", d2start, d2count,
+                                dvar);
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for(j = 0; j < irr_con_map[i].ni_active; j++){
-            if(irr_con[i][j].paddy){
+        for (j = 0; j < irr_con_map[i].ni_active; j++) {
+            if (irr_con[i][j].paddy) {
                 irr_con[i][j].irrigation_efficiency = 1.0;
-            } else {
+            }
+            else {
                 irr_con[i][j].irrigation_efficiency = dvar[i];
             }
         }
     }
-    
+
     free(dvar);
 }
 

@@ -137,6 +137,7 @@ enum
     OUT_SOIL_MOIST,       /**< soil total moisture content  [mm] for each soil layer */
     OUT_SOIL_EFF_SAT,     /**< soil effective saturation [-] for each soil layer */
     OUT_SOIL_WET,         /**< vertical average of (soil moisture - wilting point)/(maximum soil moisture - wilting point) [mm/mm] */
+    OUT_SOIL_WSTRESS,     /**< vertical root-zone average of (soil moisture - wilting point)/(critical moisture - wilting point) [mm/mm] */
     OUT_SURFSTOR,         /**< storage of liquid water and ice (not snow) on surface (ponding) [mm] */
     OUT_SURF_FROST_FRAC,  /**< fraction of soil surface that is frozen [fraction] */
     OUT_SWE,              /**< snow water equivalent in snow pack (including vegetation-intercepted snow)  [mm] */
@@ -480,13 +481,13 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     force_type_struct TYPE[N_FORCING_TYPES];
-    double FORCE_DT[MAX_FORCE_FILES];    /**< forcing file time step */
-    size_t force_steps_per_day[MAX_FORCE_FILES];    /**< forcing file timesteps per day */
-    unsigned short int FORCE_ENDIAN[MAX_FORCE_FILES];  /**< endian-ness of input file, used for DAILY_BINARY format */
-    int FORCE_FORMAT[MAX_FORCE_FILES];            /**< ASCII or BINARY */
-    int FORCE_INDEX[MAX_FORCE_FILES];
-    int VAR_INDEX[N_FORCING_TYPES];
-    size_t N_FORCE_FILES;
+    double FORCE_DT[N_FORCING_TYPES];    /**< forcing file time step */
+    size_t force_steps_per_day[N_FORCING_TYPES];    /**< forcing file timesteps per day */
+    unsigned short int FORCE_ENDIAN[N_FORCING_TYPES];  /**< endian-ness of input file, used for
+                                                          DAILY_BINARY format */
+    int FORCE_FORMAT[N_FORCING_TYPES];            /**< ASCII or BINARY */
+    int FORCE_INDEX[N_FORCING_TYPES];
+    size_t N_TYPES[N_FORCING_TYPES];
 } param_set_struct;
 
 /******************************************************************************

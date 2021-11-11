@@ -395,7 +395,7 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in location_struct
-    nitems = 9;
+    nitems = 10;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -435,6 +435,10 @@ create_MPI_location_struct_type(MPI_Datatype *mpi_type)
 
     // size_t nveg;
     offsets[i] = offsetof(location_struct, nveg);
+    mpi_types[i++] = MPI_AINT;
+
+    // size_t ncrop;
+    offsets[i] = offsetof(location_struct, ncrop);
     mpi_types[i++] = MPI_AINT;
 
     // size_t global_idx;
@@ -488,7 +492,7 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in option_struct
-    nitems = 54;
+    nitems = 53;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -656,10 +660,6 @@ create_MPI_option_struct_type(MPI_Datatype *mpi_type)
 
     // bool TFALLBACK;
     offsets[i] = offsetof(option_struct, TFALLBACK);
-    mpi_types[i++] = MPI_C_BOOL;
-
-    // bool MATRIC;
-    offsets[i] = offsetof(option_struct, MATRIC);
     mpi_types[i++] = MPI_C_BOOL;
 
     // bool BASEFLOW;

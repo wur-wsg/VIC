@@ -75,7 +75,7 @@
 #define MIN_SNOW_WETFRAC 0.01  /**< Minimum fraction of snow depth to be considered wet */
 
 /***** Define minimum and maximum values for model timesteps *****/
-#define MIN_SUBDAILY_STEPS_PER_DAY  4
+#define MIN_SUBDAILY_STEPS_PER_DAY  1
 #define MAX_SUBDAILY_STEPS_PER_DAY  1440
 
 #ifndef WET
@@ -265,8 +265,6 @@ typedef struct {
                             FALSE = when iterations fail to converge, report an error
                                     and abort simulation for current grid cell
                             Default = TRUE */
-    bool MATRIC;         /**< TRUE = use matric potential to calculate drainage
-                            Default = FALSE */
 
     // input options
     unsigned short int BASEFLOW;     /**< ARNO: read Ds, Dm, Ws, c; NIJSSEN2001: read d1, d2, d3, d4 */
@@ -560,6 +558,8 @@ typedef struct {
                                          soil (mm) */
     double Wpwp[MAX_LAYERS];          /**< soil moisture content at permanent
                                          wilting point (mm) */
+    double Wfc[MAX_LAYERS];           /**< soil moisture content at field
+                                         capacity (mm) */
     double Ws;                        /**< fraction of maximum soil moisture */
     double AlbedoPar;                 /**< soil albedo in PAR range (400-700nm) */
     double alpha[MAX_NODES];          /**< thermal solution constant */
@@ -770,7 +770,11 @@ typedef struct {
     double Cs;              /**< average volumetric heat capacity of the
                                current layer (J/m^3/K) */
     double T;               /**< temperature of the unfrozen sublayer (C) */
-    double Ksat;            /**< saturated hydraulic  conductivity (mm/day) */
+    double Wcr;             /**< critical moisture level for soil
+                                         layer, evaporation is no longer
+                                         affected moisture stress in the
+                                         soil (mm) */
+    double Ksat;            /**< saturated hydraulic conductivity (mm/day) */
     double ice[MAX_FROST_AREAS]; /**< ice content of the frozen sublayer (mm) */
     double kappa;           /**< average thermal conductivity of the current
                                layer (W/m/K) */
@@ -783,6 +787,7 @@ typedef struct {
     double esoil;           /**< soil evaporation from soil layer (mm) */
     double evap;            /**< evapotranspiration from soil layer (mm) */
     double transp;          /**< transpiration from soil layer (mm) */
+    double water_stress;    /**< transpiration water stress of the soil layer [mm/mm] */
 } layer_data_struct;
 
 /******************************************************************************
@@ -807,6 +812,9 @@ typedef struct {
                                           in the root zone (mm) */
     double wetness;                    /**< average of
                                           (layer.moist - Wpwp)/(porosity*depth - Wpwp)
+                                          over all layers (fraction) */
+    double water_stress;               /**< average of
+                                          (layer.moist - Wpwp)/(Wcr - Wpwp)
                                           over all layers (fraction) */
     double zwt;                        /**< average water table position [cm] - using lowest unsaturated layer */
     double zwt_lumped;                 /**< average water table position [cm] - lumping all layers' moisture together */

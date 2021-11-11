@@ -39,7 +39,7 @@ display_current_settings(int mode)
     extern global_param_struct global_param;
     extern filenames_struct    filenames;
 
-    size_t                     file_num;
+    int                        file_num;
 
 
     print_version(VIC_DRIVER);
@@ -225,12 +225,6 @@ display_current_settings(int mode)
     else {
         fprintf(LOG_DEST, "TFALLBACK\t\tFALSE\n");
     }
-    if (options.MATRIC) {
-        fprintf(LOG_DEST, "MATRIC\t\tTRUE\n");
-    }
-    else {
-        fprintf(LOG_DEST, "MATRIC\t\tFALSE\n");
-    }
     fprintf(LOG_DEST, "WIND_H\t\t\t%f\n", global_param.wind_h);
     fprintf(LOG_DEST, "NODES\t\t\t%zu\n", options.Nnode);
     if (options.CARBON) {
@@ -249,9 +243,9 @@ display_current_settings(int mode)
 
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "Input Forcing Data:\n");
-    for (file_num = 0; file_num < param_set.N_FORCE_FILES; file_num++) {
+    for (file_num = 0; file_num < N_FORCING_TYPES; file_num++) {
         if (global_param.forceyear[file_num] > 0) {
-            fprintf(LOG_DEST, "Forcing File %zu:\t\t%s*\n", file_num + 1,
+            fprintf(LOG_DEST, "Forcing File %d:\t\t%s*\n", file_num + 1,
                     filenames.f_path_pfx[file_num]);
             fprintf(LOG_DEST, "FORCEYEAR\t\t%d\n",
                     global_param.forceyear[file_num]);
@@ -261,6 +255,8 @@ display_current_settings(int mode)
                     global_param.forceday[file_num]);
             fprintf(LOG_DEST, "FORCESEC\t\t%d\n",
                     global_param.forcesec[file_num]);
+            fprintf(LOG_DEST, "N_TYPES\t\t\t%zu\n",
+                    param_set.N_TYPES[file_num]);
             fprintf(LOG_DEST, "FORCE_DT\t\t%f\n", param_set.FORCE_DT[file_num]);
         }
     }

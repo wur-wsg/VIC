@@ -57,7 +57,6 @@ vic_start(void)
     extern int                 mpi_size;
     extern option_struct       options;
     extern parameters_struct   param;
-    extern param_set_struct    param_set;
     size_t                     j;
 
     status = MPI_Bcast(&filenames, 1, mpi_filenames_struct_type,
@@ -96,7 +95,10 @@ vic_start(void)
                         filenames.domain.nc_filename);
 
         // Validate forcing files and variables
-        for (i = 0; i < param_set.N_FORCE_FILES; i++) {
+        for (i = 0; i < N_FORCING_TYPES; i++) {
+            if (strcmp(filenames.f_path_pfx[i], "MISSING") == 0) {
+                continue;
+            }
             compare_ncdomain_with_global_domain(&filenames.forcing[i]);
         }
 

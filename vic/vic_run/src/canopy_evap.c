@@ -59,18 +59,18 @@ canopy_evap(layer_data_struct *layer,
             double            *CanopLayerBnd)
 {
     /** declare global variables **/
-    extern option_struct   options;
+    extern option_struct options;
 
     /** declare local variables **/
-    size_t                 i;
-    double                 f;   /* fraction of time step used to fill canopy */
-    double                 throughfall;
-    double                 Evap;
-    double                 tmp_Evap;
-    double                 canopyevap;
-    double                 tmp_Wdew;
-    double                 layertransp[MAX_LAYERS];
-    double                 rc;
+    size_t               i;
+    double               f;     /* fraction of time step used to fill canopy */
+    double               throughfall;
+    double               Evap;
+    double               tmp_Evap;
+    double               canopyevap;
+    double               tmp_Wdew;
+    double               layertransp[MAX_LAYERS];
+    double               rc;
 
     Evap = 0;
 
@@ -96,7 +96,8 @@ canopy_evap(layer_data_struct *layer,
                  air_temp, vpd, veg_var->LAI, (double) 1.0, false);
     if (veg_var->LAI > 0) {
         canopyevap = pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0)) *
-                     penman(air_temp, elevation, rad, vpd, ra, rc, veg_lib->rarc) *
+                     penman(air_temp, elevation, rad, vpd, ra, rc,
+                            veg_lib->rarc) *
                      delta_t / CONST_CDAY;
     }
     else {
@@ -287,6 +288,11 @@ transpiration(layer_data_struct *layer,
           0.5))) {
         gsm_inv = 1.0;
 
+        for (i = 0; i < options.Nlayer; i++) {
+            // Store water stress
+            layer[i].water_stress = gsm_inv;
+        }
+
         /* compute whole-canopy stomatal resistance */
         if (!options.CARBON || options.RC_MODE == RC_JARVIS) {
             /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
@@ -349,11 +355,16 @@ transpiration(layer_data_struct *layer,
 
         /** Assign excess transpiration to wetter layer **/
         if (spare_transp > 0.0) {
-            for (i = 0; i < options.Nlayer; i++) {
-                if (avail_moist[i] >= Wcr[i]) {
-                    layertransp[i] += (double) root[i] *
-                                      spare_transp / root_sum;
+            if (root_sum > 0) {
+                for (i = 0; i < options.Nlayer; i++) {
+                    if (avail_moist[i] >= Wcr[i]) {
+                        layertransp[i] += (double) root[i] *
+                                          spare_transp / root_sum;
+                    }
                 }
+            }
+            else {
+                transp -= spare_transp;
             }
         }
     }
@@ -386,6 +397,9 @@ transpiration(layer_data_struct *layer,
             else {
                 gsm_inv = 0.0;
             }
+
+            // Store water stress
+            layer[i].water_stress = gsm_inv;
 
             if (gsm_inv > 0.0) {
                 /* compute whole-canopy stomatal resistance */
