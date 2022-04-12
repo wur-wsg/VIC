@@ -77,6 +77,7 @@ typedef struct PARAMETERS {
 
     /**  Phenology  **/
     int IdentifyAnthesis;
+    float MaxOptimumTemp;
     float OptimumDaylength;
     float CriticalDaylength;
     float SatVernRequirement;
@@ -434,7 +435,7 @@ typedef struct METEO {
     float CosLD;
     float DiffRadPP;
     float DSinBE;
-    float TmaxStress;
+    float TempStress;
     float TminStress;
 } Meteo;
 

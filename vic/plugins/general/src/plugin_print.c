@@ -113,12 +113,16 @@ plugin_print_options(plugin_option_struct *op)
             op->WOFOST_CALC_MIN ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_CONTINUE      : %s\n",
             op->WOFOST_CONTINUE ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_FOREC_TSUM    : %s\n",
+            op->WOFOST_FORCE_TSUM ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_FOREC_FERT    : %s\n",
             op->WOFOST_FORCE_FERT ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PIRR          : %s\n",
             op->WOFOST_PIRR ? "true" : "false");
     fprintf(LOG_DEST, "\tWOFOST_PFERT         : %s\n",
             op->WOFOST_PFERT ? "true" : "false");
+    fprintf(LOG_DEST, "\tWOFOST_PTEMP         : %s\n",
+            op->WOFOST_PTEMP ? "true" : "false");
     fprintf(LOG_DEST, "\tFORCE_CO2            : %s\n",
             op->FORCE_CO2 ? "true" : "false");
 

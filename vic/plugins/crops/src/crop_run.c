@@ -234,6 +234,11 @@ crop_run(size_t iCell)
                     /* Determine if the sowing already has occurred */
                     IfSowing(cgrid, &cgrid->start);
 
+                    if (plugin_options.WOFOST_DIST_TSUM) {
+                        cgrid->crp->prm.TempSum1 = crop_con[iCell][iCrop].tsum1;
+                        cgrid->crp->prm.TempSum2 = crop_con[iCell][iCrop].tsum2;
+                    }
+                    
                     if (plugin_options.WOFOST_DIST_FERT) {
                         for (iTime = 0;
                              iTime < plugin_options.NFERTTIMES;

@@ -14,6 +14,8 @@ crop_forcing(void)
 
     double                           *dvar;
 
+    size_t                            d4count[4];
+    size_t                            d4start[4];
     size_t                            d5count[5];
     size_t                            d5start[5];
 
@@ -25,6 +27,15 @@ crop_forcing(void)
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error.");
 
+    d4start[0] = 0;
+    d4start[1] = 0;
+    d4start[2] = 0;
+    d4start[3] = 0;
+    d4count[0] = 1;
+    d4count[1] = 1;
+    d4count[2] = global_domain.n_ny;
+    d4count[3] = global_domain.n_nx;
+    
     d5start[0] = 0;
     d5start[1] = 0;
     d5start[2] = 0;
@@ -36,6 +47,51 @@ crop_forcing(void)
     d5count[3] = global_domain.n_ny;
     d5count[4] = global_domain.n_nx;
 
+    // Get tsum forcing data
+    if (plugin_options.WOFOST_FORCE_TSUM) {
+        // Get tsum1
+        if (plugin_global_param.forcerun[FORCING_TSUM_1]) {
+            d4start[0] = plugin_global_param.forceskip[FORCING_TSUM_1] +
+                         plugin_global_param.forceoffset[FORCING_TSUM_1];
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d4start[1] = j;
+                get_scatter_nc_field_double(&(plugin_filenames.forcing[
+                                                  FORCING_TSUM_1]),
+                                            plugin_filenames.f_varname[
+                                                FORCING_TSUM_1], d4start,
+                                            d4count, dvar);
+
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        crop_force[i].tsum1[iCrop] = dvar[i];
+                    }
+                }
+            }
+        }
+        
+        // Get tsum2
+        if (plugin_global_param.forcerun[FORCING_TSUM_2]) {
+            d4start[0] = plugin_global_param.forceskip[FORCING_TSUM_2] +
+                         plugin_global_param.forceoffset[FORCING_TSUM_2];
+            for (j = 0; j < plugin_options.NCROPTYPES; j++) {
+                d4start[1] = j;
+                get_scatter_nc_field_double(&(plugin_filenames.forcing[
+                                                  FORCING_TSUM_2]),
+                                            plugin_filenames.f_varname[
+                                                FORCING_TSUM_2], d4start,
+                                            d4count, dvar);
+
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    iCrop = crop_con_map[i].cidx[j];
+                    if (iCrop != NODATA_VEG) {
+                        crop_force[i].tsum2[iCrop] = dvar[i];
+                    }
+                }
+            }
+        }
+    }
+    
     // Get fertilizer forcing data
     if (plugin_options.WOFOST_FORCE_FERT) {
         // Get DVS_point

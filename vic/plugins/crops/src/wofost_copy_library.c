@@ -307,6 +307,7 @@ copy_wofost_parameters(Parameters *from,
     to->TempEffMax = from->TempEffMax;
     to->TSumEmergence = from->TSumEmergence;
     to->IdentifyAnthesis = from->IdentifyAnthesis;
+    to->MaxOptimumTemp = from->MaxOptimumTemp;
     to->OptimumDaylength = from->OptimumDaylength;
     to->CriticalDaylength = from->CriticalDaylength;
     to->SatVernRequirement = from->SatVernRequirement;
@@ -493,7 +494,7 @@ copy_wofost_vic(Meteo *from,
     to->CosLD = from->CosLD;
     to->DiffRadPP = from->DiffRadPP;
     to->DSinBE = from->DSinBE;
-    to->TmaxStress = from->TmaxStress;
+    to->TempStress = from->TempStress;
     to->TminStress = from->TminStress;
 }
 

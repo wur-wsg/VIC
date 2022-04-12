@@ -202,6 +202,7 @@ initialize_wofost_parameters(Parameters *prm)
     prm->TempEffMax = 0.;
     prm->TSumEmergence = 0.;
     prm->IdentifyAnthesis = 0;
+    prm->MaxOptimumTemp = 0;
     prm->OptimumDaylength = 0.;
     prm->CriticalDaylength = 0.;
     prm->SatVernRequirement = 0.;
@@ -382,7 +383,7 @@ initialize_wofost_vic(Meteo *met)
     met->CosLD = 0.;
     met->DiffRadPP = 0.;
     met->DSinBE = 0.;
-    met->TmaxStress = 0.;
+    met->TempStress = 0.;
     met->TminStress = 0.;
 }
 

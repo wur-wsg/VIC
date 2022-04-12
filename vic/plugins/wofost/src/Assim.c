@@ -106,9 +106,15 @@ DailyTotalAssimilation(SimUnit *Grid)
     /* Correction for the atmospheric CO2 concentration */
     EFF = EFF * Factor;
 
-    Grid->met->TmaxStress = Afgen(Grid->crp->prm.FactorAssimRateTemp, 
+    Grid->met->TempStress = Afgen(Grid->crp->prm.FactorAssimRateTemp, 
                                  &Grid->met->DayTemp);
-    AssimMax = Grid->met->TmaxStress *
+    if (plugin_options.WOFOST_PTEMP) {
+        // Only adjust TempStress if temperature is above optimal (not below)
+        if(Grid->met->DayTemp > Grid->crp->prm.MaxOptimumTemp){
+            Grid->met->TempStress = 1;
+        }
+    }
+    AssimMax = Grid->met->TempStress *
                Afgen(Grid->crp->prm.MaxAssimRate,
                      &(Grid->crp->st.Development)) *
                Afgen(Grid->crp->prm.CO2AMAXTB, &Grid->met->CO2);

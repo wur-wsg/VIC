@@ -205,14 +205,16 @@ wofost_set_data(void)
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
-                        }
-
-                        iGrid->crp->prm.TempSum1 = dvar[i];
-                    }
+                    crop_con[i][iCrop].tsum1 = dvar[i];
+                    
+//                    for (k = 0; k < options.SNOW_BAND; k++) {
+//                        iGrid = Grid[i][k];
+//                        for (l = 0; l < (size_t)iCrop; l++) {
+//                            iGrid = iGrid->next;
+//                        }
+//
+//                        iGrid->crp->prm.TempSum1 = dvar[i];
+//                    }
                 }
             }
         }
@@ -227,14 +229,16 @@ wofost_set_data(void)
             for (i = 0; i < local_domain.ncells_active; i++) {
                 iCrop = crop_con_map[i].cidx[j];
                 if (iCrop != NODATA_VEG) {
-                    for (k = 0; k < options.SNOW_BAND; k++) {
-                        iGrid = Grid[i][k];
-                        for (l = 0; l < (size_t)iCrop; l++) {
-                            iGrid = iGrid->next;
-                        }
-
-                        iGrid->crp->prm.TempSum2 = dvar[i];
-                    }
+                    crop_con[i][iCrop].tsum2 = dvar[i];
+                    
+//                    for (k = 0; k < options.SNOW_BAND; k++) {
+//                        iGrid = Grid[i][k];
+//                        for (l = 0; l < (size_t)iCrop; l++) {
+//                            iGrid = iGrid->next;
+//                        }
+//
+//                        iGrid->crp->prm.TempSum2 = dvar[i];
+//                    }
                 }
             }
         }

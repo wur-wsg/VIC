@@ -116,6 +116,12 @@ plugin_set_force_type(char *cmdstr)
     else if (strcasecmp("CO2", nctype) == 0) {
         type = FORCING_CO2;
     }
+    else if (strcasecmp("TSUM1", nctype) == 0) {
+        type = FORCING_TSUM_1;
+    }
+    else if (strcasecmp("TSUM2", nctype) == 0) {
+        type = FORCING_TSUM_2;
+    }
     else if (strcasecmp("FERT_DVS", nctype) == 0) {
         type = FORCING_FERT_DVS;
     }
