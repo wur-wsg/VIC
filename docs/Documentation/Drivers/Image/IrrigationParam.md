@@ -8,6 +8,7 @@ The Irrigation Parameters serve three main purposes:
 
 *   Define vegetation types that are irrigated and paddy irrigated
 *   Define the irrigation efficiency and groundwater withdrawal fraction
+*   Define the irrigation offset to avoid the whole region demanding irrigation at the same time
 
 The irrigation parameters are supplied to VIC-WUR in a NetCDF file, with a separate variable for each irrigation parameter.
 
@@ -19,11 +20,12 @@ Below is a list of irrigation parameters.
 | paddy                 | [irr_class] | 0 = not paddy irrigation, 1 = paddy irrigation | int    | 1                | Indicator for paddy irrigation                  |
 | groundwater_fraction  | [lat, lon]  | fraction                                       | double | 1                | Fraction of irrigation comming from groundwater |
 | irrigation_efficiency | [lat, lon]  | fraction                                       | double | 1                | Fraction of water withdrawn per water required  |
+| irrigation_offset     | [lat, lon]  | days                                           | int    | 1                | Days after (forced) vegetation coverage change irrigation starts |
 
 # Example netCDF format VIC-WUR image driver irrigation parameters
 
 ```
-netcdf irr_params_MIRCA2000_global {
+netcdf irr_params_global {
 dimensions:
 	irr_class = 2 ;
 	lon = 720 ;
@@ -54,8 +56,8 @@ variables:
 		irrigation_efficiency:units = "mm mm-1" ;
 		irrigation_efficiency:_FillValue = -1. ;
 		irrigation_efficiency:long_name = "Fraction of water withdrawn per water required" ;
-
-// global attributes:
-		:Description = "Routing parameters for VIC. Created by Bram Droppers" ;
-}
+	int irrigation_offset(lat, lon) ;
+		irrigation_offset:units = "days" ;
+		irrigation_offset:_FillValue = -1 ;
+		irrigation_offset:long_name = "Offset at the start of the irrigation season" ;
 ```

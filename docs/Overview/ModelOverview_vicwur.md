@@ -41,7 +41,7 @@ When water demands cannot be met, water withdrawals are partitioned between the 
 In VIC-WUR, sectoral water demands, groundwater withdrawal fraction and consumption fraction need to be specified for each grid cell. Forcings can be provided at various temporal resolutions (e.g. `FORCE_STEP`, `FORCE_DAY`, `FORCE_MONTH`, `FORCE_YEAR`). Sectors are dynamically included if all forcing files (e.g. demand, groundwater and consumption) are provided. See [Droppers et al., 2020a](../Documentation/References_vicwur.md) for more information on how this was calculated in the past.
 
 ### Dynamic irrigation demand calculation
-Instead of specifying the irrigation demand via forcing inputs, irrigation can also be calculated dynamically based on the model state. Irrigation demands are set when the soil moisture contents are below the critical point (`Wwcp`) and will try to fill soil moisture up to field capacity (`Wcr` / `Wfc_fract`).
+Instead of specifying the irrigation demand via forcing inputs, irrigation can also be calculated dynamically based on the model state. Irrigation demands are set when the soil moisture contents are below the critical point (`Wwcp`) and will try to fill soil moisture up to field capacity (`Wfc`).
 
 The exception is paddy rice irrigation, where irrigation was also supplied to keep the upper soil layer saturated. Paddy irrigated vegetation can be specified in the irrigation parameters. The saturated soil conductivity in the upper 2 layers is reduced (`Ksat_expt`) to simulate puddling practices.
 
@@ -58,10 +58,13 @@ In VIC-WUR a distinction is made between ‘small’ dam reservoirs (with an ups
 
 The scheme was adjusted slightly to account for monthly varying EFRs and to reduce overflow releases. For more information about the large-dam operation scheme, [click here](DamOperationText.md).
 
+### Vegetation coverage forcing
+In VIC-WUR, vegetation coverage can by dynamically adjusted at by forcing coverage at various temporal resolutions (e.g. `FORCE_STEP`, `FORCE_DAY`, `FORCE_MONTH`, `FORCE_YEAR`). This is for example used to incorporat monthly changes in agricultural cropland coverage. During each change all water and energy balance states from the diminishing area are equally distributed over the expanding area. For example, a cell contains 25% cropland with 10mm soil moisture and 50% bare soil with 5mm soil moisture. If cropland becomes bare soil, the resulting bare soil soil moisture is (0.25 * 10 + 0.5 * 5) / 0.75 = 13.33. Distribution is done per soil layer and per temperature node. If snow should melt in the new cropland, it is added to the soil moisture.
+
 ## Crop growth (following WOFOST)
 Crop growth is modeled following the WOFOST crop model. An arbitrary number of vegetation tiles can be assigned as being simulated by wofost. Note that multiple WOFOST crops can be grown on a single vegetation file (area-averaging the crop characteristics over the vegetation tile). For each tile WOFOST uses the VIC water stress factor to compute crop growth. In turn, WOFOST provides VIC with the vegetation parameters needed for its simulations (height, LAI, drought resistance, etc.). In order to run WOFOST, extra information is needed such as: WOFOST crop parameters, fertilizer application, mineralization rate and growing season information.
 
-for more information about the WOFOST crop growth module, [click here](WofostText.md).
+For more information about the WOFOST crop growth module, [click here](WofostText.md).
 
 ![VIC-WOFOST framework](../img/VIC-WOFOST_framework.png)
 
