@@ -227,6 +227,7 @@ display_current_settings(int mode)
     }
     fprintf(LOG_DEST, "WIND_H\t\t\t%f\n", global_param.wind_h);
     fprintf(LOG_DEST, "NODES\t\t\t%zu\n", options.Nnode);
+    fprintf(LOG_DEST, "NBARE\t\t\t%zu\n", options.Nbare);
     if (options.CARBON) {
         fprintf(LOG_DEST, "CARBON\t\tTRUE\n");
     }
@@ -342,6 +343,24 @@ display_current_settings(int mode)
     }
     else if (options.ALB_SRC == FROM_VEGLIB) {
         fprintf(LOG_DEST, "ALB_SRC\t\tFROM_VEGLIB\n");
+    }
+    if (options.BCO2_SRC == FROM_VEGHIST) {
+        fprintf(LOG_DEST, "BCO2_SRC\t\tFROM_VEGHIST\n");
+    }
+    else if (options.BCO2_SRC == FROM_VEGPARAM) {
+        fprintf(LOG_DEST, "BCO2_SRC\t\tFROM_VEGPARAM\n");
+    }
+    else if (options.BCO2_SRC == FROM_VEGLIB) {
+        fprintf(LOG_DEST, "BCO2_SRC\t\tFROM_VEGLIB\n");
+    }
+    if (options.WFC_SRC == FROM_VEGHIST) {
+        fprintf(LOG_DEST, "WFC_SRC\t\tFROM_VEGHIST\n");
+    }
+    else if (options.WFC_SRC == FROM_VEGPARAM) {
+        fprintf(LOG_DEST, "WFC_SRC\t\tFROM_VEGPARAM\n");
+    }
+    else if (options.WFC_SRC == FROM_VEGLIB) {
+        fprintf(LOG_DEST, "WFC_SRC\t\tFROM_VEGLIB\n");
     }
 
     fprintf(LOG_DEST, "\n");

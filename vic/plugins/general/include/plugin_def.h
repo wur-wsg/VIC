@@ -60,6 +60,7 @@ enum {
     // water balance
     OUT_ROUTING_ERROR,                  /**< routing budget error [mm] */
     // routing
+    OUT_STREAM_RUNOFF,                  /**< river (runoff) discharge [m3 s-1] */
     OUT_STREAM_INFLOW,                  /**< river (inflow) discharge [m3 s-1] */
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
@@ -125,6 +126,13 @@ enum {
     OUT_CROP_WST,                       /**< crop stems dry matter [kg ha-1] */
     OUT_CROP_WSO,                       /**< crop storage organs dry matter [kg ha-1] */
     OUT_CROP_WRT,                       /**< crop roots dry matter [kg ha-1] */
+    OUT_CROP_WDLV,                      /**< crop dead leafs dry matter [kg ha-1] */
+    OUT_CROP_WDST,                      /**< crop dead stems dry matter [kg ha-1] */
+    OUT_CROP_WDRT,                      /**< crop dead roots dry matter [kg ha-1] */
+    OUT_CROP_NLV,                       /**< crop leafs nitrogen content [kg ha-1] */
+    OUT_CROP_NST,                       /**< crop stems nitrogen content [kg ha-1] */
+    OUT_CROP_NSO,                       /**< crop storage organs nitrogen content [kg ha-1] */
+    OUT_CROP_NRT,                       /**< crop roots nitrogen content [kg ha-1] */
     OUT_CROP_LAI,                       /**< crop leaf area index [m2 m-2] */
     OUT_CROP_NNI,                       /**< crop nitrogen index [kg kg-1] */
     OUT_CROP_PNI,                       /**< crop phosphorous index [kg kg-1] */
@@ -132,6 +140,8 @@ enum {
     OUT_CROP_NPKI,                      /**< crop nutrient index [kg kg-1] */
     OUT_CROP_WSTRESS,                   /**< crop water stress [-] */
     OUT_CROP_NSTRESS,                   /**< crop nutrient stress [-] */
+    OUT_CROP_TMAXSTRESS,                /**< crop maximum temperature stress [-] */
+    OUT_CROP_TMINSTRESS,                /**< crop minimum temperature stress [-] */
     OUT_CROP_NSOIL,                     /**< crop soil nitrogen [kg ha-1] */
     OUT_CROP_PSOIL,                     /**< crop soil phosporous [kg ha-1] */
     OUT_CROP_KSOIL,                     /**< crop soil potassium [kg ha-1] */
@@ -159,7 +169,6 @@ enum {
     FORCING_EFR_DISCHARGE,              /**< environmental river discharge [m3 s-1] */
     FORCING_EFR_BASEFLOW,               /**< environmental baseflow [mm] */
     // water-use
-    FORCING_PUMPING_CAP,                /**< pumping capacity [mm day-1] */
     FORCING_IRR_DEMAND,                 /**< irrigation demand [mm] */
     FORCING_IRR_GROUNDWATER,            /**< irrigation groundwater fraction [-] */
     FORCING_IRR_CONSUMPTION,            /**< irrigation consumption fraction [-] */
@@ -176,11 +185,14 @@ enum {
     FORCING_ENE_GROUNDWATER,            /**< energy groundwater fraction [-] */
     FORCING_ENE_CONSUMPTION,            /**< energy consumption fraction [-] */
     // crops
-    FORCING_CO2,                        /**< CO2 concentration [ppm] */
+    FORCING_TSUM_1,                     /**< Temperature sum from emergence to anthesis [degree C] */
+    FORCING_TSUM_2,                     /**< Temperature sum from athesis to maturity [degree C] */
     FORCING_FERT_DVS,                   /**< Fertilizer application DVS point [-] */
     FORCING_FERT_N,                     /**< Fertilizer application N amount [kg ha-1] */
     FORCING_FERT_P,                     /**< Fertilizer application P amount [kg ha-1] */
     FORCING_FERT_K,                     /**< Fertilizer application K amount [kg ha-1] */
+    // co2
+    FORCING_CO2,                        /**< CO2 concentration [ppm] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_FORCING_TYPES              /**< used as a loop counter*/
@@ -230,27 +242,33 @@ typedef struct {
     bool FORCE_ROUTING;                 /**< routing (inflow) forcing flag */
     bool FORCE_LANDUSE; /**< landuse forcing flag */
     short unsigned int NDAMTYPES;       /**< maximum number of dams per cell */
-    short unsigned int NDAMSERVICE;     /**< maximum number of dam service per dam */
     short unsigned int NWUTYPES;        /**< number of water-use sectors */
     short unsigned int NWURECEIVING;    /**< maximum number of remote water-users per cell */
     short unsigned int WU_INPUT[WU_NSECTORS];   /**< water-use input location */
     size_t NIRRTYPES;                   /**< maximum number irrigated vegetation types */
     bool POTENTIAL_IRRIGATION;          /**< potential irrigation flag */
-    bool FORCE_PUMP_CAP;                /**< pumping capacity forcing flag */
+    bool EFFICIENT_IRRIGATION;          /**< efficient irrigation flag */
+    bool OFFSET_IRRIGATION;             /**< efficient irrigation flag */
+    size_t Pbare;                       /**< paddy irrigation bare soil band */
     bool COMP_WITH;                     /**< compensation water abstractions flag */
+    bool LOCAL_WITH;                    /**< local water abstractions flag */
     bool REMOTE_WITH;                   /**< remote water abstractions flag */
     bool NONRENEW_WITH;                 /**< non-renewable water abstractions flag */
     bool NONRENEW_RUNOFF;               /**< non-renewable water abstractions flag */
     bool WOFOST_PIRR;                   /**< potential irrigation for wofost module flag */
     bool WOFOST_PFERT;                  /**< potential fertilization for wofost module flag */
+    bool WOFOST_PTEMP;                  /**< optimal (maximum) temperatures for wofost module flag */
     bool WOFOST_DIST_SEASON;            /**< distributed seasons for wofost module flag */
     bool WOFOST_DIST_TSUM;              /**< distributed tsums for wofost module flag */
     bool WOFOST_DIST_FERT;              /**< distributed fertilization for wofost module flag */
     bool WOFOST_DIST_MIN;               /**< distributed mineralization for wofost module flag */
+    bool WOFOST_CALC_MIN;               /**< calculated mineralization for wofost module flag */
     bool WOFOST_CONTINUE;               /**< continue on end land-use for wofost module flag */
+    bool WOFOST_FORCE_TSUM;             /**< distributed tsums forcing for wofost module flag */
     bool WOFOST_FORCE_FERT;             /**< distributed fertilizer forcing for wofost module flag */
     short unsigned int NCROPTYPES;      /**< number of crop types */
     short unsigned int NFERTTIMES;      /**< number of fertilizer occations */
+    bool FORCE_CO2;                     /**< force atmospheric CO2 concentration flag */
 } plugin_option_struct;
 
 /******************************************************************************
@@ -281,7 +299,6 @@ typedef struct {
     double DAM_BETA;                    /**< dam correction exponent [-] */
     double DAM_GAMMA;                   /**< dam correction period [d-1] */
     double NREN_LIM;                    /**< non-renewable withdrawal limit [mm] */
-    double Wfc_fract;                   /**< field capacity fraction (of critical soil moisture) [-] */
     double Ksat_expt;                   /**< paddy saturated irrigation conductivity exponent [-] */
 } plugin_parameters_struct;
 

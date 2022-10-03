@@ -42,7 +42,6 @@ rout_random_run()
     extern rout_var_struct           *rout_var;
     extern rout_con_struct           *rout_con;
     extern rout_force_struct         *rout_force;
-    extern double                  ***out_data;
     extern size_t                    *routing_order;
     extern int                        mpi_rank;
 
@@ -69,11 +68,8 @@ rout_random_run()
     double                           *force_local;
 
     size_t                            iCell;
-    double                            in_runoff;
-    double                            in_baseflow;
     double                            inflow;
     double                           *dt_inflow;
-    double                            runoff;
     double                           *dt_runoff;
     size_t                            rout_steps_per_dt;
     double                            prev_stream;
@@ -187,35 +183,7 @@ rout_random_run()
             iuh_local[i][j] = rout_con[i].inflow_uh[j];
         }
 
-        in_runoff = out_data[i][OUT_RUNOFF][0];
-        in_baseflow = out_data[i][OUT_BASEFLOW][0];
-
-        if (rout_var[i].nonrenew_deficit > 0) {
-            if (in_baseflow > rout_var[i].nonrenew_deficit) {
-                rout_var[i].nonrenew_deficit = 0.;
-                in_baseflow -= rout_var[i].nonrenew_deficit;
-            }
-            else {
-                rout_var[i].nonrenew_deficit -= in_baseflow;
-                in_baseflow = 0.;
-            }
-
-            if (plugin_options.NONRENEW_RUNOFF) {
-                if (in_runoff > rout_var[i].nonrenew_deficit) {
-                    in_runoff -= rout_var[i].nonrenew_deficit;
-                    rout_var[i].nonrenew_deficit = 0.;
-                }
-                else {
-                    rout_var[i].nonrenew_deficit -= in_runoff;
-                    in_runoff = 0.;
-                }
-            }
-        }
-
-        run_local[i] =
-            (in_runoff + in_baseflow) *
-            local_domain.locations[i].area /
-            (global_param.dt * MM_PER_M);
+        run_local[i] = rout_var[i].runoff;
         for (j = 0; j < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; j++) {
             dt_dis_local[i][j] = rout_var[i].dt_discharge[j];
         }
@@ -256,13 +224,9 @@ rout_random_run()
                        1);
             }
 
-            /* RUNOFF*/
-            // Gather runoff from VIC
-            runoff = run_global[iCell];
-
             // Calculate delta-time runoff (equal contribution)
             for (j = 0; j < rout_steps_per_dt; j++) {
-                dt_runoff[j] = runoff / rout_steps_per_dt;
+                dt_runoff[j] = run_global[iCell] / rout_steps_per_dt;
             }
 
             // Convolute current runoff
@@ -318,15 +282,15 @@ rout_random_run()
             }
 
             // Check water balance
-            if (abs(prev_stream + (inflow_global[iCell] + runoff) -
+            if (abs(prev_stream + (inflow_global[iCell] + run_global[iCell]) -
                     (dis_global[iCell] + stream_global[iCell])) >
                 DBL_EPSILON) {
                 log_err(
                     "Discharge water balance error [%.4f]. "
                     "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
-                    prev_stream + (inflow_global[iCell] + runoff) -
+                    prev_stream + (inflow_global[iCell] + run_global[iCell]) -
                     (dis_global[iCell] + stream_global[iCell]),
-                    (inflow_global[iCell] + runoff),
+                    (inflow_global[iCell] + run_global[iCell]),
                     dis_global[iCell],
                     prev_stream,
                     stream_global[iCell]);

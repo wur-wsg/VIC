@@ -33,7 +33,6 @@
 void
 dam_set_output_met_data_info(void)
 {
-    extern plugin_option_struct plugin_options;
     extern metadata_struct      out_metadata[];
 
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_LDAM_INFLOW].varname,
@@ -233,48 +232,6 @@ dam_set_output_met_data_info(void)
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_GDAM_OP_RELEASE].units, "hm3");
     strcpy(out_metadata[N_OUTVAR_TYPES + OUT_GDAM_OP_RELEASE].description,
            "total dam operational release");
-
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_INFLOW].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_DEMAND].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_EFR].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_RELEASE].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_STORAGE].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_HIST_INFLOW].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_HIST_DEMAND].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_HIST_EFR].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_OP_STORAGE].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_LDAM_OP_RELEASE].nelem = plugin_options.NDAMTYPES;
-
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_INFLOW].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_DEMAND].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_EFR].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_RELEASE].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_STORAGE].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_HIST_INFLOW].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_HIST_DEMAND].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_HIST_EFR].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_OP_STORAGE].nelem = plugin_options.NDAMTYPES;
-    out_metadata[N_OUTVAR_TYPES +
-                 OUT_GDAM_OP_RELEASE].nelem = plugin_options.NDAMTYPES;
 }
 
 /******************************************
@@ -302,78 +259,6 @@ dam_add_hist_dim(nc_file_struct *nc,
                         &(nc->dam_dimid));
     check_nc_status(status, "Error defining dam class dimension in %s",
                     stream->filename);
-}
-
-/******************************************
-* @brief   Set output variable dimension sizes
-******************************************/
-void
-dam_set_nc_var_info(unsigned int    varid,
-                    nc_file_struct *nc_hist_file,
-                    nc_var_struct  *nc_var)
-{
-    switch (varid) {
-    case N_OUTVAR_TYPES + OUT_LDAM_INFLOW:
-    case N_OUTVAR_TYPES + OUT_LDAM_DEMAND:
-    case N_OUTVAR_TYPES + OUT_LDAM_EFR:
-    case N_OUTVAR_TYPES + OUT_LDAM_RELEASE:
-    case N_OUTVAR_TYPES + OUT_LDAM_STORAGE:
-    case N_OUTVAR_TYPES + OUT_LDAM_HIST_INFLOW:
-    case N_OUTVAR_TYPES + OUT_LDAM_HIST_DEMAND:
-    case N_OUTVAR_TYPES + OUT_LDAM_HIST_EFR:
-    case N_OUTVAR_TYPES + OUT_LDAM_OP_RELEASE:
-    case N_OUTVAR_TYPES + OUT_LDAM_OP_STORAGE:
-    case N_OUTVAR_TYPES + OUT_GDAM_INFLOW:
-    case N_OUTVAR_TYPES + OUT_GDAM_DEMAND:
-    case N_OUTVAR_TYPES + OUT_GDAM_EFR:
-    case N_OUTVAR_TYPES + OUT_GDAM_RELEASE:
-    case N_OUTVAR_TYPES + OUT_GDAM_STORAGE:
-    case N_OUTVAR_TYPES + OUT_GDAM_HIST_INFLOW:
-    case N_OUTVAR_TYPES + OUT_GDAM_HIST_DEMAND:
-    case N_OUTVAR_TYPES + OUT_GDAM_HIST_EFR:
-    case N_OUTVAR_TYPES + OUT_GDAM_OP_RELEASE:
-    case N_OUTVAR_TYPES + OUT_GDAM_OP_STORAGE:
-        nc_var->nc_dims = 4;
-        nc_var->nc_counts[1] = nc_hist_file->dam_size;
-        nc_var->nc_counts[2] = nc_hist_file->nj_size;
-        nc_var->nc_counts[3] = nc_hist_file->ni_size;
-    }
-}
-
-/******************************************
-* @brief   Set output variable dimension ids
-******************************************/
-void
-dam_set_nc_var_dimids(unsigned int    varid,
-                      nc_file_struct *nc_hist_file,
-                      nc_var_struct  *nc_var)
-{
-    switch (varid) {
-    case N_OUTVAR_TYPES + OUT_LDAM_INFLOW:
-    case N_OUTVAR_TYPES + OUT_LDAM_DEMAND:
-    case N_OUTVAR_TYPES + OUT_LDAM_EFR:
-    case N_OUTVAR_TYPES + OUT_LDAM_RELEASE:
-    case N_OUTVAR_TYPES + OUT_LDAM_STORAGE:
-    case N_OUTVAR_TYPES + OUT_LDAM_HIST_INFLOW:
-    case N_OUTVAR_TYPES + OUT_LDAM_HIST_DEMAND:
-    case N_OUTVAR_TYPES + OUT_LDAM_HIST_EFR:
-    case N_OUTVAR_TYPES + OUT_LDAM_OP_RELEASE:
-    case N_OUTVAR_TYPES + OUT_LDAM_OP_STORAGE:
-    case N_OUTVAR_TYPES + OUT_GDAM_INFLOW:
-    case N_OUTVAR_TYPES + OUT_GDAM_DEMAND:
-    case N_OUTVAR_TYPES + OUT_GDAM_EFR:
-    case N_OUTVAR_TYPES + OUT_GDAM_RELEASE:
-    case N_OUTVAR_TYPES + OUT_GDAM_STORAGE:
-    case N_OUTVAR_TYPES + OUT_GDAM_HIST_INFLOW:
-    case N_OUTVAR_TYPES + OUT_GDAM_HIST_DEMAND:
-    case N_OUTVAR_TYPES + OUT_GDAM_HIST_EFR:
-    case N_OUTVAR_TYPES + OUT_GDAM_OP_RELEASE:
-    case N_OUTVAR_TYPES + OUT_GDAM_OP_STORAGE:
-        nc_var->nc_dimids[0] = nc_hist_file->time_dimid;
-        nc_var->nc_dimids[1] = nc_hist_file->dam_dimid;
-        nc_var->nc_dimids[2] = nc_hist_file->nj_dimid;
-        nc_var->nc_dimids[3] = nc_hist_file->ni_dimid;
-    }
 }
 
 /******************************************
@@ -417,110 +302,91 @@ dam_history(unsigned int  varid,
 void
 dam_put_data(size_t iCell)
 {
-    extern plugin_option_struct plugin_options;
     extern double            ***out_data;
-    extern dam_con_map_struct  *local_dam_con_map;
-    extern dam_var_struct     **local_dam_var;
-    extern dam_con_map_struct  *global_dam_con_map;
-    extern dam_var_struct     **global_dam_var;
+    extern dam_con_map_struct  *dam_con_map;
+    extern dam_var_struct     **dam_var;
+    extern dam_con_struct     **dam_con;
 
-    size_t                      i;
+    size_t                      iDam;
     size_t                      years_running;
     double                      inflow;
     double                      demand;
     double                      efr;
 
-    for (i = 0; i < plugin_options.NDAMTYPES; i++) {
-        if (local_dam_con_map[iCell].didx[i] != NODATA_DAM) {
-            years_running =
-                (size_t)(local_dam_var[iCell][i].months_running /
-                         MONTHS_PER_YEAR);
-            if (years_running > DAM_HIST_YEARS) {
-                years_running = DAM_HIST_YEARS;
-            }
-
-            inflow = array_average(local_dam_var[iCell][i].history_inflow,
-                                   years_running, 1, MONTHS_PER_YEAR - 1,
-                                   MONTHS_PER_YEAR - 1);
-            demand = array_average(local_dam_var[iCell][i].history_demand,
-                                   years_running, 1, MONTHS_PER_YEAR - 1,
-                                   MONTHS_PER_YEAR - 1);
-            efr = array_average(local_dam_var[iCell][i].history_efr,
-                                years_running, 1, MONTHS_PER_YEAR - 1,
-                                MONTHS_PER_YEAR - 1);
-
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_INFLOW][i] =
-                local_dam_var[iCell][i].inflow;
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_DEMAND][i] =
-                local_dam_var[iCell][i].demand;
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_EFR][i] = local_dam_var[iCell][i].efr;
-
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_STORAGE][i] =
-                local_dam_var[iCell][i].storage;
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_RELEASE][i] =
-                local_dam_var[iCell][i].release;
-
-            out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_HIST_INFLOW][i] = inflow;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_HIST_DEMAND][i] = demand;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_HIST_EFR][i] = efr;
-
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_OP_RELEASE][i] =
-                local_dam_var[iCell][i].op_release[0];
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_LDAM_OP_STORAGE][i] =
-                local_dam_var[iCell][i].op_storage[0];
+    for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
+        years_running =
+            (size_t)(dam_var[iCell][iDam].months_running /
+                     MONTHS_PER_YEAR);
+        if (years_running > DAM_HIST_YEARS) {
+            years_running = DAM_HIST_YEARS;
         }
 
-        if (global_dam_con_map[iCell].didx[i] != NODATA_DAM) {
-            years_running =
-                (size_t)(global_dam_var[iCell][i].months_running /
-                         MONTHS_PER_YEAR);
-            if (years_running > DAM_HIST_YEARS) {
-                years_running = DAM_HIST_YEARS;
-            }
+        inflow = array_average(dam_var[iCell][iDam].history_inflow,
+                               years_running, 1, MONTHS_PER_YEAR - 1,
+                               MONTHS_PER_YEAR - 1);
+        demand = array_average(dam_var[iCell][iDam].history_demand,
+                               years_running, 1, MONTHS_PER_YEAR - 1,
+                               MONTHS_PER_YEAR - 1);
+        efr = array_average(dam_var[iCell][iDam].history_efr,
+                            years_running, 1, MONTHS_PER_YEAR - 1,
+                            MONTHS_PER_YEAR - 1);
 
-            inflow = array_average(global_dam_var[iCell][i].history_inflow,
-                                   years_running, 1, MONTHS_PER_YEAR - 1,
-                                   MONTHS_PER_YEAR - 1);
-            demand = array_average(global_dam_var[iCell][i].history_demand,
-                                   years_running, 1, MONTHS_PER_YEAR - 1,
-                                   MONTHS_PER_YEAR - 1);
-            efr = array_average(global_dam_var[iCell][i].history_efr,
-                                years_running, 1, MONTHS_PER_YEAR - 1,
-                                MONTHS_PER_YEAR - 1);
-
+        if(dam_con[iCell][iDam].type == DAM_LOCAL) {
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_INFLOW][i] =
-                global_dam_var[iCell][i].inflow;
+                            OUT_LDAM_INFLOW][iDam] =
+                dam_var[iCell][iDam].inflow;
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_DEMAND][i] =
-                global_dam_var[iCell][i].demand;
+                            OUT_LDAM_DEMAND][iDam] =
+                dam_var[iCell][iDam].demand;
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_EFR][i] = global_dam_var[iCell][i].efr;
+                            OUT_LDAM_EFR][iDam] = dam_var[iCell][iDam].efr;
 
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_STORAGE][i] =
-                global_dam_var[iCell][i].storage;
+                            OUT_LDAM_STORAGE][iDam] =
+                dam_var[iCell][iDam].storage;
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_RELEASE][i] =
-                global_dam_var[iCell][i].release;
+                            OUT_LDAM_RELEASE][iDam] =
+                dam_var[iCell][iDam].release;
 
-            out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_HIST_INFLOW][i] = inflow;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_HIST_DEMAND][i] = demand;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_HIST_EFR][i] = efr;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_HIST_INFLOW][iDam] = inflow;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_HIST_DEMAND][iDam] = demand;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_HIST_EFR][iDam] = efr;
 
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_OP_RELEASE][i] =
-                global_dam_var[iCell][i].op_release[0];
+                            OUT_LDAM_OP_RELEASE][iDam] =
+                dam_var[iCell][iDam].op_release[0];
             out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_GDAM_OP_STORAGE][i] =
-                global_dam_var[iCell][i].op_storage[0];
+                            OUT_LDAM_OP_STORAGE][iDam] =
+                dam_var[iCell][iDam].op_storage[0];
+        } 
+
+        else if (dam_con[iCell][iDam].type == DAM_GLOBAL) {
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_INFLOW][iDam] =
+                dam_var[iCell][iDam].inflow;
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_DEMAND][iDam] =
+                dam_var[iCell][iDam].demand;
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_EFR][iDam] = dam_var[iCell][iDam].efr;
+
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_STORAGE][iDam] =
+                dam_var[iCell][iDam].storage;
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_RELEASE][iDam] =
+                dam_var[iCell][iDam].release;
+
+            out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_HIST_INFLOW][iDam] = inflow;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_HIST_DEMAND][iDam] = demand;
+            out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_HIST_EFR][iDam] = efr;
+
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_OP_RELEASE][iDam] =
+                dam_var[iCell][iDam].op_release[0];
+            out_data[iCell][N_OUTVAR_TYPES +
+                            OUT_GDAM_OP_STORAGE][iDam] =
+                dam_var[iCell][iDam].op_storage[0];
         }
     }
 }

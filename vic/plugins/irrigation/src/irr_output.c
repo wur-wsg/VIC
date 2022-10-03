@@ -89,12 +89,6 @@ irr_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].description,
              MAXSTRING, "%s", "total irrigation water applied");
-
-    out_metadata[N_OUTVAR_TYPES + OUT_SHORTAGE].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_REQUIREMENT].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_RECEIVED].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_LEFTOVER].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_APPLIED].nelem = 1;
 }
 
 /******************************************
@@ -127,6 +121,7 @@ irr_put_data(size_t iCell)
 {
     extern option_struct       options;
     extern irr_var_struct   ***irr_var;
+    extern irr_con_struct    **irr_con;
     extern irr_con_map_struct *irr_con_map;
     extern soil_con_struct    *soil_con;
     extern veg_con_struct    **veg_con;
@@ -139,42 +134,39 @@ irr_put_data(size_t iCell)
     int                        veg_index;
 
     for (i = 0; i < irr_con_map[iCell].ni_active; i++) {
-        veg_index = irr_con_map[iCell].vidx[i];
+        veg_index = irr_con[iCell][i].veg_index;
+        veg_fract = veg_con[iCell][veg_index].Cv;
 
-        if (veg_index != NODATA_VEG) {
-            veg_fract = veg_con[iCell][veg_index].Cv;
+        if (veg_fract > 0) {
+            for (j = 0; j < options.SNOW_BAND; j++) {
+                area_fract = soil_con[iCell].AreaFract[j];
 
-            if (veg_fract > 0) {
-                for (j = 0; j < options.SNOW_BAND; j++) {
-                    area_fract = soil_con[iCell].AreaFract[j];
-
-                    if (area_fract > 0) {
-                        out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_REQUIREMENT][0] +=
-                            irr_var[iCell][i][j].requirement *
-                            veg_fract *
-                            area_fract;
-                        out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_SHORTAGE][0] +=
-                            irr_var[iCell][i][j].shortage *
-                            veg_fract *
-                            area_fract;
-                        out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_RECEIVED][0] +=
-                            irr_var[iCell][i][j].received *
-                            veg_fract *
-                            area_fract;
-                        out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_LEFTOVER][0] +=
-                            irr_var[iCell][i][j].leftover *
-                            veg_fract *
-                            area_fract;
-                        out_data[iCell][N_OUTVAR_TYPES +
-                                        OUT_APPLIED][0] +=
-                            irr_var[iCell][i][j].applied *
-                            veg_fract *
-                            area_fract;
-                    }
+                if (area_fract > 0) {
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_REQUIREMENT][0] +=
+                        irr_var[iCell][i][j].requirement *
+                        veg_fract *
+                        area_fract;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_SHORTAGE][0] +=
+                        irr_var[iCell][i][j].shortage *
+                        veg_fract *
+                        area_fract;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_RECEIVED][0] +=
+                        irr_var[iCell][i][j].received *
+                        veg_fract *
+                        area_fract;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_LEFTOVER][0] +=
+                        irr_var[iCell][i][j].leftover *
+                        veg_fract *
+                        area_fract;
+                    out_data[iCell][N_OUTVAR_TYPES +
+                                    OUT_APPLIED][0] +=
+                        irr_var[iCell][i][j].applied *
+                        veg_fract *
+                        area_fract;
                 }
             }
         }

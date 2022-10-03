@@ -200,11 +200,6 @@ wu_set_output_met_data_info(void)
                  OUT_WI_TREM_SECT].nelem = plugin_options.NWUTYPES;
     out_metadata[N_OUTVAR_TYPES +
                  OUT_WI_NREN_SECT].nelem = plugin_options.NWUTYPES;
-
-    out_metadata[N_OUTVAR_TYPES + OUT_DEMAND].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_WITHDRAWN].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_RETURNED].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_CONSUMED].nelem = 1;
 }
 
 /******************************************
