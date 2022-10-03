@@ -98,14 +98,14 @@ InitializeNutrients(SimUnit *Grid)
 
 
     /* Set the soil nutrient states */
-    Grid->ste->st_N_tot = List_cumsum(Grid->mng->N_Fert_table, 
-                          Grid->crp->CultivateDay) *
+    Grid->ste->st_N_tot = List_cumsum(Grid->mng->N_Fert_table,
+                                      Grid->crp->CultivateDay) *
                           Grid->mng->N_Uptake_frac;
-    Grid->ste->st_P_tot = List_cumsum(Grid->mng->P_Fert_table, 
-                          Grid->crp->CultivateDay) *
+    Grid->ste->st_P_tot = List_cumsum(Grid->mng->P_Fert_table,
+                                      Grid->crp->CultivateDay) *
                           Grid->mng->P_Uptake_frac;
-    Grid->ste->st_K_tot = List_cumsum(Grid->mng->K_Fert_table, 
-                          Grid->crp->CultivateDay) *
+    Grid->ste->st_K_tot = List_cumsum(Grid->mng->K_Fert_table,
+                                      Grid->crp->CultivateDay) *
                           Grid->mng->K_Uptake_frac;
 
     Grid->ste->st_N_mins = Grid->mng->N_Mins;

@@ -145,7 +145,7 @@ wu_alloc(void)
             check_nc_status(status, "Error opening %s",
                             plugin_filenames.wateruse.nc_filename);
         }
-        
+
         wu_set_nreceiving();
 
         // close parameter file

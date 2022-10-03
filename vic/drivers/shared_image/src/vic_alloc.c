@@ -125,7 +125,8 @@ vic_alloc(void)
                                    sizeof(*(veg_con_map[i].Cv)));
         check_alloc_status(veg_con_map[i].Cv, "Memory allocation error.");
 
-        veg_con_map[i].nv_active = (size_t) local_domain.locations[i].nveg + options.Nbare;
+        veg_con_map[i].nv_active = (size_t) local_domain.locations[i].nveg +
+                                   options.Nbare;
         if (options.AboveTreelineVeg >= 0) {
             veg_con_map[i].nv_active += 1;
         }

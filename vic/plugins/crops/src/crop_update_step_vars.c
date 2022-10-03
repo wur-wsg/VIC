@@ -118,9 +118,11 @@ crop_update_step_vars(size_t iCell)
                                    area_fract;
             cveg_lib->RGL += cgrid->crp->prm.RGL * area_fract;
 
-            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance * tmp_min *
+            cveg_lib->rarc += cgrid->crp->prm.MaxArchitecturalResistance *
+                              tmp_min *
                               area_fract;
-            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance * area_fract;
+            cveg_lib->rmin += cgrid->crp->prm.MinStomatalResistance *
+                              area_fract;
 
             if (cgrid->crp->st.RootDepth > csoil_con->depth[0] * CM_PER_M) {
                 cveg_var->root[0] +=
@@ -140,8 +142,8 @@ crop_update_step_vars(size_t iCell)
             for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                 ccell_data->layer[iLayer].Wcr += (csoil_con->Wpwp[iLayer] +
                                                   (csoil_con->Wfc[iLayer] -
-                                                   csoil_con->Wpwp[iLayer])
-                                                  * Wcr_FRAC) * area_fract;
+                                                   csoil_con->Wpwp[iLayer]) *
+                                                  Wcr_FRAC) * area_fract;
             }
 
             cgrid = cgrid->next;
@@ -180,15 +182,17 @@ crop_update_step_vars(size_t iCell)
 
                         cveg_var->root[0] = 1.0;
                         cveg_var->root[1] = 0.0;
-                        
+
                         for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
-                            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                                ccell_data->layer[iLayer].Wcr = soil_con[iCell].Wcr[iLayer];
+                            for (iLayer = 0; iLayer < options.Nlayer;
+                                 iLayer++) {
+                                ccell_data->layer[iLayer].Wcr =
+                                    soil_con[iCell].Wcr[iLayer];
                             }
                         }
                     }
-                    else {                        
+                    else {
                         // Partial to full crop coverage
                         cveg_lib->rarc /= cveg_hist->fcanopy[NR];
                         cveg_lib->trunk_ratio /= cveg_hist->fcanopy[NR];
@@ -208,11 +212,13 @@ crop_update_step_vars(size_t iCell)
                         for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                             cveg_var->root[iLayer] /= root_sum;
                         }
-                        
+
                         for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
-                            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-                                ccell_data->layer[iLayer].Wcr /= cveg_hist->fcanopy[NR];
+                            for (iLayer = 0; iLayer < options.Nlayer;
+                                 iLayer++) {
+                                ccell_data->layer[iLayer].Wcr /=
+                                    cveg_hist->fcanopy[NR];
                             }
                         }
                     }

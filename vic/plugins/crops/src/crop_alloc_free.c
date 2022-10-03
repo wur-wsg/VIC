@@ -55,12 +55,12 @@ crop_alloc(void)
             malloc(crop_con_map[i].nc_active *
                    sizeof(*crop_force[i].tsum1));
         check_alloc_status(crop_force[i].tsum1, "Memory allocation error");
-        
+
         crop_force[i].tsum2 =
             malloc(crop_con_map[i].nc_active *
                    sizeof(*crop_force[i].tsum2));
         check_alloc_status(crop_force[i].tsum2, "Memory allocation error");
-        
+
         crop_force[i].DVS_point =
             malloc(crop_con_map[i].nc_active *
                    sizeof(*crop_force[i].DVS_point));

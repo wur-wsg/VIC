@@ -115,7 +115,7 @@ calculate_derived_water_states(size_t iCell,
     layer_data_struct          layer[MAX_LAYERS];
 
     cell_data_struct         **cell;
-    veg_var_struct         **veg;
+    veg_var_struct           **veg;
     snow_data_struct         **snow;
     energy_bal_struct        **energy;
 
@@ -278,7 +278,6 @@ calculate_derived_water_states(size_t iCell,
     }
 }
 
-
 /******************************************
 * @brief   Calculate derived energy states
 ******************************************/
@@ -368,15 +367,15 @@ calculate_total_water(size_t  iCell,
     extern option_struct       options;
     extern veg_con_map_struct *veg_con_map;
     extern all_vars_struct    *all_vars;
-    
+
     double                     total;
 
-    veg_var_struct   **veg_var;
-    cell_data_struct **cell;
-    snow_data_struct **snow;
+    veg_var_struct           **veg_var;
+    cell_data_struct         **cell;
+    snow_data_struct         **snow;
 
-    size_t             iVeg;
-    size_t             iLayer;
+    size_t                     iVeg;
+    size_t                     iLayer;
 
     veg_var = all_vars[iCell].veg_var;
     cell = all_vars[iCell].cell;
@@ -384,7 +383,8 @@ calculate_total_water(size_t  iCell,
 
     total = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
+            Cv_change[iVeg] > MINCOVERAGECHANGE) {
             total += veg_var[iVeg][iBand].Wdew * Cv[iVeg];
             total += snow[iVeg][iBand].pack_water * Cv[iVeg];
             total += snow[iVeg][iBand].surf_water * Cv[iVeg];
@@ -392,11 +392,11 @@ calculate_total_water(size_t  iCell,
             total += snow[iVeg][iBand].snow_canopy * Cv[iVeg];
             for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                 total += cell[iVeg][iBand].layer[iLayer].moist *
-                                Cv[iVeg];
+                         Cv[iVeg];
             }
         }
     }
-    
+
     return(total);
 }
 
@@ -411,20 +411,21 @@ calculate_total_carbon(size_t  iCell,
 {
     extern veg_con_map_struct *veg_con_map;
     extern all_vars_struct    *all_vars;
-    
+
     double                     total;
 
-    veg_var_struct   **veg_var;
-    cell_data_struct **cell;
+    veg_var_struct           **veg_var;
+    cell_data_struct         **cell;
 
-    size_t             iVeg;
+    size_t                     iVeg;
 
     veg_var = all_vars[iCell].veg_var;
     cell = all_vars[iCell].cell;
 
     total = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
+            Cv_change[iVeg] > MINCOVERAGECHANGE) {
             total += veg_var[iVeg][iBand].AnnualNPP * Cv[iVeg];
             total += veg_var[iVeg][iBand].AnnualNPPPrev * Cv[iVeg];
             total += cell[iVeg][iBand].CLitter * Cv[iVeg];
@@ -432,7 +433,7 @@ calculate_total_carbon(size_t  iCell,
             total += cell[iVeg][iBand].CSlow * Cv[iVeg];
         }
     }
-    
+
     return(total);
 }
 
@@ -445,19 +446,20 @@ calculate_total_energy(size_t   iCell,
                        double  *pack_tempEnergy,
                        double **TEnergy,
                        double  *Cv,
-                       double *Cv_change)
+                       double  *Cv_change)
 {
     extern option_struct       options;
     extern veg_con_map_struct *veg_con_map;
 
     double                     total;
 
-    size_t              iVeg;
-    size_t              iNode;
+    size_t                     iVeg;
+    size_t                     iNode;
 
     total = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
+            Cv_change[iVeg] > MINCOVERAGECHANGE) {
             total += surf_tempEnergy[iVeg] * Cv[iVeg];
             total += pack_tempEnergy[iVeg] * Cv[iVeg];
             for (iNode = 0; iNode < options.Nnode; iNode++) {
@@ -465,7 +467,7 @@ calculate_total_energy(size_t   iCell,
             }
         }
     }
-    
+
     return(total);
 }
 
@@ -473,43 +475,47 @@ calculate_total_energy(size_t   iCell,
 * @brief   Calculate total energy
 ******************************************/
 double
-calculate_total_irrigation(size_t   iCell,
-                           size_t iBand,
-                           double  *Cv,
+calculate_total_irrigation(size_t  iCell,
+                           size_t  iBand,
+                           double *Cv,
                            double *Cv_change)
 {
     extern global_param_struct        global_param;
-    extern plugin_global_param_struct        plugin_global_param;
+    extern plugin_global_param_struct plugin_global_param;
     extern domain_struct              local_domain;
-    extern irr_con_map_struct *irr_con_map;
-    extern irr_con_struct    **irr_con;
-    extern irr_var_struct   ***irr_var;
+    extern irr_con_map_struct        *irr_con_map;
+    extern irr_con_struct           **irr_con;
+    extern irr_var_struct          ***irr_var;
 
-    double                     total;
+    double                            total;
 
-    irr_var_struct   **irr;
+    irr_var_struct                  **irr;
 
-    size_t             iVeg;
-    size_t             iIrr;
-    size_t             iStep;
+    size_t                            iVeg;
+    size_t                            iIrr;
+    size_t                            iStep;
     size_t                            rout_steps_per_dt;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
-    
+
     irr = irr_var[iCell];
 
     total = 0.0;
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         iVeg = irr_con[iCell][iIrr].veg_index;
-        if (Cv_change[iVeg] < -MINCOVERAGECHANGE || Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
+            Cv_change[iVeg] > MINCOVERAGECHANGE) {
             total += irr[iIrr][iBand].leftover * Cv[iVeg];
         }
     }
-    for (iStep = 0; iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1; iStep++) {
-        total += rout_var[iCell].dt_discharge[iStep] * global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
+    for (iStep = 0;
+         iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
+         iStep++) {
+        total += rout_var[iCell].dt_discharge[iStep] * global_param.dt /
+                 local_domain.locations[iCell].area * MM_PER_M;
     }
-    
+
     return(total);
 }
 
@@ -544,12 +550,12 @@ get_energy_terms(size_t   iCell,
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
         surf_tempEnergy[iVeg] = snow[iVeg][iBand].surf_temp *
-                                     snow_surf_capacity[iVeg];
+                                snow_surf_capacity[iVeg];
         pack_tempEnergy[iVeg] = snow[iVeg][iBand].pack_temp *
-                                     snow_pack_capacity[iVeg];
+                                snow_pack_capacity[iVeg];
         for (iNode = 0; iNode < options.Nnode; iNode++) {
             TEnergy[iVeg][iNode] = energy[iVeg][iBand].T[iNode] *
-                                        node_capacity[iVeg][iNode];
+                                   node_capacity[iVeg][iNode];
         }
     }
 }

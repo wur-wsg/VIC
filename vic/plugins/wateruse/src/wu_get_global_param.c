@@ -85,20 +85,20 @@ wu_validate_global_param(void)
     extern plugin_filenames_struct plugin_filenames;
 
     // Options
-    if (!plugin_options.ROUTING && 
-            (plugin_options.LOCAL_WITH || plugin_options.REMOTE_WITH)) {
+    if (!plugin_options.ROUTING &&
+        (plugin_options.LOCAL_WITH || plugin_options.REMOTE_WITH)) {
         log_err("WATERUSE = TRUE and REMOTE_WITH = TRUE or LOCAL_WITH = TRUE "
                 "but ROUTING = FALSE");
     }
-    if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION && 
-            (plugin_options.LOCAL_WITH || plugin_options.REMOTE_WITH)) {
+    if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION &&
+        (plugin_options.LOCAL_WITH || plugin_options.REMOTE_WITH)) {
         log_err("WATERUSE = TRUE and REMOTE_WITH = TRUE or LOCAL_WITH = TRUE "
                 "but DECOMPOSITION = RANDOM");
     }
 
     // Parameters
     if (strcasecmp(plugin_filenames.wateruse.nc_filename, MISSING_S) == 0 &&
-            plugin_options.REMOTE_WITH) {
+        plugin_options.REMOTE_WITH) {
         log_err("WATERUSE = TRUE and REMOTE_WITH = TRUE but file is missing");
     }
 

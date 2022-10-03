@@ -80,7 +80,8 @@ alloc_force(force_data_struct *force)
 
         force->par = calloc(NR + 1, sizeof(*(force->par)));
         check_alloc_status(force->par, "Memory allocation error.");
-    } else {
+    }
+    else {
         force->Catm = calloc(NR + 1, sizeof(*(force->Catm)));
         check_alloc_status(force->Catm, "Memory allocation error.");
     }
@@ -116,7 +117,8 @@ free_force(force_data_struct *force)
         free(force->coszen);
         free(force->fdir);
         free(force->par);
-    } else {
+    }
+    else {
         free(force->Catm);
     }
 }

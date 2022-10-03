@@ -34,7 +34,7 @@ void
 crop_set_output_met_data_info(void)
 {
     extern plugin_option_struct plugin_options;
-    extern metadata_struct out_metadata[];
+    extern metadata_struct      out_metadata[];
 
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_CULTIVATE].varname,
              MAXSTRING,
@@ -280,26 +280,30 @@ crop_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_NSTRESS].description,
              MAXSTRING, "%s", "crop nutrient stress");
 
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].varname, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].varname,
+             MAXSTRING,
              "%s", "OUT_CROP_TMAXSTRESS");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].long_name,
              MAXSTRING,
              "%s", "max_temperature_stress");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].standard_name,
              MAXSTRING, "%s", "crop_max_temperature_stress");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].units, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].units,
+             MAXSTRING,
              "%s", "-");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMAXSTRESS].description,
              MAXSTRING, "%s", "crop maximum temperature stress");
 
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].varname, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].varname,
+             MAXSTRING,
              "%s", "OUT_CROP_TMINSTRESS");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].long_name,
              MAXSTRING,
              "%s", "min_temperature_stress");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].standard_name,
              MAXSTRING, "%s", "crop_min_temperature_stress");
-    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].units, MAXSTRING,
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].units,
+             MAXSTRING,
              "%s", "-");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_CROP_TMINSTRESS].description,
              MAXSTRING, "%s", "crop minimum temperature stress");
@@ -1155,20 +1159,26 @@ crop_put_rate_data(size_t iCell)
                 if (cgrid->crp->GrowthDay == 2) {
                     tmp_develop = cgrid->crp->st.Development -
                                   cgrid->crp->rt.Development;
-                    
+
                     tmp_dw_root = cgrid->crp->prm.InitialDryWeight *
-                            Afgen(cgrid->crp->prm.Roots, &tmp_develop);
+                                  Afgen(cgrid->crp->prm.Roots, &tmp_develop);
                     tmp_dw_leaf = cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Leaves, &tmp_develop);
+                                  (1 -
+                                   Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                                  Afgen(cgrid->crp->prm.Leaves, &tmp_develop);
                     tmp_dw_stem = cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Stems, &tmp_develop);
+                                  (1 -
+                                   Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
+                                  Afgen(cgrid->crp->prm.Stems, &tmp_develop);
                     tmp_dw_storage = cgrid->crp->prm.InitialDryWeight *
-                        (1 - Afgen(cgrid->crp->prm.Roots, &tmp_develop)) *
-                        Afgen(cgrid->crp->prm.Storage, &tmp_develop);
-                    
-                    tmp_Nmax_leaf = Afgen(cgrid->crp->prm.N_MaxLeaves, &tmp_develop);
+                                     (1 -
+                                      Afgen(cgrid->crp->prm.Roots,
+                                            &tmp_develop)) *
+                                     Afgen(cgrid->crp->prm.Storage,
+                                           &tmp_develop);
+
+                    tmp_Nmax_leaf = Afgen(cgrid->crp->prm.N_MaxLeaves,
+                                          &tmp_develop);
                     tmp_Nmax_stem = cgrid->crp->prm.N_MaxStems * tmp_Nmax_leaf;
                     tmp_Nmax_root = cgrid->crp->prm.N_MaxRoots * tmp_Nmax_leaf;
 

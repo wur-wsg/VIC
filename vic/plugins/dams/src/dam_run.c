@@ -132,11 +132,11 @@ global_dam_operate(dam_con_struct *dam_con,
 void
 local_dam_run(size_t iCell)
 {
-    extern dam_con_map_struct  *dam_con_map;
-    extern dam_con_struct     **dam_con;
-    extern dam_var_struct     **dam_var;
+    extern dam_con_map_struct *dam_con_map;
+    extern dam_con_struct    **dam_con;
+    extern dam_var_struct    **dam_var;
 
-    size_t                      iDam;
+    size_t                     iDam;
 
     for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
         if (dam_con[iCell][iDam].type == DAM_LOCAL) {
@@ -146,7 +146,8 @@ local_dam_run(size_t iCell)
             if (dam_var[iCell][iDam].active) {
                 local_dam_operate(&dam_con[iCell][iDam],
                                   &dam_var[iCell][iDam], iCell);
-            } else {
+            }
+            else {
                 dam_var[iCell][iDam].inflow = 0.;
                 dam_var[iCell][iDam].demand = 0.;
                 dam_var[iCell][iDam].efr = 0.;
@@ -161,11 +162,11 @@ local_dam_run(size_t iCell)
 void
 global_dam_run(size_t iCell)
 {
-    extern dam_con_map_struct  *dam_con_map;
-    extern dam_con_struct     **dam_con;
-    extern dam_var_struct     **dam_var;
+    extern dam_con_map_struct *dam_con_map;
+    extern dam_con_struct    **dam_con;
+    extern dam_var_struct    **dam_var;
 
-    size_t                      iDam;
+    size_t                     iDam;
 
     for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
         if (dam_con[iCell][iDam].type == DAM_GLOBAL) {
@@ -175,7 +176,8 @@ global_dam_run(size_t iCell)
             if (dam_var[iCell][iDam].active) {
                 global_dam_operate(&dam_con[iCell][iDam],
                                    &dam_var[iCell][iDam], iCell);
-            } else {
+            }
+            else {
                 dam_var[iCell][iDam].inflow = 0.;
                 dam_var[iCell][iDam].demand = 0.;
                 dam_var[iCell][iDam].efr = 0.;

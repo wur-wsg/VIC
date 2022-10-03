@@ -123,7 +123,7 @@ irr_set_info(void)
     extern irr_con_struct        **irr_con;
 
     double                        *dvar;
-    int                        *ivar;
+    int                           *ivar;
 
     size_t                         i;
     size_t                         j;
@@ -165,10 +165,10 @@ irr_set_info(void)
         }
     }
 
-    if(plugin_options.OFFSET_IRRIGATION){
+    if (plugin_options.OFFSET_IRRIGATION) {
         get_scatter_nc_field_int(&(plugin_filenames.irrigation),
-                                    "irrigation_offset", d2start, d2count,
-                                    ivar);
+                                 "irrigation_offset", d2start, d2count,
+                                 ivar);
 
         for (i = 0; i < local_domain.ncells_active; i++) {
             for (j = 0; j < irr_con_map[i].ni_active; j++) {

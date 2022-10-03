@@ -162,8 +162,8 @@ calculate_availability_remote(size_t  iCell,
 * @brief   Divide available resources over sectors
 ******************************************/
 void
-calculate_division_remote(size_t iCell,
-                          double available_remote,
+calculate_division_remote(size_t  iCell,
+                          double  available_remote,
                           double *demand_remote)
 {
     extern plugin_option_struct plugin_options;
@@ -188,7 +188,7 @@ calculate_division_remote(size_t iCell,
         if (iSector == NODATA_WU) {
             continue;
         }
-        
+
         demand_remote_tmp = demand_remote[i];
 
         // remote
@@ -196,7 +196,7 @@ calculate_division_remote(size_t iCell,
         if (demand_remote_tmp > 0) {
             frac_remote_tmp = available_remote_tmp / demand_remote_tmp;
             frac_remote_tmp = min(frac_remote_tmp, 1.0);
-            
+
             for (j = 0; j < wu_con[iCell].nreceiving; j++) {
                 iCell2 = wu_con[iCell].receiving[j];
 
@@ -206,7 +206,8 @@ calculate_division_remote(size_t iCell,
                 }
 
                 wu_var[iCell2][iSector2].available_remote_tmp =
-                    wu_var[iCell2][iSector2].demand_remote_tmp * frac_remote_tmp;
+                    wu_var[iCell2][iSector2].demand_remote_tmp *
+                    frac_remote_tmp;
 
                 available_remote_tmp -=
                     wu_var[iCell2][iSector2].available_remote_tmp;
@@ -267,13 +268,13 @@ calculate_use_remote(size_t  iCell,
             else {
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp = 0;
             }
-            wu_var[iCell2][iSector2].returned_remote_tmp = 
+            wu_var[iCell2][iSector2].returned_remote_tmp =
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp *
                 (1 - wu_force[iCell2][iSector2].consumption_frac);
-            wu_var[iCell2][iSector2].consumed_remote_tmp = 
+            wu_var[iCell2][iSector2].consumed_remote_tmp =
                 wu_var[iCell2][iSector2].withdrawn_remote_tmp *
                 wu_force[iCell2][iSector2].consumption_frac;
-            
+
             // total accounting
             wu_var[iCell2][iSector2].consumed +=
                 wu_var[iCell2][iSector2].consumed_remote_tmp;
@@ -322,9 +323,9 @@ calculate_hydrology_remote(size_t iCell,
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
-    
+
     // non-renewable
-    if(returned > 0.) {
+    if (returned > 0.) {
         for (i = 0; i < plugin_options.NWUTYPES; i++) {
             iSector = wu_con_map[iCell].sidx[i];
             if (iSector == NODATA_WU) {
@@ -333,24 +334,26 @@ calculate_hydrology_remote(size_t iCell,
 
             for (j = 0; j < wu_con[iCell].nreceiving; j++) {
                 iCell2 = wu_con[iCell].receiving[j];
-                
+
                 iSector2 = wu_con_map[iCell2].sidx[i];
                 if (iSector2 == NODATA_WU) {
                     continue;
                 }
-                
+
                 // get available nonrenewable requirements
                 available_nonrenew_tmp = rout_var[iCell2].nonrenew_deficit;
 
                 // get returned irrigation withdrawals
-                returned_nonrenew_tmp = wu_var[iCell2][iSector2].returned_remote_tmp;
+                returned_nonrenew_tmp =
+                    wu_var[iCell2][iSector2].returned_remote_tmp;
 
                 // add returned resources to nonrenewable
-                returned_nonrenew_tmp = min(available_nonrenew_tmp, returned_nonrenew_tmp);
-                if(available_nonrenew_tmp > 0) {
+                returned_nonrenew_tmp = min(available_nonrenew_tmp,
+                                            returned_nonrenew_tmp);
+                if (available_nonrenew_tmp > 0) {
                     rout_var[iCell2].nonrenew_deficit -= returned_nonrenew_tmp;
 
-                    if(rout_var[iCell2].nonrenew_deficit < 0){
+                    if (rout_var[iCell2].nonrenew_deficit < 0) {
                         rout_var[iCell2].nonrenew_deficit = 0;
                     }
 
@@ -360,7 +363,7 @@ calculate_hydrology_remote(size_t iCell,
 
                 // decrease returned
                 returned -= returned_nonrenew_tmp;
-                if(returned < 0){
+                if (returned < 0) {
                     returned = 0;
                 }
             }
@@ -377,18 +380,20 @@ calculate_hydrology_remote(size_t iCell,
         }
 
         withdrawn_discharge_tmp = withdrawn_remote /
-            MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+                                  MM_PER_M *
+                                  local_domain.locations[iCell].area /
+                                  global_param.dt;
         returned_discharge_tmp = returned /
-            MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+                                 MM_PER_M * local_domain.locations[iCell].area /
+                                 global_param.dt;
 
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-                
             discharge_dt = rout_var[iCell].dt_discharge[iStep];
-            
+
             // Discharge withdrawals
-            if(withdrawn_discharge_tmp > 0.) {
+            if (withdrawn_discharge_tmp > 0.) {
                 if (available_discharge_tmp > 0) {
                     // Scale withdrawal proportionally to discharge availability
                     rout_var[iCell].dt_discharge[iStep] -=
@@ -396,16 +401,17 @@ calculate_hydrology_remote(size_t iCell,
                         (discharge_dt / available_discharge_tmp);
                 }
                 else {
-                    log_err("Wateruse discharge withdrawn while no discharge is available");
+                    log_err(
+                        "Wateruse discharge withdrawn while no discharge is available");
                 }
             }
-            
+
             // Stream returns
-            if(returned_discharge_tmp > 0.) {
+            if (returned_discharge_tmp > 0.) {
                 if (available_discharge_tmp > 0) {
                     // Scale returns proportionally to stream availability
-                        rout_var[iCell].dt_discharge[iStep] +=
-                            returned_discharge_tmp *
+                    rout_var[iCell].dt_discharge[iStep] +=
+                        returned_discharge_tmp *
                         (discharge_dt / available_discharge_tmp);
                 }
                 else {
@@ -414,7 +420,7 @@ calculate_hydrology_remote(size_t iCell,
                         returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
                 }
             }
-            
+
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }
@@ -484,29 +490,29 @@ account_remote(size_t iCell)
 * @brief   Check the water-use water balance
 ******************************************/
 void
-check_water_use_balance_remote(size_t iCell,
-                               double available_remote,
+check_water_use_balance_remote(size_t  iCell,
+                               double  available_remote,
                                double *demand_remote,
-                               double withdrawn_remote)
+                               double  withdrawn_remote)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct      **wu_var;
     extern wu_con_struct       *wu_con;
     extern wu_con_map_struct   *wu_con_map;
-    
-    double demand_remote_tmp;
+
+    double                      demand_remote_tmp;
 
     size_t                      i;
     size_t                      j;
     int                         iSector;
     size_t                      iCell2;
     int                         iSector2;
-    
+
     demand_remote_tmp = 0.0;
     for (i = 0; i < plugin_options.NWUTYPES; i++) {
         demand_remote_tmp += demand_remote[i];
     }
-    
+
     for (i = 0; i < plugin_options.NWUTYPES; i++) {
         iSector = wu_con_map[iCell].sidx[i];
         if (iSector == NODATA_WU) {
@@ -592,27 +598,27 @@ void
 wu_remote(size_t iCell)
 {
     extern plugin_option_struct plugin_options;
-    
-    double available_remote;
-    double *demand_remote;
-    double withdrawn_remote;
-    double returned;
-    
-    size_t                     iSector;
+
+    double                      available_remote;
+    double                     *demand_remote;
+    double                      withdrawn_remote;
+    double                      returned;
+
+    size_t                      iSector;
 
     /******************************************
        Alloc
     ******************************************/
     demand_remote = malloc(plugin_options.NWUTYPES * sizeof(*demand_remote));
     check_alloc_status(demand_remote, "Memory allocation error.");
-    
+
     /******************************************
        Init
     ******************************************/
     available_remote = 0.;
     withdrawn_remote = 0.;
     returned = 0.;
-    
+
     for (iSector = 0; iSector < plugin_options.NWUTYPES; iSector++) {
         demand_remote[iSector] = 0.0;
     }

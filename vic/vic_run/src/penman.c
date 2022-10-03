@@ -79,7 +79,7 @@ calc_rc(double rs,
         vpdfactor =
             (vpdfactor <
              param.CANOPY_VPDMINFACTOR) ? param.CANOPY_VPDMINFACTOR : vpdfactor;
-        
+
         /* calculate co2 resistance factor (Li et al., 2019) */
         co2factor = 1 / (1 + b_co2 * (co2 / param.CANOPY_CO2REF - 1));
 

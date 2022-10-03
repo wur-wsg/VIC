@@ -111,7 +111,7 @@ dam_set_service(void)
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         nservicing_tmp[j] = 0;
     }
-    
+
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         d3start[0] = j;
 
@@ -121,39 +121,41 @@ dam_set_service(void)
                                     "service_fraction", d3start, d3count, dvar);
 
         for (i = 0; i < local_domain.ncells_active; i++) {
-            if(ivar[i] > 0){
-                for(k = 0; k < local_domain.ncells_active; k++){
-                    if(ivar[i] != id_map[k]){
+            if (ivar[i] > 0) {
+                for (k = 0; k < local_domain.ncells_active; k++) {
+                    if (ivar[i] != id_map[k]) {
                         continue;
                     }
-                    
+
                     dam_index = dam_con_map[k].didx[j];
-                    if(dam_index == NODATA_DAM){
+                    if (dam_index == NODATA_DAM) {
                         log_warn("Servicing cell %zu is references a dam (%zu)"
                                  " that does not exit",
                                  i, k);
                         continue;
                     }
-                    
-                    if(nservicing_tmp[j] >= dam_con[k][dam_index].nservice){
+
+                    if (nservicing_tmp[j] >= dam_con[k][dam_index].nservice) {
                         log_err("number of servicing cells (%zu) is larger "
                                 "than specified in the parameter file (%zu)",
-                                nservicing_tmp[j], dam_con[k][dam_index].nservice);
+                                nservicing_tmp[j],
+                                dam_con[k][dam_index].nservice);
                     }
-                    
+
                     dam_con[k][dam_index].service[nservicing_tmp[j]] = i;
-                    dam_con[k][dam_index].service_frac[nservicing_tmp[j]] = dvar[i];
+                    dam_con[k][dam_index].service_frac[nservicing_tmp[j]] =
+                        dvar[i];
                     nservicing_tmp[j]++;
                 }
             }
         }
     }
-     
+
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
             dam_index = dam_con_map[i].didx[j];
-            
-            if(dam_index != NODATA_DAM){
+
+            if (dam_index != NODATA_DAM) {
                 if (nservicing_tmp[j] != dam_con[i][dam_index].nservice) {
                     error_count++;
                 }
@@ -211,39 +213,43 @@ dam_set_info(void)
     check_alloc_status(dvar, "Memory allocation error.");
 
     if (mpi_rank == VIC_MPI_ROOT) {
-        get_nc_field_int(&(plugin_filenames.dams), "type", d1start, d1count, ivar);
+        get_nc_field_int(&(plugin_filenames.dams), "type", d1start, d1count,
+                         ivar);
     }
     status = MPI_Bcast(ivar, plugin_options.NDAMTYPES, MPI_INT,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
-    
+
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
             dam_index = dam_con_map[i].didx[j];
-            
+
             if (dam_index != NODATA_DAM) {
-                if(ivar[j] == 0){
+                if (ivar[j] == 0) {
                     dam_con[i][dam_index].type = DAM_LOCAL;
-                } else if(ivar[j] == 1){
+                }
+                else if (ivar[j] == 1) {
                     dam_con[i][dam_index].type = DAM_GLOBAL;
-                } else {
+                }
+                else {
                     log_err("Unknown dam type %d", ivar[j]);
                 }
             }
         }
     }
-    
+
     if (mpi_rank == VIC_MPI_ROOT) {
-        get_nc_field_int(&(plugin_filenames.dams), "year", d1start, d1count, ivar);
+        get_nc_field_int(&(plugin_filenames.dams), "year", d1start, d1count,
+                         ivar);
     }
     status = MPI_Bcast(ivar, plugin_options.NDAMTYPES, MPI_INT,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
-    
+
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
             dam_index = dam_con_map[i].didx[j];
-            
+
             if (dam_index != NODATA_DAM) {
                 dam_con[i][dam_index].year = ivar[j];
             }
@@ -251,16 +257,17 @@ dam_set_info(void)
     }
 
     if (mpi_rank == VIC_MPI_ROOT) {
-        get_nc_field_double(&(plugin_filenames.dams), "capacity", d1start, d1count, dvar);
+        get_nc_field_double(&(plugin_filenames.dams), "capacity", d1start,
+                            d1count, dvar);
     }
     status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_INT,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
-    
+
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
             dam_index = dam_con_map[i].didx[j];
-            
+
             if (dam_index != NODATA_DAM) {
                 dam_con[i][dam_index].capacity = dvar[j];
             }
@@ -268,16 +275,17 @@ dam_set_info(void)
     }
 
     if (mpi_rank == VIC_MPI_ROOT) {
-        get_nc_field_double(&(plugin_filenames.dams), "inflow_fraction", d1start, d1count, dvar);
+        get_nc_field_double(&(plugin_filenames.dams), "inflow_fraction",
+                            d1start, d1count, dvar);
     }
     status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_INT,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
-    
+
     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
             dam_index = dam_con_map[i].didx[j];
-            
+
             if (dam_index != NODATA_DAM) {
                 dam_con[i][dam_index].inflow_frac = dvar[j];
             }

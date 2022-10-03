@@ -423,8 +423,8 @@ rout_basin_set_order()
     extern rout_con_struct *rout_con;
     extern size_t          *routing_order;
 
-    bool                    *done_tmp;
-    bool                    *done_fin;
+    bool                   *done_tmp;
+    bool                   *done_fin;
     size_t                  rank;
     bool                    has_upstream;
 
@@ -435,7 +435,7 @@ rout_basin_set_order()
     check_alloc_status(done_tmp, "Memory allocation error.");
     done_fin = malloc(local_domain.ncells_active * sizeof(*done_fin));
     check_alloc_status(done_fin, "Memory allocation error.");
-    
+
     for (i = 0; i < local_domain.ncells_active; i++) {
         done_tmp[i] = false;
         done_fin[i] = false;
@@ -477,7 +477,7 @@ rout_basin_set_order()
             }
         }
     }
-    
+
     free(done_tmp);
     free(done_fin);
 }

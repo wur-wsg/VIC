@@ -257,11 +257,13 @@ vic_force(void)
                 force[i].par[j] = (double) dvar[i];
             }
         }
-    } else {
+    }
+    else {
         // Atmospheric CO2 mixing ratio
         for (j = 0; j < NF; j++) {
             for (i = 0; i < local_domain.ncells_active; i++) {
-                force[i].Catm[j] = (double) param.CANOPY_CO2REF * PPM_to_MIXRATIO;
+                force[i].Catm[j] = (double) param.CANOPY_CO2REF *
+                                   PPM_to_MIXRATIO;
             }
         }
     }
@@ -492,7 +494,8 @@ vic_force(void)
                 local_domain.locations[i].latitude,
                 local_domain.locations[i].longitude, soil_con[i].time_zone_lng,
                 dmy[current].day_in_year, SEC_PER_DAY / 2);
-        } else {
+        }
+        else {
             force[i].Catm[NR] = average(force[i].Catm, NF);
         }
     }

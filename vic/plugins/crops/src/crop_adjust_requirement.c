@@ -66,19 +66,19 @@ crop_adjust_requirement(size_t iCell)
                             if (crop_con_map[iCell].veg_class[crop_class] ==
                                 veg_class) {
                                 isCrop = true;
-                                
+
                                 if (cgrid->cultivating > 0) {
                                     isCultivated = true;
                                 }
-                                
+
                                 plantDay = cgrid->start.day_in_year;
                                 currentDay = dmy[current].day_in_year;
-                                if(plantDay < currentDay){
-                                    plantDay += DAYS_PER_YEAR + 
-                                            leap_year(dmy[current].year, 
-                                                      global_param.calendar);
+                                if (plantDay < currentDay) {
+                                    plantDay += DAYS_PER_YEAR +
+                                                leap_year(dmy[current].year,
+                                                          global_param.calendar);
                                 }
-                                if(plantDay - currentDay < cirr_con->offset){
+                                if (plantDay - currentDay < cirr_con->offset) {
                                     isOffset = true;
                                 }
                             }

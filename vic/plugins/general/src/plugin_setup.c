@@ -130,7 +130,7 @@ void
 plugin_start(void)
 {
     extern plugin_option_struct plugin_options;
-    
+
     plugin_force_start();
     if (plugin_options.ROUTING) {
         rout_start();
@@ -165,12 +165,12 @@ plugin_alloc(void)
     plugin_save_data =
         malloc(local_domain.ncells_active * sizeof(*plugin_save_data));
     check_alloc_status(plugin_save_data, "Memory allocation error");
-    
-    if(plugin_options.FORCE_CO2){
+
+    if (plugin_options.FORCE_CO2) {
         co2_alloc();
     }
-    if (plugin_options.ROUTING || 
-            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+    if (plugin_options.ROUTING ||
+        (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_alloc();
     }
     if (plugin_options.FORCE_LANDUSE) {
@@ -300,11 +300,11 @@ plugin_finalize(void)
     MPI_Type_free(&plugin_mpi_option_struct_type);
     MPI_Type_free(&plugin_mpi_param_struct_type);
 
-    if(plugin_options.FORCE_CO2){
+    if (plugin_options.FORCE_CO2) {
         co2_finalize();
     }
-    if (plugin_options.ROUTING || 
-            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+    if (plugin_options.ROUTING ||
+        (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_finalize();
     }
     if (plugin_options.FORCE_LANDUSE) {

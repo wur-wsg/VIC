@@ -193,9 +193,9 @@ crop_run(size_t iCell)
     extern dmy_struct          *dmy;
     extern size_t               current;
 
-    double fN;
-    double aN;
-    
+    double                      fN;
+    double                      aN;
+
     size_t                      iTime;
     size_t                      iBand;
     size_t                      crop_class;
@@ -238,7 +238,7 @@ crop_run(size_t iCell)
                         cgrid->crp->prm.TempSum1 = crop_con[iCell][iCrop].tsum1;
                         cgrid->crp->prm.TempSum2 = crop_con[iCell][iCrop].tsum2;
                     }
-                    
+
                     if (plugin_options.WOFOST_DIST_FERT) {
                         for (iTime = 0;
                              iTime < plugin_options.NFERTTIMES;
@@ -276,22 +276,23 @@ crop_run(size_t iCell)
                             }
                         }
                     }
-                    
+
                     if (plugin_options.WOFOST_CALC_MIN) {
                         // Calculated following Sattari et al. (2014)
                         // Crop yield response to soil fertility and N, P, K inputs in different environments: Testing and improving the QUEFTS model
                         fN = 0.25 * (soil_con[iCell].ph - 3);
-                        if(soil_con[iCell].ph > 7.0){
+                        if (soil_con[iCell].ph > 7.0) {
                             fN = 1;
-                        } else if (soil_con[iCell].ph < 4.7){
+                        }
+                        else if (soil_con[iCell].ph < 4.7) {
                             fN = 0.4;
                         }
                         aN = 2 * pow(2, (cgrid->met->Temp - 9.0) / 9.0);
-                        
+
                         cgrid->mng->N_Mins = fN * aN * soil_con[iCell].carbon;
                         cgrid->ste->st_N_mins = cgrid->mng->N_Mins;
                     }
-                    
+
                     wofost_run(cgrid);
 
                     /* Check crop coverage */

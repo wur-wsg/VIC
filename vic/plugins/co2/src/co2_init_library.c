@@ -42,10 +42,10 @@ initialize_co2_force(co2_force_struct *co2_force)
 void
 co2_initialize_local_structures(void)
 {
-    extern domain_struct        local_domain;
-    extern co2_force_struct    *co2_force;
+    extern domain_struct     local_domain;
+    extern co2_force_struct *co2_force;
 
-    size_t                      i;
+    size_t                   i;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         initialize_co2_force(&co2_force[i]);

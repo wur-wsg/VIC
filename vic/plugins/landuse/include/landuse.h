@@ -54,16 +54,17 @@ void lu_initialize_local_structures(void);
 void lu_forcing(void);
 void lu_apply(void);
 
-void get_heat_capacities(size_t, size_t, double *, double *, double **, 
-        double *);
+void get_heat_capacities(size_t, size_t, double *, double *, double **,
+                         double *);
 void calculate_derived_water_states(size_t, size_t);
 void calculate_derived_energy_states(size_t, size_t, double *);
 double calculate_total_water(size_t, size_t, double *, double *);
 double calculate_total_carbon(size_t, size_t, double *, double *);
-double calculate_total_energy(size_t, double *, double *, double **, double *, double *);
+double calculate_total_energy(size_t, double *, double *, double **, double *,
+                              double *);
 double calculate_total_irrigation(size_t, size_t, double *, double *);
 void get_energy_terms(size_t, size_t, double *, double *, double **, double *,
-                 double *, double **);
+                      double *, double **);
 
 void lu_set_output_met_data_info(void);
 void lu_set_nc_var_info(unsigned int, nc_file_struct *, nc_var_struct *);

@@ -63,7 +63,7 @@ plugin_set_output_met_data_info(void)
              MAXSTRING, "%s", "non-renewable deficit");
 
     if (plugin_options.ROUTING ||
-            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+        (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_set_output_met_data_info();
     }
     if (plugin_options.FORCE_LANDUSE) {
@@ -212,7 +212,7 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
     }
 
     if (plugin_options.ROUTING ||
-            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+        (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_history(varid, agg_type);
     }
     if (plugin_options.FORCE_LANDUSE) {

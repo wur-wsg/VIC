@@ -81,7 +81,7 @@ plugin_force_validate_global_param(void)
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.forcing[i].nc_filename);
     }
-    
+
     if (strcmp(plugin_filenames.f_path_pfx[FORCING_CO2], MISSING_S) != 0) {
         plugin_options.FORCE_CO2 = true;
     }

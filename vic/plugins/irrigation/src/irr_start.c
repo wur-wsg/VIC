@@ -33,7 +33,7 @@
 void
 irr_start(void)
 {
-    extern option_struct options;
+    extern option_struct           options;
     extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
 
@@ -43,13 +43,13 @@ irr_start(void)
     if (plugin_options.Pbare == PADDY_BARE_TRUE_BUT_UNSET) {
         plugin_options.Pbare = options.NVEGTYPES;
     }
-    if(plugin_options.Pbare > options.NVEGTYPES || 
-            plugin_options.Pbare <= options.NVEGTYPES - options.Nbare){
-        log_err("Paddy bare type (%zu) is not within bare types (%zu - %zu).", 
-                plugin_options.Pbare, options.NVEGTYPES - options.Nbare + 1, 
+    if (plugin_options.Pbare > options.NVEGTYPES ||
+        plugin_options.Pbare <= options.NVEGTYPES - options.Nbare) {
+        log_err("Paddy bare type (%zu) is not within bare types (%zu - %zu).",
+                plugin_options.Pbare, options.NVEGTYPES - options.Nbare + 1,
                 options.NVEGTYPES);
     }
-    
+
     // Check domain & get dimensions
     status = nc_open(plugin_filenames.irrigation.nc_filename, NC_NOWRITE,
                      &(plugin_filenames.irrigation.nc_id));

@@ -87,13 +87,13 @@ initialize_dam_con(dam_con_struct *dam_con)
 void
 dam_initialize_local_structures(void)
 {
-    extern domain_struct        local_domain;
-    extern dam_con_map_struct  *dam_con_map;
-    extern dam_con_struct     **dam_con;
-    extern dam_var_struct     **dam_var;
+    extern domain_struct       local_domain;
+    extern dam_con_map_struct *dam_con_map;
+    extern dam_con_struct    **dam_con;
+    extern dam_var_struct    **dam_var;
 
-    size_t                      i;
-    size_t                      j;
+    size_t                     i;
+    size_t                     j;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < dam_con_map[i].nd_active; j++) {

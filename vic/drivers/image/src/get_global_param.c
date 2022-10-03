@@ -339,6 +339,7 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
+
             /*************************************
                Define forcing files
             *************************************/
@@ -348,6 +349,7 @@ get_global_param(FILE *gp)
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
+
             /*************************************
                Define parameter files
             *************************************/
