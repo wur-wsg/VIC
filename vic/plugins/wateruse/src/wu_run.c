@@ -74,7 +74,7 @@ reset_wu(size_t iCell)
 * @brief   Get (cell) demand from sectors
 ******************************************/
 void
-calculate_demand(size_t  iCell)
+calculate_demand(size_t iCell)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct      **wu_var;
@@ -110,7 +110,7 @@ void
 wu_run(size_t iCell)
 {
     /******************************************
-     Reset
+       Reset
     ******************************************/
     reset_wu(iCell);
 

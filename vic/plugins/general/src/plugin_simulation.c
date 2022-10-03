@@ -106,11 +106,11 @@ plugin_run(void)
                 irr_set_demand(i);
             }
         }
-        if(plugin_options.WATERUSE){
+        if (plugin_options.WATERUSE) {
             wu_run(i);
         }
-        if(plugin_options.ROUTING ||
-                (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)){
+        if (plugin_options.ROUTING ||
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
             rout_run(i);
         }
     }
@@ -125,13 +125,13 @@ plugin_run(void)
                     local_dam_run(iCell);
                 }
                 rout_basin_run(iCell);
-                if (plugin_options.WATERUSE &&plugin_options.LOCAL_WITH) {
+                if (plugin_options.WATERUSE && plugin_options.LOCAL_WITH) {
                     wu_run_local(iCell);
                 }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
                 }
-                if (plugin_options.WATERUSE &&plugin_options.REMOTE_WITH) {
+                if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
                     wu_remote(iCell);
                 }
             }
@@ -188,8 +188,8 @@ plugin_put_data(size_t iCell)
 {
     extern plugin_option_struct plugin_options;
 
-    if (plugin_options.ROUTING || 
-            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+    if (plugin_options.ROUTING ||
+        (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_put_data(iCell);
     }
     if (plugin_options.FORCE_LANDUSE) {

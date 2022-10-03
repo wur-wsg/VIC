@@ -67,7 +67,8 @@ compute_pot_evap(size_t  model_steps_per_day,
     net_short = (1.0 - albedo) * shortwave;
     gsm_inv = 1.0;
     ref_crop = false;
-    rc = calc_rc(rsmin, net_short, RGL, tair, vpd, co2, lai, b_co2, gsm_inv, ref_crop);
+    rc = calc_rc(rsmin, net_short, RGL, tair, vpd, co2, lai, b_co2, gsm_inv,
+                 ref_crop);
     net_rad = net_short + net_longwave;
     if (!overstory) {
         ra_veg = aero_resist[0];

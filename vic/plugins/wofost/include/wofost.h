@@ -168,7 +168,7 @@ typedef struct PARAMETERS {
     float TCPT;
     float TCKT;
     float N_fixation;
-        
+
     /** Translocation **/
     float TranslocationFrac;
 } Parameters;

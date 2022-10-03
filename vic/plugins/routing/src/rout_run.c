@@ -33,14 +33,14 @@
 void
 rout_run(size_t iCell)
 {
-    extern domain_struct              local_domain;
-    extern global_param_struct        global_param;
-    extern plugin_option_struct       plugin_options;
-    extern rout_var_struct           *rout_var;
-    extern double                  ***out_data;
+    extern domain_struct        local_domain;
+    extern global_param_struct  global_param;
+    extern plugin_option_struct plugin_options;
+    extern rout_var_struct     *rout_var;
+    extern double            ***out_data;
 
-    double                            in_runoff;
-    double                            in_baseflow;
+    double                      in_runoff;
+    double                      in_baseflow;
 
     /* RUNOFF*/
     // Gather runoff from VIC
@@ -74,4 +74,3 @@ rout_run(size_t iCell)
         local_domain.locations[iCell].area /
         (global_param.dt * MM_PER_M);
 }
-

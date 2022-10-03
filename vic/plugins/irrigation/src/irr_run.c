@@ -81,27 +81,29 @@ irr_run_requirement(size_t iCell)
 
         veg_fract = cveg_con->Cv;
 
-        if(current == 0 || dmy[current].day_in_year != dmy[current - 1].day_in_year) {
+        if (current == 0 ||
+            dmy[current].day_in_year != dmy[current - 1].day_in_year) {
             for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                 cirr_var = &(irr_var[iCell][iIrr][iBand]);
 
-                // Assume a new irrigation season starts 
+                // Assume a new irrigation season starts
                 // when the vegetation coverage changes
-                if(veg_fract != cirr_var->prev_Cv){
+                if (veg_fract != cirr_var->prev_Cv) {
                     cirr_var->offset = 0;
-                } 
-                if (cirr_var->offset < cirr_con->offset){
+                }
+                if (cirr_var->offset < cirr_con->offset) {
                     cirr_var->offset++;
                 }
                 cirr_var->prev_Cv = veg_fract;
             }
         }
-    
+
         if (veg_fract > 0) {
             for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                 cirr_var = &(irr_var[iCell][iIrr][iBand]);
                 ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
-                cveg_var = &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
+                cveg_var =
+                    &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
                 area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {
@@ -144,8 +146,8 @@ irr_run_requirement(size_t iCell)
                         // With ponding the moisture of the top layer should
                         // always be saturated
                         cirr_var->requirement =
-                            (csoil_con->max_moist[0] + PADDY_FLOOD_HEIGHT)
-                                - (moist[0] + cirr_var->leftover);
+                            (csoil_con->max_moist[0] + PADDY_FLOOD_HEIGHT) -
+                            (moist[0] + cirr_var->leftover);
                     }
                     else {
                         // Without ponding the moisture should be at
@@ -160,12 +162,11 @@ irr_run_requirement(size_t iCell)
                     **********************************************************************/
                     // Calculate whether irrigation water is required to
                     // prevent suboptimal evapotranspiration
-                    if(cirr_var->offset >= cirr_con->offset){
-                        
-                        if (cirr_con->paddy && 
-                                csoil_con->max_moist[0]
-                                - (moist[0] + cirr_var->leftover) > 0 &&
-                                cirr_var->requirement > 0) {
+                    if (cirr_var->offset >= cirr_con->offset) {
+                        if (cirr_con->paddy &&
+                            csoil_con->max_moist[0] -
+                            (moist[0] + cirr_var->leftover) > 0 &&
+                            cirr_var->requirement > 0) {
                             cirr_var->flag_req = true;
                         }
                         else if (total_wcr -
@@ -234,7 +235,8 @@ irr_run_shortage(size_t iCell)
             for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                 cirr_var = &(irr_var[iCell][iIrr][iBand]);
                 ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
-                cveg_var = &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
+                cveg_var =
+                    &(all_vars[iCell].veg_var[cirr_con->veg_index][iBand]);
                 area_fract = csoil_con->AreaFract[iBand];
 
                 if (area_fract > 0) {
@@ -322,7 +324,8 @@ irr_run_shortage(size_t iCell)
                     ccell_var->water_stress = 0;
                     for (k = 0; k < options.Nlayer; k++) {
                         ccell_var->water_stress +=
-                            ccell_var->layer[k].water_stress * cveg_var->root[k];
+                            ccell_var->layer[k].water_stress *
+                            cveg_var->root[k];
                     }
                 }
             }

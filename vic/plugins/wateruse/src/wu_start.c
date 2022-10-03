@@ -44,11 +44,11 @@ wu_start(void)
                          &(plugin_filenames.wateruse.nc_id));
         check_nc_status(status, "Error opening %s",
                         plugin_filenames.wateruse.nc_filename);
-    
+
         plugin_options.NWURECEIVING =
             get_nc_dimension(&(plugin_filenames.wateruse),
                              "wu_receiving");
-        
+
         compare_ncdomain_with_global_domain(&plugin_filenames.wateruse);
 
         status = nc_close(plugin_filenames.wateruse.nc_id);

@@ -1186,7 +1186,8 @@ vic_init(void)
         if (k > local_domain.locations[i].nveg + options.Nbare) {
             sprint_location(locstr, &(local_domain.locations[i]));
             log_err("Number of veg tiles with nonzero area (%zu) > nveg + Nbare "
-                    "(%zu).\n%s", k, local_domain.locations[i].nveg + options.Nbare,
+                    "(%zu).\n%s", k,
+                    local_domain.locations[i].nveg + options.Nbare,
                     locstr);
         }
         else if (k < local_domain.locations[i].nveg) {
@@ -1286,7 +1287,8 @@ vic_init(void)
         }
 
         // handle the bare soil portion of the tile
-        for (j = options.NVEGTYPES - options.Nbare; j < options.NVEGTYPES ; j++) {
+        for (j = options.NVEGTYPES - options.Nbare; j < options.NVEGTYPES;
+             j++) {
             vidx = veg_con_map[i].vidx[j];
             if (vidx != NODATA_VEG) {
                 Cv_sum[i] += veg_con[i][vidx].Cv;
@@ -1633,7 +1635,7 @@ vic_init(void)
                         soil_con[i].Ksat[m];
                     all_vars[i].cell[j][k].layer[m].Wcr =
                         soil_con[i].Wcr[m];
-                    all_vars[i].veg_var[j][k].root[m] = 
+                    all_vars[i].veg_var[j][k].root[m] =
                         veg_con[i][j].root[m];
                 }
             }

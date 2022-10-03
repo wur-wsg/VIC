@@ -35,7 +35,7 @@ crop_forcing(void)
     d4count[1] = 1;
     d4count[2] = global_domain.n_ny;
     d4count[3] = global_domain.n_nx;
-    
+
     d5start[0] = 0;
     d5start[1] = 0;
     d5start[2] = 0;
@@ -69,7 +69,7 @@ crop_forcing(void)
                 }
             }
         }
-        
+
         // Get tsum2
         if (plugin_global_param.forcerun[FORCING_TSUM_2]) {
             d4start[0] = plugin_global_param.forceskip[FORCING_TSUM_2] +
@@ -91,7 +91,7 @@ crop_forcing(void)
             }
         }
     }
-    
+
     // Get fertilizer forcing data
     if (plugin_options.WOFOST_FORCE_FERT) {
         // Get DVS_point

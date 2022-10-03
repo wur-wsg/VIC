@@ -44,7 +44,8 @@ dam_generate_default_state(void)
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         for (j = 0; j < dam_con_map[i].nd_active; j++) {
-            dam_var[i][j].storage = dam_con[i][j].capacity * plugin_param.DAM_ALPHA;
+            dam_var[i][j].storage = dam_con[i][j].capacity *
+                                    plugin_param.DAM_ALPHA;
         }
     }
 }

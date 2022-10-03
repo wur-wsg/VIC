@@ -35,9 +35,9 @@ all_vars_struct
 make_all_vars(size_t nveg)
 {
     extern option_struct options;
-    
-    all_vars_struct temp;
-    size_t          Nitems;
+
+    all_vars_struct      temp;
+    size_t               Nitems;
 
     Nitems = nveg + options.Nbare;
 

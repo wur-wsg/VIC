@@ -58,11 +58,11 @@ calculate_demand_local(size_t  iCell,
 ******************************************/
 void
 calculate_availability_local(size_t   iCell,
-                       double  *available_gw,
-                       double  *available_surf,
-                       double  *available_dam,
-                       double **av_gw,
-                       double  *av_dam)
+                             double  *available_gw,
+                             double  *available_surf,
+                             double  *available_dam,
+                             double **av_gw,
+                             double  *av_dam)
 {
     extern plugin_global_param_struct plugin_global_param;
     extern global_param_struct        global_param;
@@ -155,7 +155,8 @@ calculate_availability_local(size_t   iCell,
         for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
             av_dam[iDam] = 0;
 
-            if (dam_var[iCell][iDam].active && dam_con[iCell][iDam].type == DAM_LOCAL) {
+            if (dam_var[iCell][iDam].active &&
+                dam_con[iCell][iDam].type == DAM_LOCAL) {
                 av_dam[iDam] = dam_var[iCell][iDam].storage * M3_PER_HM3 /
                                local_domain.locations[iCell].area * MM_PER_M;
                 (*available_dam) += av_dam[iDam];
@@ -172,11 +173,11 @@ calculate_availability_local(size_t   iCell,
 ******************************************/
 void
 calculate_division_local(size_t iCell,
-                   double available_gw,
-                   double available_surf,
-                   double available_dam,
-                   double demand_gw,
-                   double demand_surf)
+                         double available_gw,
+                         double available_surf,
+                         double available_dam,
+                         double demand_gw,
+                         double demand_surf)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct      **wu_var;
@@ -250,10 +251,10 @@ calculate_division_local(size_t iCell,
 ******************************************/
 void
 calculate_use_local(size_t  iCell,
-              double *withdrawn_gw,
-              double *withdrawn_surf,
-              double *withdrawn_dam,
-              double *returned)
+                    double *withdrawn_gw,
+                    double *withdrawn_surf,
+                    double *withdrawn_dam,
+                    double *returned)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct      **wu_var;
@@ -347,14 +348,14 @@ calculate_use_local(size_t  iCell,
 ******************************************/
 void
 calculate_hydrology_local(size_t   iCell,
-                    double   available_gw,
-                    double   available_dam,
-                    double **av_gw,
-                    double  *av_dam,
-                    double   withdrawn_gw,
-                    double   withdrawn_surf,
-                    double   withdrawn_dam,
-                    double   returned)
+                          double   available_gw,
+                          double   available_dam,
+                          double **av_gw,
+                          double  *av_dam,
+                          double   withdrawn_gw,
+                          double   withdrawn_surf,
+                          double   withdrawn_dam,
+                          double   returned)
 {
     extern plugin_global_param_struct plugin_global_param;
     extern global_param_struct        global_param;
@@ -433,13 +434,13 @@ calculate_hydrology_local(size_t   iCell,
     }
 
     // non-renewable
-    if (returned > 0.){
+    if (returned > 0.) {
         for (i = 0; i < plugin_options.NWUTYPES; i++) {
             iSector = wu_con_map[iCell].sidx[i];
             if (iSector == NODATA_WU) {
                 continue;
             }
-            
+
             // get available nonrenewable requirements
             available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
 
@@ -447,23 +448,24 @@ calculate_hydrology_local(size_t   iCell,
             returned_nonrenew_tmp = wu_var[iCell][iSector].returned;
 
             // add returned resources to nonrenewable
-            returned_nonrenew_tmp = min(available_nonrenew_tmp, returned_nonrenew_tmp);
-            if(available_nonrenew_tmp > 0) {
+            returned_nonrenew_tmp = min(available_nonrenew_tmp,
+                                        returned_nonrenew_tmp);
+            if (available_nonrenew_tmp > 0) {
                 rout_var[iCell].nonrenew_deficit -= returned_nonrenew_tmp;
 
-                if(rout_var[iCell].nonrenew_deficit < 0){
+                if (rout_var[iCell].nonrenew_deficit < 0) {
                     rout_var[iCell].nonrenew_deficit = 0;
                 }
             }
 
             // decrease returned
             returned -= returned_nonrenew_tmp;
-            if(returned < 0){
+            if (returned < 0) {
                 returned = 0;
             }
         }
     }
-    
+
     // surface
     if (withdrawn_surf > 0. || returned > 0.) {
         available_discharge_tmp = 0.;
@@ -474,18 +476,20 @@ calculate_hydrology_local(size_t   iCell,
         }
 
         withdrawn_discharge_tmp = withdrawn_surf /
-            MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+                                  MM_PER_M *
+                                  local_domain.locations[iCell].area /
+                                  global_param.dt;
         returned_discharge_tmp = returned /
-            MM_PER_M * local_domain.locations[iCell].area / global_param.dt;
+                                 MM_PER_M * local_domain.locations[iCell].area /
+                                 global_param.dt;
 
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
              iStep++) {
-            
             discharge_dt = rout_var[iCell].dt_discharge[iStep];
-                    
+
             // Discharge withdrawals
-            if(withdrawn_discharge_tmp > 0.) {
+            if (withdrawn_discharge_tmp > 0.) {
                 if (available_discharge_tmp > 0) {
                     // Scale withdrawal proportionally to discharge availability
                     rout_var[iCell].dt_discharge[iStep] -=
@@ -493,16 +497,17 @@ calculate_hydrology_local(size_t   iCell,
                         (discharge_dt / available_discharge_tmp);
                 }
                 else {
-                    log_err("Wateruse discharge withdrawn while no discharge is available");
+                    log_err(
+                        "Wateruse discharge withdrawn while no discharge is available");
                 }
             }
-            
+
             // Stream returns
-            if(returned_discharge_tmp > 0.) {
+            if (returned_discharge_tmp > 0.) {
                 if (available_discharge_tmp > 0) {
                     // Scale returns proportionally to stream availability
-                        rout_var[iCell].dt_discharge[iStep] +=
-                            returned_discharge_tmp *
+                    rout_var[iCell].dt_discharge[iStep] +=
+                        returned_discharge_tmp *
                         (discharge_dt / available_discharge_tmp);
                 }
                 else {
@@ -511,7 +516,7 @@ calculate_hydrology_local(size_t   iCell,
                         returned_discharge_tmp / (plugin_options.UH_LENGTH - 1);
                 }
             }
-            
+
             if (rout_var[iCell].dt_discharge[iStep] < 0) {
                 rout_var[iCell].dt_discharge[iStep] = 0.;
             }
@@ -537,7 +542,8 @@ calculate_hydrology_local(size_t   iCell,
     if (withdrawn_dam > 0.) {
         if (plugin_options.DAMS) {
             for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
-                if (dam_var[iCell][iDam].active && dam_con[iCell][iDam].type == DAM_LOCAL) {
+                if (dam_var[iCell][iDam].active &&
+                    dam_con[iCell][iDam].type == DAM_LOCAL) {
                     dam_var[iCell][iDam].storage -=
                         withdrawn_dam *
                         (av_dam[iDam] / available_dam) /
@@ -559,14 +565,14 @@ calculate_hydrology_local(size_t   iCell,
 ******************************************/
 void
 check_water_use_balance_local(size_t iCell,
-                        double available_gw,
-                        double available_surf,
-                        double available_dam,
-                        double demand_gw,
-                        double demand_surf,
-                        double withdrawn_gw,
-                        double withdrawn_surf,
-                        double withdrawn_dam)
+                              double available_gw,
+                              double available_surf,
+                              double available_dam,
+                              double demand_gw,
+                              double demand_surf,
+                              double withdrawn_gw,
+                              double withdrawn_surf,
+                              double withdrawn_dam)
 {
     extern plugin_option_struct plugin_options;
     extern wu_var_struct      **wu_var;
@@ -686,7 +692,7 @@ wu_run_local(size_t iCell)
     withdrawn_surf = 0.;
     withdrawn_dam = 0.;
     returned = 0.;
-    
+
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
         for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
             av_gw[iVeg][iBand] = 0.0;
@@ -702,44 +708,44 @@ wu_run_local(size_t iCell)
        Demand
     ******************************************/
     calculate_demand_local(iCell,
-                     &demand_gw, &demand_surf);
+                           &demand_gw, &demand_surf);
 
     /******************************************
        Availability
     ******************************************/
     calculate_availability_local(iCell,
-                           &available_gw, &available_surf, &available_dam,
-                           av_gw, av_dam);
+                                 &available_gw, &available_surf, &available_dam,
+                                 av_gw, av_dam);
 
     /******************************************
        Divide
     ******************************************/
     calculate_division_local(iCell,
-                       available_gw, available_surf, available_dam,
-                       demand_gw, demand_surf);
+                             available_gw, available_surf, available_dam,
+                             demand_gw, demand_surf);
 
     /******************************************
        Withdrawals & Consumption
     ******************************************/
     calculate_use_local(iCell,
-                  &withdrawn_gw, &withdrawn_surf, &withdrawn_dam,
-                  &returned);
+                        &withdrawn_gw, &withdrawn_surf, &withdrawn_dam,
+                        &returned);
 
     /******************************************
        Return
     ******************************************/
     calculate_hydrology_local(iCell,
-                        available_gw, available_dam, av_gw, av_dam,
-                        withdrawn_gw, withdrawn_surf, withdrawn_dam,
-                        returned);
+                              available_gw, available_dam, av_gw, av_dam,
+                              withdrawn_gw, withdrawn_surf, withdrawn_dam,
+                              returned);
 
     /******************************************
        Check balance
     ******************************************/
     check_water_use_balance_local(iCell,
-                            available_gw, available_surf, available_dam,
-                            demand_gw, demand_surf,
-                            withdrawn_gw, withdrawn_surf, withdrawn_dam);
+                                  available_gw, available_surf, available_dam,
+                                  demand_gw, demand_surf,
+                                  withdrawn_gw, withdrawn_surf, withdrawn_dam);
 
     /******************************************
        Free

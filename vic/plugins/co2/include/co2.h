@@ -5,7 +5,7 @@ typedef struct {
     double CO2;
 } co2_force_struct;
 
-co2_force_struct   *co2_force;
+co2_force_struct *co2_force;
 
 void co2_alloc(void);
 void co2_initialize_local_structures(void);

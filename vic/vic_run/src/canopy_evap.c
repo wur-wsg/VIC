@@ -93,7 +93,7 @@ canopy_evap(layer_data_struct *layer,
     }
 
     rc = calc_rc((double) 0.0, net_short, veg_lib->RGL, Catm / PPM_to_MIXRATIO,
-                 air_temp, vpd, veg_var->LAI, (double) 0.0, 
+                 air_temp, vpd, veg_var->LAI, (double) 0.0,
                  (double) 1.0, false);
     if (veg_var->LAI > 0) {
         canopyevap = pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0)) *
@@ -299,7 +299,7 @@ transpiration(layer_data_struct *layer,
             /* Jarvis scheme, using resistance factors from Wigmosta et al., 1994 */
             veg_var->rc = calc_rc(veg_lib->rmin, net_short,
                                   veg_lib->RGL, air_temp, vpd,
-                                  Catm / PPM_to_MIXRATIO, 
+                                  Catm / PPM_to_MIXRATIO,
                                   veg_var->LAI, veg_lib->b_co2,
                                   gsm_inv, false);
             if (options.CARBON) {
@@ -371,6 +371,7 @@ transpiration(layer_data_struct *layer,
             }
         }
     }
+
     /*********************************************************************
        CASE 2: Independent transpirations
 
@@ -411,7 +412,7 @@ transpiration(layer_data_struct *layer,
                                           net_short,
                                           veg_lib->RGL,
                                           air_temp, vpd, Catm / PPM_to_MIXRATIO,
-                                          veg_var->LAI, veg_lib->b_co2, 
+                                          veg_var->LAI, veg_lib->b_co2,
                                           gsm_inv, false);
                     if (options.CARBON) {
                         for (cidx = 0; cidx < options.Ncanopy; cidx++) {

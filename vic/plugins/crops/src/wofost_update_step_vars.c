@@ -4,7 +4,7 @@
 void
 wofost_update_step_vars(size_t iCell)
 {
-    extern option_struct options;
+    extern option_struct        options;
     extern plugin_option_struct plugin_options;
     extern crop_force_struct   *crop_force;
     extern crop_con_struct    **crop_con;
@@ -12,7 +12,7 @@ wofost_update_step_vars(size_t iCell)
     extern SimUnit           ***Grid;
 
     SimUnit                    *iGrid;
-    
+
     size_t                      iCrop;
     size_t                      iFert;
     size_t                      iBand;
@@ -28,11 +28,11 @@ wofost_update_step_vars(size_t iCell)
 
                 /* Determine if the sowing already has occurred */
                 IfSowing(iGrid, &iGrid->start);
-                
-                if(iGrid->crp->Sowing != 1){
+
+                if (iGrid->crp->Sowing != 1) {
                     continue;
                 }
-                
+
                 crop_con[iCell][iCrop].tsum1 =
                     crop_force[iCell].tsum1[iCrop];
                 crop_con[iCell][iCrop].tsum2 =
@@ -52,10 +52,10 @@ wofost_update_step_vars(size_t iCell)
                     /* Determine if the sowing already has occurred */
                     IfSowing(iGrid, &iGrid->start);
 
-                    if(iGrid->crp->Sowing != 1){
+                    if (iGrid->crp->Sowing != 1) {
                         continue;
                     }
-                    
+
                     crop_con[iCell][iCrop].DVS_point[iFert] =
                         crop_force[iCell].DVS_point[iCrop][iFert];
                     crop_con[iCell][iCrop].N_amount[iFert] =

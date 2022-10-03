@@ -24,17 +24,18 @@ List(TABLE_D *Table)
 }
 
 float
-List_cumsum(TABLE_D *Table, size_t n)
+List_cumsum(TABLE_D *Table,
+            size_t   n)
 {
     extern dmy_struct *dmy;
     extern size_t      current;
-    
-    size_t i;
-    
-    TABLE_D *start = Table;
-    float total = 0.;
-    
-    for(i = 0; i < n; i++){
+
+    size_t             i;
+
+    TABLE_D           *start = Table;
+    float              total = 0.;
+
+    for (i = 0; i < n; i++) {
         Table = start;
         while (Table) {
             if (dmy[current - i].month == Table->month &&
