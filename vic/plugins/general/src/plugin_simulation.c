@@ -36,6 +36,9 @@ plugin_force(void)
     extern plugin_option_struct plugin_options;
 
     plugin_start_forcing();
+    if (plugin_options.FORCE_CO2) {
+        co2_forcing();
+    }
     if (plugin_options.ROUTING && plugin_options.FORCE_ROUTING) {
         rout_forcing();
     }
@@ -68,8 +71,8 @@ plugin_update_step_vars(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-        if (plugin_options.WATERUSE) {
-            wu_update_step_vars(i);
+        if (plugin_options.FORCE_CO2) {
+            co2_update_step_vars(i);
         }
         if (plugin_options.WOFOST) {
             crop_update_step_vars(i);
@@ -103,6 +106,13 @@ plugin_run(void)
                 irr_set_demand(i);
             }
         }
+        if(plugin_options.WATERUSE){
+            wu_run(i);
+        }
+        if(plugin_options.ROUTING ||
+                (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)){
+            rout_run(i);
+        }
     }
 
     if (plugin_options.ROUTING) {
@@ -115,17 +125,13 @@ plugin_run(void)
                     local_dam_run(iCell);
                 }
                 rout_basin_run(iCell);
-                if (plugin_options.WATERUSE) {
-                    wu_run(iCell);
+                if (plugin_options.WATERUSE &&plugin_options.LOCAL_WITH) {
+                    wu_run_local(iCell);
                 }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
                 }
-            }
-            for (i = 0; i < local_domain.ncells_active; i++) {
-                iCell = routing_order[i];
-
-                if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
+                if (plugin_options.WATERUSE &&plugin_options.REMOTE_WITH) {
                     wu_remote(iCell);
                 }
             }
@@ -143,7 +149,8 @@ plugin_run(void)
         }
         if (plugin_options.IRRIGATION) {
             if (plugin_options.POTENTIAL_IRRIGATION ||
-                plugin_options.WATERUSE) {
+                plugin_options.WATERUSE ||
+                plugin_options.WOFOST) {
                 irr_get_withdrawn(i);
             }
             irr_run_shortage(i);
@@ -159,7 +166,7 @@ plugin_run(void)
 * @brief    Write plugins
 ******************************************/
 void
-plugin_put_data(void)
+plugin_put_data_all(void)
 {
     extern domain_struct        local_domain;
     extern plugin_option_struct plugin_options;
@@ -169,30 +176,42 @@ plugin_put_data(void)
     // If running with OpenMP, run this for loop using multiple threads
     #pragma omp parallel for default(shared) private(i)
     for (i = 0; i < local_domain.ncells_active; i++) {
-        if (plugin_options.ROUTING) {
-            rout_put_data(i);
-        }
-        if (plugin_options.FORCE_LANDUSE) {
-            lu_put_data(i);
-        }
-        if (plugin_options.EFR) {
-            efr_put_data(i);
-        }
-        if (plugin_options.DAMS) {
-            dam_put_data(i);
-        }
-        if (plugin_options.WATERUSE) {
-            wu_put_data(i);
-        }
-        if (plugin_options.IRRIGATION) {
-            irr_put_data(i);
-        }
-        if (plugin_options.WOFOST) {
-            crop_put_data(i);
-        }
-
-        plugin_store_error(i);
+        plugin_put_data(i);
     }
+}
+
+/******************************************
+* @brief    Write plugins single
+******************************************/
+void
+plugin_put_data(size_t iCell)
+{
+    extern plugin_option_struct plugin_options;
+
+    if (plugin_options.ROUTING || 
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+        rout_put_data(iCell);
+    }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_put_data(iCell);
+    }
+    if (plugin_options.EFR) {
+        efr_put_data(iCell);
+    }
+    if (plugin_options.DAMS) {
+        dam_put_data(iCell);
+    }
+    if (plugin_options.WATERUSE) {
+        wu_put_data(iCell);
+    }
+    if (plugin_options.IRRIGATION) {
+        irr_put_data(iCell);
+    }
+    if (plugin_options.WOFOST) {
+        crop_put_data(iCell);
+    }
+
+    plugin_store_error(iCell);
 }
 
 /******************************************

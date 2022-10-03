@@ -478,6 +478,7 @@ print_option(option_struct *option)
     fprintf(LOG_DEST, "\tNlakenode            : %zu\n", option->Nlakenode);
     fprintf(LOG_DEST, "\tNlayer               : %zu\n", option->Nlayer);
     fprintf(LOG_DEST, "\tNnode                : %zu\n", option->Nnode);
+    fprintf(LOG_DEST, "\tNbare                : %zu\n", option->Nbare);
     fprintf(LOG_DEST, "\tNOFLUX               : %s\n",
             option->NOFLUX ? "true" : "false");
     fprintf(LOG_DEST, "\tNVEGTYPES            : %zu\n", option->NVEGTYPES);
@@ -512,6 +513,8 @@ print_option(option_struct *option)
     fprintf(LOG_DEST, "\tALB_SRC              : %d\n", option->ALB_SRC);
     fprintf(LOG_DEST, "\tLAI_SRC              : %d\n", option->LAI_SRC);
     fprintf(LOG_DEST, "\tFCAN_SRC             : %d\n", option->FCAN_SRC);
+    fprintf(LOG_DEST, "\tBCO2_SRC             : %d\n", option->BCO2_SRC);
+    fprintf(LOG_DEST, "\tWFC_SRC              : %d\n", option->WFC_SRC);
     fprintf(LOG_DEST, "\tLAKE_PROFILE         : %s\n",
             option->LAKE_PROFILE ? "true" : "false");
     fprintf(LOG_DEST, "\tORGANIC_FRACT        : %s\n",
@@ -672,6 +675,7 @@ print_parameters(parameters_struct *param)
     fprintf(LOG_DEST, "\tCANOPY_RSMAX: %.4f\n", param->CANOPY_RSMAX);
     fprintf(LOG_DEST, "\tCANOPY_VPDMINFACTOR: %.4f\n",
             param->CANOPY_VPDMINFACTOR);
+    fprintf(LOG_DEST, "\tCANOPY_CO2REF: %.4f\n", param->CANOPY_CO2REF);
     fprintf(LOG_DEST, "\tLAKE_TMELT: %.4f\n", param->LAKE_TMELT);
     fprintf(LOG_DEST, "\tLAKE_MAX_SURFACE: %.4f\n", param->LAKE_MAX_SURFACE);
     fprintf(LOG_DEST, "\tLAKE_BETA: %.4f\n", param->LAKE_BETA);
@@ -955,6 +959,7 @@ print_soil_con(soil_con_struct *scon,
     }
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tc                     : %f\n", scon->c);
+    fprintf(LOG_DEST, "\tcarbon                : %f\n", scon->carbon);
     fprintf(LOG_DEST, "\tdepth                 :");
     for (i = 0; i < nlayers; i++) {
         fprintf(LOG_DEST, "\t%f", scon->depth[i]);
@@ -1010,6 +1015,7 @@ print_soil_con(soil_con_struct *scon,
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "\tmax_snow_distrib_slope: %f\n",
             scon->max_snow_distrib_slope);
+    fprintf(LOG_DEST, "\tph                    : %f\n", scon->ph);
     fprintf(LOG_DEST, "\tphi_s                 :");
     for (i = 0; i < nlayers; i++) {
         fprintf(LOG_DEST, "\t%f", scon->phi_s[i]);
@@ -1199,6 +1205,7 @@ print_veg_lib(veg_lib_struct *vlib,
     fprintf(LOG_DEST, "\trad_atten     : %.4f\n", vlib->rad_atten);
     fprintf(LOG_DEST, "\trarc          : %.4f\n", vlib->rarc);
     fprintf(LOG_DEST, "\trmin          : %.4f\n", vlib->rmin);
+    fprintf(LOG_DEST, "\tb_co2         : %.4f\n", vlib->b_co2);
     fprintf(LOG_DEST, "\troughness     :");
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         fprintf(LOG_DEST, "\t%.2f", vlib->roughness[i]);

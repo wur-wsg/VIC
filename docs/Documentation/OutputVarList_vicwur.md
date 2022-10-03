@@ -75,6 +75,8 @@ Using options within the global parameter file, any combination of the variables
 | OUT_CROP_WST,     | Crop stem dry matter 		                | kg ha-1    |
 | OUT_CROP_WLV,     | Crop leafs dry matter		                | kg ha-1    |
 | OUT_CROP_WRT,     | Crop roots dry matter 		                | kg ha-1    |
+| OUT_CROP_TMAXSTRESS,     | Crop temperature stress 		                | -    |
+| OUT_CROP_TMINSTRESS,     | Crop minimum temperature stress 		                | -    |
 | OUT_CROP_WSTRESS,     | Crop water stress 		                | -    |
 | OUT_CROP_NSTRESS,     | Crop nutrient stress 		                | -    |
 | OUT_CROP_NUPT,     | Crop nitrogen uptake 		                | kg ha-1    |

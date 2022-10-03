@@ -62,9 +62,8 @@ plugin_set_output_met_data_info(void)
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].description,
              MAXSTRING, "%s", "non-renewable deficit");
 
-    out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].nelem = 1;
-
-    if (plugin_options.ROUTING) {
+    if (plugin_options.ROUTING ||
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_set_output_met_data_info();
     }
     if (plugin_options.FORCE_LANDUSE) {
@@ -156,9 +155,6 @@ plugin_set_nc_var_info(unsigned int       varid,
     if (plugin_options.FORCE_LANDUSE) {
         lu_set_nc_var_info(varid, nc_hist_file, nc_var);
     }
-    if (plugin_options.DAMS) {
-        dam_set_nc_var_info(varid, nc_hist_file, nc_var);
-    }
     if (plugin_options.WATERUSE) {
         wu_set_nc_var_info(varid, nc_hist_file, nc_var);
     }
@@ -192,9 +188,6 @@ plugin_set_nc_var_dimids(unsigned int    varid,
     if (plugin_options.FORCE_LANDUSE) {
         lu_set_nc_var_dimids(varid, nc_hist_file, nc_var);
     }
-    if (plugin_options.DAMS) {
-        dam_set_nc_var_dimids(varid, nc_hist_file, nc_var);
-    }
     if (plugin_options.WATERUSE) {
         wu_set_nc_var_dimids(varid, nc_hist_file, nc_var);
     }
@@ -218,7 +211,8 @@ plugin_get_default_outvar_aggtype(unsigned int  varid,
         break;
     }
 
-    if (plugin_options.ROUTING) {
+    if (plugin_options.ROUTING ||
+            (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
         rout_history(varid, agg_type);
     }
     if (plugin_options.FORCE_LANDUSE) {

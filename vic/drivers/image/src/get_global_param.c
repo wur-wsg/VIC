@@ -73,6 +73,9 @@ get_global_param(FILE *gp)
             if (strcasecmp("NODES", optstr) == 0) {
                 sscanf(cmdstr, "%*s %zu", &options.Nnode);
             }
+            if (strcasecmp("NBARE", optstr) == 0) {
+                sscanf(cmdstr, "%*s %zu", &options.Nbare);
+            }
             else if (strcasecmp("MODEL_STEPS_PER_DAY", optstr) == 0) {
                 sscanf(cmdstr, "%*s %zu", &global_param.model_steps_per_day);
             }
@@ -336,7 +339,6 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
-
             /*************************************
                Define forcing files
             *************************************/
@@ -346,7 +348,6 @@ get_global_param(FILE *gp)
             else if (strcasecmp("WIND_H", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &global_param.wind_h);
             }
-
             /*************************************
                Define parameter files
             *************************************/
@@ -460,6 +461,38 @@ get_global_param(FILE *gp)
                 }
                 else {
                     log_err("Unrecognized value of ALB_SRC in the global "
+                            "control file.");
+                }
+            }
+            else if (strcasecmp("BCO2_SRC", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                if (strcasecmp("FROM_VEGPARAM", flgstr) == 0) {
+                    options.BCO2_SRC = FROM_VEGPARAM;
+                }
+                else if (strcasecmp("FROM_VEGLIB", flgstr) == 0) {
+                    options.BCO2_SRC = FROM_VEGLIB;
+                }
+                else if (strcasecmp("FROM_DEFAULT", flgstr) == 0) {
+                    options.BCO2_SRC = FROM_DEFAULT;
+                }
+                else {
+                    log_err("Unrecognized value of BCO2_SRC in the global "
+                            "control file.");
+                }
+            }
+            else if (strcasecmp("WFC_SRC", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                if (strcasecmp("FROM_VEGPARAM", flgstr) == 0) {
+                    options.WFC_SRC = FROM_VEGPARAM;
+                }
+                else if (strcasecmp("FROM_VEGLIB", flgstr) == 0) {
+                    options.WFC_SRC = FROM_VEGLIB;
+                }
+                else if (strcasecmp("FROM_DEFAULT", flgstr) == 0) {
+                    options.WFC_SRC = FROM_DEFAULT;
+                }
+                else {
+                    log_err("Unrecognized value of WFC_SRC in the global "
                             "control file.");
                 }
             }

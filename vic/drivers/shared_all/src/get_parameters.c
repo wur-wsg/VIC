@@ -115,6 +115,9 @@ get_parameters(FILE *paramfile)
             else if (strcasecmp("CANOPY_VPDMINFACTOR", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &param.CANOPY_VPDMINFACTOR);
             }
+            else if (strcasecmp("CANOPY_CO2REF", optstr) == 0) {
+                sscanf(cmdstr, "%*s %lf", &param.CANOPY_CO2REF);
+            }
             // Lake Parameters
             else if (strcasecmp("LAKE_TMELT", optstr) == 0) {
                 sscanf(cmdstr, "%*s %lf", &param.LAKE_TMELT);
@@ -622,6 +625,10 @@ validate_parameters()
     if (!(param.CANOPY_VPDMINFACTOR >= 0.)) {
         log_err(
             "CANOPY_VPDMINFACTOR must be defined on the interval [0, inf) (-)");
+    }
+    if (!(param.CANOPY_CO2REF >= 0.)) {
+        log_err(
+            "CANOPY_CO2REF must be defined on the interval [0, inf) (-)");
     }
 
     // Lake Parameters

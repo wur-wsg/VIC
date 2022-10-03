@@ -177,7 +177,7 @@ solve_snow(char               overstory,
 
         /** Compute Radiation Balance over Snow **/
 
-        if (iveg != Nveg) {
+        if (iveg < Nveg) {
             /****************************************
                Check Vegetation for Intercepted Snow
             ****************************************/

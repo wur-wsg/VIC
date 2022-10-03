@@ -46,7 +46,6 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     plugin_options->FORCE_ROUTING = false;
     plugin_options->FORCE_LANDUSE = false;
     plugin_options->NDAMTYPES = 0;
-    plugin_options->NDAMSERVICE = 0;
     plugin_options->NWUTYPES = WU_NSECTORS;
     plugin_options->NWURECEIVING = 0;
     for (i = 0; i < WU_NSECTORS; i++) {
@@ -54,21 +53,28 @@ plugin_initialize_options(plugin_option_struct *plugin_options)
     }
     plugin_options->NIRRTYPES = 0;
     plugin_options->POTENTIAL_IRRIGATION = false;
-    plugin_options->FORCE_PUMP_CAP = false;
+    plugin_options->EFFICIENT_IRRIGATION = false;
+    plugin_options->OFFSET_IRRIGATION = false;
+    plugin_options->Pbare = PADDY_BARE_TRUE_BUT_UNSET;
     plugin_options->COMP_WITH = false;
+    plugin_options->LOCAL_WITH = true;
     plugin_options->REMOTE_WITH = false;
     plugin_options->NONRENEW_WITH = false;
     plugin_options->NONRENEW_RUNOFF = false;
     plugin_options->WOFOST_PIRR = false;
     plugin_options->WOFOST_PFERT = false;
+    plugin_options->WOFOST_PTEMP = false;
     plugin_options->WOFOST_DIST_SEASON = false;
     plugin_options->WOFOST_DIST_TSUM = false;
     plugin_options->WOFOST_DIST_FERT = false;
     plugin_options->WOFOST_DIST_MIN = false;
+    plugin_options->WOFOST_CALC_MIN = false;
     plugin_options->WOFOST_CONTINUE = false;
+    plugin_options->WOFOST_FORCE_TSUM = false;
     plugin_options->WOFOST_FORCE_FERT = false;
     plugin_options->NCROPTYPES = 0;
     plugin_options->NFERTTIMES = 0;
+    plugin_options->FORCE_CO2 = false;
 }
 
 /******************************************
@@ -107,7 +113,6 @@ plugin_initialize_parameters(plugin_parameters_struct *plugin_param)
     plugin_param->DAM_BETA = 0.6;
     plugin_param->DAM_GAMMA = 5;
     plugin_param->NREN_LIM = INFINITY;
-    plugin_param->Wfc_fract = 0.7;
     plugin_param->Ksat_expt = 0.33;
 }
 

@@ -47,6 +47,7 @@ The following options determine the method of resolving the surface energy balan
 | WATERUSE   | string    | TRUE or FALSE     | Option for computing water-use. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 | IRRIGATION   | string    | TRUE or FALSE     | Option for computing irrigation. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
 | WOFOST   | string    | TRUE or FALSE     | Option for computing crops with wofost. <li>**TRUE** = compute.  <li>**FALSE** = do not compute.  <br><br>Default = False.                                                |
+| LANDUSE_FORCE   | string    | TRUE or FALSE     | Option for forcing vegetation coverage. <li>**TRUE** = force.  <li>**FALSE** = do not force.  <br><br>Default = False. |
 
 # Define State Files
 
@@ -156,6 +157,7 @@ DAMS						TRUE				# TRUE = calculate dam operation;  Default = FALSE
 WATERUSE					TRUE				# TRUE = calculate water use;  Default = FALSE
 IRRIGATION					TRUE				# TRUE = calculate irrigation;  Default = FALSE
 WOFOST					    TRUE		        # TRUE = calculate crops with wofost;  Default = FALSE
+LANDUSE_FORCE               TRUE                # TRUE = force vegetation coverage; Default = FALSE
 
 #######################################################################
 # Domain Files and Info

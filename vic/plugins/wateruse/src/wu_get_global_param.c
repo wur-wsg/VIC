@@ -48,13 +48,13 @@ wu_get_global_param(char *cmdstr)
     else if (strcasecmp("WATERUSE_PARAMETERS", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", plugin_filenames.wateruse.nc_filename);
     }
-    else if (strcasecmp("FORCE_PUMPING_CAPACITY", optstr) == 0) {
-        sscanf(cmdstr, "%*s %s", flgstr);
-        plugin_options.FORCE_PUMP_CAP = str_to_bool(flgstr);
-    }
     else if (strcasecmp("COMPENSATION_WITHDRAWAL", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
         plugin_options.COMP_WITH = str_to_bool(flgstr);
+    }
+    else if (strcasecmp("LOCAL_WITHDRAWAL", optstr) == 0) {
+        sscanf(cmdstr, "%*s %s", flgstr);
+        plugin_options.LOCAL_WITH = str_to_bool(flgstr);
     }
     else if (strcasecmp("REMOTE_WITHDRAWAL", optstr) == 0) {
         sscanf(cmdstr, "%*s %s", flgstr);
@@ -85,25 +85,24 @@ wu_validate_global_param(void)
     extern plugin_filenames_struct plugin_filenames;
 
     // Options
-    if (!plugin_options.ROUTING) {
-        log_err("WATERUSE = TRUE but ROUTING = FALSE");
+    if (!plugin_options.ROUTING && 
+            (plugin_options.LOCAL_WITH || plugin_options.REMOTE_WITH)) {
+        log_err("WATERUSE = TRUE and REMOTE_WITH = TRUE or LOCAL_WITH = TRUE "
+                "but ROUTING = FALSE");
     }
-    if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
-        log_err("WATERUSE = TRUE but DECOMPOSITION = RANDOM");
+    if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION && 
+            (plugin_options.LOCAL_WITH || plugin_options.REMOTE_WITH)) {
+        log_err("WATERUSE = TRUE and REMOTE_WITH = TRUE or LOCAL_WITH = TRUE "
+                "but DECOMPOSITION = RANDOM");
     }
 
     // Parameters
-    if (strcasecmp(plugin_filenames.wateruse.nc_filename, MISSING_S) == 0) {
-        log_err("WATERUSE = TRUE but file is missing");
+    if (strcasecmp(plugin_filenames.wateruse.nc_filename, MISSING_S) == 0 &&
+            plugin_options.REMOTE_WITH) {
+        log_err("WATERUSE = TRUE and REMOTE_WITH = TRUE but file is missing");
     }
 
     // Forcing
-    if (plugin_options.FORCE_PUMP_CAP) {
-        if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_PUMPING_CAP],
-                       MISSING_S) == 0) {
-            log_err("FORCE_PUMP_CAP = TRUE but file is missing");
-        }
-    }
     if (strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_DEMAND],
                    MISSING_S) != 0 &&
         strcasecmp(plugin_filenames.f_path_pfx[FORCING_IRR_GROUNDWATER],

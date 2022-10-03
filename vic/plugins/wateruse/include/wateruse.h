@@ -57,7 +57,6 @@ typedef struct {
  * @brief   Water-use Constants
  *****************************************************************************/
 typedef struct {
-    double pumping_capacity;        /**< pumping capacity [mm day-1] */
     size_t nreceiving;              /**< number of receiving cells */
     size_t *receiving;              /**< receiving cell id */
 } wu_con_struct;
@@ -89,13 +88,14 @@ typedef struct {
     double available_remote_tmp;    /**< available remote resources (temporary) [mm] */
     double demand_remote_tmp;       /**< demand for remote resources (temporary) [mm] */
     double withdrawn_remote_tmp;    /**< withdrawn remote resources (temporary) [mm] */
+    double returned_remote_tmp;     /**< returned remote resources (temporary) [mm] */
+    double consumed_remote_tmp;     /**< consumed remote resources (temporary) [mm] */
 } wu_var_struct;
 
 /******************************************************************************
  * @brief   Water-use Forcing
  *****************************************************************************/
 typedef struct {
-    double pumping_capacity;       /**< pumping capacity [mm day-1] */
     double demand;                 /**< water demand [mm] */
     double consumption_frac;       /**< water groundwater fraction [-] */
     double groundwater_frac;       /**< water consumption fraction [-] */
@@ -135,6 +135,7 @@ void wu_put_data(size_t);
 void wu_update_step_vars(size_t);
 void wu_forcing(void);
 void wu_run(size_t);
+void wu_run_local(size_t);
 void wu_remote(size_t);
 void wu_nonrenew(size_t);
 

@@ -69,10 +69,6 @@ efr_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_EFR_MOIST].description,
              MAXSTRING, "%s", "required environmental soil moisture");
-
-    out_metadata[N_OUTVAR_TYPES + OUT_EFR_DISCHARGE].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_EFR_BASEFLOW].nelem = 1;
-    out_metadata[N_OUTVAR_TYPES + OUT_EFR_MOIST].nelem = 1;
 }
 
 /******************************************
