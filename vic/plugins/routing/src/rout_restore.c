@@ -117,7 +117,6 @@ rout_compute_derived_state_vars(void)
     extern plugin_global_param_struct plugin_global_param;
     extern plugin_option_struct       plugin_options;
     extern rout_var_struct           *rout_var;
-    extern plugin_save_data_struct   *plugin_save_data;
 
     size_t                            i;
     size_t                            j;
@@ -138,8 +137,5 @@ rout_compute_derived_state_vars(void)
                 rout_var[i].stream += rout_var[i].dt_discharge[j];
             }
         }
-
-        plugin_save_data[i].total_moist_storage += rout_var[i].stream;
-        plugin_save_data[i].total_moist_storage += rout_var[i].nonrenew_deficit;
     }
 }

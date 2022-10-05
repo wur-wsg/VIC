@@ -132,21 +132,25 @@ global_dam_operate(dam_con_struct *dam_con,
 void
 local_dam_run(size_t iCell)
 {
-    extern plugin_option_struct plugin_options;
-    extern dam_con_map_struct  *local_dam_con_map;
-    extern dam_con_struct     **local_dam_con;
-    extern dam_var_struct     **local_dam_var;
+    extern dam_con_map_struct *dam_con_map;
+    extern dam_con_struct    **dam_con;
+    extern dam_var_struct    **dam_var;
 
-    size_t                      i;
+    size_t                     iDam;
 
-    for (i = 0; i < plugin_options.NDAMTYPES; i++) {
-        if (local_dam_con_map[iCell].didx[i] != NODATA_DAM) {
-            local_dam_register(&local_dam_con[iCell][i],
-                               &local_dam_var[iCell][i], iCell);
+    for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
+        if (dam_con[iCell][iDam].type == DAM_LOCAL) {
+            local_dam_register(&dam_con[iCell][iDam],
+                               &dam_var[iCell][iDam], iCell);
 
-            if (local_dam_var[iCell][i].active) {
-                local_dam_operate(&local_dam_con[iCell][i],
-                                  &local_dam_var[iCell][i], iCell);
+            if (dam_var[iCell][iDam].active) {
+                local_dam_operate(&dam_con[iCell][iDam],
+                                  &dam_var[iCell][iDam], iCell);
+            }
+            else {
+                dam_var[iCell][iDam].inflow = 0.;
+                dam_var[iCell][iDam].demand = 0.;
+                dam_var[iCell][iDam].efr = 0.;
             }
         }
     }
@@ -158,21 +162,25 @@ local_dam_run(size_t iCell)
 void
 global_dam_run(size_t iCell)
 {
-    extern plugin_option_struct plugin_options;
-    extern dam_con_map_struct  *global_dam_con_map;
-    extern dam_con_struct     **global_dam_con;
-    extern dam_var_struct     **global_dam_var;
+    extern dam_con_map_struct *dam_con_map;
+    extern dam_con_struct    **dam_con;
+    extern dam_var_struct    **dam_var;
 
-    size_t                      i;
+    size_t                     iDam;
 
-    for (i = 0; i < plugin_options.NDAMTYPES; i++) {
-        if (global_dam_con_map[iCell].didx[i] != NODATA_DAM) {
-            global_dam_register(&global_dam_con[iCell][i],
-                                &global_dam_var[iCell][i], iCell);
+    for (iDam = 0; iDam < dam_con_map[iCell].nd_active; iDam++) {
+        if (dam_con[iCell][iDam].type == DAM_GLOBAL) {
+            global_dam_register(&dam_con[iCell][iDam],
+                                &dam_var[iCell][iDam], iCell);
 
-            if (global_dam_var[iCell][i].active) {
-                global_dam_operate(&global_dam_con[iCell][i],
-                                   &global_dam_var[iCell][i], iCell);
+            if (dam_var[iCell][iDam].active) {
+                global_dam_operate(&dam_con[iCell][iDam],
+                                   &dam_var[iCell][iDam], iCell);
+            }
+            else {
+                dam_var[iCell][iDam].inflow = 0.;
+                dam_var[iCell][iDam].demand = 0.;
+                dam_var[iCell][iDam].efr = 0.;
             }
         }
     }

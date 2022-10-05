@@ -790,7 +790,9 @@ surface_fluxes(bool                 overstory,
                          iter_soil_veg_var.albedo, force->shortwave[hidx],
                          iter_soil_energy.NetLongAtmos,
                          veg_lib->RGL, Tair, VPDcanopy,
-                         iter_soil_veg_var.LAI, soil_con->elevation,
+                         force->Catm[hidx] / PPM_to_MIXRATIO,
+                         iter_soil_veg_var.LAI, veg_lib->b_co2,
+                         soil_con->elevation,
                          iter_aero_resist_veg,
                          veg_lib->overstory,
                          veg_lib->rarc,
@@ -810,7 +812,7 @@ surface_fluxes(bool                 overstory,
             step_layer[lidx] = iter_layer[lidx];
         }
 
-        if (iveg != Nveg) {
+        if (iveg < Nveg) {
             if (step_snow.snow) {
                 store_throughfall += snow_veg_var.throughfall;
                 store_canopyevap += snow_veg_var.canopyevap;
@@ -854,7 +856,7 @@ surface_fluxes(bool                 overstory,
             store_aero_cond_used[1] += param.HUGE_RESIST;
         }
 
-        if (iveg != Nveg) {
+        if (iveg < Nveg) {
             store_canopy_vapor_flux += step_snow.canopy_vapor_flux;
         }
         store_melt += step_melt;
@@ -1001,7 +1003,7 @@ surface_fluxes(bool                 overstory,
        Store vegetation variable sums for sub-model time steps
     **********************************************************/
 
-    if (iveg != Nveg) {
+    if (iveg < Nveg) {
         veg_var->throughfall = store_throughfall;
         veg_var->canopyevap = store_canopyevap;
         if (snow->snow) {
@@ -1050,7 +1052,7 @@ surface_fluxes(bool                 overstory,
        Store carbon cycle variable sums for sub-model time steps
     **********************************************************/
 
-    if (options.CARBON && iveg != Nveg) {
+    if (options.CARBON && iveg < Nveg) {
         veg_var->rc = 1 / store_gc / (double) N_steps;
         for (cidx = 0; cidx < options.Ncanopy; cidx++) {
             veg_var->rsLayer[cidx] = 1 / store_gsLayer[cidx] / (double) N_steps;

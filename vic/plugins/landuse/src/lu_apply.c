@@ -28,106 +28,220 @@
 #include <plugin.h>
 
 /******************************************
-* @brief   Get the heat capacities to calculate energy transfer
+* @brief   Distribute paddy balance variables
 ******************************************/
 void
-get_heat_capacities(size_t   iCell,
-                    size_t   iBand,
-                    double  *snow_surf_capacity,
-                    double  *snow_pack_capacity,
-                    double **node_capacity,
-                    double  *Cv)
+distribute_paddy_balance_terms(size_t  iCell,
+                               size_t  iBand,
+                               double *Cv_change,
+                               double *Cv_old,
+                               double *Cv_new,
+                               double *Cv_change_tmp)
 {
-    extern parameters_struct   param;
-    extern option_struct       options;
-    extern veg_con_map_struct *veg_con_map;
-    extern soil_con_struct    *soil_con;
-    extern all_vars_struct    *all_vars;
+    extern option_struct        options;
+    extern plugin_option_struct plugin_options;
+    extern soil_con_struct     *soil_con;
+    extern veg_lib_struct     **veg_lib;
+    extern veg_con_map_struct  *veg_con_map;
+    extern veg_con_struct     **veg_con;
+    extern all_vars_struct     *all_vars;
+    extern irr_con_map_struct  *irr_con_map;
+    extern irr_con_struct     **irr_con;
 
-    double                     snow_ice;
-    double                     snow_surf_swq;
-    double                     snow_pack_swq;
+    double                      Cv_avail;
+    double                      red_frac;
+    double                      add_frac;
+    double                      inflow;
 
-    snow_data_struct         **snow;
-    energy_bal_struct        **energy;
+    // water-balance
+    // veg_var
+    double             Wdew;
+    // snow
+    double             surf_water;
+    double             pack_water;
+    double             snow_canopy;
+    double             swq;
+    // cell
+    double             moist[MAX_LAYERS];
+    double             ice[MAX_LAYERS][MAX_FROST_AREAS];
 
-    size_t                     iVeg;
-    size_t                     iNode;
+    veg_var_struct   **veg_var;
+    cell_data_struct **cell;
+    snow_data_struct **snow;
 
+    size_t             iIrr;
+    int                iVeg_bare;
+    size_t            *iVegs;
+    size_t             nVegs;
+    size_t             i;
+    size_t             iLayer;
+    size_t             iFrost;
+    size_t             veg_class;
+
+    veg_var = all_vars[iCell].veg_var;
+    cell = all_vars[iCell].cell;
     snow = all_vars[iCell].snow;
-    energy = all_vars[iCell].energy;
 
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        snow_ice = snow[iVeg][iBand].swq - snow[iVeg][iBand].surf_water -
-                   snow[iVeg][iBand].pack_water;
-        if (snow_ice > param.SNOW_MAX_SURFACE_SWE) {
-            snow_surf_swq = param.SNOW_MAX_SURFACE_SWE;
-        }
-        else {
-            snow_surf_swq = snow_ice;
-        }
-        snow_pack_swq = snow_ice - snow_surf_swq;
+    /* WATER-BALANCE */
 
-        if (Cv[iVeg] > 0) {
-            snow_surf_capacity[iVeg] = CONST_VCPICE_WQ * snow_surf_swq;
-            snow_pack_capacity[iVeg] = CONST_VCPICE_WQ * snow_pack_swq;
+    iVegs = malloc(options.NVEGTYPES * sizeof(*iVegs));
+    check_alloc_status(iVegs, "Memory allocation error");
 
-            for (iNode = 0; iNode < options.Nnode; iNode++) {
-                node_capacity[iVeg][iNode] =
-                    energy[iVeg][iBand].Cs_node[iNode] *
-                    soil_con[iCell].dz_node[iNode];
-            }
-        }
-        else {
-            snow_surf_capacity[iVeg] = 0.;
-            snow_pack_capacity[iVeg] = 0.;
-
-            for (iNode = 0; iNode < options.Nnode; iNode++) {
-                node_capacity[iVeg][iNode] = 0.;
+    iVeg_bare = veg_con_map[iCell].vidx[plugin_options.Pbare - 1];
+    nVegs = 0;
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        if (irr_con[iCell][iIrr].paddy) {
+            if (Cv_change[irr_con[iCell][iIrr].veg_index] <
+                -MINCOVERAGECHANGE ||
+                Cv_change[irr_con[iCell][iIrr].veg_index] > MINCOVERAGECHANGE) {
+                iVegs[nVegs] = irr_con[iCell][iIrr].veg_index;
+                nVegs++;
             }
         }
     }
-}
 
-/******************************************
-* @brief   Get the current energy contents
-******************************************/
-void
-get_energy_terms(size_t   iCell,
-                 size_t   iBand,
-                 double  *snow_surf_capacity,
-                 double  *snow_pack_capacity,
-                 double **node_capacity,
-                 double  *orig_surf_tempEnergy,
-                 double  *orig_pack_tempEnergy,
-                 double **orig_TEnergy)
-{
-    extern option_struct       options;
-    extern veg_con_map_struct *veg_con_map;
-    extern all_vars_struct    *all_vars;
+    if (iVeg_bare != NODATA_VEG) {
+        iVegs[nVegs] = iVeg_bare;
+        nVegs++;
+    }
 
-    snow_data_struct         **snow;
-    energy_bal_struct        **energy;
+    // Get available area to redistribute
+    Cv_avail = 0.0;
+    for (i = 0; i < nVegs; i++) {
+        if (Cv_change[iVegs[i]] > MINCOVERAGECHANGE) {
+            Cv_avail += Cv_change[iVegs[i]];
+        }
+    }
 
-    size_t                     iVeg;
-    size_t                     iNode;
+    // get
+    Wdew = 0.0;
+    pack_water = 0.0;
+    surf_water = 0.0;
+    swq = 0.0;
+    snow_canopy = 0.0;
+    for (iLayer = 0; iLayer < MAX_LAYERS; iLayer++) {
+        moist[iLayer] = 0.0;
+        for (iFrost = 0; iFrost < MAX_FROST_AREAS; iFrost++) {
+            ice[iLayer][iFrost] = 0.0;
+        }
+    }
 
-    snow = all_vars[iCell].snow;
-    energy = all_vars[iCell].energy;
-
-    /* ENERGY-BALANCE */
+    for (i = 0; i < nVegs; i++) {
+        if (Cv_change[iVegs[i]] < -MINCOVERAGECHANGE) {
+            Wdew += veg_var[iVegs[i]][iBand].Wdew * -Cv_change[iVegs[i]];
+            pack_water += snow[iVegs[i]][iBand].pack_water *
+                          -Cv_change[iVegs[i]];
+            surf_water += snow[iVegs[i]][iBand].surf_water *
+                          -Cv_change[iVegs[i]];
+            swq += snow[iVegs[i]][iBand].swq * -Cv_change[iVegs[i]];
+            snow_canopy += snow[iVegs[i]][iBand].snow_canopy *
+                           -Cv_change[iVegs[i]];
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                moist[iLayer] += cell[iVegs[i]][iBand].layer[iLayer].moist *
+                                 -Cv_change[iVegs[i]];
+                for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
+                    ice[iLayer][iFrost] +=
+                        cell[iVegs[i]][iBand].layer[iLayer].ice[iFrost] *
+                        -Cv_change[iVegs[i]];
+                }
+            }
+        }
+    }
 
     // set
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        orig_surf_tempEnergy[iVeg] = snow[iVeg][iBand].surf_temp *
-                                     snow_surf_capacity[iVeg];
-        orig_pack_tempEnergy[iVeg] = snow[iVeg][iBand].pack_temp *
-                                     snow_pack_capacity[iVeg];
-        for (iNode = 0; iNode < options.Nnode; iNode++) {
-            orig_TEnergy[iVeg][iNode] = energy[iVeg][iBand].T[iNode] *
-                                        node_capacity[iVeg][iNode];
+    for (i = 0; i < nVegs; i++) {
+        if (Cv_change[iVegs[i]] > MINCOVERAGECHANGE) {
+            red_frac = Cv_old[iVegs[i]] / Cv_new[iVegs[i]];
+            add_frac = (Cv_change[iVegs[i]] / Cv_avail) / Cv_new[iVegs[i]];
+
+            veg_var[iVegs[i]][iBand].Wdew = veg_var[iVegs[i]][iBand].Wdew *
+                                            red_frac +
+                                            Wdew * add_frac;
+            snow[iVegs[i]][iBand].pack_water =
+                snow[iVegs[i]][iBand].pack_water *
+                red_frac + pack_water * add_frac;
+            snow[iVegs[i]][iBand].surf_water =
+                snow[iVegs[i]][iBand].surf_water *
+                red_frac + surf_water * add_frac;
+            snow[iVegs[i]][iBand].swq = snow[iVegs[i]][iBand].swq * red_frac +
+                                        swq *
+                                        add_frac;
+            snow[iVegs[i]][iBand].snow_canopy =
+                snow[iVegs[i]][iBand].snow_canopy *
+                red_frac + snow_canopy *
+                add_frac;
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                cell[iVegs[i]][iBand].layer[iLayer].moist =
+                    cell[iVegs[i]][iBand].layer[iLayer].moist * red_frac +
+                    moist[iLayer] * add_frac;
+                for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
+                    cell[iVegs[i]][iBand].layer[iLayer].ice[iFrost] =
+                        cell[iVegs[i]][iBand].layer[iLayer].ice[iFrost] *
+                        red_frac +
+                        ice[iLayer][iFrost] * add_frac;
+                }
+            }
+
+            veg_class = veg_con[iCell][iVegs[i]].veg_class;
+            if (!veg_lib[iCell][veg_class].overstory ||
+                veg_var[iVegs[i]][iBand].LAI <= 0. ||
+                veg_class == options.NVEGTYPES) {
+                // Remove intercepted canopy snow for vegetation without overstory or leaves
+                snow[iVegs[i]][iBand].swq += snow[iVegs[i]][iBand].snow_canopy;
+                snow[iVegs[i]][iBand].snow_canopy = 0.;
+            }
+
+            if (veg_var[iVegs[i]][iBand].LAI <= 0. ||
+                veg_class == options.NVEGTYPES) {
+                // Remove intercepted canopy water for vegetation without leaves
+                cell[iVegs[i]][iBand].layer[0].moist +=
+                    veg_var[iVegs[i]][iBand].Wdew;
+                veg_var[iVegs[i]][iBand].Wdew = 0.;
+            }
+
+            // Gather excess soil moisture
+            inflow = 0.0;
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                if (cell[iVegs[i]][iBand].layer[iLayer].moist >
+                    soil_con[iCell].max_moist[iLayer]) {
+                    inflow += cell[iVegs[i]][iBand].layer[iLayer].moist -
+                              soil_con[iCell].max_moist[iLayer];
+                    cell[iVegs[i]][iBand].layer[iLayer].moist =
+                        soil_con[iCell].max_moist[iLayer];
+                }
+            }
+
+            if (inflow > 0) {
+                // Redistribute excess soil moisture
+                for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                    cell[iVegs[i]][iBand].layer[iLayer].moist += inflow;
+
+                    inflow = 0.0;
+                    if (cell[iVegs[i]][iBand].layer[iLayer].moist >
+                        soil_con[iCell].max_moist[iLayer]) {
+                        inflow = cell[iVegs[i]][iBand].layer[iLayer].moist -
+                                 soil_con[iCell].max_moist[iLayer];
+                        cell[iVegs[i]][iBand].layer[iLayer].moist =
+                            soil_con[iCell].max_moist[iLayer];
+                    }
+                    if (inflow == 0.) {
+                        break;
+                    }
+                }
+                if (inflow != 0.) {
+                    log_warn(
+                        "Could not redistribute (part of) water balance [%.4f mm] in cell [%zu], since soil is full",
+                        inflow, iCell);
+                }
+            }
         }
     }
+
+    for (i = 0; i < nVegs; i++) {
+        Cv_change_tmp[iVegs[i]] = 0.;
+    }
+
+    free(iVegs);
 }
 
 /******************************************
@@ -147,6 +261,7 @@ distribute_water_balance_terms(size_t  iCell,
     extern veg_con_struct    **veg_con;
     extern all_vars_struct    *all_vars;
 
+    double                    *Cv_change_tmp;
     double                     Cv_avail;
     double                     red_frac;
     double                     add_frac;
@@ -179,15 +294,32 @@ distribute_water_balance_terms(size_t  iCell,
     cell = all_vars[iCell].cell;
     snow = all_vars[iCell].snow;
 
+    Cv_change_tmp = malloc(options.NVEGTYPES * sizeof(*Cv_change_tmp));
+    check_alloc_status(Cv_change, "Memory allocation error");
+
+    /* WATER-BALANCE */
+
+    before_moist = calculate_total_water(iCell, iBand, Cv_old, Cv_change);
+
+    // Do paddy changes
+    for (iVeg = 0; iVeg < options.NVEGTYPES; iVeg++) {
+        Cv_change_tmp[iVeg] = Cv_change[iVeg];
+    }
+    if (plugin_options.IRRIGATION &&
+        plugin_options.Pbare != options.NVEGTYPES) {
+        // Paddy
+        distribute_paddy_balance_terms(iCell, iBand,
+                                       Cv_change, Cv_old, Cv_new,
+                                       Cv_change_tmp);
+    }
+
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
-            Cv_avail += Cv_change[iVeg];
+        if (Cv_change_tmp[iVeg] > MINCOVERAGECHANGE) {
+            Cv_avail += Cv_change_tmp[iVeg];
         }
     }
-
-    /* WATER-BALANCE */
 
     // get
     Wdew = 0.0;
@@ -203,42 +335,29 @@ distribute_water_balance_terms(size_t  iCell,
     }
 
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < 0) {
-            Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change[iVeg];
-            pack_water += snow[iVeg][iBand].pack_water * -Cv_change[iVeg];
-            surf_water += snow[iVeg][iBand].surf_water * -Cv_change[iVeg];
-            swq += snow[iVeg][iBand].swq * -Cv_change[iVeg];
-            snow_canopy += snow[iVeg][iBand].snow_canopy * -Cv_change[iVeg];
+        if (Cv_change_tmp[iVeg] < -MINCOVERAGECHANGE) {
+            Wdew += veg_var[iVeg][iBand].Wdew * -Cv_change_tmp[iVeg];
+            pack_water += snow[iVeg][iBand].pack_water * -Cv_change_tmp[iVeg];
+            surf_water += snow[iVeg][iBand].surf_water * -Cv_change_tmp[iVeg];
+            swq += snow[iVeg][iBand].swq * -Cv_change_tmp[iVeg];
+            snow_canopy += snow[iVeg][iBand].snow_canopy * -Cv_change_tmp[iVeg];
             for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                 moist[iLayer] += cell[iVeg][iBand].layer[iLayer].moist *
-                                 -Cv_change[iVeg];
+                                 -Cv_change_tmp[iVeg];
                 for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
                     ice[iLayer][iFrost] +=
                         cell[iVeg][iBand].layer[iLayer].ice[iFrost] *
-                        -Cv_change[iVeg];
+                        -Cv_change_tmp[iVeg];
                 }
             }
         }
     }
 
-    before_moist = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        before_moist += veg_var[iVeg][iBand].Wdew * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].pack_water * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].surf_water * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].swq * Cv_old[iVeg];
-        before_moist += snow[iVeg][iBand].snow_canopy * Cv_old[iVeg];
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            before_moist += cell[iVeg][iBand].layer[iLayer].moist *
-                            Cv_old[iVeg];
-        }
-    }
-
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change_tmp[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
-            add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
+            add_frac = (Cv_change_tmp[iVeg] / Cv_avail) / Cv_new[iVeg];
 
             veg_var[iVeg][iBand].Wdew = veg_var[iVeg][iBand].Wdew * red_frac +
                                         Wdew * add_frac;
@@ -263,48 +382,59 @@ distribute_water_balance_terms(size_t  iCell,
 
             veg_class = veg_con[iCell][iVeg].veg_class;
             if (!veg_lib[iCell][veg_class].overstory ||
-                veg_var[iVeg][iBand].LAI <= 0.) {
+                veg_var[iVeg][iBand].LAI <= 0. ||
+                veg_class == options.NVEGTYPES) {
                 // Remove intercepted canopy snow for vegetation without overstory or leaves
                 snow[iVeg][iBand].swq += snow[iVeg][iBand].snow_canopy;
                 snow[iVeg][iBand].snow_canopy = 0.;
             }
 
-            if (veg_var[iVeg][iBand].LAI <= 0.) {
+            if (veg_var[iVeg][iBand].LAI <= 0. ||
+                veg_class == options.NVEGTYPES) {
                 // Remove intercepted canopy water for vegetation without leaves
-                inflow = veg_var[iVeg][iBand].Wdew;
+                cell[iVeg][iBand].layer[0].moist += veg_var[iVeg][iBand].Wdew;
+                veg_var[iVeg][iBand].Wdew = 0.;
+            }
+
+            // Gather excess soil moisture
+            inflow = 0.0;
+            for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
+                if (cell[iVeg][iBand].layer[iLayer].moist >
+                    soil_con[iCell].max_moist[iLayer]) {
+                    inflow += cell[iVeg][iBand].layer[iLayer].moist -
+                              soil_con[iCell].max_moist[iLayer];
+                    cell[iVeg][iBand].layer[iLayer].moist =
+                        soil_con[iCell].max_moist[iLayer];
+                }
+            }
+
+            if (inflow > 0) {
+                // Redistribute excess soil moisture
                 for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
                     cell[iVeg][iBand].layer[iLayer].moist += inflow;
+
+                    inflow = 0.0;
                     if (cell[iVeg][iBand].layer[iLayer].moist >
                         soil_con[iCell].max_moist[iLayer]) {
                         inflow = cell[iVeg][iBand].layer[iLayer].moist -
                                  soil_con[iCell].max_moist[iLayer];
+                        cell[iVeg][iBand].layer[iLayer].moist =
+                            soil_con[iCell].max_moist[iLayer];
                     }
-                    else {
-                        inflow = 0.;
+                    if (inflow == 0.) {
                         break;
                     }
                 }
                 if (inflow != 0.) {
-                    log_warn("Could not redistribute (part of) "
-                             "intercepted canopy water [%.4f] since soil is full",
-                             inflow);
+                    log_warn(
+                        "Could not redistribute (part of) water balance [%.4f mm] since soil is full",
+                        inflow * Cv_new[iVeg]);
                 }
-                veg_var[iVeg][iBand].Wdew = 0.;
             }
         }
     }
 
-    after_moist = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        after_moist += veg_var[iVeg][iBand].Wdew * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].pack_water * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].surf_water * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].swq * Cv_new[iVeg];
-        after_moist += snow[iVeg][iBand].snow_canopy * Cv_new[iVeg];
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            after_moist += cell[iVeg][iBand].layer[iLayer].moist * Cv_new[iVeg];
-        }
-    }
+    after_moist = calculate_total_water(iCell, iBand, Cv_new, Cv_change);
 
     // Check water balance
     if (abs(before_moist - after_moist) > DBL_EPSILON) {
@@ -318,7 +448,7 @@ distribute_water_balance_terms(size_t  iCell,
                     "swq\t[%.4f mm]\n"
                     "snow_canopy\t[%.4f mm]\n",
                     iBand, iVeg,
-                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change_tmp[iVeg],
                     veg_var[iVeg][iBand].Wdew,
                     snow[iVeg][iBand].pack_water,
                     snow[iVeg][iBand].surf_water,
@@ -344,12 +474,10 @@ distribute_water_balance_terms(size_t  iCell,
             fprintf(LOG_DEST, "moist %zu\t[%.4f mm]\n",
                     iLayer, moist[iLayer]);
         }
-        log_err("\nWater balance error for cell %zu:\n"
-                "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
-                iCell,
-                before_moist,
-                after_moist);
+        log_err("Water balance error");
     }
+
+    free(Cv_change_tmp);
 }
 
 /******************************************
@@ -388,15 +516,17 @@ distribute_carbon_balance_terms(size_t  iCell,
     veg_var = all_vars[iCell].veg_var;
     cell = all_vars[iCell].cell;
 
+    /* CARBON-BALANCE */
+
+    before_carbon = calculate_total_carbon(iCell, iBand, Cv_old, Cv_change);
+
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             Cv_avail += Cv_change[iVeg];
         }
     }
-
-    /* CARBON-BALANCE */
 
     // get
     AnnualNPP = 0.0;
@@ -405,7 +535,7 @@ distribute_carbon_balance_terms(size_t  iCell,
     CInter = 0.0;
     CSlow = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
             AnnualNPP += veg_var[iVeg][iBand].AnnualNPP * -Cv_change[iVeg];
             AnnualNPPPrev += veg_var[iVeg][iBand].AnnualNPPPrev *
                              -Cv_change[iVeg];
@@ -415,18 +545,9 @@ distribute_carbon_balance_terms(size_t  iCell,
         }
     }
 
-    before_carbon = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        before_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_old[iVeg];
-        before_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_old[iVeg];
-        before_carbon += cell[iVeg][iBand].CLitter * Cv_old[iVeg];
-        before_carbon += cell[iVeg][iBand].CInter * Cv_old[iVeg];
-        before_carbon += cell[iVeg][iBand].CSlow * Cv_old[iVeg];
-    }
-
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -444,209 +565,39 @@ distribute_carbon_balance_terms(size_t  iCell,
         }
     }
 
-    after_carbon = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        after_carbon += veg_var[iVeg][iBand].AnnualNPP * Cv_new[iVeg];
-        after_carbon += veg_var[iVeg][iBand].AnnualNPPPrev * Cv_new[iVeg];
-        after_carbon += cell[iVeg][iBand].CLitter * Cv_new[iVeg];
-        after_carbon += cell[iVeg][iBand].CInter * Cv_new[iVeg];
-        after_carbon += cell[iVeg][iBand].CSlow * Cv_new[iVeg];
-    }
+    after_carbon = calculate_total_carbon(iCell, iBand, Cv_new, Cv_change);
 
     // Check water balance
     if (abs(before_carbon - after_carbon) > DBL_EPSILON) {
-        log_err("\nCarbon balance error for cell %zu:\n"
-                "Initial carbon content [%.4f gC m-2]\tFinal water content [%.4f gC m-2]",
-                iCell,
-                before_carbon,
-                after_carbon);
-    }
-}
-
-/******************************************
-* @brief   Calculate derived water states
-******************************************/
-void
-calculate_derived_water_states(size_t iCell,
-                               size_t iBand)
-{
-    extern dmy_struct         *dmy;
-    extern size_t              current;
-    extern option_struct       options;
-    extern force_data_struct  *force;
-    extern veg_con_map_struct *veg_con_map;
-    extern veg_con_struct    **veg_con;
-    extern veg_lib_struct    **veg_lib;
-    extern soil_con_struct    *soil_con;
-    extern veg_con_struct    **veg_con;
-    extern all_vars_struct    *all_vars;
-    extern size_t              NR;
-
-    double                     runoff;
-    double                     moist[MAX_LAYERS];
-    double                     resid_moist;
-    double                     max_moist;
-    layer_data_struct          layer[MAX_LAYERS];
-
-    cell_data_struct         **cell;
-    snow_data_struct         **snow;
-    energy_bal_struct        **energy;
-
-    size_t                     iVeg;
-    size_t                     veg_class;
-    size_t                     iLayer;
-
-    cell = all_vars[iCell].cell;
-    snow = all_vars[iCell].snow;
-    energy = all_vars[iCell].energy;
-
-    // calculate
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        // initialize
-        veg_class = veg_con[iCell][iVeg].veg_class;
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            moist[iLayer] = cell[iVeg][iBand].layer[iLayer].moist;
-            layer[iLayer] = cell[iVeg][iBand].layer[iLayer];
+        for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+            fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
+                    "\t\tAfter:\n"
+                    "Cv\t\t[%.8f]\t[%.8f]\t[%.16f]\n"
+                    "AnnualNPP\t[%.4f mm]\n"
+                    "AnnualNPPPrev\t[%.4f mm]\n"
+                    "CLitter\t[%.4f mm]\n"
+                    "CInter\t[%.4f mm]\n"
+                    "CSlow\t[%.4f mm]\n",
+                    iBand, iVeg,
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
+                    veg_var[iVeg][iBand].AnnualNPP,
+                    veg_var[iVeg][iBand].AnnualNPPPrev,
+                    cell[iVeg][iBand].CLitter,
+                    cell[iVeg][iBand].CInter,
+                    cell[iVeg][iBand].CSlow);
         }
-
-        /* CELL_DATA_STRUCT */
-        // Some snow variables are ignored since they depend on the age of the snow or are constant
-        // cell[iVeg][iBand].layer[iLayer].phi; // Not used in VIC?
-
-        // asat
-        compute_runoff_and_asat(&soil_con[iCell], moist, 0,
-                                &cell[iVeg][iBand].asat, &runoff);
-        // zwt & zwt_lumped
-        wrap_compute_zwt(&soil_con[iCell], &cell[iVeg][iBand]);
-        // rootmoist & wetness
-        cell[iVeg][iBand].rootmoist = 0;
-        cell[iVeg][iBand].wetness = 0;
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            max_moist = soil_con[iCell].porosity[iLayer] *
-                        soil_con[iCell].depth[iLayer] * MM_PER_M;
-
-            if (veg_con[iCell][iVeg].root[iLayer] > 0) {
-                cell[iVeg][iBand].rootmoist +=
-                    cell[iVeg][iBand].layer[iLayer].moist;
-                cell[iVeg][iBand].wetness +=
-                    (cell[iVeg][iBand].layer[iLayer].moist -
-                     soil_con[iCell].Wpwp[iLayer]) /
-                    (max_moist -
-                     soil_con[iCell].Wpwp[iLayer]);
-            }
-            cell[iVeg][iBand].wetness /= options.Nlayer;
-        }
-
-        /* LAYER_DATA_STRUCT */
-        // Cs & kappa
-        compute_soil_layer_thermal_properties(layer, soil_con[iCell].depth,
-                                              soil_con[iCell].bulk_dens_min,
-                                              soil_con[iCell].soil_dens_min,
-                                              soil_con[iCell].quartz,
-                                              soil_con[iCell].bulk_density,
-                                              soil_con[iCell].soil_density,
-                                              soil_con[iCell].organic,
-                                              soil_con[iCell].frost_fract,
-                                              options.Nlayer);
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            cell[iVeg][iBand].layer[iLayer].Cs = layer[iLayer].Cs;
-            cell[iVeg][iBand].layer[iLayer].kappa = layer[iLayer].kappa;
-        }
-
-        // eff_sat & phi
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            max_moist = soil_con[iCell].porosity[iLayer] *
-                        soil_con[iCell].depth[iLayer] * MM_PER_M;
-            resid_moist = soil_con[iCell].resid_moist[iLayer] *
-                          soil_con[iCell].depth[iLayer] * MM_PER_M;
-
-            cell[iVeg][iBand].layer[iLayer].eff_sat =
-                (cell[iVeg][iBand].layer[iLayer].moist - resid_moist) /
-                (max_moist - resid_moist);
-        }
-
-        /* SNOW_DATA_STRUCT */
-        // Some snow variables are ignored since they depend on the age of the snow or are constant
-        // snow[iVeg][iBand].albedo;
-        // snow[iVeg][iBand].canopy_albedo;
-        // snow[iVeg][iBand].density;
-        // snow[iVeg][iBand].snow_distrib_slope;
-        // snow[iVeg][iBand].coverage;
-        // snow[iVeg][iBand].max_snow_depth;
-        // snow[iVeg][iBand].snow_distrib_slope;
-        // snow[iVeg][iBand].tmp_int_storage;
-
-        // depth & snow & MELTING
-        snow[iVeg][iBand].snow = false;
-        snow[iVeg][iBand].MELTING = false;
-        if (snow[iVeg][iBand].swq > 0 ||
-            (snow[iVeg][iBand].snow_canopy > 0. &&
-             veg_lib[iCell][veg_class].overstory)) {
-            snow[iVeg][iBand].snow = true;
-        }
-        if (snow[iVeg][iBand].swq > 0. && snow[iVeg][iBand].coldcontent >= 0 &&
-            ((soil_con[iCell].lat >= 0 && (dmy[current].day_in_year > 60 &&     // ~ March 1
-                                           dmy[current].day_in_year < 273)) ||     // ~ October 1
-             (soil_con[iCell].lat < 0 && (dmy[current].day_in_year < 60 ||    // ~ March 1
-                                          dmy[current].day_in_year > 273))    // ~ October 1
-            )) {
-            // Different from VIC melting flag calculation to remove date dependency
-            snow[iVeg][iBand].MELTING = true;
-        }
-        if (snow[iVeg][iBand].swq > 0.) {
-            if (snow[iVeg][iBand].last_snow == 0 ||
-                snow[iVeg][iBand].density <= 0.) {
-                snow[iVeg][iBand].density = new_snow_density(
-                    force->air_temp[NR] + soil_con->Tfactor[iBand]);
-            }
-            snow[iVeg][iBand].depth = CONST_RHOFW * snow[iVeg][iBand].swq /
-                                      snow[iVeg][iBand].density;
-        }
-
-        /* ENERGY_BALANCE_STRUCT */
-        // Some energy variables are ignored since they depend on the simulation are constant
-        // energy[iVeg][iBand].T_fbflag;
-        // energy[iVeg][iBand].T_fbcount;
-        // energy[iVeg][iBand].T1_index;
-        // energy[iVeg][iBand].Tcanopy;
-        // energy[iVeg][iBand].Tcanopy_fbflag;
-        // energy[iVeg][iBand].Tcanopy_fbcount;
-        // energy[iVeg][iBand].Tfoliage;
-        // energy[iVeg][iBand].Tfoliage_fbflag;
-        // energy[iVeg][iBand].Tfoliage_fbcount;
-        // energy[iVeg][iBand].Tsurf_fbflag;
-        // energy[iVeg][iBand].Tsurf_fbcount;
-        // energy[iVeg][iBand].unfrozen; // Not used in VIC?
-        // energy[iVeg][iBand].AlbedoLake;
-        // energy[iVeg][iBand].AlbedoOver;
-        // energy[iVeg][iBand].AlbedoUnder;
-
-        // moist & ice & Cs_node & kappa_node
-        distribute_node_moisture_properties(energy[iVeg][iBand].moist,
-                                            energy[iVeg][iBand].ice,
-                                            energy[iVeg][iBand].kappa_node,
-                                            energy[iVeg][iBand].Cs_node,
-                                            soil_con[iCell].Zsum_node,
-                                            energy[iVeg][iBand].T,
-                                            soil_con[iCell].max_moist_node,
-                                            soil_con[iCell].expt_node,
-                                            soil_con[iCell].bubble_node,
-                                            moist, soil_con[iCell].depth,
-                                            soil_con[iCell].soil_dens_min,
-                                            soil_con[iCell].bulk_dens_min,
-                                            soil_con[iCell].quartz,
-                                            soil_con[iCell].soil_density,
-                                            soil_con[iCell].bulk_density,
-                                            soil_con[iCell].organic,
-                                            options.Nnode,
-                                            options.Nlayer,
-                                            soil_con[iCell].FS_ACTIVE);
-
-        // Cs & kappa
-        energy[iVeg][iBand].Cs[0] = cell[iVeg][iBand].layer[0].Cs;
-        energy[iVeg][iBand].Cs[2] = cell[iVeg][iBand].layer[1].Cs;
-        energy[iVeg][iBand].kappa[0] = cell[iVeg][iBand].layer[0].kappa;
-        energy[iVeg][iBand].kappa[2] = cell[iVeg][iBand].layer[1].kappa;
+        fprintf(LOG_DEST, "\n\t\tTotals:\n"
+                "AnnualNPP\t[%.4f mm]\n"
+                "AnnualNPPPrev\t[%.4f mm]\n"
+                "CLitter\t[%.4f mm]\n"
+                "CInter\t[%.4f mm]\n"
+                "CSlow\t[%.4f mm]\n",
+                AnnualNPP,
+                AnnualNPPPrev,
+                CLitter,
+                CInter,
+                CSlow);
+        log_err("Carbon balance error");
     }
 }
 
@@ -695,15 +646,20 @@ distribute_energy_balance_terms(size_t   iCell,
     snow = all_vars[iCell].snow;
     energy = all_vars[iCell].energy;
 
+    /* ENERGY-BALANCE */
+
+    before_energy = calculate_total_energy(iCell,
+                                           orig_surf_tempEnergy,
+                                           orig_pack_tempEnergy, orig_TEnergy,
+                                           Cv_old, Cv_change);
+
     // Get available area to redistribute
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             Cv_avail += Cv_change[iVeg];
         }
     }
-
-    /* ENERGY-BALANCE */
 
     // get
     pack_tempEnergy = 0.0;
@@ -712,7 +668,7 @@ distribute_energy_balance_terms(size_t   iCell,
         TEnergy[iNode] = 0.0;
     }
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] < 0) {
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
             surf_tempEnergy += orig_surf_tempEnergy[iVeg] * -Cv_change[iVeg];
             pack_tempEnergy += orig_pack_tempEnergy[iVeg] * -Cv_change[iVeg];
             for (iNode = 0; iNode < options.Nnode; iNode++) {
@@ -721,18 +677,9 @@ distribute_energy_balance_terms(size_t   iCell,
         }
     }
 
-    before_energy = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        before_energy += orig_surf_tempEnergy[iVeg] * Cv_old[iVeg];
-        before_energy += orig_pack_tempEnergy[iVeg] * Cv_old[iVeg];
-        for (iNode = 0; iNode < options.Nnode; iNode++) {
-            before_energy += orig_TEnergy[iVeg][iNode] * Cv_old[iVeg];
-        }
-    }
-
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > 0) {
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -754,14 +701,10 @@ distribute_energy_balance_terms(size_t   iCell,
         }
     }
 
-    after_energy = 0.0;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        after_energy += new_surf_tempEnergy[iVeg] * Cv_new[iVeg];
-        after_energy += new_pack_tempEnergy[iVeg] * Cv_new[iVeg];
-        for (iNode = 0; iNode < options.Nnode; iNode++) {
-            after_energy += new_TEnergy[iVeg][iNode] * Cv_new[iVeg];
-        }
-    }
+    after_energy = calculate_total_energy(iCell,
+                                          new_surf_tempEnergy,
+                                          new_pack_tempEnergy, new_TEnergy,
+                                          Cv_new, Cv_change);
 
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
         if (snow_pack_capacity[iVeg] > 0) {
@@ -828,89 +771,130 @@ distribute_energy_balance_terms(size_t   iCell,
             fprintf(LOG_DEST, "TEnergy %zu\t[%.4f J m-2]\n",
                     iNode, TEnergy[iNode]);
         }
-        log_err("\nEnergy balance error for cell %zu:\n"
-                "Initial energy content [%.4f J m-2]\tFinal energy content [%.4f J m-2]\n"
-                "",
-                iCell,
-                before_energy,
-                after_energy);
+        log_err("Energy balance error");
     }
 }
 
 /******************************************
-* @brief   Calculate derived energy states
+* @brief   Distribute irrigation balance variables
 ******************************************/
 void
-calculate_derived_energy_states(size_t  iCell,
-                                size_t  iBand,
-                                double *snow_surf_capacity)
+distribute_irrigation_balance_terms(size_t  iCell,
+                                    size_t  iBand,
+                                    double *Cv_change,
+                                    double *Cv_old,
+                                    double *Cv_new)
 {
-    extern option_struct       options;
-    extern veg_con_map_struct *veg_con_map;
-    extern veg_con_struct    **veg_con;
-    extern soil_con_struct    *soil_con;
-    extern veg_con_struct    **veg_con;
-    extern all_vars_struct    *all_vars;
+    extern global_param_struct        global_param;
+    extern plugin_global_param_struct plugin_global_param;
+    extern domain_struct              local_domain;
+    extern veg_con_map_struct        *veg_con_map;
+    extern irr_con_map_struct        *irr_con_map;
+    extern irr_con_struct           **irr_con;
+    extern irr_var_struct          ***irr_var;
 
-    double                     moist[MAX_LAYERS];
-    double                     T[MAX_NODES];
-    layer_data_struct          layer[MAX_LAYERS];
+    double                            Cv_avail;
+    double                            before_moist;
+    double                            after_moist;
 
-    cell_data_struct         **cell;
-    snow_data_struct         **snow;
-    energy_bal_struct        **energy;
+    double                            leftover;
+    double                            leftover_discharge_tmp;
 
-    size_t                     iVeg;
-    size_t                     iLayer;
-    size_t                     iNode;
+    irr_var_struct                  **irr;
 
-    cell = all_vars[iCell].cell;
-    snow = all_vars[iCell].snow;
-    energy = all_vars[iCell].energy;
+    size_t                            iVeg;
+    size_t                            iIrr;
+    size_t                            iStep;
+    size_t                            rout_steps_per_dt;
 
-    // calculate
+    rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
+                        global_param.model_steps_per_day;
+
+    irr = irr_var[iCell];
+
+    /* WATER-BALANCE */
+
+    before_moist = calculate_total_irrigation(iCell, iBand, Cv_old, Cv_change);
+
+    // Get available area to redistribute
+    Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        // initialize
-        for (iLayer = 0; iLayer < options.Nlayer; iLayer++) {
-            moist[iLayer] = cell[iVeg][iBand].layer[iLayer].moist;
-            layer[iLayer] = cell[iVeg][iBand].layer[iLayer];
+        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_avail += Cv_change[iVeg];
         }
-        for (iNode = 0; iNode < options.Nnode; iNode++) {
-            T[iNode] = energy[iVeg][iBand].T[iNode];
+    }
+
+    // get
+    leftover = 0.0;
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
+            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            leftover += irr[iIrr][iBand].leftover * Cv_old[iVeg];
         }
+    }
 
-        /* LAYER_DATA_STRUCT & ENERGY_BALANCE_STRUCT*/
-        // Some layer and energy variables are ignored since they depend on the simulation or are constant
-        // energy[iVeg][iBand].unfrozen; // Not used in VIC?
 
-        // T & ice & Nfrost & Nthaw & tdepth & fdepth & frozen
-        calc_layer_average_thermal_props(&energy[iVeg][iBand], layer,
-                                         &soil_con[iCell], options.Nnode, T);
+    // set
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        iVeg = irr_con[iCell][iIrr].veg_index;
+        if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
+            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            irr[iIrr][iBand].leftover = 0.0;
+        }
+    }
 
-        // moist & ice & Cs_node & kappa_node (only used to recompute node ice content)
-        distribute_node_moisture_properties(energy[iVeg][iBand].moist,
-                                            energy[iVeg][iBand].ice,
-                                            energy[iVeg][iBand].kappa_node,
-                                            energy[iVeg][iBand].Cs_node,
-                                            soil_con[iCell].Zsum_node,
-                                            energy[iVeg][iBand].T,
-                                            soil_con[iCell].max_moist_node,
-                                            soil_con[iCell].expt_node,
-                                            soil_con[iCell].bubble_node,
-                                            moist, soil_con[iCell].depth,
-                                            soil_con[iCell].soil_dens_min,
-                                            soil_con[iCell].bulk_dens_min,
-                                            soil_con[iCell].quartz,
-                                            soil_con[iCell].soil_density,
-                                            soil_con[iCell].bulk_density,
-                                            soil_con[iCell].organic,
-                                            options.Nnode,
-                                            options.Nlayer,
-                                            soil_con[iCell].FS_ACTIVE);
+    leftover_discharge_tmp = leftover / MM_PER_M *
+                             local_domain.locations[iCell].area /
+                             global_param.dt;
+    for (iStep = rout_steps_per_dt;
+         iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
+         iStep++) {
+        // Scale leftover proportionally to length
+        rout_var[iCell].dt_discharge[iStep] += leftover_discharge_tmp /
+                                               (plugin_options.UH_LENGTH - 1);
+        if (rout_var[iCell].dt_discharge[iStep] < 0) {
+            rout_var[iCell].dt_discharge[iStep] = 0.;
+        }
+    }
 
-        /* SNOW_DATA_STRUCT */
-        snow[iVeg][iBand].coldcontent = snow_surf_capacity[iVeg] *
-                                        snow[iVeg][iBand].surf_temp;
+    // Recalculate discharge and stream moisture
+    rout_var[iCell].discharge = 0.;
+    rout_var[iCell].stream = 0.;
+    for (iStep = 0;
+         iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
+         iStep++) {
+        if (iStep < rout_steps_per_dt) {
+            rout_var[iCell].discharge += rout_var[iCell].dt_discharge[iStep];
+        }
+        else {
+            rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
+        }
+    }
+
+    after_moist = calculate_total_irrigation(iCell, iBand, Cv_new, Cv_change);
+
+    // Check water balance
+    if (abs(before_moist - after_moist) > DBL_EPSILON) {
+        for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+            iVeg = irr_con[iCell][iIrr].veg_index;
+
+            fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
+                    "\t\tAfter:\n"
+                    "Cv\t\t[%.8f]\t[%.8f]\t[%.16f]\n"
+                    "leftover\t[%.4f mm]\n",
+                    iBand, iVeg,
+                    Cv_old[iVeg], Cv_new[iVeg], Cv_change[iVeg],
+                    irr[iVeg][iIrr].leftover);
+        }
+        fprintf(LOG_DEST, "\n\t\tTotals:\n"
+                "leftover\t[%.4f mm]\n",
+                leftover);
+        log_warn("\nIrrigation balance error for cell %zu:\n"
+                 "Initial water content [%.4f mm]\tFinal water content [%.4f mm]",
+                 iCell,
+                 before_moist,
+                 after_moist);
     }
 }
 
@@ -920,33 +904,44 @@ calculate_derived_energy_states(size_t  iCell,
 void
 lu_apply(void)
 {
-    extern domain_struct       local_domain;
-    extern option_struct       options;
-    extern veg_con_map_struct *veg_con_map;
-    extern veg_con_struct    **veg_con;
-    extern lu_force_struct    *lu_force;
-    extern soil_con_struct    *soil_con;
+    extern domain_struct        local_domain;
+    extern option_struct        options;
+    extern plugin_option_struct plugin_options;
+    extern veg_con_map_struct  *veg_con_map;
+    extern veg_con_struct     **veg_con;
+    extern lu_force_struct     *lu_force;
+    extern soil_con_struct     *soil_con;
 
-    char                       locstr[MAXSTRING];
-    double                     Cv_sum;
-    double                    *Cv_old;
-    double                    *Cv_new;
-    double                    *Cv_change;
+    char                        locstr[MAXSTRING];
+    double                      Cv_sum;
+    double                     *Cv_old;
+    double                     *Cv_new;
+    double                     *Cv_change;
 
-    double                    *snow_surf_capacity;
-    double                    *snow_pack_capacity;
-    double                   **node_capacity;
-    double                    *orig_surf_tempEnergy;
-    double                    *orig_pack_tempEnergy;
-    double                   **orig_TEnergy;
-    double                    *new_surf_tempEnergy;
-    double                    *new_pack_tempEnergy;
-    double                   **new_TEnergy;
+    double                     *snow_surf_capacity;
+    double                     *snow_pack_capacity;
+    double                    **node_capacity;
+    double                     *orig_surf_tempEnergy;
+    double                     *orig_pack_tempEnergy;
+    double                    **orig_TEnergy;
+    double                     *new_surf_tempEnergy;
+    double                     *new_pack_tempEnergy;
+    double                    **new_TEnergy;
 
-    size_t                     iCell;
-    size_t                     iVeg;
-    size_t                     iBand;
-    size_t                     veg_class;
+    double                      before_water;
+    double                      before_carbon;
+    double                      before_energy;
+    double                      after_water;
+    double                      after_carbon;
+    double                      after_energy;
+    double                      max_water;
+    double                      max_carbon;
+    double                      max_energy;
+
+    size_t                      iCell;
+    size_t                      iVeg;
+    size_t                      iBand;
+    size_t                      veg_class;
 
     Cv_old = malloc(options.NVEGTYPES * sizeof(*Cv_old));
     check_alloc_status(Cv_old, "Memory allocation error");
@@ -1043,6 +1038,17 @@ lu_apply(void)
                                  orig_surf_tempEnergy, orig_pack_tempEnergy,
                                  orig_TEnergy);
 
+                // Gather initial states
+                before_water = calculate_total_water(iCell, iBand, Cv_old,
+                                                     Cv_change);
+                before_carbon = calculate_total_carbon(iCell, iBand, Cv_old,
+                                                       Cv_change);
+                before_energy = calculate_total_energy(iCell,
+                                                       orig_surf_tempEnergy,
+                                                       orig_pack_tempEnergy,
+                                                       orig_TEnergy, Cv_old,
+                                                       Cv_change);
+
                 // Water
                 distribute_water_balance_terms(iCell, iBand,
                                                Cv_change, Cv_old, Cv_new);
@@ -1068,8 +1074,62 @@ lu_apply(void)
                                                 new_surf_tempEnergy,
                                                 new_pack_tempEnergy,
                                                 new_TEnergy);
+                get_energy_terms(iCell, iBand,
+                                 snow_surf_capacity, snow_pack_capacity,
+                                 node_capacity,
+                                 new_surf_tempEnergy, new_pack_tempEnergy,
+                                 new_TEnergy);
                 calculate_derived_energy_states(iCell, iBand,
                                                 snow_surf_capacity);
+
+                // Gather final states
+                after_water = calculate_total_water(iCell, iBand, Cv_new,
+                                                    Cv_change);
+                after_carbon = calculate_total_carbon(iCell, iBand, Cv_new,
+                                                      Cv_change);
+                after_energy = calculate_total_energy(iCell,
+                                                      new_surf_tempEnergy,
+                                                      new_pack_tempEnergy,
+                                                      new_TEnergy, Cv_new,
+                                                      Cv_change);
+
+                max_water = max(fabs(before_water), fabs(after_water));
+                max_carbon = max(fabs(before_carbon), fabs(after_carbon));
+                max_energy = max(fabs(before_energy), fabs(after_energy));
+                max_water = max(max_water, DBL_EPSILON);
+                max_carbon = max(max_carbon, DBL_EPSILON);
+                max_energy = max(max_energy, DBL_EPSILON);
+                if (fabs(before_water - after_water) >
+                    max_water * veg_con_map[iCell].nv_active *
+                    MINCOVERAGECHANGE) {
+                    log_warn(
+                        "Water balance error [%.4f out of %.4f mm] for cell [%zu]",
+                        fabs(before_water - max_water), after_water,
+                        iCell);
+                }
+                if (fabs(before_carbon - after_carbon) >
+                    max_carbon * veg_con_map[iCell].nv_active *
+                    MINCOVERAGECHANGE) {
+                    log_warn(
+                        "Carbon balance error [%.4f out of %.4f g m-2] for cell [%zu]",
+                        fabs(
+                            before_carbon - after_carbon), max_carbon, iCell);
+                }
+                if (fabs(before_energy - after_energy) >
+                    max_energy * veg_con_map[iCell].nv_active *
+                    MINCOVERAGECHANGE) {
+                    log_warn(
+                        "Energy balance error [%.4f out of %.4f J m-3] for cell [%zu]",
+                        fabs(
+                            before_energy - after_energy), max_energy, iCell);
+                }
+
+                if (plugin_options.IRRIGATION && plugin_options.ROUTING) {
+                    // Irrigation
+                    distribute_irrigation_balance_terms(iCell, iBand,
+                                                        Cv_change, Cv_old,
+                                                        Cv_new);
+                }
             }
         }
     }

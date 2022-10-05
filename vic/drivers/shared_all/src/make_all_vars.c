@@ -34,10 +34,12 @@
 all_vars_struct
 make_all_vars(size_t nveg)
 {
-    all_vars_struct temp;
-    size_t          Nitems;
+    extern option_struct options;
 
-    Nitems = nveg + 1;
+    all_vars_struct      temp;
+    size_t               Nitems;
+
+    Nitems = nveg + options.Nbare;
 
     temp.snow = make_snow_data(Nitems);
     temp.energy = make_energy_bal(Nitems);

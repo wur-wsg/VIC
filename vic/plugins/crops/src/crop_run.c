@@ -37,7 +37,7 @@ crop_register_meteo(size_t iCell)
     extern soil_con_struct    *soil_con;
     extern option_struct       options;
     extern force_data_struct  *force;
-    extern crop_force_struct  *crop_force;
+    extern co2_force_struct   *co2_force;
     extern all_vars_struct    *all_vars;
     extern veg_con_map_struct *veg_con_map;
     extern size_t              NR;
@@ -59,7 +59,7 @@ crop_register_meteo(size_t iCell)
             iVeg = veg_con_map[iCell].vidx[veg_class];
             ccell_data = &(all_vars[iCell].cell[iVeg][iBand]);
 
-            cgrid->met->CO2 += crop_force[iCell].CO2 *
+            cgrid->met->CO2 += co2_force[iCell].CO2 *
                                (plugin_global_param.wofost_steps_per_day /
                                 global_param.atmos_steps_per_day);
             cgrid->met->Radiation += force[iCell].shortwave[NR] * SEC_PER_DAY *
@@ -154,8 +154,7 @@ crop_run_flag(void)
     extern dmy_struct         *dmy;
     extern size_t              current;
 
-    if (current > 0 &&
-        dmy[current].dayseconds ==
+    if (dmy[current].dayseconds ==
         SEC_PER_DAY - (SEC_PER_DAY / global_param.model_steps_per_day)) {
         return true;
     }
@@ -193,6 +192,9 @@ crop_run(size_t iCell)
     extern SimUnit           ***Grid;
     extern dmy_struct          *dmy;
     extern size_t               current;
+
+    double                      fN;
+    double                      aN;
 
     size_t                      iTime;
     size_t                      iBand;
@@ -232,6 +234,11 @@ crop_run(size_t iCell)
                     /* Determine if the sowing already has occurred */
                     IfSowing(cgrid, &cgrid->start);
 
+                    if (plugin_options.WOFOST_DIST_TSUM) {
+                        cgrid->crp->prm.TempSum1 = crop_con[iCell][iCrop].tsum1;
+                        cgrid->crp->prm.TempSum2 = crop_con[iCell][iCrop].tsum2;
+                    }
+
                     if (plugin_options.WOFOST_DIST_FERT) {
                         for (iTime = 0;
                              iTime < plugin_options.NFERTTIMES;
@@ -268,6 +275,22 @@ crop_run(size_t iCell)
                                     crop_con[iCell][iCrop].K_amount[iTime];
                             }
                         }
+                    }
+
+                    if (plugin_options.WOFOST_CALC_MIN) {
+                        // Calculated following Sattari et al. (2014)
+                        // Crop yield response to soil fertility and N, P, K inputs in different environments: Testing and improving the QUEFTS model
+                        fN = 0.25 * (soil_con[iCell].ph - 3);
+                        if (soil_con[iCell].ph > 7.0) {
+                            fN = 1;
+                        }
+                        else if (soil_con[iCell].ph < 4.7) {
+                            fN = 0.4;
+                        }
+                        aN = 2 * pow(2, (cgrid->met->Temp - 9.0) / 9.0);
+
+                        cgrid->mng->N_Mins = fN * aN * soil_con[iCell].carbon;
+                        cgrid->ste->st_N_mins = cgrid->mng->N_Mins;
                     }
 
                     wofost_run(cgrid);

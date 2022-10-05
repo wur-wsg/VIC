@@ -134,6 +134,11 @@ vic_start(void)
         options.ROOT_ZONES = get_nc_dimension(&(filenames.params), "root_zone");
         options.Nlayer = get_nc_dimension(&(filenames.params), "nlayer");
         options.NVEGTYPES = get_nc_dimension(&(filenames.params), "veg_class");
+        if (options.Nbare > options.NVEGTYPES) {
+            log_err("Number of bare types (%zu) is more than "
+                    "number of vegetation types (%zu).", options.Nbare,
+                    options.NVEGTYPES);
+        }
         if (options.SNOW_BAND == SNOW_BAND_TRUE_BUT_UNSET) {
             options.SNOW_BAND = get_nc_dimension(&(filenames.params),
                                                  "snow_band");

@@ -182,6 +182,23 @@ vic_init(void)
         }
     }
 
+    // default value for b_co2
+    for (j = 0; j < options.NVEGTYPES; j++) {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            veg_lib[i][j].b_co2 = 0.0;
+        }
+    }
+    if (options.BCO2_SRC == FROM_VEGLIB || options.BCO2_SRC == FROM_VEGPARAM) {
+        for (j = 0; j < options.NVEGTYPES; j++) {
+            d3start[0] = j;
+            get_scatter_nc_field_double(&(filenames.params), "b_co2",
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                veg_lib[i][j].b_co2 = (double) dvar[i];
+            }
+        }
+    }
+
     // wind_atten
     for (j = 0; j < options.NVEGTYPES; j++) {
         d3start[0] = j;
@@ -265,7 +282,7 @@ vic_init(void)
         if (options.FCAN_SRC == FROM_DEFAULT) {
             for (k = 0; k < MONTHS_PER_YEAR; k++) {
                 for (i = 0; i < local_domain.ncells_active; i++) {
-                    if (j < options.NVEGTYPES - 1) {
+                    if (j < options.NVEGTYPES - options.Nbare) {
                         veg_lib[i][j].fcanopy[k] = 1.0;
                     }
                     // Assuming the last type is bare soil
@@ -640,6 +657,16 @@ vic_init(void)
                                  0.7;
         }
     }
+    if (options.WFC_SRC == FROM_VEGLIB || options.WFC_SRC == FROM_VEGPARAM) {
+        for (j = 0; j < options.Nlayer; j++) {
+            d3start[0] = j;
+            get_scatter_nc_field_double(&(filenames.params), "Wfc_FRACT",
+                                        d3start, d3count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                soil_con[i].Wfc[j] = (double) dvar[i];
+            }
+        }
+    }
 
     // rough: soil roughness
     get_scatter_nc_field_double(&(filenames.params), "rough",
@@ -767,6 +794,15 @@ vic_init(void)
             soil_con[i].Wfc[j] *= soil_con[i].max_moist[j];
             soil_con[i].Wcr[j] *= soil_con[i].max_moist[j];
             soil_con[i].Wpwp[j] *= soil_con[i].max_moist[j];
+            if (soil_con[i].Wcr[j] > soil_con[i].Wfc[j]) {
+                sprint_location(locstr, &(local_domain.locations[i]));
+                log_err("Calculated critical point moisture (%f mm) is "
+                        "greater than calculated field capacity moisture "
+                        "(%f mm) for layer %zd."
+                        "\n\tIn the soil parameter file, "
+                        "Wcr_FRACT MUST be <= Wfc_FRACT.\n%s",
+                        soil_con[i].Wcr[j], soil_con[i].Wfc[j], j, locstr);
+            }
             if (soil_con[i].Wpwp[j] > soil_con[i].Wcr[j]) {
                 sprint_location(locstr, &(local_domain.locations[i]));
                 log_err("Calculated wilting point moisture (%f mm) is "
@@ -852,10 +888,10 @@ vic_init(void)
                 soil_con[i].dz_node[1] = soil_con[i].depth[0];
                 soil_con[i].dz_node[2] = soil_con[i].depth[0];
                 soil_con[i].Zsum_node[0] = 0;
-                soil_con[i].Zsum_node[1] = soil_con[0].depth[0];
-                Zsum = 2. * soil_con[0].depth[0];
+                soil_con[i].Zsum_node[1] = soil_con[i].depth[0];
+                Zsum = 2. * soil_con[i].depth[0];
                 soil_con[i].Zsum_node[2] = Zsum;
-                tmpdp = dp - soil_con[0].depth[0] * 2.5;
+                tmpdp = dp - soil_con[i].depth[0] * 2.5;
                 tmpadj = 3.5;
                 for (j = 3; j < Nnodes - 1; j++) {
                     soil_con[i].dz_node[j] = tmpdp /
@@ -1091,7 +1127,7 @@ vic_init(void)
     // for above-treeline vegetation in some cases
     // TODO: handle above treeline vegetation tile
     for (i = 0; i < local_domain.ncells_active; i++) {
-        nveg = veg_con_map[i].nv_active - 1;
+        nveg = veg_con_map[i].nv_active - options.Nbare;
         for (j = 0; j < veg_con_map[i].nv_active; j++) {
             veg_con[i][j].vegetat_type_num = (int) nveg;
         }
@@ -1147,10 +1183,11 @@ vic_init(void)
             }
         }
         // check the number of nonzero veg tiles
-        if (k > local_domain.locations[i].nveg + 1) {
+        if (k > local_domain.locations[i].nveg + options.Nbare) {
             sprint_location(locstr, &(local_domain.locations[i]));
-            log_err("Number of veg tiles with nonzero area (%zu) > nveg + 1 "
-                    "(%zu).\n%s", k, local_domain.locations[i].nveg,
+            log_err("Number of veg tiles with nonzero area (%zu) > nveg + Nbare "
+                    "(%zu).\n%s", k,
+                    local_domain.locations[i].nveg + options.Nbare,
                     locstr);
         }
         else if (k < local_domain.locations[i].nveg) {
@@ -1200,9 +1237,9 @@ vic_init(void)
 
     // Run some checks and corrections for vegetation
     for (i = 0; i < local_domain.ncells_active; i++) {
-        // Only run to options.NVEGTYPES - 1, assuming bare soil
+        // Only run to options.NVEGTYPES - options.Nbare, assuming bare soil
         // is the last type
-        for (j = 0; j < options.NVEGTYPES - 1; j++) {
+        for (j = 0; j < options.NVEGTYPES - options.Nbare; j++) {
             vidx = veg_con_map[i].vidx[j];
             if (vidx != NODATA_VEG) {
                 sum = 0;
@@ -1250,9 +1287,12 @@ vic_init(void)
         }
 
         // handle the bare soil portion of the tile
-        vidx = veg_con_map[i].vidx[options.NVEGTYPES - 1];
-        if (vidx != NODATA_VEG) {
-            Cv_sum[i] += veg_con[i][vidx].Cv;
+        for (j = options.NVEGTYPES - options.Nbare; j < options.NVEGTYPES;
+             j++) {
+            vidx = veg_con_map[i].vidx[j];
+            if (vidx != NODATA_VEG) {
+                Cv_sum[i] += veg_con[i][vidx].Cv;
+            }
         }
 
         // TODO: handle bare soil adjustment for compute treeline option
@@ -1588,13 +1628,15 @@ vic_init(void)
         }
         initialize_energy(all_vars[i].energy, nveg);
 
-        for (j = 0; j <= nveg; j++) {
+        for (j = 0; j < nveg + options.Nbare; j++) {
             for (k = 0; k < options.SNOW_BAND; k++) {
                 for (m = 0; m < options.Nlayer; m++) {
                     all_vars[i].cell[j][k].layer[m].Ksat =
                         soil_con[i].Ksat[m];
                     all_vars[i].cell[j][k].layer[m].Wcr =
                         soil_con[i].Wcr[m];
+                    all_vars[i].veg_var[j][k].root[m] =
+                        veg_con[i][j].root[m];
                 }
             }
         }

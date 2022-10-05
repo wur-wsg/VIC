@@ -70,6 +70,7 @@ initialize_dam_con(dam_con_struct *dam_con)
     size_t i;
 
     dam_con->dam_class = MISSING_USI;
+    dam_con->type = -1;
     dam_con->year = 0;
     dam_con->capacity = 0;
     dam_con->inflow_frac = 0.0;
@@ -86,28 +87,18 @@ initialize_dam_con(dam_con_struct *dam_con)
 void
 dam_initialize_local_structures(void)
 {
-    extern domain_struct        local_domain;
-    extern plugin_option_struct plugin_options;
-    extern dam_con_map_struct  *local_dam_con_map;
-    extern dam_con_struct     **local_dam_con;
-    extern dam_var_struct     **local_dam_var;
-    extern dam_con_map_struct  *global_dam_con_map;
-    extern dam_con_struct     **global_dam_con;
-    extern dam_var_struct     **global_dam_var;
+    extern domain_struct       local_domain;
+    extern dam_con_map_struct *dam_con_map;
+    extern dam_con_struct    **dam_con;
+    extern dam_var_struct    **dam_var;
 
-    size_t                      i;
-    size_t                      j;
+    size_t                     i;
+    size_t                     j;
 
     for (i = 0; i < local_domain.ncells_active; i++) {
-        for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-            if (local_dam_con_map[i].didx[j] != NODATA_DAM) {
-                initialize_dam_con(&local_dam_con[i][j]);
-                initialize_dam_var(&local_dam_var[i][j]);
-            }
-            if (global_dam_con_map[i].didx[j] != NODATA_DAM) {
-                initialize_dam_con(&global_dam_con[i][j]);
-                initialize_dam_var(&global_dam_var[i][j]);
-            }
+        for (j = 0; j < dam_con_map[i].nd_active; j++) {
+            initialize_dam_con(&dam_con[i][j]);
+            initialize_dam_var(&dam_var[i][j]);
         }
     }
 }

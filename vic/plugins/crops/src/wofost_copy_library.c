@@ -307,6 +307,7 @@ copy_wofost_parameters(Parameters *from,
     to->TempEffMax = from->TempEffMax;
     to->TSumEmergence = from->TSumEmergence;
     to->IdentifyAnthesis = from->IdentifyAnthesis;
+    to->MaxOptimumTemp = from->MaxOptimumTemp;
     to->OptimumDaylength = from->OptimumDaylength;
     to->CriticalDaylength = from->CriticalDaylength;
     to->SatVernRequirement = from->SatVernRequirement;
@@ -329,6 +330,7 @@ copy_wofost_parameters(Parameters *from,
     to->RelRespiStorage = from->RelRespiStorage;
     to->RelRespiRoots = from->RelRespiRoots;
     to->RelRespiStems = from->RelRespiStems;
+    to->CritLAIFactor = from->CritLAIFactor;
     to->MaxRelDeathRate = from->MaxRelDeathRate;
     to->CorrectionTransp = from->CorrectionTransp;
     to->CropGroupNumber = from->CropGroupNumber;
@@ -378,6 +380,7 @@ copy_wofost_parameters(Parameters *from,
     to->MinStomatalResistance = from->MinStomatalResistance;
     to->MaxArchitecturalResistance = from->MaxArchitecturalResistance;
     to->Fcanopy = from->Fcanopy;
+    to->TranslocationFrac = from->TranslocationFrac;
 }
 
 void
@@ -491,6 +494,8 @@ copy_wofost_vic(Meteo *from,
     to->CosLD = from->CosLD;
     to->DiffRadPP = from->DiffRadPP;
     to->DSinBE = from->DSinBE;
+    to->TempStress = from->TempStress;
+    to->TminStress = from->TminStress;
 }
 
 void

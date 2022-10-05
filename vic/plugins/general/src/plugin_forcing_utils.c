@@ -52,6 +52,7 @@ void
 plugin_force_validate_global_param(void)
 {
     extern global_param_struct     global_param;
+    extern plugin_option_struct    plugin_options;
     extern plugin_filenames_struct plugin_filenames;
 
     int                            status;
@@ -79,6 +80,10 @@ plugin_force_validate_global_param(void)
         status = nc_close(plugin_filenames.forcing[i].nc_id);
         check_nc_status(status, "Error closing %s",
                         plugin_filenames.forcing[i].nc_filename);
+    }
+
+    if (strcmp(plugin_filenames.f_path_pfx[FORCING_CO2], MISSING_S) != 0) {
+        plugin_options.FORCE_CO2 = true;
     }
 }
 

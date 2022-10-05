@@ -98,7 +98,7 @@ CalcBlowingSnow(double   Dt,
     wind10 = Wind * log(10. / ZO) / log((2 + ZO) / ZO);
 
     /* Check for bare soil case. */
-    if (iveg == Nveg) {
+    if (iveg >= Nveg) {
         fe = 1500;
         sigma_slope = .0002;
     }

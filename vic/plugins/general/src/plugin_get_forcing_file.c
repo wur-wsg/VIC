@@ -234,9 +234,21 @@ plugin_get_forcing_file_skip(short unsigned int type)
     force_num = date2num(global_param.time_origin_num, &force_dmy, 0.,
                          global_param.calendar, global_param.time_units);
 
-    plugin_global_param.forceskip[type] =
-        (unsigned int) round((start_num - force_num) *
-                             (double)
-                             (plugin_global_param.force_steps_per_year[type] /
-                              days_per_year));
+    if (plugin_global_param.forcefreq[type] == FORCE_STEP ||
+        plugin_global_param.forcefreq[type] == FORCE_DAY) {
+        plugin_global_param.forceskip[type] =
+            (unsigned int) round((start_num - force_num) *
+                                 ((double)plugin_global_param.
+                                  force_steps_per_year[type] /
+                                  (double)days_per_year));
+    }
+    else if (plugin_global_param.forcefreq[type] == FORCE_MONTH) {
+        plugin_global_param.forceskip[type] = start_dmy.month - force_dmy.month;
+    }
+    else if (plugin_global_param.forcefreq[type] == FORCE_YEAR) {
+        plugin_global_param.forceskip[type] = 0;
+    }
+    else {
+        log_err("Forcing timestep not implemented for forceskip calculation");
+    }
 }

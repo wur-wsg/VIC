@@ -3,7 +3,7 @@
 #ifndef WOFOST_H
 #define WOFOST_H
 
-#define NR_VARIABLES_CRP        75
+#define NR_VARIABLES_CRP        77
 #define NR_TABLES_CRP           22
 #define NR_VARIABLES_SITE       12
 #define NR_TABLES_SITE          1
@@ -77,6 +77,7 @@ typedef struct PARAMETERS {
 
     /**  Phenology  **/
     int IdentifyAnthesis;
+    float MaxOptimumTemp;
     float OptimumDaylength;
     float CriticalDaylength;
     float SatVernRequirement;
@@ -120,6 +121,7 @@ typedef struct PARAMETERS {
     float RelRespiStems;
 
     /** Death Rates  **/
+    float CritLAIFactor;
     float MaxRelDeathRate;
 
     /** Water Use  **/
@@ -166,6 +168,9 @@ typedef struct PARAMETERS {
     float TCPT;
     float TCKT;
     float N_fixation;
+
+    /** Translocation **/
+    float TranslocationFrac;
 } Parameters;
 
 
@@ -430,6 +435,8 @@ typedef struct METEO {
     float CosLD;
     float DiffRadPP;
     float DSinBE;
+    float TempStress;
+    float TminStress;
 } Meteo;
 
 /* Place holder for a simulation unit */
@@ -471,6 +478,7 @@ void FillManageVariables();
 /* General help functions */
 float Afgen(TABLE *, float *);
 float List(TABLE_D *);
+float List_cumsum(TABLE_D *, size_t);
 float limit(float a, float b, float c);
 float insw(float x1, float x2, float x3);
 float sweaf(float, float);

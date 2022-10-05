@@ -39,6 +39,8 @@ initialize_irr_var(irr_var_struct *irr_var)
     irr_var->shortage = 0.0;
     irr_var->requirement = 0.0;
     irr_var->flag_req = false;
+    irr_var->offset = 0;
+    irr_var->prev_Cv = 0.0;
 }
 
 /******************************************
@@ -53,6 +55,7 @@ initialize_irr_con(irr_con_struct *irr_con)
     irr_con->veg_index = MISSING_USI;
     irr_con->groundwater_fraction = 0.0;
     irr_con->irrigation_efficiency = 0.0;
+    irr_con->offset = 0;
 }
 
 /******************************************
