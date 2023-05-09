@@ -199,7 +199,7 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 32;
+    nitems = 38;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -247,9 +247,6 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // short unsigned int NDAMTYPES;
     offsets[i] = offsetof(plugin_option_struct, NDAMTYPES);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
-    // short unsigned int NDAMSERVICE;
-    offsets[i] = offsetof(plugin_option_struct, NDAMSERVICE);
-    mpi_types[i++] = MPI_UNSIGNED_SHORT;
     // short unsigned int NWUTYPES;
     offsets[i] = offsetof(plugin_option_struct, NWUTYPES);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
@@ -265,12 +262,21 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_AINT;
     // bool POTENTIAL_IRRIGATION;
     offsets[i] = offsetof(plugin_option_struct, POTENTIAL_IRRIGATION);
+    mpi_types[i++] = MPI_AINT;
+    // bool EFFICIENT_IRRIGATION;
+    offsets[i] = offsetof(plugin_option_struct, EFFICIENT_IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
-    // bool FORCE_PUMP_CAP;
-    offsets[i] = offsetof(plugin_option_struct, FORCE_PUMP_CAP);
+    // bool OFFSET_IRRIGATION;
+    offsets[i] = offsetof(plugin_option_struct, OFFSET_IRRIGATION);
     mpi_types[i++] = MPI_C_BOOL;
+    // size_t Pbare;
+    offsets[i] = offsetof(plugin_option_struct, Pbare);
+    mpi_types[i++] = MPI_AINT;
     // bool COMP_WITH;
     offsets[i] = offsetof(plugin_option_struct, COMP_WITH);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool LOCAL_WITH;
+    offsets[i] = offsetof(plugin_option_struct, LOCAL_WITH);
     mpi_types[i++] = MPI_C_BOOL;
     // bool REMOTE_WITH;
     offsets[i] = offsetof(plugin_option_struct, REMOTE_WITH);
@@ -287,6 +293,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool WOFOST_PFERT;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_PFERT);
     mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_PTEMP;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_PTEMP);
+    mpi_types[i++] = MPI_C_BOOL;
     // bool WOFOST_DIST_SEASON;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_SEASON);
     mpi_types[i++] = MPI_C_BOOL;
@@ -299,8 +308,14 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // bool WOFOST_DIST_MIN;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_DIST_MIN);
     mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_CALC_MIN;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_CALC_MIN);
+    mpi_types[i++] = MPI_C_BOOL;
     // bool WOFOST_CONTINUE;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_CONTINUE);
+    mpi_types[i++] = MPI_C_BOOL;
+    // bool WOFOST_FORCE_TSUM;
+    offsets[i] = offsetof(plugin_option_struct, WOFOST_FORCE_TSUM);
     mpi_types[i++] = MPI_C_BOOL;
     // bool WOFOST_FORCE_FERT;
     offsets[i] = offsetof(plugin_option_struct, WOFOST_FORCE_FERT);
@@ -311,6 +326,9 @@ plugin_create_MPI_option_struct_type(MPI_Datatype *mpi_type)
     // short unsigned int NFERTTIMES;
     offsets[i] = offsetof(plugin_option_struct, NFERTTIMES);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
+    // bool FORCE_CO2;
+    offsets[i] = offsetof(plugin_option_struct, FORCE_CO2);
+    mpi_types[i++] = MPI_C_BOOL;
 
     // make sure that the we have the right number of elements
     if (i != (size_t) nitems) {
@@ -343,7 +361,7 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 6;
+    nitems = 5;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
     offsets = malloc(nitems * sizeof(*offsets));
@@ -369,9 +387,6 @@ plugin_create_MPI_param_struct_type(MPI_Datatype *mpi_type)
     mpi_types[i++] = MPI_DOUBLE;
     // double NREN_LIM;
     offsets[i] = offsetof(plugin_parameters_struct, NREN_LIM);
-    mpi_types[i++] = MPI_DOUBLE;
-    // double Wfc_fract;
-    offsets[i] = offsetof(plugin_parameters_struct, Wfc_fract);
     mpi_types[i++] = MPI_DOUBLE;
     // double Ksat_expt;
     offsets[i] = offsetof(plugin_parameters_struct, Ksat_expt);

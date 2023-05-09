@@ -37,6 +37,9 @@ crop_start(void)
     extern domain_struct           global_domain;
     extern plugin_filenames_struct plugin_filenames;
 
+    size_t                         tsum_idx[2] = {
+        FORCING_TSUM_1, FORCING_TSUM_2
+    };
     size_t                         fert_idx[4] = {
         FORCING_FERT_DVS, FORCING_FERT_N, FORCING_FERT_P, FORCING_FERT_K
     };
@@ -60,6 +63,33 @@ crop_start(void)
     if (plugin_options.WOFOST_DIST_FERT) {
         plugin_options.NFERTTIMES = get_nc_dimension(&(plugin_filenames.crop),
                                                      "fertilizer_times");
+    }
+    if (plugin_options.WOFOST_FORCE_TSUM) {
+        for (i = 0; i < 2; i++) {
+            // Get information from the forcing file(s)
+            // Open first-year forcing files and get info
+            snprintf(plugin_filenames.forcing[tsum_idx[i]].nc_filename,
+                     MAXSTRING, "%s%4d.nc",
+                     plugin_filenames.f_path_pfx[tsum_idx[i]],
+                     global_param.startyear);
+            status = nc_open(plugin_filenames.forcing[tsum_idx[i]].nc_filename,
+                             NC_NOWRITE,
+                             &(plugin_filenames.forcing[tsum_idx[i]].nc_id));
+            check_nc_status(status, "Error opening %s",
+                            plugin_filenames.forcing[tsum_idx[i]].nc_filename);
+
+            dim_len = get_nc_dimension(&(plugin_filenames.forcing[tsum_idx[i]]),
+                                       "crop_class");
+            if (dim_len != plugin_options.NCROPTYPES) {
+                log_err(
+                    "Tsum forcing crop_class length is not equal to NCROPTYPES");
+            }
+
+            // Close first-year forcing files
+            status = nc_close(plugin_filenames.forcing[tsum_idx[i]].nc_id);
+            check_nc_status(status, "Error closing %s",
+                            plugin_filenames.forcing[tsum_idx[i]].nc_filename);
+        }
     }
     if (plugin_options.WOFOST_FORCE_FERT) {
         for (i = 0; i < 4; i++) {

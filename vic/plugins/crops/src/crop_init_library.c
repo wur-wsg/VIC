@@ -37,6 +37,8 @@ initialize_crop_con(crop_con_struct *crop_con)
 
     size_t                      i;
 
+    crop_con->tsum1 = 0.;
+    crop_con->tsum2 = 0.;
     for (i = 0; i < plugin_options.NFERTTIMES; i++) {
         crop_con->DVS_point[i] = 0.;
         crop_con->N_amount[i] = 0.;
@@ -57,8 +59,9 @@ initialize_crop_force(crop_force_struct *crop_force,
     size_t                      iCrop;
     size_t                      iFert;
 
-    crop_force->CO2 = 0.;
     for (iCrop = 0; iCrop < ncrops; iCrop++) {
+        crop_force->tsum1[iCrop] = 0.;
+        crop_force->tsum2[iCrop] = 0.;
         for (iFert = 0; iFert < plugin_options.NFERTTIMES; iFert++) {
             crop_force->DVS_point[iCrop][iFert] = 0.;
             crop_force->N_amount[iCrop][iFert] = 0.;

@@ -63,6 +63,11 @@ dam_validate_global_param(void)
 {
     extern plugin_filenames_struct plugin_filenames;
 
+    // Options
+    if (!plugin_options.ROUTING) {
+        log_err("DAMS = TRUE but ROUTING = FALSE");
+    }
+
     // Parameters
     if (strcasecmp(plugin_filenames.dams.nc_filename, MISSING_S) == 0) {
         log_err("DAMS = TRUE but file is missing");

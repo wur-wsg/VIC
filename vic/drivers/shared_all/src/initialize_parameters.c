@@ -71,6 +71,7 @@ initialize_parameters()
     param.CANOPY_CLOSURE = 4000.0;
     param.CANOPY_RSMAX = 5000.0;
     param.CANOPY_VPDMINFACTOR = 0.1;
+    param.CANOPY_CO2REF = 366;
 
     // Lake Parameters
     param.LAKE_TMELT = 0.0;

@@ -62,7 +62,8 @@ double calc_sensible_heat(double atmos_density, double t1, double t0,
                           double Ra);
 void calc_Nscale_factors(bool, double *, double, double, double *);
 double calc_rainonly(double, double, double, double);
-double calc_rc(double, double, double, double, double, double, double, char);
+double calc_rc(double, double, double, double, double, double, double, double,
+               double, char);
 void calc_rc_ps(char, double, double, double, double *, double, double,
                 double *, double, double, double *, double, double, double,
                 double *, double *);
@@ -112,8 +113,8 @@ void colavg(double *, double *, double *, double, double *, int, double,
 double compute_coszen(double, double, double, unsigned short int, unsigned int);
 void compute_derived_lake_dimensions(lake_var_struct *, lake_con_struct);
 void compute_pot_evap(size_t, double, double, double, double, double, double,
-                      double, double, double, double *, char, double, double,
-                      double, double *);
+                      double, double, double, double, double, double *, char,
+                      double, double, double, double *);
 void compute_runoff_and_asat(soil_con_struct *, double *, double, double *,
                              double *);
 double calc_Q12(double, double, double, double, double);

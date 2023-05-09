@@ -169,7 +169,7 @@ calc_surf_energy_bal(double             Le,
         Tnew_fbcount[nidx] = 0;
     }
 
-    if (iveg != Nveg) {
+    if (iveg < Nveg) {
         if (veg_var->fcanopy > 0.0 && veg_var->LAI > 0.0) {
             VEG = true;
         }
@@ -211,12 +211,7 @@ calc_surf_energy_bal(double             Le,
     atmos_density = force->density[hidx];     // atmospheric density
     atmos_pressure = force->pressure[hidx];    // atmospheric pressure
     atmos_shortwave = force->shortwave[hidx];   // incoming shortwave radiation
-    if (options.CARBON) {
-        atmos_Catm = force->Catm[hidx];        // CO2 mixing ratio
-    }
-    else {
-        atmos_Catm = MISSING;
-    }
+    atmos_Catm = force->Catm[hidx];        // CO2 mixing ratio
     emissivity = 1.;        // longwave emissivity
     delta_t = dt;
     max_moist = soil_con->max_moist[0] / (soil_con->depth[0] * MM_PER_M);
@@ -612,7 +607,7 @@ calc_surf_energy_bal(double             Le,
 
     /** Store precipitation that reaches the surface */
     if (!snow->snow && !INCLUDE_SNOW) {
-        if (iveg != Nveg) {
+        if (iveg < Nveg) {
             *ppt = veg_var->throughfall;
         }
         else {

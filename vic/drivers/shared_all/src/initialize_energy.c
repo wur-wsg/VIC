@@ -40,7 +40,7 @@ initialize_energy(energy_bal_struct **energy,
     size_t               veg;
 
     // initialize miscellaneous energy balance terms
-    for (veg = 0; veg <= Nveg; veg++) {
+    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
         for (band = 0; band < options.SNOW_BAND; band++) {
             // Prognostic states
             energy[veg][band].AlbedoLake = 0.0;

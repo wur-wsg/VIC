@@ -67,6 +67,7 @@ vic_init_output(dmy_struct *dmy_current)
 
     // initialize the save data structures
     for (i = 0; i < local_domain.ncells_active; i++) {
+        plugin_put_data(i);
         initialize_save_data(&(all_vars[i]), &(force[i]), &(soil_con[i]),
                              veg_con[i], veg_lib[i], &lake_con, out_data[i],
                              &(save_data[i]), &timer);

@@ -38,7 +38,7 @@ initialize_soil(cell_data_struct **cell,
 
     size_t               veg, band, lindex, frost_area;
 
-    for (veg = 0; veg <= veg_num; veg++) {
+    for (veg = 0; veg < veg_num + options.Nbare; veg++) {
         for (band = 0; band < options.SNOW_BAND; band++) {
             // Prognostic states
             cell[veg][band].aero_resist[0] = 0.0;

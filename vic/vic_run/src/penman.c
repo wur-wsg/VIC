@@ -36,7 +36,9 @@ calc_rc(double rs,
         double RGL,
         double tair,
         double vpd,
+        double co2,
         double lai,
+        double b_co2,
         double gsm_inv,
         char   ref_crop)
 {
@@ -46,6 +48,7 @@ calc_rc(double rs,
     double                   DAYfactor; /* factor for canopy resistance based on photosynthesis */
     double                   Tfactor; /* factor for canopy resistance based on temperature */
     double                   vpdfactor; /* factor for canopy resistance based on vpd */
+    double                   co2factor; /* factor for canopy resistance based on atmospheric co2 concentrations */
     double                   rc;
 
     if (rs == 0) {
@@ -77,8 +80,11 @@ calc_rc(double rs,
             (vpdfactor <
              param.CANOPY_VPDMINFACTOR) ? param.CANOPY_VPDMINFACTOR : vpdfactor;
 
+        /* calculate co2 resistance factor (Li et al., 2019) */
+        co2factor = 1 / (1 + b_co2 * (co2 / param.CANOPY_CO2REF - 1));
+
         /* calculate canopy resistance in s/m */
-        rc = rs / (lai * gsm_inv * Tfactor * vpdfactor) * DAYfactor;
+        rc = rs / (lai * gsm_inv * Tfactor * vpdfactor * co2factor) * DAYfactor;
         rc = (rc > param.CANOPY_RSMAX) ? param.CANOPY_RSMAX : rc;
     }
 

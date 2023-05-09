@@ -13,7 +13,7 @@ List(TABLE_D *Table)
     extern size_t      current;
 
     while (Table) {
-        if (dmy[current].month == Table->month - 1 &&
+        if (dmy[current].month == Table->month &&
             dmy[current].day == Table->day) {
             return Table->amount;
         }
@@ -21,4 +21,30 @@ List(TABLE_D *Table)
     }
 
     return 0.;
+}
+
+float
+List_cumsum(TABLE_D *Table,
+            size_t   n)
+{
+    extern dmy_struct *dmy;
+    extern size_t      current;
+
+    size_t             i;
+
+    TABLE_D           *start = Table;
+    float              total = 0.;
+
+    for (i = 0; i < n; i++) {
+        Table = start;
+        while (Table) {
+            if (dmy[current - i].month == Table->month &&
+                dmy[current - i].day == Table->day) {
+                total += Table->amount;
+            }
+            Table = Table->next;
+        }
+    }
+
+    return total;
 }

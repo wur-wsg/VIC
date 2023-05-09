@@ -34,6 +34,7 @@ void
 plugin_store_error(size_t iCell)
 {
     extern global_param_struct      global_param;
+    extern plugin_option_struct     plugin_options;
     extern domain_struct            local_domain;
     extern plugin_save_data_struct *plugin_save_data;
     extern save_data_struct        *save_data;
@@ -45,25 +46,66 @@ plugin_store_error(size_t iCell)
 
     size_t                          i;
 
-    inflow = out_data[iCell][OUT_RUNOFF][0] + out_data[iCell][OUT_BASEFLOW][0];
-    inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0] *
-              global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
-    inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_RETURNED][0];
+    // OUT_ROUTING_ERROR contains all plugin water states: river streamflow,
+    // non-renewable storage, dam reservoir storage, and irrigation leftovers
 
-    outflow = out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] *
-              global_param.dt / local_domain.locations[iCell].area * MM_PER_M;
-
-    for (i = 0; i < WU_NSECTORS; i++) {
-        outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] +
-                   out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] +
-                   out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
+    // Inflow
+    inflow = 0.;
+    if (plugin_options.ROUTING) {
+        inflow += (out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_RUNOFF][0] +
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_INFLOW][0]) *
+                  global_param.dt / local_domain.locations[iCell].area *
+                  MM_PER_M;
+    }
+    if (plugin_options.DAMS) {
+        inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_INFLOW][0] *
+                  M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+    }
+    if (plugin_options.IRRIGATION) {
+        inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_RECEIVED][0];
+    }
+    if (plugin_options.WATERUSE) {
+        inflow += out_data[iCell][N_OUTVAR_TYPES + OUT_RETURNED][0];
     }
 
-    /* NOTE: local dams are not included in the routing error, since they modify runoff*/
-    storage = out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] -
-              out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
-    storage += out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_STORAGE][0] *
-               M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+    // Outflow
+    outflow = 0.;
+    if (plugin_options.ROUTING) {
+        outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_DISCHARGE][0] *
+                   global_param.dt / local_domain.locations[iCell].area *
+                   MM_PER_M;
+    }
+    if (plugin_options.DAMS) {
+        outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_RELEASE][0] *
+                   M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+    }
+    if (plugin_options.IRRIGATION) {
+        outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
+    }
+    if (plugin_options.WATERUSE) {
+        for (i = 0; i < WU_NSECTORS; i++) {
+            outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] +
+                       out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i] +
+                       out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i] +
+                       out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
+        }
+    }
+
+    // Storage
+    storage = 0.;
+    if (plugin_options.ROUTING ||
+        (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
+        storage += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] -
+                   out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
+    }
+    if (plugin_options.DAMS) {
+        storage += (out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_STORAGE][0] +
+                    out_data[iCell][N_OUTVAR_TYPES + OUT_LDAM_STORAGE][0]) *
+                   M3_PER_HM3 / local_domain.locations[iCell].area * MM_PER_M;
+    }
+    if (plugin_options.IRRIGATION) {
+        storage += out_data[iCell][N_OUTVAR_TYPES + OUT_LEFTOVER][0];
+    }
 
     out_data[iCell][N_OUTVAR_TYPES + OUT_ROUTING_ERROR][0] = \
         calc_water_balance_error(inflow,
@@ -73,14 +115,19 @@ plugin_store_error(size_t iCell)
 
     plugin_save_data[iCell].total_moist_storage = storage;
 
-    for (i = 0; i < WU_NSECTORS; i++) {
-        save_data[iCell].total_soil_moist -=
-            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
-        save_data[iCell].total_moist_storage -=
-            out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+    // Adapt variables for OUT_WATER_ERROR
+    if (plugin_options.IRRIGATION) {
+        save_data[iCell].total_moist_storage +=
+            out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
+        save_data[iCell].total_soil_moist +=
+            out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
     }
-    save_data[iCell].total_soil_moist +=
-        out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
-    save_data[iCell].total_moist_storage +=
-        out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
+    if (plugin_options.WATERUSE) {
+        for (i = 0; i < WU_NSECTORS; i++) {
+            save_data[iCell].total_soil_moist -=
+                out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+            save_data[iCell].total_moist_storage -=
+                out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+        }
+    }
 }

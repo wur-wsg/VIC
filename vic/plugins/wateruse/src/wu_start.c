@@ -38,23 +38,24 @@ wu_start(void)
 
     int                            status;
 
-    // Check domain & get dimensions
-    status = nc_open(plugin_filenames.wateruse.nc_filename, NC_NOWRITE,
-                     &(plugin_filenames.wateruse.nc_id));
-    check_nc_status(status, "Error opening %s",
-                    plugin_filenames.wateruse.nc_filename);
-
     if (plugin_options.REMOTE_WITH) {
+        // Check domain & get dimensions
+        status = nc_open(plugin_filenames.wateruse.nc_filename, NC_NOWRITE,
+                         &(plugin_filenames.wateruse.nc_id));
+        check_nc_status(status, "Error opening %s",
+                        plugin_filenames.wateruse.nc_filename);
+
         plugin_options.NWURECEIVING =
             get_nc_dimension(&(plugin_filenames.wateruse),
                              "wu_receiving");
+
+        compare_ncdomain_with_global_domain(&plugin_filenames.wateruse);
+
+        status = nc_close(plugin_filenames.wateruse.nc_id);
+        check_nc_status(status, "Error closing %s",
+                        plugin_filenames.wateruse.nc_filename);
     }
     else {
         plugin_options.NWURECEIVING = 0;
     }
-    compare_ncdomain_with_global_domain(&plugin_filenames.wateruse);
-
-    status = nc_close(plugin_filenames.wateruse.nc_id);
-    check_nc_status(status, "Error closing %s",
-                    plugin_filenames.wateruse.nc_filename);
 }
