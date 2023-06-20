@@ -185,6 +185,8 @@ dam_alloc(void)
             malloc(plugin_options.NDAMTYPES * sizeof(*dam_con_map[i].didx));
         check_alloc_status(dam_con_map[i].didx, "Memory allocation error");
     }
+    dam_classes = malloc(plugin_options.NDAMTYPES * sizeof(*dam_classes));
+    check_alloc_status(dam_classes, "Memory allocation error");
 
     dam_set_ndamtypes();
 
@@ -251,4 +253,5 @@ dam_finalize(void)
     free(dam_con_map);
     free(dam_con);
     free(dam_var);
+    free(dam_classes);
 }
