@@ -46,6 +46,62 @@ dam_set_state_meta_data_info(void)
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STORAGE].description,
              MAXSTRING, "%s", "storage in dam/reservoir");
+
+    
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].varname,
+             MAXSTRING, "%s", "STATE_DAM_INFLOW");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].long_name,
+             MAXSTRING, "%s", "total inflow");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].standard_name,
+             MAXSTRING, "%s", "total inflow");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].units, MAXSTRING,
+             "%s", "hm3");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].description,
+             MAXSTRING, "%s", "accumulated inflow over accumulation steps.");
+
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_DEMAND].varname,
+             MAXSTRING, "%s", "STATE_DAM_DEMAND");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_DEMAND].long_name,
+             MAXSTRING, "%s", "total demand");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_DEMAND].standard_name,
+             MAXSTRING, "%s", "total demand");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_DEMAND].units, MAXSTRING,
+             "%s", "hm3");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_DEMAND].description,
+             MAXSTRING, "%s", "accumulated demand over accumulation steps.");
+
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_EFR].varname,
+             MAXSTRING, "%s", "STATE_DAM_EFR");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_EFR].long_name,
+             MAXSTRING, "%s", "total eft");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_EFR].standard_name,
+             MAXSTRING, "%s", "total eft");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_EFR].units, MAXSTRING,
+             "%s", "hm3");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_EFR].description,
+             MAXSTRING, "%s", "accumulated EFR over accumulation steps.");
+    
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].varname,
+             MAXSTRING, "%s", "STATE_DAM_MONTHS");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].long_name,
+             MAXSTRING, "%s", "months");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].standard_name,
+             MAXSTRING, "%s", "months");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].units, MAXSTRING,
+             "%s", "1");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].description,
+             MAXSTRING, "%s", "number of months running during simulation period.");
+
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STEPS].varname,
+             MAXSTRING, "%s", "STATE_DAM_STEPS");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STEPS].long_name,
+             MAXSTRING, "%s", "steps");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STEPS].standard_name,
+             MAXSTRING, "%s", "steps");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STEPS].units, MAXSTRING,
+             "%s", "1");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STEPS].description,
+             MAXSTRING, "%s", "accumulation steps of the current month");
 }
 
 /******************************************
@@ -120,12 +176,7 @@ dam_add_state_dim_var_data(char           *filename,
     size_t dstart[MAXDIMS];
     size_t dcount[MAXDIMS];
     int    var_id;
-    //int    *ivar;
     int    status;
-    //int    dam_index;
-    //int    dam_class;
-    //size_t i;
-    //size_t j;
 
     // Initialize
     dstart[0] = 0;
@@ -137,29 +188,10 @@ dam_add_state_dim_var_data(char           *filename,
                     "dam_class",
                     filename);
 
-    // Fill dimension variable
-    // ivar = malloc(nc_state_file->dam_size * sizeof(*ivar));
-    // check_alloc_status(ivar, "Memory allocation error");
-
-    // TODO: check this. only works when dam_class is sequence starting from 1 to # with interval of 1.
-    // Maybe better to store the real dam_class values 
-    
-    // for (i = 0; i < global_domain.ncells_active; i++){
-    //     for (j = 0; j < plugin_options.NDAMTYPES; j++) {
-    //         dam_index = dam_con_map[i].didx[j];
-
-    //         if (dam_index != NODATA_DAM) {
-    //             dam_class = dam_con[i][dam_index].dam_class;
-    //             ivar[j] =  dam_class;
-    //         }
-    //     }
-    // }
-
     status = nc_put_vara_int(nc_state_file->nc_id, var_id, dstart,
                              dcount, dam_classes);
     check_nc_status(status, "Error writing dam_class id in %s",
                     filename);
-    //free(ivar);
 }
 
 /******************************************
@@ -172,6 +204,9 @@ dam_set_nc_state_var_info(nc_file_struct *nc,
     // Set the number of dimensions and dimids for each state variable
     switch (varid) {
     case N_STATE_VARS + STATE_DAM_STORAGE:
+    case N_STATE_VARS + STATE_DAM_INFLOW:
+    case N_STATE_VARS + STATE_DAM_DEMAND:
+    case N_STATE_VARS + STATE_DAM_EFR:
         // Reset from 2D gridded to 1D
         nc->nc_vars[varid].nc_dims = 1;
         nc->nc_vars[varid].nc_counts[1] = 0;
@@ -179,7 +214,20 @@ dam_set_nc_state_var_info(nc_file_struct *nc,
         // Overwrite the first dim
         nc->nc_vars[varid].nc_dimids[0] = nc->dam_dimid;
         nc->nc_vars[varid].nc_counts[0] = 1;
+        nc->nc_vars[varid].nc_type = NC_DOUBLE;
         //nc->nc_vars[varid].nc_counts[0] = nc->dam_size;
+        break;
+    case N_STATE_VARS + STATE_DAM_MONTHS:
+    case N_STATE_VARS + STATE_DAM_STEPS:
+        // Reset from 2D gridded to 1D
+        nc->nc_vars[varid].nc_dims = 1;
+        nc->nc_vars[varid].nc_counts[1] = 0;
+        nc->nc_vars[varid].nc_dimids[1] = -1;
+        // Overwrite the first dim
+        nc->nc_vars[varid].nc_dimids[0] = nc->dam_dimid;
+        nc->nc_vars[varid].nc_counts[0] = 1;
+        nc->nc_vars[varid].nc_type = NC_INT;
+        break;
     }
 }
 
@@ -199,7 +247,8 @@ dam_store(nc_file_struct *state_file)
     int                               dam_index;
     //int                               dam_class;
     double                            *dvar = NULL;
-    size_t                            d3start[1];
+    int                               *ivar = NULL;
+    size_t                            d1start[1];
     nc_var_struct                     *nc_var;
     int                               status;
 
@@ -207,10 +256,11 @@ dam_store(nc_file_struct *state_file)
 
     // allocate memory for variables to be stored
     dvar = malloc(1 * sizeof(*dvar));
+    ivar = malloc(1 * sizeof(*ivar));
     check_alloc_status(dvar, "Memory allocation error");
 
     // initialize starts and counts
-    d3start[0] = 0;
+    d1start[0] = 0;
 
     nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STORAGE]);
 
@@ -219,10 +269,37 @@ dam_store(nc_file_struct *state_file)
             dam_index = dam_con_map[i].didx[j];
             if (dam_index != NODATA_DAM){
                 //dam_class = dam_con[i][dam_index].dam_class;
-                d3start[0] = j;
+                d1start[0] = j;
+                // storage
+                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STORAGE]);
                 dvar[0] = (double) dam_var[i][dam_index].storage;
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d3start, nc_var->nc_counts, dvar);
-                check_nc_status(status, "Error writing values.");
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                check_nc_status(status, "Error writing STATE_DAM_STORAGE.");
+                // total inflow
+                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_INFLOW]);
+                dvar[0] = (double) dam_var[i][dam_index].total_inflow;
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                check_nc_status(status, "Error writing STATE_DAM_INFLOW.");
+                // total demand
+                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_DEMAND]);
+                dvar[0] = (double) dam_var[i][dam_index].total_demand;
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                check_nc_status(status, "Error writing STATE_DAM_DEMAND.");
+                // total efr
+                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_EFR]);
+                dvar[0] = (double) dam_var[i][dam_index].total_efr;
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                check_nc_status(status, "Error writing STATE_DAM_EFR.");
+                // months
+                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_MONTHS]);
+                ivar[0] = (int) dam_var[i][dam_index].months_running;
+                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, ivar);
+                check_nc_status(status, "Error writing STATE_DAM_MONTHS.");
+                // steps
+                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STEPS]);
+                ivar[0] = (int) dam_var[i][dam_index].register_steps;
+                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, ivar);
+                check_nc_status(status, "Error writing STATE_DAM_STEPS.");
             }  
         }
     }

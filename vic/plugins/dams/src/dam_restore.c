@@ -74,5 +74,34 @@ dam_check_init_state_file(void)
 void
 dam_restore(void)
 {
+    extern filenames_struct     filenames;
+    extern metadata_struct      state_metadata[];
+    extern domain_struct        local_domain;
+    extern dam_con_map_struct   *dam_con_map;
+    extern dam_var_struct       **dam_var;
+
+    size_t                      i;
+    size_t                      j;
+    int                         dam_index;
+    size_t                      d1count[1];
+    size_t                      d1start[1];
+    double                      *dvar = NULL;
+
+    d1count[0] = 1;
+    dvar = malloc(1 * sizeof(*dvar));
+    check_alloc_status(dvar, "Memory allocation error");
+
+    for (j = 0; j < plugin_options.NDAMTYPES; j++){
+        for (i = 0; i < local_domain.ncells_active; i++){
+            dam_index = dam_con_map[i].didx[j];
+            if(dam_index != NODATA_DAM){
+                d1start[0] = j;                
+                get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_STORAGE].varname,
+                    d1start,d1count,dvar);
+                dam_var[i][dam_index].storage = dvar[0];
+            }
+        }
+    }
     
+    free(dvar);
 }
