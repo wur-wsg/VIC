@@ -336,6 +336,9 @@ typedef struct {
     unsigned int statesec;          /**< Seconds since midnight at which to save state */
     unsigned short int stateyear;  /**< Year of the simulation at which to save
                                       model state */
+    unsigned short int inityear;    /** Year of the init state */
+    unsigned short int initmonth;   /** Month of the init state */
+    unsigned short int initday;     /** Day of the init state */
     unsigned short int calendar;  /**< Date/time calendar */
     unsigned short int time_units;  /**< Units for numeric times */
     double time_origin_num;        /**< Numeric date origin */

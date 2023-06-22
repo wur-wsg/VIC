@@ -47,19 +47,22 @@ dam_register_operation_start(dam_var_struct *dam_var)
     size_t             years_running;
 
     years_running = (size_t)(dam_var->months_running / MONTHS_PER_YEAR);
+    // limit to dam hist years [5].
     if (years_running > DAM_HIST_YEARS) {
         years_running = DAM_HIST_YEARS;
     }
 
     // Setup arrays
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
+        // calculate average montly inflow of the historical years.
         inflow[i] = array_average(dam_var->history_inflow,
                                   years_running, 1, i, MONTHS_PER_YEAR - 1);
     }
 
+    // reverse inflow array
     double_flip(inflow, MONTHS_PER_YEAR);
 
-    // Calculate average
+    // Calculate yearly average
     inflow_avg = 0.0;
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         inflow_avg += inflow[i];
@@ -70,12 +73,16 @@ dam_register_operation_start(dam_var_struct *dam_var)
     inflow_cum = 0.0;
     inflow_cum_max = 0.0;
     month_max = 0;
+    // Loop 24 months in the revered inflow array (historical months -> current month). 
+    // If the monthly average inflow drops below yearly average the dam should operate next month
     for (i = 0; i < 2 * MONTHS_PER_YEAR; i++) {
+        // index of month in loop from current month to next 24 months.
         month = (dmy[current].month - 1 + i) % MONTHS_PER_YEAR;
-
+        // accumulate inflow when monthly inflow larger than average
+        //  
         if (inflow[month] > inflow_avg) {
             inflow_cum += inflow[month];
-
+            // compare to accumulated inflow for month_max
             if (inflow_cum > inflow_cum_max) {
                 inflow_cum_max = inflow_cum;
 
@@ -84,6 +91,7 @@ dam_register_operation_start(dam_var_struct *dam_var)
                 month_max = month + 1;
             }
         }
+        // otherwise reset
         else {
             inflow_cum = 0.0;
         }
@@ -290,6 +298,7 @@ local_dam_register(dam_con_struct *dam_con,
             if (dmy[current].year >= dam_con->year) {
                 dam_var->active = true;
             }
+            dam_var->months_running++;
         }
     }
 
@@ -308,14 +317,16 @@ global_dam_register(dam_con_struct *dam_con,
     extern dmy_struct          *dmy;
     extern size_t               current;
 
+    // TODO: this will lead to unexpected behaviour when simulation start from init state file. Requires different approach.
     if (current > 0) {
         if (dmy[current].month != dmy[current - 1].month) {
             dam_register_history(dam_var);
+            // set the operaional month of the new year.
             if (dmy[current].year != dmy[current - 1].year) {
                 dam_register_operation_start(dam_var);
             }
             if (dmy[current].month == dam_var->op_month) {
-                // Set dam active
+                // Set dam active when current year equal or larger than construction year
                 if (dmy[current].year >= dam_con->year) {
                     dam_var->active = true;
                 }

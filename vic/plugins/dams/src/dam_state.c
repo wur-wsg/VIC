@@ -304,10 +304,6 @@ dam_store(nc_file_struct *state_file)
         }
     }
     
-    // gather_put_nc_field_double(state_file->nc_id,
-    //         nc_var->nc_varid,
-    //         state_file->d_fillvalue,
-    //         d3start, nc_var->nc_counts, dvar);
-
     free(dvar);
+    free(ivar);
 }

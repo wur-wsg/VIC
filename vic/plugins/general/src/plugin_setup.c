@@ -284,6 +284,9 @@ plugin_compute_derived_state_vars(void)
     if (plugin_options.ROUTING) {
         rout_compute_derived_state_vars();
     }
+    if(plugin_options.DAMS){
+        dam_compute_derived_state_vars();
+    }
 }
 
 /******************************************
