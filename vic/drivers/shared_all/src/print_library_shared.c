@@ -282,6 +282,10 @@ print_global_param(global_param_struct *gp)
     fprintf(LOG_DEST, "\tstatemonth          : %hu\n", gp->statemonth);
     fprintf(LOG_DEST, "\tstateyear           : %hu\n", gp->stateyear);
     fprintf(LOG_DEST, "\tstatesec            : %u\n", gp->statesec);
+    fprintf(LOG_DEST, "\tinitdayday          : %hu\n", gp->initday);
+    fprintf(LOG_DEST, "\tinitmonth           : %hu\n", gp->initmonth);
+    fprintf(LOG_DEST, "\tinityear            : %hu\n", gp->inityear);
+    fprintf(LOG_DEST, "\tinitsec             : %u\n", gp->initsec);
 }
 
 /******************************************************************************

@@ -314,15 +314,37 @@ global_dam_register(dam_con_struct *dam_con,
                     size_t          iCell)
 {
     extern plugin_option_struct plugin_options;
+    extern option_struct        options;
+    extern global_param_struct  global_param;
     extern dmy_struct          *dmy;
     extern size_t               current;
 
-    // TODO: this will lead to unexpected behaviour when simulation start from init state file. Requires different approach.
-    if (current > 0) {
-        if (dmy[current].month != dmy[current - 1].month) {
+    dmy_struct                  prev_dmy;
+    dmy_struct                  init_dmy;
+    double                      offset;
+    double                      init_time;
+
+    if(current > 0){
+       prev_dmy = dmy[current - 1]; 
+    }
+    else if(options.INIT_STATE){
+        offset = global_param.dt / (double) SEC_PER_DAY;
+        init_dmy.year = global_param.inityear;
+        init_dmy.month = global_param.initmonth;
+        init_dmy.day = global_param.initday;
+        init_dmy.dayseconds = global_param.initsec;
+        
+        init_time = date2num(global_param.time_origin_num,&init_dmy,0, global_param.calendar,TIME_UNITS_DAYS);
+        // This should be the last timestamp from simulation which produced the restart file, but assumes identical temporal resolution.
+        num2date(global_param.time_origin_num, (init_time - offset),0, global_param.calendar, TIME_UNITS_DAYS, &prev_dmy);
+
+    }
+
+    if (current > 0 || (current == 0 && options.INIT_STATE) ) {
+        if (dmy[current].month != prev_dmy.month) {
             dam_register_history(dam_var);
             // set the operaional month of the new year.
-            if (dmy[current].year != dmy[current - 1].year) {
+            if (dmy[current].year != prev_dmy.year) {
                 dam_register_operation_start(dam_var);
             }
             if (dmy[current].month == dam_var->op_month) {

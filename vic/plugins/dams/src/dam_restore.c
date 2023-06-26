@@ -37,12 +37,15 @@ dam_check_init_state_file(void)
     extern plugin_option_struct       plugin_options;
     extern int                        *dam_classes;
     extern int                        mpi_rank;
+    extern global_param_struct        global_param;
 
     int                               state_ndams;
     int                               *state_dam_classes;
     size_t                            j;  
     size_t                            d1start[1];
     size_t                            d1count[1];
+    dmy_struct                        start_dmy;
+    dmy_struct                        init_dmy;
 
     if (mpi_rank == VIC_MPI_ROOT){
         state_ndams = get_nc_dimension(&(filenames.init_state), "dam_class");
@@ -64,6 +67,23 @@ dam_check_init_state_file(void)
                     "dam_class values in dam param file.")
             }
         }
+
+        // Restart can only be done from the when start of simulations equals the init state timestamp
+        start_dmy.dayseconds = global_param.startsec;
+        start_dmy.year = global_param.startyear;
+        start_dmy.day = global_param.startday;
+        start_dmy.month = global_param.startmonth;
+
+        init_dmy.dayseconds = global_param.initsec;
+        init_dmy.year = global_param.inityear;
+        init_dmy.day = global_param.initday;
+        init_dmy.month = global_param.initmonth;
+
+
+        if(!dmy_equal(&start_dmy, &init_dmy)){
+            log_err("Cannot restore dams when the INIT_STATE time is not equal to simulation start time.");
+        }
+
     }
 }
 
@@ -138,7 +158,6 @@ void dam_compute_derived_state_vars(void)
 {
     extern domain_struct        local_domain;
     extern dam_con_map_struct   *dam_con_map;
-    extern dam_con_struct       **dam_con;
     extern dam_var_struct       **dam_var;
 
     size_t iDam;
