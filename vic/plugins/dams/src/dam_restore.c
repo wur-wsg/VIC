@@ -102,15 +102,30 @@ dam_restore(void)
 
     size_t                      i;
     size_t                      j;
+    size_t                      k;
     int                         dam_index;
     size_t                      d1count[1];
     size_t                      d1start[1];
+    size_t                      d2histcount[2];
+    size_t                      d2moncount[2];
+    size_t                      d2start[2];
     double                      *dvar = NULL;
+    double                      *d2monvar = NULL;
+    double                      *d2histvar = NULL;
     int                         *ivar = NULL;
 
     d1count[0] = 1;
+    d2histcount[0] = MONTHS_PER_YEAR * DAM_HIST_YEARS;
+    d2histcount[1] = 1;
+    d2moncount[0] = MONTHS_PER_YEAR;
+    d2moncount[1] = 1;
+    d2start[0] = 0;
     dvar = malloc(1 * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error");
+    d2monvar = malloc(MONTHS_PER_YEAR * sizeof(*d2monvar));
+    check_alloc_status(d2monvar, "Memory allocation error");
+    d2histvar = malloc(MONTHS_PER_YEAR * DAM_HIST_YEARS * sizeof(*d2histvar));
+    check_alloc_status(d2histvar, "Memory allocation error");
     ivar = malloc(1 * sizeof(*ivar));
     check_alloc_status(ivar, "Memory allocation error");
 
@@ -118,7 +133,8 @@ dam_restore(void)
         for (i = 0; i < local_domain.ncells_active; i++){
             dam_index = dam_con_map[i].didx[j];
             if(dam_index != NODATA_DAM){
-                d1start[0] = j;                
+                d1start[0] = j;   
+                d2start[1] = j;             
                 /// restore the storage
                 get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_STORAGE].varname,
                     d1start,d1count,dvar);
@@ -143,12 +159,49 @@ dam_restore(void)
                 get_nc_field_int(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_STEPS].varname,
                     d1start,d1count,ivar);
                 dam_var[i][dam_index].register_steps = ivar[0];
+                // restore op_month
+                get_nc_field_int(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_OP_MONTH].varname,
+                    d1start,d1count,ivar);
+                dam_var[i][dam_index].op_month = ivar[0];
+                // restore op release
+                get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].varname,
+                    d2start,d2moncount,d2monvar);
+                for(k=0; k < MONTHS_PER_YEAR;k++){
+                    dam_var[i][dam_index].op_release[k] = d2monvar[k];    
+                }
+                // restore op storage
+                get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].varname,
+                    d2start,d2moncount,d2monvar);
+                for(k=0; k < MONTHS_PER_YEAR;k++){
+                    dam_var[i][dam_index].op_storage[k] = d2monvar[k];    
+                }
+                // restore hist demand
+                get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].varname,
+                    d2start,d2histcount,d2histvar);
+                for(k=0; k < MONTHS_PER_YEAR * DAM_HIST_YEARS;k++){
+                    dam_var[i][dam_index].history_demand[k] = d2histvar[k];    
+                }
+                // restore hist inflow
+                get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].varname,
+                    d2start,d2histcount,d2histvar);
+                for(k=0; k < MONTHS_PER_YEAR * DAM_HIST_YEARS;k++){
+                    dam_var[i][dam_index].history_inflow[k] = d2histvar[k];    
+                }
+                // restore hist efr
+                get_nc_field_double(&(filenames.init_state),state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].varname,
+                    d2start,d2histcount,d2histvar);
+                for(k=0; k < MONTHS_PER_YEAR * DAM_HIST_YEARS;k++){
+                    dam_var[i][dam_index].history_efr[k] = d2histvar[k];    
+                }
+            
             }
         }
     }
     
     free(dvar);
     free(ivar);
+    free(d2monvar);
+    free(d2histvar);
 }
 
 /******************************************

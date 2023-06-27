@@ -434,10 +434,7 @@ dam_store(nc_file_struct *state_file)
     size_t                            i;
     size_t                            j;
     int                               dam_index;
-    //int                               dam_class;
     double                            *dvar = NULL;
-    // double                            *dhistvar = NULL;
-    // double                            *dmonthvar = NULL;
     int                               *ivar = NULL;
     size_t                            d1start[1];
     size_t                            d2start[2];
@@ -448,8 +445,6 @@ dam_store(nc_file_struct *state_file)
 
     // allocate memory for variables to be stored
     dvar = malloc(1 * sizeof(*dvar));
-    // dhistvar = malloc(MONTHS_PER_YEAR * DAM_HIST_YEARS * sizeof(*dhistvar));
-    // dmonthvar = malloc(MONTHS_PER_YEAR * sizeof(dmonthvar));
     ivar = malloc(1 * sizeof(*ivar));
     check_alloc_status(dvar, "Memory allocation error");
 
@@ -504,27 +499,22 @@ dam_store(nc_file_struct *state_file)
                 check_nc_status(status, "Error writing STATE_DAM_OP_MONTH.");
                 //operational release
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_RELEASE]);
-                //dmonthvar = dam_var[i][dam_index].op_release;
                 status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts,  dam_var[i][dam_index].op_release);
                 check_nc_status(status, "Error writing STATE_DAM_OP_RELEASE.");
                 //operational storage
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_STORAGE]);
-                // dmonthvar = dam_var[i][dam_index].op_storage;
                 status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].op_storage);
                 check_nc_status(status, "Error writing STATE_DAM_OP_STORAGE.");
                 //hist demand
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND]);
-                // dhistvar = dam_var[i][dam_index].history_demand;
                 status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].history_demand);
                 check_nc_status(status, "Error writing STATE_DAM_HIST_DEMAND.");
                 //hist efr
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_HISTORY_EFR]);
-                // dhistvar = dam_var[i][dam_index].history_efr;
                 status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].history_efr);
                 check_nc_status(status, "Error writing STATE_DAM_HIST_EFR.");
                 //hist inflow
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW]);
-                // dhistvar = dam_var[i][dam_index].history_inflow;
                 status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].history_inflow);
                 check_nc_status(status, "Error writing STATE_DAM_HIST_INFLOW.");
             }  
@@ -532,7 +522,5 @@ dam_store(nc_file_struct *state_file)
     }
     
     free(dvar);
-    //free(dhistvar);
-    //free(dmonthvar);
     free(ivar);
 }
