@@ -146,10 +146,14 @@ typedef struct {
     // plugins
     int rdt_dimid;
     int dam_dimid;
+    int hist_dimid;
+    int month_dimid;
     int wu_dimid;
     int crop_dimid;
     size_t rdt_size;
     size_t dam_size;
+    size_t hist_size;
+    size_t month_size;
     size_t wu_size;
     size_t crop_size;
 
