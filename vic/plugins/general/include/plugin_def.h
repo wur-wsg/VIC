@@ -48,6 +48,19 @@ enum {
 enum {
     // routing
     STATE_DISCHARGE_DT,                 /**< routing sub-step discharge [m3 s-1] */
+    STATE_DAM_STORAGE,                  /**< dam/reservoir storage [hm3] */
+    STATE_DAM_MONTHS,                   /**< number of months running [1] */
+    STATE_DAM_INFLOW,                   /**< dam total inflow [hm3] */
+    STATE_DAM_DEMAND,                   /**< dam total demand [hm3] */
+    STATE_DAM_EFR,                      /**< dam total efr [hm3] */
+    STATE_DAM_STEPS,                    /**< model steps registered after last operation */
+    STATE_DAM_OP_MONTH,                 /**< start of dam operational year [month] */
+    STATE_DAM_OP_STORAGE,               /**< calculated storage [hm3] */
+    STATE_DAM_OP_RELEASE,               /**< calculated release [hm3] */
+    STATE_DAM_HISTORY_INFLOW,           /**< historical inflow [hm3] */
+    STATE_DAM_HISTORY_DEMAND,           /**< historical demand [hm3] */
+    STATE_DAM_HISTORY_EFR,              /**< historical environmental flow requirement [hm3] */
+
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_STATE_VARS                 /**< used as a loop counter*/

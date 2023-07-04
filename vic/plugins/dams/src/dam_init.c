@@ -48,7 +48,8 @@ dam_set_mapping(void)
             dam_index = dam_con_map[i].didx[j];
 
             if (dam_index != NODATA_DAM) {
-                dam_con[i][dam_index].dam_class = j;
+                // actually dam_class is the dam_class index
+                dam_con[i][dam_index].dam_class = j; 
             }
         }
     }
@@ -187,8 +188,9 @@ dam_set_info(void)
     extern domain_struct           local_domain;
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
-    extern dam_con_map_struct     *dam_con_map;
-    extern dam_con_struct        **dam_con;
+    extern dam_con_map_struct      *dam_con_map;
+    extern dam_con_struct          **dam_con;
+    extern int                     *dam_classes;
     extern MPI_Comm                MPI_COMM_VIC;
     extern int                     mpi_rank;
 
@@ -257,6 +259,24 @@ dam_set_info(void)
     }
 
     if (mpi_rank == VIC_MPI_ROOT) {
+        get_nc_field_int(&(plugin_filenames.dams), "dam_class", d1start, d1count,
+                         dam_classes);
+    }
+    status = MPI_Bcast(dam_classes, plugin_options.NDAMTYPES, MPI_INT,
+                       VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+
+    for (j = 0; j < plugin_options.NDAMTYPES; j++) {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            dam_index = dam_con_map[i].didx[j];
+
+            if (dam_index != NODATA_DAM) {
+                dam_con[i][dam_index].dam_class = dam_classes[j];
+            }
+        }
+    }
+
+    if (mpi_rank == VIC_MPI_ROOT) {
         get_nc_field_double(&(plugin_filenames.dams), "capacity", d1start,
                             d1count, dvar);
     }
@@ -292,6 +312,20 @@ dam_set_info(void)
         }
     }
 
+    // if (mpi_rank == VIC_MPI_ROOT){
+    //     get_nc_field_int(&(plugin_filenames.dams), "dam_class",
+    //                         d1start, d1count, ivar);
+    //     for (j = 0; j < plugin_options.NDAMTYPES; j++){
+    //         for (i = 0; i < local_domain.ncells_active; i++){
+    //             dam_index = dam_con_map[i].didx[j];
+
+    //             if (dam_index != NODATA_DAM) {
+    //                 dam_con[i][dam_index].inflow_frac = dvar[j];
+    //             }
+    //         }
+    //     }
+    // }
+
     free(ivar);
     free(dvar);
 }
@@ -315,7 +349,7 @@ dam_init(void)
                         plugin_filenames.dams.nc_filename);
     }
 
-    dam_set_mapping();
+    //dam_set_mapping();
     dam_set_info();
     dam_set_service();
 
