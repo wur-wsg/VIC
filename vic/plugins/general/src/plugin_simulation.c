@@ -227,6 +227,5 @@ plugin_store(nc_file_struct *state_file)
     }
     if (plugin_options.DAMS) {
         dam_store(state_file);
-        log_warn("DAM state restore not implemented yet...");
     }
 }

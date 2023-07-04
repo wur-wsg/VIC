@@ -243,7 +243,7 @@ plugin_check_init_state_file(void)
     if (plugin_options.ROUTING) {
         rout_check_init_state_file();
     }
-    if(plugin_options.DAMS){
+    if (plugin_options.DAMS) {
         dam_check_init_state_file();
     }
 }
@@ -260,7 +260,6 @@ plugin_restore(void)
         rout_restore();
     }
     if (plugin_options.DAMS) {
-        log_warn("DAM state restore not implemented yet...");
         dam_restore();
     }
 }
@@ -284,7 +283,7 @@ plugin_compute_derived_state_vars(void)
     if (plugin_options.ROUTING) {
         rout_compute_derived_state_vars();
     }
-    if(plugin_options.DAMS){
+    if (plugin_options.DAMS) {
         dam_compute_derived_state_vars();
     }
 }

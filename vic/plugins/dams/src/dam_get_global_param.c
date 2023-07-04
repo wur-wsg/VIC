@@ -63,7 +63,7 @@ dam_validate_global_param(void)
 {
     extern plugin_filenames_struct plugin_filenames;
     extern plugin_option_struct    plugin_options;
-    
+
     // Options
     if (!plugin_options.ROUTING) {
         log_err("DAMS = TRUE but ROUTING = FALSE");

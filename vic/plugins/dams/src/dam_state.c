@@ -47,7 +47,7 @@ dam_set_state_meta_data_info(void)
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STORAGE].description,
              MAXSTRING, "%s", "storage in dam/reservoir");
 
-    
+
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].varname,
              MAXSTRING, "%s", "STATE_DAM_INFLOW");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_INFLOW].long_name,
@@ -80,7 +80,7 @@ dam_set_state_meta_data_info(void)
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_EFR].description,
              MAXSTRING, "%s", "accumulated EFR over accumulation steps.");
-    
+
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].varname,
              MAXSTRING, "%s", "STATE_DAM_MONTHS");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].long_name,
@@ -90,7 +90,8 @@ dam_set_state_meta_data_info(void)
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].units, MAXSTRING,
              "%s", "1");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_MONTHS].description,
-             MAXSTRING, "%s", "number of months running during simulation period.");
+             MAXSTRING, "%s",
+             "number of months running during simulation period.");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_STEPS].varname,
              MAXSTRING, "%s", "STATE_DAM_STEPS");
@@ -120,7 +121,8 @@ dam_set_state_meta_data_info(void)
              MAXSTRING, "%s", "operational release");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].standard_name,
              MAXSTRING, "%s", "operational_release");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].units, MAXSTRING,
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].units,
+             MAXSTRING,
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].description,
              MAXSTRING, "%s", "operational release");
@@ -131,32 +133,39 @@ dam_set_state_meta_data_info(void)
              MAXSTRING, "%s", "operational storage");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].standard_name,
              MAXSTRING, "%s", "operational_storage");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].units, MAXSTRING,
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].units,
+             MAXSTRING,
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].description,
              MAXSTRING, "%s", "operational release");
-    
+
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].varname,
              MAXSTRING, "%s", "STATE_DAM_HISTORY_INFLOW");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].long_name,
              MAXSTRING, "%s", "historical inflow");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].standard_name,
-             MAXSTRING, "%s", "historical_inflow");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].units, MAXSTRING,
+    snprintf(
+        state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].standard_name,
+        MAXSTRING, "%s", "historical_inflow");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].units,
+             MAXSTRING,
              "%s", "hm3");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].description,
-             MAXSTRING, "%s", "historical inflow");
+    snprintf(
+        state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].description,
+        MAXSTRING, "%s", "historical inflow");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].varname,
              MAXSTRING, "%s", "STATE_DAM_HISTORY_DEMAND");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].long_name,
              MAXSTRING, "%s", "historical demand");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].standard_name,
-             MAXSTRING, "%s", "historical_demand");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].units, MAXSTRING,
+    snprintf(
+        state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].standard_name,
+        MAXSTRING, "%s", "historical_demand");
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].units,
+             MAXSTRING,
              "%s", "hm3");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].description,
-             MAXSTRING, "%s", "historical demand");
+    snprintf(
+        state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].description,
+        MAXSTRING, "%s", "historical demand");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].varname,
              MAXSTRING, "%s", "STATE_DAM_HISTORY_EFR");
@@ -164,11 +173,11 @@ dam_set_state_meta_data_info(void)
              MAXSTRING, "%s", "historical efr");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].standard_name,
              MAXSTRING, "%s", "historical_efr");
-    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].units, MAXSTRING,
+    snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].units,
+             MAXSTRING,
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].description,
              MAXSTRING, "%s", "historical environmental flow requirement");
-
 }
 
 /******************************************
@@ -177,7 +186,7 @@ dam_set_state_meta_data_info(void)
 void
 dam_set_nc_state_file_info(nc_file_struct *nc_state_file)
 {
-    extern plugin_option_struct       plugin_options;
+    extern plugin_option_struct plugin_options;
     // dam classes
     nc_state_file->dam_dimid = MISSING;
     nc_state_file->dam_size = plugin_options.NDAMTYPES;
@@ -187,7 +196,6 @@ dam_set_nc_state_file_info(nc_file_struct *nc_state_file)
     // months
     nc_state_file->month_dimid = MISSING;
     nc_state_file->month_size = MONTHS_PER_YEAR;
-
 }
 
 /******************************************
@@ -195,7 +203,7 @@ dam_set_nc_state_file_info(nc_file_struct *nc_state_file)
 ******************************************/
 void
 dam_add_state_dim(char           *filename,
-                   nc_file_struct *nc_state_file)
+                  nc_file_struct *nc_state_file)
 {
     int status;
 
@@ -223,7 +231,7 @@ dam_add_state_dim(char           *filename,
 ******************************************/
 void
 dam_add_state_dim_var(char           *filename,
-                       nc_file_struct *nc_state_file)
+                      nc_file_struct *nc_state_file)
 {
     int dimids[MAXDIMS];
     int var_id;
@@ -282,7 +290,6 @@ dam_add_state_dim_var(char           *filename,
                              strlen("month"),
                              "month");
     check_nc_status(status, "Error adding attribute in %s", filename);
-    
 }
 
 /******************************************
@@ -290,18 +297,18 @@ dam_add_state_dim_var(char           *filename,
 ******************************************/
 void
 dam_add_state_dim_var_data(char           *filename,
-                            nc_file_struct *nc_state_file)
-{   
-    //extern dam_con_struct    **dam_con;
-    extern int               *dam_classes;
+                           nc_file_struct *nc_state_file)
+{
+    // extern dam_con_struct    **dam_con;
+    extern int *dam_classes;
 
-    size_t dstart[MAXDIMS];
-    size_t dcount[MAXDIMS];
-    int    var_id;
-    int    status;
-    size_t i;
-    int history[MONTHS_PER_YEAR * DAM_HIST_YEARS];
-    int month[MONTHS_PER_YEAR];
+    size_t      dstart[MAXDIMS];
+    size_t      dcount[MAXDIMS];
+    int         var_id;
+    int         status;
+    size_t      i;
+    int         history[MONTHS_PER_YEAR * DAM_HIST_YEARS];
+    int         month[MONTHS_PER_YEAR];
 
     // Initialize dam_class
     dstart[0] = 0;
@@ -322,7 +329,7 @@ dam_add_state_dim_var_data(char           *filename,
     dstart[0] = 0;
     dcount[0] = nc_state_file->hist_size;
 
-    for(i=0; i<nc_state_file->hist_size; i++){
+    for (i = 0; i < nc_state_file->hist_size; i++) {
         history[i] = (int) i;
     }
 
@@ -341,7 +348,7 @@ dam_add_state_dim_var_data(char           *filename,
     dstart[0] = 0;
     dcount[0] = nc_state_file->month_size;
 
-    for(i=0; i<nc_state_file->month_size; i++){
+    for (i = 0; i < nc_state_file->month_size; i++) {
         month[i] = (int) i;
     }
 
@@ -355,8 +362,6 @@ dam_add_state_dim_var_data(char           *filename,
                              dcount, month);
     check_nc_status(status, "Error writing month in %s",
                     filename);
-
-
 }
 
 /******************************************
@@ -364,59 +369,59 @@ dam_add_state_dim_var_data(char           *filename,
 ******************************************/
 void
 dam_set_nc_state_var_info(nc_file_struct *nc,
-                           size_t          varid)
+                          size_t          varid)
 {
     // Set the number of dimensions and dimids for each state variable
     switch (varid) {
-        case N_STATE_VARS + STATE_DAM_STORAGE:
-        case N_STATE_VARS + STATE_DAM_INFLOW:
-        case N_STATE_VARS + STATE_DAM_DEMAND:
-        case N_STATE_VARS + STATE_DAM_EFR:
-            // Reset from 2D gridded to 1D
-            nc->nc_vars[varid].nc_dims = 1;
-            nc->nc_vars[varid].nc_counts[1] = 0;
-            nc->nc_vars[varid].nc_dimids[1] = -1;
-            // Overwrite the first dim
-            nc->nc_vars[varid].nc_dimids[0] = nc->dam_dimid;
-            nc->nc_vars[varid].nc_counts[0] = 1;
-            nc->nc_vars[varid].nc_type = NC_DOUBLE;
-            //nc->nc_vars[varid].nc_counts[0] = nc->dam_size;
-            break;
-        case N_STATE_VARS + STATE_DAM_MONTHS:
-        case N_STATE_VARS + STATE_DAM_STEPS:
-        case N_STATE_VARS + STATE_DAM_OP_MONTH:
-            // Reset from 2D gridded to 1D
-            nc->nc_vars[varid].nc_dims = 1;
-            nc->nc_vars[varid].nc_counts[1] = 0;
-            nc->nc_vars[varid].nc_dimids[1] = -1;
-            // Overwrite the first dim
-            nc->nc_vars[varid].nc_dimids[0] = nc->dam_dimid;
-            nc->nc_vars[varid].nc_counts[0] = 1;
-            nc->nc_vars[varid].nc_type = NC_INT;
-            break;
-        case N_STATE_VARS + STATE_DAM_HISTORY_EFR:
-        case N_STATE_VARS + STATE_DAM_HISTORY_INFLOW:
-        case N_STATE_VARS + STATE_DAM_HISTORY_DEMAND:
-            // Reset from 2D gridded to 2D time series
-            nc->nc_vars[varid].nc_dims = 2;
-            nc->nc_vars[varid].nc_counts[0] = MONTHS_PER_YEAR * DAM_HIST_YEARS;
-            nc->nc_vars[varid].nc_dimids[0] = nc->hist_dimid; 
-            // Overwrite the first dim
-            nc->nc_vars[varid].nc_dimids[1] = nc->dam_dimid;
-            nc->nc_vars[varid].nc_counts[1] = 1;
-            nc->nc_vars[varid].nc_type = NC_DOUBLE;
-            break;
-        case N_STATE_VARS + STATE_DAM_OP_STORAGE:
-        case N_STATE_VARS + STATE_DAM_OP_RELEASE:
-            // Reset from 2D gridded to 2D time series
-            nc->nc_vars[varid].nc_dims = 2;
-            nc->nc_vars[varid].nc_counts[0] = MONTHS_PER_YEAR;
-            nc->nc_vars[varid].nc_dimids[0] = nc->month_dimid; 
-            // Overwrite the first dim
-            nc->nc_vars[varid].nc_dimids[1] = nc->dam_dimid;
-            nc->nc_vars[varid].nc_counts[1] = 1;
-            nc->nc_vars[varid].nc_type = NC_DOUBLE;
-            break;
+    case N_STATE_VARS + STATE_DAM_STORAGE:
+    case N_STATE_VARS + STATE_DAM_INFLOW:
+    case N_STATE_VARS + STATE_DAM_DEMAND:
+    case N_STATE_VARS + STATE_DAM_EFR:
+        // Reset from 2D gridded to 1D
+        nc->nc_vars[varid].nc_dims = 1;
+        nc->nc_vars[varid].nc_counts[1] = 0;
+        nc->nc_vars[varid].nc_dimids[1] = -1;
+        // Overwrite the first dim
+        nc->nc_vars[varid].nc_dimids[0] = nc->dam_dimid;
+        nc->nc_vars[varid].nc_counts[0] = 1;
+        nc->nc_vars[varid].nc_type = NC_DOUBLE;
+        // nc->nc_vars[varid].nc_counts[0] = nc->dam_size;
+        break;
+    case N_STATE_VARS + STATE_DAM_MONTHS:
+    case N_STATE_VARS + STATE_DAM_STEPS:
+    case N_STATE_VARS + STATE_DAM_OP_MONTH:
+        // Reset from 2D gridded to 1D
+        nc->nc_vars[varid].nc_dims = 1;
+        nc->nc_vars[varid].nc_counts[1] = 0;
+        nc->nc_vars[varid].nc_dimids[1] = -1;
+        // Overwrite the first dim
+        nc->nc_vars[varid].nc_dimids[0] = nc->dam_dimid;
+        nc->nc_vars[varid].nc_counts[0] = 1;
+        nc->nc_vars[varid].nc_type = NC_INT;
+        break;
+    case N_STATE_VARS + STATE_DAM_HISTORY_EFR:
+    case N_STATE_VARS + STATE_DAM_HISTORY_INFLOW:
+    case N_STATE_VARS + STATE_DAM_HISTORY_DEMAND:
+        // Reset from 2D gridded to 2D time series
+        nc->nc_vars[varid].nc_dims = 2;
+        nc->nc_vars[varid].nc_counts[0] = MONTHS_PER_YEAR * DAM_HIST_YEARS;
+        nc->nc_vars[varid].nc_dimids[0] = nc->hist_dimid;
+        // Overwrite the first dim
+        nc->nc_vars[varid].nc_dimids[1] = nc->dam_dimid;
+        nc->nc_vars[varid].nc_counts[1] = 1;
+        nc->nc_vars[varid].nc_type = NC_DOUBLE;
+        break;
+    case N_STATE_VARS + STATE_DAM_OP_STORAGE:
+    case N_STATE_VARS + STATE_DAM_OP_RELEASE:
+        // Reset from 2D gridded to 2D time series
+        nc->nc_vars[varid].nc_dims = 2;
+        nc->nc_vars[varid].nc_counts[0] = MONTHS_PER_YEAR;
+        nc->nc_vars[varid].nc_dimids[0] = nc->month_dimid;
+        // Overwrite the first dim
+        nc->nc_vars[varid].nc_dimids[1] = nc->dam_dimid;
+        nc->nc_vars[varid].nc_counts[1] = 1;
+        nc->nc_vars[varid].nc_type = NC_DOUBLE;
+        break;
     }
 }
 
@@ -426,20 +431,20 @@ dam_set_nc_state_var_info(nc_file_struct *nc,
 void
 dam_store(nc_file_struct *state_file)
 {
-    extern domain_struct              local_domain;
-    extern plugin_option_struct       plugin_options;
-    extern dam_var_struct             **dam_var;
-    extern dam_con_map_struct         *dam_con_map;
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
+    extern dam_var_struct     **dam_var;
+    extern dam_con_map_struct  *dam_con_map;
 
-    size_t                            i;
-    size_t                            j;
-    int                               dam_index;
-    double                            *dvar = NULL;
-    int                               *ivar = NULL;
-    size_t                            d1start[1];
-    size_t                            d2start[2];
-    nc_var_struct                     *nc_var;
-    int                               status;
+    size_t                      i;
+    size_t                      j;
+    int                         dam_index;
+    double                     *dvar = NULL;
+    int                        *ivar = NULL;
+    size_t                      d1start[1];
+    size_t                      d2start[2];
+    nc_var_struct              *nc_var;
+    int                         status;
 
     // write state variables
 
@@ -455,72 +460,102 @@ dam_store(nc_file_struct *state_file)
 
     nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STORAGE]);
 
-    for (j = 0; j < plugin_options.NDAMTYPES ; j++) {
+    for (j = 0; j < plugin_options.NDAMTYPES; j++) {
         for (i = 0; i < local_domain.ncells_active; i++) {
             dam_index = dam_con_map[i].didx[j];
-            if (dam_index != NODATA_DAM){
-                //dam_class = dam_con[i][dam_index].dam_class;
+            if (dam_index != NODATA_DAM) {
+                // dam_class = dam_con[i][dam_index].dam_class;
                 d1start[0] = j;
                 d2start[1] = j;
                 // storage
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STORAGE]);
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STORAGE]);
                 dvar[0] = (double) dam_var[i][dam_index].storage;
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d1start, nc_var->nc_counts, dvar);
                 check_nc_status(status, "Error writing STATE_DAM_STORAGE.");
                 // total inflow
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_INFLOW]);
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_INFLOW]);
                 dvar[0] = (double) dam_var[i][dam_index].total_inflow;
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d1start, nc_var->nc_counts, dvar);
                 check_nc_status(status, "Error writing STATE_DAM_INFLOW.");
                 // total demand
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_DEMAND]);
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_DEMAND]);
                 dvar[0] = (double) dam_var[i][dam_index].total_demand;
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d1start, nc_var->nc_counts, dvar);
                 check_nc_status(status, "Error writing STATE_DAM_DEMAND.");
                 // total efr
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_EFR]);
                 dvar[0] = (double) dam_var[i][dam_index].total_efr;
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, dvar);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d1start, nc_var->nc_counts, dvar);
                 check_nc_status(status, "Error writing STATE_DAM_EFR.");
                 // months
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_MONTHS]);
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_MONTHS]);
                 ivar[0] = (int) dam_var[i][dam_index].months_running;
-                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, ivar);
+                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid,
+                                         d1start, nc_var->nc_counts, ivar);
                 check_nc_status(status, "Error writing STATE_DAM_MONTHS.");
                 // steps
                 nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_STEPS]);
                 ivar[0] = (int) dam_var[i][dam_index].register_steps;
-                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, ivar);
+                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid,
+                                         d1start, nc_var->nc_counts, ivar);
                 check_nc_status(status, "Error writing STATE_DAM_STEPS.");
                 // operational month
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_MONTH]);
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_MONTH]);
                 ivar[0] = (int) dam_var[i][dam_index].op_month;
-                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid, d1start, nc_var->nc_counts, ivar);
+                status = nc_put_vara_int(state_file->nc_id, nc_var->nc_varid,
+                                         d1start, nc_var->nc_counts, ivar);
                 check_nc_status(status, "Error writing STATE_DAM_OP_MONTH.");
-                //operational release
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_RELEASE]);
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts,  dam_var[i][dam_index].op_release);
+                // operational release
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_RELEASE]);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d2start, nc_var->nc_counts,
+                                            dam_var[i][dam_index].op_release);
                 check_nc_status(status, "Error writing STATE_DAM_OP_RELEASE.");
-                //operational storage
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_STORAGE]);
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].op_storage);
+                // operational storage
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_OP_STORAGE]);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d2start, nc_var->nc_counts,
+                                            dam_var[i][dam_index].op_storage);
                 check_nc_status(status, "Error writing STATE_DAM_OP_STORAGE.");
-                //hist demand
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND]);
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].history_demand);
+                // hist demand
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS +
+                                          STATE_DAM_HISTORY_DEMAND]);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d2start, nc_var->nc_counts,
+                                            dam_var[i][dam_index].history_demand);
                 check_nc_status(status, "Error writing STATE_DAM_HIST_DEMAND.");
-                //hist efr
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_HISTORY_EFR]);
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].history_efr);
+                // hist efr
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS +
+                                          STATE_DAM_HISTORY_EFR]);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d2start, nc_var->nc_counts,
+                                            dam_var[i][dam_index].history_efr);
                 check_nc_status(status, "Error writing STATE_DAM_HIST_EFR.");
-                //hist inflow
-                nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW]);
-                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid, d2start, nc_var->nc_counts, dam_var[i][dam_index].history_inflow);
+                // hist inflow
+                nc_var =
+                    &(state_file->nc_vars[N_STATE_VARS +
+                                          STATE_DAM_HISTORY_INFLOW]);
+                status = nc_put_vara_double(state_file->nc_id, nc_var->nc_varid,
+                                            d2start, nc_var->nc_counts,
+                                            dam_var[i][dam_index].history_inflow);
                 check_nc_status(status, "Error writing STATE_DAM_HIST_INFLOW.");
-            }  
+            }
         }
     }
-    
+
     free(dvar);
     free(ivar);
 }

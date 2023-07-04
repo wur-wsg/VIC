@@ -341,7 +341,7 @@ typedef struct {
     unsigned short int initmonth;  /**< Month of the restart file timestamp */
     unsigned int initsec;          /**< Seconds since midnight of the start file timestamp */
     unsigned short int inityear;  /**< Year of the restart file timestamp. */
-                                      
+
     unsigned short int calendar;  /**< Date/time calendar */
     unsigned short int time_units;  /**< Units for numeric times */
     double time_origin_num;        /**< Numeric date origin */

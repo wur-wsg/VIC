@@ -73,13 +73,13 @@ dam_register_operation_start(dam_var_struct *dam_var)
     inflow_cum = 0.0;
     inflow_cum_max = 0.0;
     month_max = 0;
-    // Loop 24 months in the revered inflow array (historical months -> current month). 
+    // Loop 24 months in the revered inflow array (historical months -> current month).
     // If the monthly average inflow drops below yearly average the dam should operate next month
     for (i = 0; i < 2 * MONTHS_PER_YEAR; i++) {
         // index of month in loop from current month to next 24 months.
         month = (dmy[current].month - 1 + i) % MONTHS_PER_YEAR;
         // accumulate inflow when monthly inflow larger than average
-        //  
+        //
         if (inflow[month] > inflow_avg) {
             inflow_cum += inflow[month];
             // compare to accumulated inflow for month_max
@@ -324,23 +324,24 @@ global_dam_register(dam_con_struct *dam_con,
     double                      offset;
     double                      init_time;
 
-    if(current > 0){
-       prev_dmy = dmy[current - 1]; 
+    if (current > 0) {
+        prev_dmy = dmy[current - 1];
     }
-    else if(options.INIT_STATE){
+    else if (options.INIT_STATE) {
         offset = global_param.dt / (double) SEC_PER_DAY;
         init_dmy.year = global_param.inityear;
         init_dmy.month = global_param.initmonth;
         init_dmy.day = global_param.initday;
         init_dmy.dayseconds = global_param.initsec;
-        
-        init_time = date2num(global_param.time_origin_num,&init_dmy,0, global_param.calendar,TIME_UNITS_DAYS);
-        // This should be the last timestamp from simulation which produced the restart file, but assumes identical temporal resolution.
-        num2date(global_param.time_origin_num, (init_time - offset),0, global_param.calendar, TIME_UNITS_DAYS, &prev_dmy);
 
+        init_time = date2num(global_param.time_origin_num, &init_dmy, 0,
+                             global_param.calendar, TIME_UNITS_DAYS);
+        // This should be the last timestamp from simulation which produced the restart file, but assumes identical temporal resolution.
+        num2date(global_param.time_origin_num, (init_time - offset), 0,
+                 global_param.calendar, TIME_UNITS_DAYS, &prev_dmy);
     }
 
-    if (current > 0 || (current == 0 && options.INIT_STATE) ) {
+    if (current > 0 || (current == 0 && options.INIT_STATE)) {
         if (dmy[current].month != prev_dmy.month) {
             dam_register_history(dam_var);
             // set the operaional month of the new year.
