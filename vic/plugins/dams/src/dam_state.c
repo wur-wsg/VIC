@@ -118,26 +118,28 @@ dam_set_state_meta_data_info(void)
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].varname,
              MAXSTRING, "%s", "STATE_DAM_OP_RELEASE");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].long_name,
-             MAXSTRING, "%s", "operational release");
+             MAXSTRING, "%s", "optimal release");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].standard_name,
-             MAXSTRING, "%s", "operational_release");
+             MAXSTRING, "%s", "optimal_release");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].units,
              MAXSTRING,
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_RELEASE].description,
-             MAXSTRING, "%s", "operational release");
+             MAXSTRING, "%s",
+             "Monthly optimal release in ascending order starting from the month of the last run model timestep.");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].varname,
              MAXSTRING, "%s", "STATE_DAM_OP_STORAGE");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].long_name,
-             MAXSTRING, "%s", "operational storage");
+             MAXSTRING, "%s", "optimal storage");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].standard_name,
-             MAXSTRING, "%s", "operational_storage");
+             MAXSTRING, "%s", "optimal_storage");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].units,
              MAXSTRING,
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_OP_STORAGE].description,
-             MAXSTRING, "%s", "operational release");
+             MAXSTRING, "%s",
+             "Monthly optimal release in ascending order starting from the month of the last run model timestep.");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].varname,
              MAXSTRING, "%s", "STATE_DAM_HISTORY_INFLOW");
@@ -151,7 +153,8 @@ dam_set_state_meta_data_info(void)
              "%s", "hm3");
     snprintf(
         state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_INFLOW].description,
-        MAXSTRING, "%s", "historical inflow");
+        MAXSTRING, "%s",
+        "Monthly historical inflow in descending order starting from previous month of last run model timestep.");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].varname,
              MAXSTRING, "%s", "STATE_DAM_HISTORY_DEMAND");
@@ -165,7 +168,8 @@ dam_set_state_meta_data_info(void)
              "%s", "hm3");
     snprintf(
         state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_DEMAND].description,
-        MAXSTRING, "%s", "historical demand");
+        MAXSTRING, "%s",
+        "Monthly historical demand in descending order starting from previous month of last run model timestep.");
 
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].varname,
              MAXSTRING, "%s", "STATE_DAM_HISTORY_EFR");
@@ -177,7 +181,8 @@ dam_set_state_meta_data_info(void)
              MAXSTRING,
              "%s", "hm3");
     snprintf(state_metadata[N_STATE_VARS + STATE_DAM_HISTORY_EFR].description,
-             MAXSTRING, "%s", "historical environmental flow requirement");
+             MAXSTRING, "%s",
+             "Monthly historical environmental flow requirement in descending order starting from previous month of last run model timestep.");
 }
 
 /******************************************

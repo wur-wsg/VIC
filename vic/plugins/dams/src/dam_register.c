@@ -28,7 +28,7 @@
 #include <plugin.h>
 
 /******************************************
-* @brief   Calculate the operational year
+* @brief   Calculate the operational year. This function is called from global_dam_register when a new year starts.
 ******************************************/
 void
 dam_register_operation_start(dam_var_struct *dam_var)
@@ -55,11 +55,12 @@ dam_register_operation_start(dam_var_struct *dam_var)
     // Setup arrays
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         // calculate average montly inflow of the historical years.
+        // Since this main routine only runs at the start of a new year. The fist element is December.
         inflow[i] = array_average(dam_var->history_inflow,
                                   years_running, 1, i, MONTHS_PER_YEAR - 1);
     }
 
-    // reverse inflow array
+    // reverse inflow array. Ascending order. First value is now Janurary and second February.
     double_flip(inflow, MONTHS_PER_YEAR);
 
     // Calculate yearly average
@@ -77,6 +78,7 @@ dam_register_operation_start(dam_var_struct *dam_var)
     // If the monthly average inflow drops below yearly average the dam should operate next month
     for (i = 0; i < 2 * MONTHS_PER_YEAR; i++) {
         // index of month in loop from current month to next 24 months.
+        // Since the main rountine only runs in January. The first element in loop is month 0.
         month = (dmy[current].month - 1 + i) % MONTHS_PER_YEAR;
         // accumulate inflow when monthly inflow larger than average
         //
@@ -123,6 +125,7 @@ dam_register_operation(dam_con_struct *dam_con,
     double                     release[MONTHS_PER_YEAR];
     double                     storage[MONTHS_PER_YEAR];
     size_t                     steps_per_month[MONTHS_PER_YEAR];
+    double                     d_steps_per_month[MONTHS_PER_YEAR];
     double                     k;
     double                     c;
 
@@ -133,14 +136,15 @@ dam_register_operation(dam_con_struct *dam_con,
     if (years_running > DAM_HIST_YEARS) {
         years_running = DAM_HIST_YEARS;
     }
-
+    // calculates the simulation step for each month in current year starting from January.
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         steps_per_month[i] =
             days_per_month(i + 1, dmy[current].year, global_param.calendar) *
             global_param.model_steps_per_day;
     }
 
-    // Setup arrays
+    // Calculates the average of each calendar month from the past 5 years monthly historical data.
+    // First element in history is the past month. Descending months in array.
     for (i = 0; i < MONTHS_PER_YEAR; i++) {
         inflow[i] = array_average(dam_var->history_inflow,
                                   years_running, 1, i, MONTHS_PER_YEAR - 1);
@@ -150,9 +154,25 @@ dam_register_operation(dam_con_struct *dam_con,
                                years_running, 1, i, MONTHS_PER_YEAR - 1);
     }
 
+    // Reverse arrays. First element is current month. Ascending months in array.
     double_flip(inflow, MONTHS_PER_YEAR);
     double_flip(demand, MONTHS_PER_YEAR);
     double_flip(efr, MONTHS_PER_YEAR);
+
+    // cast to doubles. prep for cshift
+    for (i = 0; i < MONTHS_PER_YEAR; i++) {
+        d_steps_per_month[i] = (double) steps_per_month[i];
+    }
+
+    // shift steps_per_month so it start at the current month.
+    for (i = 1; i < dmy[current].month; i++) {
+        cshift(d_steps_per_month, MONTHS_PER_YEAR, 1, 0, 1);
+    }
+
+    // cast back to integers
+    for (i = 0; i < MONTHS_PER_YEAR; i++) {
+        steps_per_month[i] = (size_t) d_steps_per_month[i];
+    }
 
     // Calculate dam release
     dam_calc_opt_release(inflow, demand, efr, release, MONTHS_PER_YEAR);
@@ -182,13 +202,13 @@ dam_register_history(dam_var_struct *dam_var)
     dam_var->months_running++;
 
     // Shift array
-    cshift(dam_var->history_demand, 1, DAM_HIST_YEARS * MONTHS_PER_YEAR, 1, -1);
+    cshift(dam_var->history_demand, 1, DAM_HIST_YEARS * MONTHS_PER_YEAR, 1, -1); // shift backwards
     cshift(dam_var->history_inflow, 1, DAM_HIST_YEARS * MONTHS_PER_YEAR, 1, -1);
     cshift(dam_var->history_efr, 1, DAM_HIST_YEARS * MONTHS_PER_YEAR, 1, -1);
-    cshift(dam_var->op_release, MONTHS_PER_YEAR, 1, 0, 1);
+    cshift(dam_var->op_release, MONTHS_PER_YEAR, 1, 0, 1); // shift forwards
     cshift(dam_var->op_storage, MONTHS_PER_YEAR, 1, 0, 1);
 
-    // Store monthly average
+    // Store last monthly average -> so if dmy.month = 5 history_xxx[0] -> month 4.
     dam_var->history_inflow[0] = dam_var->total_inflow /
                                  dam_var->register_steps;
     dam_var->history_demand[0] = dam_var->total_demand /
@@ -344,7 +364,7 @@ global_dam_register(dam_con_struct *dam_con,
     if (current > 0 || (current == 0 && options.INIT_STATE)) {
         if (dmy[current].month != prev_dmy.month) {
             dam_register_history(dam_var);
-            // set the operaional month of the new year.
+            // set the operational month of the new year.
             if (dmy[current].year != prev_dmy.year) {
                 dam_register_operation_start(dam_var);
             }
@@ -353,6 +373,7 @@ global_dam_register(dam_con_struct *dam_con,
                 if (dmy[current].year >= dam_con->year) {
                     dam_var->active = true;
                 }
+                // Calculate the optimal release and storage. Only calculated once a year when the dam starts to operate.
                 dam_register_operation(dam_con, dam_var);
             }
         }

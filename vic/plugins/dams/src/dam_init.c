@@ -313,20 +313,6 @@ dam_set_info(void)
         }
     }
 
-    // if (mpi_rank == VIC_MPI_ROOT){
-    // get_nc_field_int(&(plugin_filenames.dams), "dam_class",
-    // d1start, d1count, ivar);
-    // for (j = 0; j < plugin_options.NDAMTYPES; j++){
-    // for (i = 0; i < local_domain.ncells_active; i++){
-    // dam_index = dam_con_map[i].didx[j];
-
-    // if (dam_index != NODATA_DAM) {
-    // dam_con[i][dam_index].inflow_frac = dvar[j];
-    // }
-    // }
-    // }
-    // }
-
     free(ivar);
     free(dvar);
 }
