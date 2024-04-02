@@ -100,7 +100,7 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 32;
+    nitems = 36;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -235,6 +235,22 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
 
     // unsigned short int stateyear;
     offsets[i] = offsetof(global_param_struct, stateyear);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unisgned short int initday
+    offsets[i] = offsetof(global_param_struct, initday);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned short int initmonth;
+    offsets[i] = offsetof(global_param_struct, initmonth);
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned int initsec
+    offsets[i] = offsetof(global_param_struct, initsec);
+    mpi_types[i++] = MPI_UNSIGNED;
+
+    // unsigned short int inityear
+    offsets[i] = offsetof(global_param_struct, inityear);
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
     // unsigned short int calendar;

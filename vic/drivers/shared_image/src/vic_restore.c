@@ -904,28 +904,41 @@ vic_restore(void)
 void
 check_init_state_file(void)
 {
-    extern filenames_struct filenames;
-    extern domain_struct    global_domain;
-    extern domain_struct    local_domain;
-    extern option_struct    options;
-    extern soil_con_struct *soil_con;
-    extern int              mpi_rank;
+    extern filenames_struct    filenames;
+    extern domain_struct       global_domain;
+    extern domain_struct       local_domain;
+    extern option_struct       options;
+    extern global_param_struct global_param;
+    extern soil_con_struct    *soil_con;
+    extern int                 mpi_rank;
 
-    int                     status;
-    size_t                  dimlen;
-    size_t                  i;
-    size_t                  j;
-    size_t                  d1count[1];
-    size_t                  d1start[1];
-    size_t                  d2count[2];
-    size_t                  d2start[2];
-    size_t                  d3count[3];
-    size_t                  d3start[3];
-    int                     lon_var_id;
-    int                     lat_var_id;
-    double                 *dvar;
-    double                  rtol = 0.0; // maybe move this to a .h file
-    double                  abs_tol = 0.0001; // maybe move this to a .h file
+    int                        status;
+    size_t                     dimlen;
+    size_t                     i;
+    size_t                     j;
+    size_t                     d1count[1];
+    size_t                     d1start[1];
+    size_t                     d2count[2];
+    size_t                     d2start[2];
+    size_t                     d3count[3];
+    size_t                     d3start[3];
+    int                        lon_var_id;
+    int                        lat_var_id;
+    int                        time_var_id;
+    double                    *dvar;
+    double                     rtol = 0.0; // maybe move this to a .h file
+    double                     abs_tol = 0.0001; // maybe move this to a .h file
+    double                     start_time;
+    double                     init_time_num;
+    double                     nc_init_time;
+    dmy_struct                 start_dmy;
+    dmy_struct                 time_origin_dmy;
+    dmy_struct                 init_time_dmy;
+    unsigned short int         init_time_unit;
+    char                      *nc_time_unit_char = NULL;
+    char                      *nc_calendar_char = NULL;
+    unsigned short int         nc_calendar;
+
 
     // read and validate dimension lengths
     if (mpi_rank == VIC_MPI_ROOT) {
@@ -1074,6 +1087,61 @@ check_init_state_file(void)
         }
     }
 
+    // time
+    if (mpi_rank == VIC_MPI_ROOT) {
+        d1start[0] = 0;
+        status = nc_inq_varid(filenames.init_state.nc_id,
+                              "time", &time_var_id);
+        check_nc_status(status, "Unable to find variable \"%s\" in %s",
+                        "time",
+                        filenames.init_state.nc_filename);
+
+        get_nc_var_attr(&filenames.init_state, "time", "units",
+                        &nc_time_unit_char);
+
+        get_nc_var_attr(&filenames.init_state, "time", "calendar",
+                        &nc_calendar_char);
+
+        // parse the calendar string and check to make sure it matches the global clock
+        nc_calendar = str_to_calendar(nc_calendar_char);
+
+
+        status = nc_get_var1_double(filenames.init_state.nc_id, time_var_id,
+                                    d1start, &nc_init_time);
+
+        check_nc_status(status, "Error reading data from \"%s\" in %s",
+                        "time",
+                        filenames.init_state.nc_filename);
+
+        // convert nc time to days since origin
+        parse_nc_time_units(nc_time_unit_char, &init_time_unit,
+                            &time_origin_dmy);
+        num2date(global_param.time_origin_num, nc_init_time, 0, nc_calendar,
+                 init_time_unit, &init_time_dmy);
+
+        // store init date in global params.
+        global_param.initsec = init_time_dmy.dayseconds;
+        global_param.initday = init_time_dmy.day;
+        global_param.initmonth = init_time_dmy.month;
+        global_param.inityear = init_time_dmy.year;
+
+        // convert to numerical date
+        init_time_num = date2num(global_param.time_origin_num, &init_time_dmy,
+                                 0, global_param.calendar, TIME_UNITS_DAYS);
+
+        start_dmy.dayseconds = global_param.startsec;
+        start_dmy.year = global_param.startyear;
+        start_dmy.day = global_param.startday;
+        start_dmy.month = global_param.startmonth;
+
+        // convert simulation start date to numerical date.
+        start_time = date2num(global_param.time_origin_num, &start_dmy, 0.,
+                              global_param.calendar, TIME_UNITS_DAYS);
+        // compare the restart file timestamp with simulation start date.
+        if (start_time != init_time_num) {
+            log_warn("INIT_STATE time does not equals simulation start");
+        }
+    }
     // initialize dvar for soil thermal node deltas and depths
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error");
@@ -1118,6 +1186,8 @@ check_init_state_file(void)
         }
     }
     free(dvar);
+    free(nc_time_unit_char);
+    free(nc_calendar_char);
 
     plugin_check_init_state_file();
 }

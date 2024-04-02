@@ -71,7 +71,6 @@ typedef struct {
  *****************************************************************************/
 typedef struct {
     bool active;                    /**< active flag */
-
     double inflow;                  /**< inflow [hm3] */
     double demand;                  /**< water demand [hm3] */
     double efr;                     /**< environmental requirments [hm3] */
@@ -99,6 +98,7 @@ typedef struct {
 dam_con_map_struct *dam_con_map;
 dam_var_struct    **dam_var;
 dam_con_struct    **dam_con;
+int                *dam_classes;
 
 /******************************************************************************
  * @brief   Functions
@@ -136,5 +136,17 @@ void local_dam_run(size_t);
 void global_dam_run(size_t);
 
 void dam_finalize(void);
+
+void dam_check_init_state_file(void);
+void dam_restore(void);
+void dam_compute_derived_state_vars(void);
+
+void dam_set_state_meta_data_info(void);
+void dam_set_nc_state_file_info(nc_file_struct *);
+void dam_add_state_dim(char *, nc_file_struct *);
+void dam_add_state_dim_var(char *, nc_file_struct *);
+void dam_add_state_dim_var_data(char *, nc_file_struct *);
+void dam_set_nc_state_var_info(nc_file_struct *, size_t);
+void dam_store(nc_file_struct *);
 
 #endif

@@ -144,14 +144,18 @@ typedef struct {
     size_t time_size;
     size_t veg_size;
     // plugins
-    int rdt_dimid;
-    int dam_dimid;
-    int wu_dimid;
-    int crop_dimid;
-    size_t rdt_size;
-    size_t dam_size;
-    size_t wu_size;
-    size_t crop_size;
+    int rdt_dimid; /**< rout step dimension id */
+    int dam_dimid; /**< dam class dimension id */
+    int hist_dimid; /**< historical [months] dimension id */
+    int month_dimid; /**< (calendar) month dimension id */
+    int wu_dimid; /**< water use sector dimension id */
+    int crop_dimid; /**< crop type dimension id */
+    size_t rdt_size; /**< size of rout step dimension */
+    size_t dam_size; /**< size of dam_class dimension */
+    size_t hist_size; /**< size of history dimension */
+    size_t month_size; /**< size of (calendar) month dimension */
+    size_t wu_size; /**< size of water use class dimension */
+    size_t crop_size; /**< size of crop types dimension */
 
     bool open;
     nc_var_struct *nc_vars;

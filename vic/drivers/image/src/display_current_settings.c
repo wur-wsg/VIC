@@ -409,6 +409,10 @@ display_current_settings(int mode)
         else if (options.STATE_FORMAT == NETCDF4) {
             fprintf(LOG_DEST, "STATE_FORMAT\t\tNETCDF4\n");
         }
+        fprintf(LOG_DEST, "INITYEAR\t\t%d\n", global_param.inityear);
+        fprintf(LOG_DEST, "INITMONTH\t\t%d\n", global_param.initmonth);
+        fprintf(LOG_DEST, "INITDAY\t\t%d\n", global_param.initday);
+        fprintf(LOG_DEST, "INITSEC\t\t%u\n", global_param.initsec);
     }
     else {
         fprintf(LOG_DEST, "INIT_STATE\t\tFALSE\n");

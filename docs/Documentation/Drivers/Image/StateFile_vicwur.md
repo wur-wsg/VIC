@@ -20,11 +20,28 @@ The netCDF state file dimensions include:
 | snow_band      | Number of snow bands                             |
 | frost_area     | Number of frost areas                            |
 | discharge_dt   | Number of routing timesteps                      |
+| dam_class      | Dam classes following the dam parameter file     |
+| month          | Month in year                                    |
+| history        | Historical dam operational months                |
 
 * * *
 
 ## Routing Information (only when ROUT are turned on in the [global parameter file](GlobalParam_vicwur.md#DefineStateFiles))
 
-| State   variable name            | Type              | Description                                  |
-|----------------------------------|-------------------|----------------------------------------------|
-| STATE_DISCHARGE_DT               | double            | routing sub-step discharge stored [m3 s-1]   |
+| State   variable name            | Type              | Description                                       |
+|----------------------------------|-------------------|---------------------------------------------------|
+| STATE_DISCHARGE_DT               | double            | routing sub-step discharge stored [m3 s-1]        |
+| STATE_DAM_STORAGE                | double            | water storage in dam/reservoir [hm3]              |
+| STATE_DAM_MONTHS                 | integer           | number of months in operation                     |
+| STATE_DAM_INFLOW                 | double            | accumulated inflow over accumulation steps [hm3]  |
+| STATE_DAM_DEMAND                 | double            | accumulated demand over accumulation steps [hm3]  |
+| STATE_DAM_EFR                    | double            | accumulated EFR over accumulation steps [hm3]     |
+| STATE_DAM_STEPS                  | integer           | accumulated simulation steps of last month        |
+| STATE_DAM_OP_MONTH               | integer           | start of dam operation [month in year]            |
+| STATE_DAM_OP_RELEASE             | double            | monthly optimal release [hm3]                     |
+| STATE_DAM_OP_STORAGE             | double            | monthly optimal storage [hm3]                     |
+| STATE_DAM_HISTORY_INFLOW         | double            | montly historical inflow from now [hm3]           |
+| STATE_DAM_HISTORY_DEMAND         | double            | montly historical demand from now [hm3]           |
+| STATE_DAM_HISTORY_EFR            | double            | montly historical EFR from now [hm3]              |
+
+

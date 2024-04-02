@@ -226,6 +226,6 @@ plugin_store(nc_file_struct *state_file)
         rout_store(state_file);
     }
     if (plugin_options.DAMS) {
-        log_warn("DAM state restore not implemented yet...");
+        dam_store(state_file);
     }
 }
