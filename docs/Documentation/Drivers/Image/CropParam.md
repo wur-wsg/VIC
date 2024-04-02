@@ -12,7 +12,7 @@ The crop parameters serve the following main purposes:
 *   Define default mineralization rates
 *   Define Temperature factor
 
-The crop parameters are supplied to VIC-WUR in a NetCDF file, with a separate variable for each crop parameter.
+The crop parameters are supplied to VIC-WUR in a NetCDF file, with a separate variable for each crop parameter. Note that some parameters are not required: plant_day and harvest_day are only needed if WOFOST_DIST_SEASON is true; TSUM1 and TSUM2 are only needed if WOFOST_DIST_TSUM is true; N_mins, P_mins, K_mins, N_recovery, P_recovery and K_recovery are only needed if WOFOST_DIST_MINERALIZATION is true; N_amount, P_amount and K_amount are only needed if WOFOST_DIST_FERTILIZER is true; carbon, Ph and mineralization_period are only needed if WOFOST_CALC_MINERALIZATION is true and will overwrite the other mineralization parameters.
 
 Below is a list of crop parameters.
 
@@ -36,6 +36,9 @@ Below is a list of crop parameters.
 | N_recovery | [lat, lon, crop]  | fraction                                       | double | number of crops                | Crop nitrogen recovery rate |
 | P_recovery | [lat, lon, crop]  | fraction                                       | double | number of crops                | Crop phosphorus recovery rate |
 | K_recovery | [lat, lon, crop]  | fraction                                       | double | number of crops                | Crop potassium recovery rate |
+| carbon | [lat, lon]  | g kg-1                                       | double | 1                | Soil carbon content |
+| Ph | [lat, lon]  | -                                       | double | 1                | Soil Ph |
+| mineralization_period | [lat, lon, crop]  | days                                       | double | number of crops                | Mineralization period over which mineralization is calculated |
 
 # Example netCDF format VIC-WUR image driver crop parameters
 
@@ -135,8 +138,17 @@ variables:
 		K_recovery:units = "kg kg-1" ;
 		K_recovery:_FillValue = -1.f ;
 		K_recovery:long_name = "N mineralization recovery rate" ;
+	float carbon(lat, lon) ;
+		carbon:units = "g kg-1" ;
+		carbon:_FillValue = -1.f ;
+		carbon:long_name = "Organic carbon content for top 20 cm of soil" ;
+	float pH(lat, lon) ;
+		pH:units = "-" ;
+		pH:_FillValue = -1.f ;
+		pH:long_name = "pH for top 20 cm of soil" ;
+	float mineralization_period(crop_class, lat, lon) ;
+		mineralization_period:units = "days" ;
+		mineralization_period:_FillValue = -1.f ;
+		mineralization_period:long_name = "mineralization reference period" ;
 
-// global attributes:
-		:Description = "Crop parameters for VIC. Created by Bram Droppers" ;
-}
 ```

@@ -39,17 +39,19 @@ VIC-WUR requires a NetCDF file with gridded forcings. Forcing timesteps can be e
 
 | Variable        | Dimension        | Units | Description                                   |
 |-----------------|------------------|-------|-----------------------------------------------|
-| Cv      | [time, lat, lon] | -    | Coverage fraction for each land-cover tile                         |
+| Cv      | [time, veg_class, lat, lon] | fraction    | Coverage fraction for each land-cover tile                         |
 
 #### Crop Forcings:
 
 | Variable        | Dimension        | Units | Description                                   |
 |-----------------|------------------|-------|-----------------------------------------------|
 | CO2      | [time, lat, lon] | ppm    | Atmospheric CO2 concentration                         |
-| FERT_DVS | [time, lat, lon] | -    | Fertilizer development stage application timing      |
-| FERT_N | [time, lat, lon] | kg ha-1    | Fertilizer nitrogen amount               |
-| FERT_P      | [time, lat, lon] | mm    | Fertilizer phosphorus amount                        |
-| FERT_K      | [time, lat, lon] | mm    | Fertilizer potassium amount                        |
+| FERT_DVS | [time, crop_class, lat, lon] | -    | Fertilizer development stage application timing      |
+| FERT_N | [time, crop_class, lat, lon] | kg ha-1    | Fertilizer nitrogen amount               |
+| FERT_P      | [time, crop_class, lat, lon] | mm    | Fertilizer phosphorus amount                        |
+| FERT_K      | [time, crop_class, lat, lon] | mm    | Fertilizer potassium amount                        |
+| TSUM1      | [time, crop_class, lat, lon] | degrees C   | tsum 1                        |
+| TSUM2      | [time, crop_class, lat, lon] | degrees C    | tsum 2                        |
 
 The forcing data must be chunked by calendar year, with each NetCDF file named by the year, e.g. `prefix.$year.nc`.
 
