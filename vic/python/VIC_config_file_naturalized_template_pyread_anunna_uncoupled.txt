@@ -1,0 +1,178 @@
+#######################################################################
+# VIC Model Parameters
+#######################################################################
+
+#######################################################################
+# Time Options
+#######################################################################
+MODEL_STEPS_PER_DAY     1               
+SNOW_STEPS_PER_DAY      1               
+RUNOFF_STEPS_PER_DAY    24              
+ROUT_STEPS_PER_DAY		24				
+WOFOST_STEPS_PER_DAY	1				
+
+STARTYEAR                               
+STARTMONTH                              
+STARTDAY                                
+ENDYEAR                 
+ENDMONTH                
+ENDDAY                  
+BASEFLOW                NIJSSEN2001     
+
+MODEL_STEPS_PER_DAY     1              
+SNOW_STEPS_PER_DAY      1               
+RUNOFF_STEPS_PER_DAY    24             
+ROUT_STEPS_PER_DAY		24				
+WOFOST_STEPS_PER_DAY	1				
+
+#######################################################################
+# Simulation Options
+#######################################################################
+FULL_ENERGY             FALSE           
+SNOW_BAND				FALSE           
+
+QUICK_FLUX			    TRUE     		
+EXP_TRANS				FALSE			
+IMPLICIT                FALSE         
+
+NBARE                   2               
+GWM                     TRUE            
+
+FCAN_SRC				FROM_VEGPARAM   
+LAI_SRC					FROM_VEGPARAM   
+ALB_SRC				    FROM_VEGPARAM   
+BCO2_SRC                FROM_VEGPARAM   
+WFC_SRC                 FROM_VEGPARAM   
+
+
+# Plugins
+ROUTING					TRUE			
+DECOMPOSITION			BASIN			
+EFR						FALSE			
+DAMS					FALSE			
+WATERUSE				FALSE			
+IRRIGATION				FALSE			
+WOFOST					FALSE		    
+
+
+LANDUSE_FORCE           FALSE  
+#ROUTING_FORCE          TRUE
+
+
+POTENTIAL_IRRIGATION    FALSE           
+EFFICIENT_IRRIGATION    FALSE           
+
+OFFSET_IRRIGATION       FALSE            
+PBARE                   21              
+
+REMOTE_WITHDRAWAL       FALSE            
+
+NONRENEWABLE_WITHDRAWAL FALSE   
+
+WOFOST_POTENTIAL_IRRIGATION FALSE       
+WOFOST_POTENTIAL_FERTILIZER FALSE       
+WOFOST_CONTINUE             FALSE        
+WOFOST_DIST_SEASON          FALSE        
+WOFOST_DIST_TSUM            FALSE        
+WOFOST_DIST_MINERALIZATION  FALSE        
+WOFOST_CALC_MINERALIZATION  FALSE        
+
+WOFOST_DIST_FERTILIZER 	    FALSE       
+WOFOST_FORCE_FERTILIZER 	FALSE      
+
+#######################################################################
+# State Files and Parameters
+#######################################################################
+#INIT_STATE                                       
+STATENAME                                        
+STATEYEAR                                        
+STATEMONTH                                       
+STATEDAY                                         
+STATESEC    00000                               
+STATE_FORMAT           NETCDF4                   
+
+#######################################################################
+# Domain Files and Info
+#######################################################################
+DOMAIN         /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/domain_Indus.nc
+DOMAIN_TYPE    	LAT     		lat
+DOMAIN_TYPE    	LON     		lon
+DOMAIN_TYPE    	MASK    		mask
+DOMAIN_TYPE    	AREA    		area
+DOMAIN_TYPE    	FRAC    		frac
+DOMAIN_TYPE    	YDIM    		lat
+DOMAIN_TYPE    	XDIM    		lon
+
+#######################################################################
+# Forcing Files and Info
+# netcdf forcing files will be of the form: FILE.YYYY.nc
+#######################################################################
+# FORCE_TYPE	      TYPE   	VARIABLE NAME		FILE
+# Metreorological forcing
+FORCE_TYPE    	      AIR_TEMP	tas					/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/tas_daily_GFDL-ESM4adj_historical/tas_daily_GFDL-ESM4adj_historical_
+FORCE_TYPE    	      PREC		pr				    /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/pr_daily_GFDL-ESM4adj_historical/pr_daily_GFDL-ESM4adj_historical_
+FORCE_TYPE    	      PRESSURE	psurf    			/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/psurf_daily_GFDL-ESM4_historical/psurf_daily_GFDL-ESM4_historical_
+FORCE_TYPE    	      SWDOWN	swdown				/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/swdown_daily_GFDL-ESM4adj_historical/swdown_daily_GFDL-ESM4adj_historical_
+FORCE_TYPE    	      LWDOWN	lwdown				/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/lwdown_daily_GFDL-ESM4adj_historical/lwdown_daily_GFDL-ESM4adj_historical_
+FORCE_TYPE    	      VP		vp				    /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/vp_daily_GFDL-ESM4_historical/vp_daily_GFDL-ESM4_historical_
+FORCE_TYPE    	      WIND		wind10		    	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/wind10_daily_GFDL-ESM4_historical/wind10_daily_GFDL-ESM4_historical_
+
+# PLUGIN_FORCE_TYPE	  TYPE		        VARIABLE NAME		FREQ    FILE
+PLUGIN_FORCE_TYPE     CV                coverage            MONTH   /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/coverage_monthly_MIRCA/coverage_monthly_MIRCA_
+PLUGIN_FORCE_TYPE	  CO2 		        co2			        YEAR    /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/co2_yearly_historical_1970_2000/co2_yearly_historical_1970_2000_
+PLUGIN_FORCE_TYPE	  MUN_DEMAND		demand		        MONTH	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/sectoralDemand_monthly_historical_1970_2000/sectoralDemand_monthly_historical_1970_2000_
+PLUGIN_FORCE_TYPE	  MUN_GROUNDWATER	groundwater         YEAR	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/sectoralGround_yearly/sectoralGround_yearly_
+PLUGIN_FORCE_TYPE	  MUN_CONSUMPTION	consumption         MONTH	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/sectoralConsump_monthly_historical_1970_2000/sectoralConsump_monthly_historical_1970_2000_
+#PLUGIN_FORCE_TYPE     DISCHARGE         discharge_mf        MONTH   /lustre/nobackup/WUR/ESG/liu297/gitrepo/VIC-WUR-GWM-1910/vic_online/python/vicextrainput/forcing_discharge_
+#######################################################################
+# Land Surface Files and Info
+#######################################################################
+CONSTANTS                 /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/06Constants/VIC_constants_default.txt
+PARAMETERS        		  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/VIC_params_Mirca_calibrated_Indus.nc
+
+ROUTING_PARAMETERS		  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/old_rout.nc
+
+IRRIGATION_PARAMETERS	  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/irrigation_params_Indus.nc
+WATERUSE_PARAMETERS       /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/wu_params_command_Indus.nc
+DAMS_PARAMETERS           /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/dam_params_Grand_Indus.nc
+CROP_PARAMETERS 		  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/crop_params_Mirca_Indus.nc
+WOFOST_TEXT_PARAMETERS 	  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/wofost_params_Mirca_Indus_new.txt
+
+#######################################################################
+# Output Options
+#######################################################################
+RESULT_DIR						/lustre/nobackup/WUR/ESG/liu297/gitrepo/VIC-WUR-GWM-1910/vic_online/python/output/
+OUTFILE							 fluxes_naturalized_gwm_uncoupled
+LOG_DIR                         /lustre/nobackup/WUR/ESG/liu297/gitrepo/VIC-WUR-GWM-1910/vic_online/python/output/
+
+OUT_FORMAT						NETCDF4
+COMPRESS						2
+AGGFREQ							NMONTHS	1
+HISTFREQ                        NMONTHS 1
+
+# Water flux
+OUTVAR							OUT_BASEFLOW
+OUTVAR							OUT_RUNOFF
+OUTVAR                          OUT_GWRECHARGE
+# Water state
+OUTVAR							OUT_SOIL_MOIST
+# Water additional
+OUTVAR							OUT_WATER_ERROR
+# Routing flux
+OUTVAR							OUT_DISCHARGE
+#OUTVAR							OUT_WITHDRAWN
+#OUTVAR							OUT_RETURNED
+#OUTVAR							OUT_CONSUMED
+#OUTVAR							OUT_WI_GW_SECT
+#OUTVAR							OUT_WI_SURF_SECT
+#OUTVAR							OUT_WI_NREN_SECT
+# Routing state
+#OUTVAR                          OUT_STREAM_MOIST
+#OUTVAR							OUT_NONREN_DEFICIT
+#OUTVAR							OUT_LEFTOVER
+# Routing additional
+#OUTVAR							OUT_DEMAND
+#OUTVAR							OUT_RECEIVED
+#OUTVAR							OUT_APPLIED
+#OUTVAR							OUT_SHORTAGE
+#OUTVAR							OUT_ROUTING_ERROR

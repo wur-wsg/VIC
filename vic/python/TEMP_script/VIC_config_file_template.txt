@@ -1,0 +1,161 @@
+#######################################################################
+# VIC Model Parameters
+#######################################################################
+
+#######################################################################
+# Time Options
+#######################################################################
+MODEL_STEPS_PER_DAY     1               # number of model time steps in 24 hour period
+SNOW_STEPS_PER_DAY      1               # number of snow model time steps in 24 hour period
+RUNOFF_STEPS_PER_DAY    24              # number of runoff time steps in 24 hour period
+ROUT_STEPS_PER_DAY		24				# number of routing time steps in 24 hour period
+WOFOST_STEPS_PER_DAY	1				# number of WOFOST time steps in 24 hour period
+
+STARTYEAR                               # year model simulation starts
+STARTMONTH                              # month model simulation starts
+STARTDAY                                # day model simulation starts
+ENDYEAR                 
+ENDMONTH                
+ENDDAY                  
+BASEFLOW                NIJSSEN2001     # ARNO = columns 5-8 are the standard VIC baseflow parameters; NIJSSEN2001 = columns 5-8 of soil file are baseflow parameters from Nijssen et al (2001) 
+
+#######################################################################
+# Simulation Options
+#######################################################################
+FULL_ENERGY             FALSE           # TRUE = calculate energy balance; FALSE = calculate water balance; Default = FALSE
+SNOW_BAND				FALSE           # TRUE = calculate snow bands;  Default = FALSE
+
+QUICK_FLUX			    TRUE     		# TRUE = ground heat flux method of Liang et al (1999); FALSE = finite element method of Cherkauer et al (1999)
+EXP_TRANS				FALSE			# TRUE = exponential thermal nodes in soil;  Default = FALSE
+IMPLICIT                FALSE           # TRUE = implicit soil heat flux solution; FALSE = explicit soil heat flux solution; Default = TRUE
+NBARE                   2               # Number of bare soil types
+GWM                     TRUE            # TRUE = calculate groundwater recharge, no baseflow Default = FALSE
+
+FCAN_SRC				FROM_VEGPARAM   # FROM_VEGPARAM = get variable from vegetation parameter file; Default = FROM_DEFAULT
+LAI_SRC					FROM_VEGPARAM   # FROM_VEGPARAM = get variable from vegetation parameter file; Default = FROM_VEGPARAM
+ALB_SRC				    FROM_VEGPARAM   # FROM_VEGPARAM = get variable from vegetation parameter file; Default = FROM_VEGPARAM
+BCO2_SRC                FROM_VEGPARAM   # FROM_VEGPARAM = get variable from vegetation parameter file; Default = FROM_DEFAULT
+WFC_SRC                 FROM_VEGPARAM   # FROM_VEGPARAM = get variable from vegetation parameter file; Default = FROM_DEFAULT
+
+# Plugins
+ROUTING					TRUE			# TRUE = calculate routing; Default = FALSE
+DECOMPOSITION			BASIN			# RANDOM, BASIN or FILE; Default = RANDOM
+EFR						FALSE			# TRUE = calculate enviromental flow requirements;  Default = FALSE
+DAMS					TRUE			# TRUE = calculate dam operation;  Default = FALSE
+WATERUSE				TRUE			# TRUE = calculate water use;  Default = FALSE
+IRRIGATION				TRUE			# TRUE = calculate irrigation;  Default = FALSE
+WOFOST					TRUE		    # TRUE = calculate crops with wofost;  Default = FALSE
+
+LANDUSE_FORCE           TRUE            # TRUE = force vegetation coverage; Default = FALSE
+
+POTENTIAL_IRRIGATION    FALSE           # TRUE = potential irrigation withdrawals; Default = FALSE
+EFFICIENT_IRRIGATION    FALSE           # TRUE = efficient irrigation withdrawals; Default = FALSE
+OFFSET_IRRIGATION       TRUE            # TRUE = offset irrigation withdrawals; Default = FALSE
+PBARE                   21              # Number of bare soil types
+
+REMOTE_WITHDRAWAL       TRUE            # TRUE = enable remote water withdrawals; Default = FALSE
+NONRENEWABLE_WITHDRAWAL TRUE            # TRUE = enable non-renewable water withdrawals; Default = FALSE
+
+WOFOST_POTENTIAL_IRRIGATION FALSE       # TRUE = ignore crop water stress; Default = FALSE
+WOFOST_POTENTIAL_FERTILIZER FALSE       # TRUE = ignore crop nutrient stress; Default = FALSE
+WOFOST_CONTINUE             TRUE        # TRUE = continue crop simulation to maturity after growing season; Default = FALSE
+WOFOST_DIST_SEASON          TRUE        # TRUE = get growing season from crop parameter file; Default = FALSE
+WOFOST_DIST_TSUM            TRUE        # TRUE = get tsums from crop parameter file; Default = FALSE
+WOFOST_DIST_MINERALIZATION  TRUE        # TRUE = get mineralization from crop parameter file; Default = FALSE
+WOFOST_CALC_MINERALIZATION  TRUE        # TRUE = calculate mineralization during runtime; Default = FALSE
+WOFOST_DIST_FERTILIZER 	    TRUE        # TRUE = get fertilizer from crop parameter file; Default = FALSE
+WOFOST_FORCE_FERTILIZER 	FALSE       # TRUE = force fertilizer from forcing file; Default = FALSE
+
+#######################################################################
+# State Files and Parameters
+#######################################################################
+#INIT_STATE                                       # Initial state path/file, result files from last time step
+#STATENAME                                        # Output state file path/prefix. The time (STATEYEAR,STATEMONTH,STATEDAY,STATESEC)
+#STATEYEAR                                        # year to save model state
+#STATEMONTH                                       # month to save model state
+#STATEDAY                                         # day to save model state
+#STATESEC    82800                                # second to save model state
+#STATE_FORMAT           NETCDF4                   # State file format, valid options:
+
+#######################################################################
+# Domain Files and Info
+#######################################################################
+DOMAIN         /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/domain_Indus.nc
+DOMAIN_TYPE    	LAT     		lat
+DOMAIN_TYPE    	LON     		lon
+DOMAIN_TYPE    	MASK    		mask
+DOMAIN_TYPE    	AREA    		area
+DOMAIN_TYPE    	FRAC    		frac
+DOMAIN_TYPE    	YDIM    		lat
+DOMAIN_TYPE    	XDIM    		lon
+
+#######################################################################
+# Forcing Files and Info
+# netcdf forcing files will be of the form: FILE.YYYY.nc
+#######################################################################
+# FORCE_TYPE	      TYPE   	VARIABLE NAME		FILE
+# Metreorological forcing
+FORCE_TYPE    	      AIR_TEMP	tas					/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/tas_daily_UKESM1-0-LLadj_historical/tas_daily_UKESM1-0-LLadj_historical_
+FORCE_TYPE    	      PREC		pr				    /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/pr_daily_UKESM1-0-LLadj_historical/pr_daily_UKESM1-0-LLadj_historical_
+FORCE_TYPE    	      PRESSURE	psurf    			/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/psurf_daily_UKESM1-0-LL_historical/psurf_daily_UKESM1-0-LL_historical_
+FORCE_TYPE    	      SWDOWN	swdown				/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/swdown_daily_UKESM1-0-LLadj_historical/swdown_daily_UKESM1-0-LLadj_historical_
+FORCE_TYPE    	      LWDOWN	lwdown				/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/lwdown_daily_UKESM1-0-LLadj_historical/lwdown_daily_UKESM1-0-LLadj_historical_
+FORCE_TYPE    	      VP		vp				    /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/vp_daily_UKESM1-0-LL_historical/vp_daily_UKESM1-0-LL_historical_
+FORCE_TYPE    	      WIND		wind10		    	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/01Natural/wind10_daily_UKESM1-0-LL_historical/wind10_daily_UKESM1-0-LL_historical_
+
+# PLUGIN_FORCE_TYPE	  TYPE		        VARIABLE NAME		FREQ    FILE
+PLUGIN_FORCE_TYPE     CV                coverage            MONTH   /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/coverage_monthly_MIRCA/coverage_monthly_MIRCA_
+PLUGIN_FORCE_TYPE	  CO2 		        co2			        YEAR    /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/co2_yearly_historical_1970_2000/co2_yearly_historical_1970_2000_
+PLUGIN_FORCE_TYPE	  MUN_DEMAND		demand		        MONTH	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/sectoralDemand_monthly_historical_1970_2000/sectoralDemand_monthly_historical_1970_2000_
+PLUGIN_FORCE_TYPE	  MUN_GROUNDWATER	groundwater         YEAR	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/sectoralGround_yearly/sectoralGround_yearly_
+PLUGIN_FORCE_TYPE	  MUN_CONSUMPTION	consumption         MONTH	/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/04Forcing/02HumanImpact/sectoralConsump_monthly_historical_1970_2000/sectoralConsump_monthly_historical_1970_2000_
+
+#######################################################################
+# Land Surface Files and Info
+#######################################################################
+CONSTANTS                 /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/06Constants/VIC_constants_default.txt
+PARAMETERS        		  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/VIC_params_Mirca_calibrated_Indus.nc
+
+ROUTING_PARAMETERS		  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/old_rout.nc
+IRRIGATION_PARAMETERS	  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/irrigation_params_Indus.nc
+WATERUSE_PARAMETERS       /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/wu_params_command_Indus.nc
+DAMS_PARAMETERS           /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/dam_params_Grand_Indus.nc
+CROP_PARAMETERS 		  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/crop_params_Mirca_Indus.nc
+WOFOST_TEXT_PARAMETERS 	  /lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/05Parameters/wofost_params_Mirca_Indus_new.txt
+
+#######################################################################
+# Output Options
+#######################################################################
+RESULT_DIR						/lustre/nobackup/WUR/ESG/liu297/vic_indus/11indus_run/07Output/02HumanImpact_offline/
+OUTFILE							fluxes_UKESM1-0-LLadj_historical_1970_2000_baseline_human_gwm_
+
+OUT_FORMAT						NETCDF4
+COMPRESS						2
+AGGFREQ							NMONTHS	1
+HISTFREQ                        NYEARS 33
+
+# Water flux
+OUTVAR							OUT_BASEFLOW
+OUTVAR							OUT_RUNOFF
+# Water state
+OUTVAR							OUT_SOIL_MOIST
+# Water additional
+OUTVAR							OUT_WATER_ERROR
+# Routing flux
+OUTVAR							OUT_DISCHARGE
+OUTVAR							OUT_WITHDRAWN
+OUTVAR							OUT_RETURNED
+OUTVAR							OUT_CONSUMED
+OUTVAR							OUT_WI_GW_SECT
+OUTVAR							OUT_WI_SURF_SECT
+OUTVAR							OUT_WI_NREN_SECT
+# Routing state
+OUTVAR                          OUT_STREAM_MOIST
+OUTVAR							OUT_NONREN_DEFICIT
+OUTVAR							OUT_LEFTOVER
+# Routing additional
+OUTVAR							OUT_DEMAND
+OUTVAR							OUT_RECEIVED
+OUTVAR							OUT_APPLIED
+OUTVAR							OUT_SHORTAGE
+OUTVAR							OUT_ROUTING_ERROR
