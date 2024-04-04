@@ -349,14 +349,14 @@ vic_run(force_data_struct   *force,
                     cell->wetness = 0;
                     for (l = 0; l < options.Nlayer; l++) {
                         if (veg_var->root[l] > 0) {
-                            cell->rootmoist += cell->layer[l].moist;
+                            cell->rootmoist += cell->layer[l].moist; //add up all the soil moist of the three layers first to the rootmoist
                         }
                         cell->wetness +=
                             (cell->layer[l].moist - soil_con->Wpwp[l]) /
                             (soil_con->porosity[l] * soil_con->depth[l] *
                              MM_PER_M - soil_con->Wpwp[l]);
                     }
-                    cell->wetness /= options.Nlayer;
+                    cell->wetness /= options.Nlayer; //devided by 3. to average to three layers. 
 
                     /* Convert LAI back to global */
                     veg_var->LAI *= veg_var->fcanopy;

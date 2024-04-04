@@ -1083,8 +1083,14 @@ surface_fluxes(bool                 overstory,
 
     (*inflow) = ppt;
 
-    ErrorFlag = runoff(cell, energy, soil_con, ppt, soil_con->frost_fract,
-                       options.Nnode);
+    if (options.GWM){
+        ErrorFlag = runoff_GWM(cell, energy, soil_con, ppt, soil_con->frost_fract,
+                           options.Nnode);
+    }
+    else{
+        ErrorFlag = runoff(cell, energy, soil_con, ppt, soil_con->frost_fract,
+                           options.Nnode);
+    }
 
     return(ErrorFlag);
 }

@@ -229,6 +229,7 @@ typedef struct {
                                 then average July air temperature will be read
                                 from soil file and used in calculating treeline */
     bool LAKES;          /**< TRUE = use lake energy code */
+    bool GWM;            /**< TRUE = baseflow will be calculated by groundwater model */
     size_t Ncanopy;      /**< Number of canopy layers in the model. */
     size_t Nfrost;       /**< Number of frost subareas in model */
     size_t Nlakenode;    /**< Number of lake thermal nodes in the model. */
@@ -829,6 +830,7 @@ typedef struct {
     double zwt_lumped;                 /**< average water table position [cm] - lumping all layers' moisture together */
 
     // Fluxes
+    double GWrecharge;                /**< recharge to the groundwater aquifer (mm/TS)*/ 
     double pot_evap;                   /**< potential evaporation (mm) */
     double recharge;                   /**< recharge from current cell (mm/TS) */
     double baseflow;                   /**< baseflow from current cell (mm/TS) */
