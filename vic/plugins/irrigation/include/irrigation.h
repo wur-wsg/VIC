@@ -70,6 +70,7 @@ typedef struct {
     bool flag_req;                  /**< requires irrigation flag */
     int offset;                     /**< irrigation offset [days] */
     double prev_Cv;                 /**< previous vegetation coverage [-] */
+    // applied+leftover = received
 } irr_var_struct;
 
 /******************************************************************************

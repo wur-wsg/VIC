@@ -338,6 +338,7 @@ wu_put_data(size_t iCell)
     extern plugin_option_struct plugin_options;
     extern wu_con_map_struct   *wu_con_map;
     extern wu_var_struct      **wu_var;
+    extern option_struct        options;
     extern double            ***out_data;
 
     size_t                      i;
@@ -346,8 +347,7 @@ wu_put_data(size_t iCell)
     for (i = 0; i < plugin_options.NWUTYPES; i++) {
         iSector = wu_con_map[iCell].sidx[i];
         if (iSector != NODATA_WU) {
-            out_data[iCell][N_OUTVAR_TYPES +
-                            OUT_DE_GW_SECT][i] =
+            out_data[iCell][N_OUTVAR_TYPES +OUT_DE_GW_SECT][i] =
                 wu_var[iCell][iSector].demand_gw;
             out_data[iCell][N_OUTVAR_TYPES +
                             OUT_DE_SURF_SECT][i] =
@@ -384,12 +384,23 @@ wu_put_data(size_t iCell)
             out_data[iCell][N_OUTVAR_TYPES + OUT_DEMAND][0] +=
                 wu_var[iCell][iSector].demand_gw +
                 wu_var[iCell][iSector].demand_surf;
-            out_data[iCell][N_OUTVAR_TYPES + OUT_WITHDRAWN][0] +=
+              
+            if(options.GWM){
+              out_data[iCell][N_OUTVAR_TYPES + OUT_WITHDRAWN][0] +=  
+                wu_var[iCell][iSector].withdrawn_surf +
+                wu_var[iCell][iSector].withdrawn_dam +
+                wu_var[iCell][iSector].withdrawn_tremote; //when coupled with groundwater model, non-renew and gw withdrawals 
+                                                         //are combined and will be deducted from MODFLOW water balance
+
+            }else{
+              out_data[iCell][N_OUTVAR_TYPES + OUT_WITHDRAWN][0] +=
                 wu_var[iCell][iSector].withdrawn_gw +
                 wu_var[iCell][iSector].withdrawn_surf +
                 wu_var[iCell][iSector].withdrawn_dam +
                 wu_var[iCell][iSector].withdrawn_tremote +
                 wu_var[iCell][iSector].withdrawn_nonrenew;
+            }
+            
             out_data[iCell][N_OUTVAR_TYPES +
                             OUT_RETURNED][0] += wu_var[iCell][iSector].returned;
             out_data[iCell][N_OUTVAR_TYPES +

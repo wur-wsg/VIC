@@ -34,7 +34,7 @@ void
 dam_operate(dam_con_struct *dam_con,
             dam_var_struct *dam_var)
 {
-    double prev_storage;
+    double prev_storage; //reservoir storage at the previous time step
 
     // Fill reservoir
     prev_storage = dam_var->storage;
@@ -83,6 +83,8 @@ local_dam_operate(dam_con_struct *dam_con,
     extern double     ***out_data;
 
     dam_operate(dam_con, dam_var);
+     //update the runoff by substracting the water intercept by the dam 
+    //or add the water released from the dam to the runoff. 
 
     out_data[iCell][OUT_RUNOFF][0] *= 1 - dam_con->inflow_frac;
     out_data[iCell][OUT_RUNOFF][0] += dam_var->release * M3_PER_HM3 *

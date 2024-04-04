@@ -39,6 +39,7 @@ plugin_store_error(size_t iCell)
     extern plugin_save_data_struct *plugin_save_data;
     extern save_data_struct        *save_data;
     extern double                ***out_data;
+    extern option_struct            options;
 
     double                          inflow;
     double                          outflow;
@@ -82,7 +83,7 @@ plugin_store_error(size_t iCell)
     if (plugin_options.IRRIGATION) {
         outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_APPLIED][0];
     }
-    if (plugin_options.WATERUSE) {
+    if (plugin_options.WATERUSE && options.GWM == false) {
         for (i = 0; i < WU_NSECTORS; i++) {
             outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] +
                        out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i] +
@@ -90,13 +91,24 @@ plugin_store_error(size_t iCell)
                        out_data[iCell][N_OUTVAR_TYPES + OUT_WI_NREN_SECT][i];
         }
     }
+    if (plugin_options.WATERUSE && options.GWM == true) {
+        for (i = 0; i < WU_NSECTORS; i++) {
+            outflow += out_data[iCell][N_OUTVAR_TYPES + OUT_WI_SURF_SECT][i] +
+                       out_data[iCell][N_OUTVAR_TYPES + OUT_WI_DAM_SECT][i] +
+                       out_data[iCell][N_OUTVAR_TYPES + OUT_WI_REM_SECT][i];
+        }
+    }
 
     // Storage
     storage = 0.;
     if (plugin_options.ROUTING ||
         (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
-        storage += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] -
-                   out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
+            if(options.GWM){
+                storage += out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0];
+            } else{
+                storage +=out_data[iCell][N_OUTVAR_TYPES + OUT_STREAM_MOIST][0] - 
+                out_data[iCell][N_OUTVAR_TYPES + OUT_NONREN_DEFICIT][0];
+            }
     }
     if (plugin_options.DAMS) {
         storage += (out_data[iCell][N_OUTVAR_TYPES + OUT_GDAM_STORAGE][0] +
@@ -124,10 +136,17 @@ plugin_store_error(size_t iCell)
     }
     if (plugin_options.WATERUSE) {
         for (i = 0; i < WU_NSECTORS; i++) {
-            save_data[iCell].total_soil_moist -=
+            if(options.GWM == false){
+                save_data[iCell].total_soil_moist -=
                 out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
-            save_data[iCell].total_moist_storage -=
+                save_data[iCell].total_moist_storage -=
                 out_data[iCell][N_OUTVAR_TYPES + OUT_WI_GW_SECT][i];
+            }
+            else{
+                continue;
+
+            }
+            
         }
     }
 }

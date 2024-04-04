@@ -66,8 +66,8 @@ irr_set_demand(size_t iCell)
     consumed = 0.0;
 
     csoil_con = &(soil_con[iCell]);
-    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
-        cirr_con = &(irr_con[iCell][iIrr]);
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) { //loop through all veg types that are in the current cell. 
+        cirr_con = &(irr_con[iCell][iIrr]); // read current cell's irrgation constant for current veg type
         cveg_con = &(veg_con[iCell][cirr_con->veg_index]);
         veg_fract = cveg_con->Cv;
 
@@ -80,12 +80,12 @@ irr_set_demand(size_t iCell)
                     if (cirr_var->flag_req) {
                         demand_crop = cirr_var->requirement * veg_fract *
                                       area_fract;
-                        consumed += demand_crop;
-                        demand += demand_crop;
+                        consumed += demand_crop; // caculate the total irrigation consumption for all veg types.
+                        demand += demand_crop; // calculate the total irrigation demand for all veg types. 
                         groundwater += demand_crop *
-                                       cirr_con->groundwater_fraction;
+                                       cirr_con->groundwater_fraction; // allocate the groundwater abstraction. 
                         efficiency += demand_crop *
-                                      cirr_con->irrigation_efficiency;
+                                      cirr_con->irrigation_efficiency; //TODO: check it 
                     }
                 }
             }
@@ -242,30 +242,30 @@ irr_apply(size_t  iCell,
     ccell_var = &(all_vars[iCell].cell[iVeg][iBand]);
     cveg_var = &(all_vars[iCell].veg_var[iVeg][iBand]);
 
-    if (received <= 0.) {
+    if (received <= 0.) {  //if there is no water to apply, return back. 
         return;
     }
 
-    if (plugin_options.EFFICIENT_IRRIGATION && !cirr_con->paddy) {
-        max_added = csoil_con->Wfc[0] - ccell_var->layer[0].moist;
+    if (plugin_options.EFFICIENT_IRRIGATION && !cirr_con->paddy) { 
+        max_added = csoil_con->Wfc[0] - ccell_var->layer[0].moist; // get the maximum amount of water that can be added to the soil by filling only field capacity
     }
     else {
-        max_added = csoil_con->max_moist[0] - ccell_var->layer[0].moist;
+        max_added = csoil_con->max_moist[0] - ccell_var->layer[0].moist; // get the maximum amount of water that can be added to the soil by filling to the maximum soil moisture
     }
     max_added = max(0., max_added);
 
     if (received < max_added) {
-        applied_tmp = received;
+        applied_tmp = received; //if there is not enough water to fill the soil, apply onnly the received amount
     }
     else {
         applied_tmp = max_added;
     }
-    leftover_tmp = received - applied_tmp;
+    leftover_tmp = received - applied_tmp; // calculate the part that more than needed 
 
     ccell_var->layer[0].moist += applied_tmp;
 
     (*applied) += applied_tmp;
-    (*leftover) += leftover_tmp;
+    (*leftover) += leftover_tmp; 
 }
 
 /******************************************
@@ -289,7 +289,7 @@ irr_leftover(size_t iCell)
     size_t                     iBand;
     size_t                     iVeg;
 
-    irr_con_struct            *cirr_con;
+    irr_con_struct            *cirr_con; //irrigation constant
     irr_var_struct            *cirr_var;
     soil_con_struct           *csoil_con;
     veg_con_struct            *cveg_con;
@@ -298,14 +298,14 @@ irr_leftover(size_t iCell)
 
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         cirr_con = &(irr_con[iCell][iIrr]);
-        iVeg = cirr_con->veg_index;
-        cveg_con = &(veg_con[iCell][iVeg]);
-        veg_fract = cveg_con->Cv;
+        iVeg = cirr_con->veg_index; //get the veg index for the current irrigation type
+        cveg_con = &(veg_con[iCell][iVeg]); //get the veg constant
+        veg_fract = cveg_con->Cv;  //get the veg fraction 
 
         if (veg_fract > 0) {
-            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-                cirr_var = &(irr_var[iCell][iIrr][iBand]);
-                area_fract = csoil_con->AreaFract[iBand];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) { //loop through all snow bands
+                cirr_var = &(irr_var[iCell][iIrr][iBand]); //get the irrigation variable 
+                area_fract = csoil_con->AreaFract[iBand]; //get the area fraction for the current snow band
 
                 if (area_fract > 0) {
                     if (cirr_var->leftover > 0) {
@@ -442,9 +442,8 @@ irr_wateruse(size_t iCell)
 
                 if (area_fract > 0) {
                     if (cirr_var->flag_req) {
-                        demand_crop = cirr_var->requirement * veg_fract *
-                                      area_fract;
-                        demand += demand_crop;
+                        demand_crop = cirr_var->requirement * veg_fract * area_fract; // calculate the demand for the current veg type and snow band
+                        demand += demand_crop; // aggregate them together as the total demand for the current cell
                     }
                 }
             }
@@ -481,13 +480,10 @@ irr_wateruse(size_t iCell)
                     if (area_fract > 0) {
                         received_tmp = 0.0;
                         if (cirr_var->flag_req && avail_frac > 0) {
-                            received_tmp = cirr_var->requirement *
-                                           avail_frac;
+                            received_tmp = cirr_var->requirement * avail_frac;
 
-                            prev_leftover += cirr_var->leftover * veg_fract *
-                                             area_fract;
-                            prev_applied += cirr_var->applied * veg_fract *
-                                            area_fract;
+                            prev_leftover += cirr_var->leftover * veg_fract * area_fract; // leftover from the previous time step
+                            prev_applied += cirr_var->applied * veg_fract * area_fract; // applied from the previous time step
 
                             irr_apply(iCell, iIrr, iVeg, iBand,
                                       received_tmp,
@@ -495,12 +491,9 @@ irr_wateruse(size_t iCell)
                                       &(cirr_var->leftover));
                             cirr_var->received += received_tmp;
 
-                            received += cirr_var->received * veg_fract *
-                                        area_fract;
-                            applied += cirr_var->applied * veg_fract *
-                                       area_fract;
-                            leftover += cirr_var->leftover * veg_fract *
-                                        area_fract;
+                            received += cirr_var->received * veg_fract * area_fract; // total received water for the current cell
+                            applied  += cirr_var->applied  * veg_fract * area_fract; // total applied water for the current cell
+                            leftover += cirr_var->leftover * veg_fract * area_fract; // total leftover water for the current cell
                         }
                     }
                 }

@@ -83,7 +83,7 @@ calculate_availability_local(size_t   iCell,
 
     size_t                            rout_steps_per_dt;
     size_t                            iStep;
-    size_t                            iVeg;
+    size_t                            iVeg; // vegitation type
     size_t                            iBand;
     size_t                            iFrost;
     size_t                            iLayer;
@@ -92,47 +92,51 @@ calculate_availability_local(size_t   iCell,
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
 
-    // groundwater
-    iLayer = options.Nlayer - 1;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (veg_con[iCell][iVeg].Cv <= 0.0) {
-            continue;
-        }
-
-        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-            if (soil_con[iCell].AreaFract[iBand] <= 0.0) {
+    // this is temporary solution for Indus case groundwater
+    if (options.GWM == false){
+        iLayer = options.Nlayer - 1; //put the groundwater abstraction at the last soil layer  
+        for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+            if (veg_con[iCell][iVeg].Cv <= 0.0) {
                 continue;
             }
 
-            av_gw[iVeg][iBand] =
-                all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist;
-            if (plugin_options.EFR) {
-                av_gw[iVeg][iBand] -= efr_force[iCell].moist[iVeg][iBand];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                if (soil_con[iCell].AreaFract[iBand] <= 0.0) {
+                    continue;
+                }
+
+                av_gw[iVeg][iBand] =
+                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist; //read the available soil moisture at the 3rd soil layer. 
+                if (plugin_options.EFR) {
+                    av_gw[iVeg][iBand] -= efr_force[iCell].moist[iVeg][iBand];
+                }
+
+                resid_moist = soil_con[iCell].resid_moist[iLayer] *
+                            soil_con[iCell].depth[iLayer] * MM_PER_M;  // convert the residual mosture into volumetric nnit.  why???
+                av_gw[iVeg][iBand] -= resid_moist;
+
+                ice = 0;
+                for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
+                    ice +=
+                        all_vars[iCell].cell[iVeg][iBand].layer[iLayer].ice[iFrost]
+                        *
+                        soil_con[iCell].frost_fract[iFrost];
+                }
+                av_gw[iVeg][iBand] -= ice;
+
+                av_gw[iVeg][iBand] *= soil_con[iCell].AreaFract[iBand] *
+                                    veg_con[iCell][iVeg].Cv;
+
+                if (av_gw[iVeg][iBand] < 0) {
+                    av_gw[iVeg][iBand] = 0;
+                }
+
+                (*available_gw) += av_gw[iVeg][iBand];
             }
-
-            resid_moist = soil_con[iCell].resid_moist[iLayer] *
-                          soil_con[iCell].depth[iLayer] * MM_PER_M;
-            av_gw[iVeg][iBand] -= resid_moist;
-
-            ice = 0;
-            for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
-                ice +=
-                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].ice[iFrost]
-                    *
-                    soil_con[iCell].frost_fract[iFrost];
-            }
-            av_gw[iVeg][iBand] -= ice;
-
-            av_gw[iVeg][iBand] *= soil_con[iCell].AreaFract[iBand] *
-                                  veg_con[iCell][iVeg].Cv;
-
-            if (av_gw[iVeg][iBand] < 0) {
-                av_gw[iVeg][iBand] = 0;
-            }
-
-            (*available_gw) += av_gw[iVeg][iBand];
         }
+        
     }
+
 
     // surface water
     for (iStep = 0;
@@ -393,7 +397,7 @@ calculate_hydrology_local(size_t   iCell,
                         global_param.model_steps_per_day;
 
     // groundwater
-    if (withdrawn_gw > 0.) {
+    if (withdrawn_gw > 0.&& options.GWM == false) {
         iLayer = options.Nlayer - 1;
         for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
             if (veg_con[iCell][iVeg].Cv <= 0.0) {
@@ -431,10 +435,11 @@ calculate_hydrology_local(size_t   iCell,
                 }
             }
         }
-    }
+    } 
 
     // non-renewable
-    if (returned > 0.) {
+    //TODO: consider 
+    if (returned > 0.&& options.GWM == false) { // only when there is no MODFLOW simulation, returned water first goes to compensate the non-renewable deficit
         for (i = 0; i < plugin_options.NWUTYPES; i++) {
             iSector = wu_con_map[iCell].sidx[i];
             if (iSector == NODATA_WU) {
@@ -442,7 +447,7 @@ calculate_hydrology_local(size_t   iCell,
             }
 
             // get available nonrenewable requirements
-            available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
+            available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit; 
 
             // get returned irrigation withdrawals
             returned_nonrenew_tmp = wu_var[iCell][iSector].returned;
@@ -465,6 +470,7 @@ calculate_hydrology_local(size_t   iCell,
             }
         }
     }
+
 
     // surface
     if (withdrawn_surf > 0. || returned > 0.) {
@@ -647,7 +653,7 @@ void
 wu_run_local(size_t iCell)
 {
     extern option_struct       options;
-    extern veg_con_map_struct *veg_con_map;
+    extern veg_con_map_struct *veg_con_map; 
 
     double                   **av_gw;
     double                    *av_dam;

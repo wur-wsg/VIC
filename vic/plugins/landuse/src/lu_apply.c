@@ -230,7 +230,7 @@ distribute_paddy_balance_terms(size_t  iCell,
                 }
                 if (inflow != 0.) {
                     log_warn(
-                        "Could not redistribute (part of) water balance [%.4f mm] in cell [%zu], since soil is full",
+                        "Could not redistribute (part of) water balance for paddy rice cells [%.4f mm] in cell [%zu], since soil is full",
                         inflow, iCell);
                 }
             }
@@ -427,8 +427,8 @@ distribute_water_balance_terms(size_t  iCell,
                 }
                 if (inflow != 0.) {
                     log_warn(
-                        "Could not redistribute (part of) water balance [%.4f mm] since soil is full",
-                        inflow * Cv_new[iVeg]);
+                        "Could not redistribute (part of) water balance for cell[%zu] [%.4f mm] since soil is full", 
+                        iCell, inflow * Cv_new[iVeg]);
                 }
             }
         }

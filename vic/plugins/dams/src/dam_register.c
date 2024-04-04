@@ -309,12 +309,12 @@ global_dam_register(dam_con_struct *dam_con,
     extern size_t               current;
 
     if (current > 0) {
-        if (dmy[current].month != dmy[current - 1].month) {
-            dam_register_history(dam_var);
-            if (dmy[current].year != dmy[current - 1].year) {
-                dam_register_operation_start(dam_var);
+        if (dmy[current].month != dmy[current - 1].month) { // New month
+            dam_register_history(dam_var); 
+            if (dmy[current].year != dmy[current - 1].year) { // New year
+                dam_register_operation_start(dam_var); 
             }
-            if (dmy[current].month == dam_var->op_month) {
+            if (dmy[current].month == dam_var->op_month) { // Operation month
                 // Set dam active
                 if (dmy[current].year >= dam_con->year) {
                     dam_var->active = true;

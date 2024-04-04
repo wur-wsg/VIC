@@ -43,7 +43,7 @@ calculate_demand_nonrenew(size_t  iCell,
 
     for (i = 0; i < plugin_options.NWUTYPES; i++) {
         if (i == WU_ENERGY) {
-            continue;
+            continue; // now the envery sector hasn't been calculated seperatly yet
         }
 
         iSector = wu_con_map[iCell].sidx[i];
@@ -141,6 +141,7 @@ calculate_use_nonrenew(size_t  iCell,
     extern wu_var_struct      **wu_var;
     extern wu_force_struct    **wu_force;
     extern wu_con_map_struct   *wu_con_map;
+    extern option_struct        options;
 
     double                      frac;
 
@@ -165,18 +166,20 @@ calculate_use_nonrenew(size_t  iCell,
         else {
             wu_var[iCell][iSector].withdrawn_nonrenew = 0.0;
         }
-
-        wu_var[iCell][iSector].returned +=
-            wu_var[iCell][iSector].withdrawn_nonrenew *
+        
+        wu_var[iCell][iSector].returned += wu_var[iCell][iSector].withdrawn_nonrenew *
             (1 - wu_force[iCell][iSector].consumption_frac);
-        wu_var[iCell][iSector].consumed +=
-            wu_var[iCell][iSector].withdrawn_nonrenew *
+        wu_var[iCell][iSector].consumed += wu_var[iCell][iSector].withdrawn_nonrenew *
             wu_force[iCell][iSector].consumption_frac;
-
         (*returned) +=
             wu_var[iCell][iSector].withdrawn_nonrenew *
             (1 - wu_force[iCell][iSector].consumption_frac);
         (*withdrawn_nonrenew) += wu_var[iCell][iSector].withdrawn_nonrenew;
+        
+        
+        
+
+       
     }
 }
 
@@ -191,6 +194,7 @@ calculate_hydrology_nonrenew(size_t iCell,
     extern global_param_struct global_param;
     extern domain_struct       local_domain;
     extern rout_var_struct    *rout_var;
+    extern option_struct       options;
 
     double                     available_stream_tmp;
     double                     returned_stream_tmp;
@@ -207,16 +211,17 @@ calculate_hydrology_nonrenew(size_t iCell,
                         global_param.model_steps_per_day;
 
     // non-renewable
-    if (withdrawn_nonrenew > 0.) {
-        rout_var[iCell].nonrenew_deficit += withdrawn_nonrenew;
+    if (withdrawn_nonrenew > 0 && options.GWM == false) {
+        rout_var[iCell].nonrenew_deficit += withdrawn_nonrenew; // TODO：deficit is positive value？
 
         if (rout_var[iCell].nonrenew_deficit < 0) {
             rout_var[iCell].nonrenew_deficit = 0;
         }
     }
+    
 
     // non-renewable returns
-    if (returned > 0.) {
+    if (returned > 0.&& options.GWM == false) {
         for (i = 0; i < plugin_options.NWUTYPES; i++) {
             iSector = wu_con_map[iCell].sidx[i];
             if (iSector == NODATA_WU) {
@@ -224,16 +229,14 @@ calculate_hydrology_nonrenew(size_t iCell,
             }
 
             // get available nonrenewable requirements
-            available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit;
-
-            // get returned irrigation withdrawals
+            available_nonrenew_tmp = rout_var[iCell].nonrenew_deficit; 
+           
             returned_nonrenew_tmp =
                 wu_var[iCell][iSector].withdrawn_nonrenew *
-                (1 - wu_force[iCell][iSector].consumption_frac);
-
+                (1 - wu_force[iCell][iSector].consumption_frac);  
             // add returned resources to nonrenewable
             returned_nonrenew_tmp = min(available_nonrenew_tmp,
-                                        returned_nonrenew_tmp);
+                                        returned_nonrenew_tmp); 
             if (available_nonrenew_tmp > 0) {
                 rout_var[iCell].nonrenew_deficit -= returned_nonrenew_tmp;
 

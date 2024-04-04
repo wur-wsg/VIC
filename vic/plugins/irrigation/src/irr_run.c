@@ -42,19 +42,19 @@ irr_run_requirement(size_t iCell)
     extern veg_con_struct         **veg_con;
     extern plugin_parameters_struct plugin_param;
     extern dmy_struct              *dmy;
-    extern size_t                   current;
+    extern size_t                   current; //current timestep
 
-    double                          moist[MAX_LAYERS];
-    double                          total_moist;
-    double                          total_wcr;
-    double                          total_wfc;
-    double                          veg_fract;
-    double                          area_fract;
+    double                          moist[MAX_LAYERS]; //soil moisture at each layer
+    double                          total_moist; //total soil moiisture of the three soil columns
+    double                          total_wcr; // soil water content at critical point
+    double                          total_wfc; // soil water content at field capacity
+    double                          veg_fract; // fraction of vegetation coverage
+    double                          area_fract; // fraction of grid cell included in each snow elevation band
 
-    size_t                          iIrr;
-    size_t                          iBand;
-    size_t                          k;
-    size_t                          l;
+    size_t                          iIrr;  // irrigation type index
+    size_t                          iBand; // snow band index
+    size_t                          k; //temporary index for soil layer
+    size_t                          l; //temporary index for frost subarea
 
     irr_con_struct                 *cirr_con;
     irr_var_struct                 *cirr_var;
@@ -66,23 +66,23 @@ irr_run_requirement(size_t iCell)
     csoil_con = &(soil_con[iCell]);
 
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
-        cirr_con = &(irr_con[iCell][iIrr]);
-        cveg_con = &(veg_con[iCell][cirr_con->veg_index]);
+        cirr_con = &(irr_con[iCell][iIrr]); // current  Irrigation Constants
+        cveg_con = &(veg_con[iCell][cirr_con->veg_index]); // current vegetation type's constants
 
         for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-            cirr_var = &(irr_var[iCell][iIrr][iBand]);
+            // Get pointers to current irrigation and cell variables
+            cirr_var = &(irr_var[iCell][iIrr][iBand]); //
             ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
-
             // Reset values
             cirr_var->requirement = 0.0;
             cirr_var->flag_req = false;
-            ccell_var->layer[0].Ksat = csoil_con->Ksat[0];
+            ccell_var->layer[0].Ksat = csoil_con->Ksat[0]; 
         }
 
         veg_fract = cveg_con->Cv;
 
-        if (current == 0 ||
-            dmy[current].day_in_year != dmy[current - 1].day_in_year) {
+        if (current == 0 || //if it is the first day of the simulation
+            dmy[current].day_in_year != dmy[current - 1].day_in_year) { //if it is the first day of the year
             for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
                 cirr_var = &(irr_var[iCell][iIrr][iBand]);
 
@@ -117,9 +117,9 @@ irr_run_requirement(size_t iCell)
                     }
 
                     // Get moisture content and critical moisture content of every layer
-                    total_moist = 0.0;
-                    total_wcr = 0.0;
-                    total_wfc = 0.0;
+                    total_moist = 0.0; // total moisture content
+                    total_wcr = 0.0; // total critical moisture content
+                    total_wfc = 0.0; //soil moisture at field capacity
                     for (k = 0; k < options.Nlayer; k++) {
                         moist[k] = 0.0;
                     }
@@ -131,10 +131,10 @@ irr_run_requirement(size_t iCell)
                                         csoil_con->frost_fract[l];
                         }
 
-                        if (cveg_var->root[k] > 0.) {
-                            total_moist += moist[k];
-                            total_wcr += ccell_var->layer[k].Wcr;
-                            total_wfc += csoil_con->Wfc[k];
+                        if (cveg_var->root[k] > 0.) {  //if current percentage in each soil layer is greater than 0, aka, there is root in this layer
+                            total_moist += moist[k];   // get the moist from the current layer
+                            total_wcr += ccell_var->layer[k].Wcr;   
+                            total_wfc += csoil_con->Wfc[k]; //soil moisture at field capacity
                         }
                     }
 
@@ -162,13 +162,16 @@ irr_run_requirement(size_t iCell)
                     **********************************************************************/
                     // Calculate whether irrigation water is required to
                     // prevent suboptimal evapotranspiration
+
+                    // if it is paddy rice and the top layer is not saturated and there is need for irrigation
                     if (cirr_var->offset >= cirr_con->offset) {
-                        if (cirr_con->paddy &&
+                        if (cirr_con->paddy &&       
                             csoil_con->max_moist[0] -
                             (moist[0] + cirr_var->leftover) > 0 &&
                             cirr_var->requirement > 0) {
                             cirr_var->flag_req = true;
-                        }
+                        } 
+                        // if it is not paddy rice and the total soil moisture is below the critical soil moisture point and there is need for irrigation
                         else if (total_wcr -
                                  (total_moist + cirr_var->leftover) > 0 &&
                                  cirr_var->requirement > 0) {
