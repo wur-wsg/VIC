@@ -391,9 +391,16 @@ display_current_settings(int mode)
     else {
         fprintf(LOG_DEST, "LAKE_PROFILE\t\tFALSE\n");
     }
+    if (options.GWM){
+        fprintf(LOG_DEST, "GWM\t\tTRUE\n");}
+    else{
+        fprintf(LOG_DEST, "GWM\t\tFALSE\n");
+    }
+    
 
     fprintf(LOG_DEST, "\n");
     fprintf(LOG_DEST, "Input State File:\n");
+    
     if (options.INIT_STATE) {
         fprintf(LOG_DEST, "INIT_STATE\t\tTRUE\t%s\n",
                 filenames.init_state.nc_filename);

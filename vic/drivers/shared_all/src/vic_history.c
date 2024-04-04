@@ -271,6 +271,7 @@ get_default_outvar_aggtype(unsigned int varid)
         agg_type = AGG_TYPE_END;
         break;
     // AGG_TYPE_SUM
+    case OUT_GWRECHARGE:
     case OUT_RECHARGE:
     case OUT_BASEFLOW:
     case OUT_DELINTERCEPT:

@@ -484,6 +484,7 @@ put_data(all_vars_struct   *all_vars,
     *****************************************/
     // Water balance terms
     out_data[OUT_DELSOILMOIST][0] = 0;
+
     for (index = 0; index < options.Nlayer; index++) {
         out_data[OUT_SOIL_MOIST][index] =
             out_data[OUT_SOIL_LIQ][index] +
@@ -534,7 +535,7 @@ put_data(all_vars_struct   *all_vars,
     ********************/
     inflow = out_data[OUT_PREC][0] + out_data[OUT_LAKE_CHAN_IN][0];  // mm over grid cell
     outflow = out_data[OUT_EVAP][0] + out_data[OUT_RUNOFF][0] +
-              out_data[OUT_BASEFLOW][0];  // mm over grid cell
+              out_data[OUT_GWRECHARGE][0]+out_data[OUT_BASEFLOW][0];  // mm over grid cell
     storage = 0.;
     for (index = 0; index < options.Nlayer; index++) {
         storage += out_data[OUT_SOIL_LIQ][index] +
@@ -649,11 +650,16 @@ collect_wb_terms(cell_data_struct cell,
     /** record runoff **/
     out_data[OUT_RUNOFF][0] += cell.runoff * AreaFactor;
 
-    /** record recharge **/
+    /** record recharge (Q12[1]) **/
     out_data[OUT_RECHARGE][0] += cell.recharge * AreaFactor;
-
-    /** record baseflow **/
+    /** record recharge to groundwater (Q12[2]) **/
+    out_data[OUT_GWRECHARGE][0] += cell.GWrecharge * AreaFactor;
+    /** record baseflow**/
     out_data[OUT_BASEFLOW][0] += cell.baseflow * AreaFactor;
+
+ 
+    /** record drainage between top soil to 2nd soil layer **/
+    //out_data[OUT_L1RECHARGE][0] += cell.L1recharge * AreaFactor;
 
     /** record inflow **/
     out_data[OUT_INFLOW][0] += (cell.inflow) * AreaFactor;
