@@ -90,6 +90,13 @@ calculate_demand(size_t iCell)
             continue;
         }
 
+        double gw_frac = calculate_groundwater_fraction(iCell);
+
+        /* Compute sector water demands partitioning into groundwater and surface water */
+        wu_var[iCell][iSector].demand_gw   = wu_force[iCell][iSector].demand * gw_frac;
+        wu_var[iCell][iSector].demand_surf = wu_force[iCell][iSector].demand * (1.0 - gw_frac);
+
+/*
         // groundwater
         wu_var[iCell][iSector].demand_gw = wu_force[iCell][iSector].demand *
                                            wu_force[iCell][iSector].
@@ -100,7 +107,24 @@ calculate_demand(size_t iCell)
                                              (1 -
                                               wu_force[iCell][iSector].
                                               groundwater_frac);
+*/
     }
+}
+
+double calculate_groundwater_fraction(size_t iCell)
+{
+    extern rout_force_struct  *rout_force;
+    extern rout_var_struct    *rout_var;
+
+    double QBf = rout_force[iCell].discharge;
+    double QChannel = rout_var[iCell].discharge;
+    
+    if (QBf < 0) {
+        QBf = 0;
+    }
+
+    double gw_frac = (QChannel == 0) ? 0 : QBf / QChannel;
+    return gw_frac;
 }
 
 /******************************************
