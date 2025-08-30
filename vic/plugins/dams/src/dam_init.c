@@ -260,7 +260,7 @@ dam_set_info(void)
         get_nc_field_double(&(plugin_filenames.dams), "capacity", d1start,
                             d1count, dvar);
     }
-    status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_INT,
+    status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_DOUBLE,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
 
@@ -278,7 +278,7 @@ dam_set_info(void)
         get_nc_field_double(&(plugin_filenames.dams), "inflow_fraction",
                             d1start, d1count, dvar);
     }
-    status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_INT,
+    status = MPI_Bcast(dvar, plugin_options.NDAMTYPES, MPI_DOUBLE,
                        VIC_MPI_ROOT, MPI_COMM_VIC);
     check_mpi_status(status, "MPI error.");
 
