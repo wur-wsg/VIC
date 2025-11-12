@@ -118,7 +118,7 @@ vic_force(void)
                                     param_set.TYPE[AIR_TEMP].varname,
                                     d3start, d3count, dvar);
         for (i = 0; i < local_domain.ncells_active; i++) {
-            force[i].air_temp[j] = (double) dvar[i];
+            force[i].air_temp[j] = (double) dvar[i] - 273.15;
         }
     }
 
@@ -195,7 +195,7 @@ vic_force(void)
                                     param_set.TYPE[PRESSURE].varname,
                                     d3start, d3count, dvar);
         for (i = 0; i < local_domain.ncells_active; i++) {
-            force[i].pressure[j] = (double) dvar[i];
+            force[i].pressure[j] = (double) dvar[i] / 1000.0;
         }
     }
     // Optional inputs
