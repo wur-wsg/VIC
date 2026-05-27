@@ -78,6 +78,9 @@ plugin_update_step_vars(void)
             crop_update_step_vars(i);
             wofost_update_step_vars(i);
         }
+        if (plugin_options.IRRIGATION) {
+            irr_update_step_vars(i);
+        }
     }
 }
 
@@ -124,16 +127,13 @@ plugin_run(void)
                 if (plugin_options.DAMS) {
                     local_dam_run(iCell);
                 }
-                rout_basin_run(iCell);
-                if (plugin_options.WATERUSE && plugin_options.LOCAL_WITH) {
-                    wu_run_local(iCell);
-                }
+                rout_basin_run(iCell);                if (plugin_options.WATERUSE && plugin_options.LOCAL_WITH) {
+                    wu_run_local(iCell);                }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
                 }
                 if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
-                    wu_remote(iCell);
-                }
+                    wu_remote(iCell);                }
             }
         }
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {
@@ -227,5 +227,8 @@ plugin_store(nc_file_struct *state_file)
     }
     if (plugin_options.DAMS) {
         log_warn("DAM state restore not implemented yet...");
+    }
+    if (plugin_options.IRRIGATION) {
+        irr_store(state_file);
     }
 }

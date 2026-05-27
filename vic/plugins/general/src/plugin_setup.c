@@ -259,6 +259,9 @@ plugin_restore(void)
     if (plugin_options.DAMS) {
         log_warn("DAM state restore not implemented yet...");
     }
+    if (plugin_options.IRRIGATION) {
+        irr_restore();
+    }
 }
 
 /******************************************

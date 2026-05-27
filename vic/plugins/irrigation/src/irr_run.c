@@ -30,6 +30,45 @@
 /******************************************
 * @brief   Calculate irrigation requirement (between field capacity and critical soil moisture point)
 ******************************************/
+/******************************************
+* @brief   Update Ksat for paddy cells before vic_run
+*          This ensures that both continuous and restart runs see the same
+*          Ksat value at the start of each vic_run timestep.
+******************************************/
+void
+irr_update_step_vars(size_t iCell)
+{
+    extern option_struct            options;
+    extern all_vars_struct         *all_vars;
+    extern irr_con_map_struct      *irr_con_map;
+    extern irr_con_struct         **irr_con;
+    extern soil_con_struct         *soil_con;
+    extern plugin_parameters_struct plugin_param;
+
+    size_t                          iIrr;
+    size_t                          iBand;
+    irr_con_struct                 *cirr_con;
+    soil_con_struct                *csoil_con;
+    cell_data_struct               *ccell_var;
+
+    csoil_con = &(soil_con[iCell]);
+
+    // Set Ksat for all veg/band combinations
+    for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
+        cirr_con = &(irr_con[iCell][iIrr]);
+        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+            ccell_var = &(all_vars[iCell].cell[cirr_con->veg_index][iBand]);
+            // Reset to default first
+            ccell_var->layer[0].Ksat = csoil_con->Ksat[0];
+            // Then apply paddy reduction if applicable
+            if (cirr_con->paddy) {
+                ccell_var->layer[0].Ksat = pow(csoil_con->Ksat[0],
+                                               plugin_param.Ksat_expt);
+            }
+        }
+    }
+}
+
 void
 irr_run_requirement(size_t iCell)
 {
@@ -162,7 +201,8 @@ irr_run_requirement(size_t iCell)
                     **********************************************************************/
                     // Calculate whether irrigation water is required to
                     // prevent suboptimal evapotranspiration
-                    if (cirr_var->offset >= cirr_con->offset) {
+                    
+                                        if (cirr_var->offset >= cirr_con->offset) {
                         if (cirr_con->paddy &&
                             csoil_con->max_moist[0] -
                             (moist[0] + cirr_var->leftover) > 0 &&

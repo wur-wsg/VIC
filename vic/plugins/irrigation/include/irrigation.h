@@ -103,4 +103,16 @@ void irr_set_demand(size_t);
 void irr_get_withdrawn(size_t);
 void irr_finalize(void);
 
+// state
+void irr_set_state_meta_data_info(void);
+void irr_set_nc_state_file_info(nc_file_struct *);
+void irr_add_state_dim(char *, nc_file_struct *);
+void irr_add_state_dim_var(char *, nc_file_struct *);
+void irr_add_state_dim_var_data(char *, nc_file_struct *);
+void irr_set_nc_state_var_info(nc_file_struct *, size_t);
+void irr_store(nc_file_struct *);
+void irr_restore(void);
+
 #endif
+
+void irr_update_step_vars(size_t iCell);

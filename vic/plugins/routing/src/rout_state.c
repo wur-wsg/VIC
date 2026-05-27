@@ -45,6 +45,18 @@ rout_set_state_meta_data_info(void)
              "%s", "m3/s");
     snprintf(state_metadata[N_STATE_VARS + STATE_DISCHARGE_DT].description,
              MAXSTRING, "%s", "sub-step discharge at the cell outflow point");
+
+    snprintf(state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].varname,
+             MAXSTRING, "%s", "STATE_NONRENEW_DEFICIT");
+    snprintf(state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].long_name,
+             MAXSTRING, "%s", "nonrenew_deficit");
+    snprintf(state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].standard_name,
+             MAXSTRING, "%s", "nonrenew_deficit");
+    snprintf(state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].units,
+             MAXSTRING, "%s", "mm");
+    snprintf(state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].description,
+             MAXSTRING, "%s",
+             "accumulated non-renewable groundwater withdrawal deficit");
 }
 
 /******************************************
@@ -168,6 +180,10 @@ rout_set_nc_state_var_info(nc_file_struct *nc,
         nc->nc_vars[varid].nc_counts[0] = 1;
         nc->nc_vars[varid].nc_counts[1] = nc->nj_size;
         nc->nc_vars[varid].nc_counts[2] = nc->ni_size;
+        break;
+    case N_STATE_VARS + STATE_NONRENEW_DEFICIT:
+        /* default 2D (lat x lon) layout inherited from plugin_set_nc_state_var_info */
+        break;
     }
 }
 
@@ -218,6 +234,25 @@ rout_store(nc_file_struct *state_file)
             dvar[i] = state_file->d_fillvalue;
         }
     }
+
+    free(dvar);
+
+    // Save non-renewable deficit (2D: one scalar per active cell)
+    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+    check_alloc_status(dvar, "Memory allocation error");
+
+    d3start[0] = 0;
+    d3start[1] = 0;
+    d3start[2] = 0;
+
+    nc_var = &(state_file->nc_vars[N_STATE_VARS + STATE_NONRENEW_DEFICIT]);
+    for (i = 0; i < local_domain.ncells_active; i++) {
+        dvar[i] = (double) rout_var[i].nonrenew_deficit;
+    }
+    gather_put_nc_field_double(state_file->nc_id,
+                               nc_var->nc_varid,
+                               state_file->d_fillvalue,
+                               d3start, nc_var->nc_counts, dvar);
 
     free(dvar);
 }
