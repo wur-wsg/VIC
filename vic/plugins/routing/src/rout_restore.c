@@ -131,8 +131,8 @@ rout_restore(void)
                                   &var_id);
             var_found = (status == NC_NOERR) ? 1 : 0;
         }
-        // Broadcast to all ranks: only root opened the file and checked whether
-        // the variable exists; other ranks are unaware of the result without this.
+        // Broadcast to all ranks: get_scatter_nc_field_double is a collective
+        // MPI call, so all ranks must enter it together or not at all.
         status = MPI_Bcast(&var_found, 1, MPI_INT, VIC_MPI_ROOT, MPI_COMM_VIC);
         check_mpi_status(status, "MPI error");
 
