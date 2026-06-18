@@ -171,9 +171,12 @@ calc_root_fractions(veg_con_struct  *veg_con,
             dum += veg_con[veg].root[layer];
         }
         if (dum == 0.0) {
-            log_err("Root fractions sum equals zero: %f , Vege Class: %d",
-                    dum, veg_con[veg].veg_class);
+            log_err("Root fractions sum equals zero: %f , Vege Class: %d, "
+                    "Gridcel: %u, Lat: %f, Lon: %f",
+                    dum, veg_con[veg].veg_class,
+                    soil_con->gridcel, soil_con->lat, soil_con->lng);
         }
+
         for (layer = 0; layer < options.Nlayer; layer++) {
             veg_con[veg].root[layer] /= dum;
         }

@@ -508,6 +508,11 @@ get_global_param(FILE *gp)
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKES = str_to_bool(flgstr);
             }
+
+            else if (strcasecmp("GWM", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                options.GWM = str_to_bool(flgstr);
+            }
             else if (strcasecmp("LAKE_PROFILE", optstr) == 0) {
                 sscanf(cmdstr, "%*s %s", flgstr);
                 options.LAKE_PROFILE = str_to_bool(flgstr);

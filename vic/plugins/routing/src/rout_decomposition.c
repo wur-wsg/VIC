@@ -320,6 +320,17 @@ rout_decomp_domain_from_basins(size_t        ncells,
     size_t *node_ids;
     size_t *basin_to_node;
 
+    if (mpi_map_local_array_sizes == NULL ||
+        mpi_map_global_array_offsets == NULL ||
+        mpi_map_mapping_array == NULL) {
+        log_err("MPI map array pointer addresses are NULL");
+    }
+    if ((*mpi_map_local_array_sizes) == NULL ||
+        (*mpi_map_global_array_offsets) == NULL ||
+        (*mpi_map_mapping_array) == NULL) {
+        log_err("MPI map arrays are NULL (allocation missing)");
+    }
+
     node_ids = malloc(mpi_size * sizeof(*node_ids));
     check_alloc_status(node_ids, "Memory allocation error.");
     basin_to_node = malloc(basins->Nbasin * sizeof(*basin_to_node));

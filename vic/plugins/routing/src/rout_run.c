@@ -38,6 +38,7 @@ rout_run(size_t iCell)
     extern plugin_option_struct plugin_options;
     extern rout_var_struct     *rout_var;
     extern double            ***out_data;
+    extern option_struct        options;
 
     double                      in_runoff;
     double                      in_baseflow;
@@ -45,9 +46,14 @@ rout_run(size_t iCell)
     /* RUNOFF*/
     // Gather runoff from VIC
     in_runoff = out_data[iCell][OUT_RUNOFF][0];
-    in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
+    if (options.GWM) {
+        in_baseflow = 0.;
+    }
+    else {
+        in_baseflow = out_data[iCell][OUT_BASEFLOW][0];
+    }
 
-    if (rout_var[iCell].nonrenew_deficit > 0) {
+    if (rout_var[iCell].nonrenew_deficit > 0 && options.GWM == false) {
         if (in_baseflow > rout_var[iCell].nonrenew_deficit) {
             in_baseflow -= rout_var[iCell].nonrenew_deficit;
             rout_var[iCell].nonrenew_deficit = 0.;

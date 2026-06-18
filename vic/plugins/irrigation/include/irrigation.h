@@ -113,6 +113,7 @@ void irr_set_nc_state_var_info(nc_file_struct *, size_t);
 void irr_store(nc_file_struct *);
 void irr_restore(void);
 
-#endif
+
 
 void irr_update_step_vars(size_t iCell);
+#endif

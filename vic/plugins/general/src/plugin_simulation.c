@@ -127,13 +127,16 @@ plugin_run(void)
                 if (plugin_options.DAMS) {
                     local_dam_run(iCell);
                 }
-                rout_basin_run(iCell);                if (plugin_options.WATERUSE && plugin_options.LOCAL_WITH) {
-                    wu_run_local(iCell);                }
+                rout_basin_run(iCell);
+                if (plugin_options.WATERUSE && plugin_options.LOCAL_WITH) {
+                    wu_run_local(iCell);
+                }
                 if (plugin_options.DAMS) {
                     global_dam_run(iCell);
                 }
                 if (plugin_options.WATERUSE && plugin_options.REMOTE_WITH) {
-                    wu_remote(iCell);                }
+                    wu_remote(iCell);
+                }
             }
         }
         else if (plugin_options.DECOMPOSITION == RANDOM_DECOMPOSITION) {

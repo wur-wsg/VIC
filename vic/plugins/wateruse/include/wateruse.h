@@ -137,6 +137,7 @@ void wu_forcing(void);
 void wu_run(size_t);
 void wu_run_local(size_t);
 void wu_remote(size_t);
+void wu_remote_report_issue_counts(void);
 void wu_nonrenew(size_t);
 
 void wu_finalize(void);

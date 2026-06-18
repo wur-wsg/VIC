@@ -201,8 +201,7 @@ irr_run_requirement(size_t iCell)
                     **********************************************************************/
                     // Calculate whether irrigation water is required to
                     // prevent suboptimal evapotranspiration
-                    
-                                        if (cirr_var->offset >= cirr_con->offset) {
+                    if (cirr_var->offset >= cirr_con->offset) {
                         if (cirr_con->paddy &&
                             csoil_con->max_moist[0] -
                             (moist[0] + cirr_var->leftover) > 0 &&

@@ -629,6 +629,7 @@ distribute_energy_balance_terms(size_t   iCell,
     double                     add_frac;
     double                     before_energy;
     double                     after_energy;
+    double                     max_energy;
 
     // energy-balance
     // snow
@@ -736,7 +737,11 @@ distribute_energy_balance_terms(size_t   iCell,
     }
 
     // Check energy balance
-    if (abs(before_energy - after_energy) > DBL_EPSILON) {
+    max_energy = max(fabs(before_energy), fabs(after_energy));
+    max_energy = max(max_energy, DBL_EPSILON);
+    if (options.FULL_ENERGY &&
+        fabs(before_energy - after_energy) >
+        max_energy * veg_con_map[iCell].nv_active * MINCOVERAGECHANGE) {
         for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
             fprintf(LOG_DEST, "\niBand %zu iVeg %zu\n"
                     "\t\tBefore\tAfter:\n"
@@ -1104,7 +1109,7 @@ lu_apply(void)
                     MINCOVERAGECHANGE) {
                     log_warn(
                         "Water balance error [%.4f out of %.4f mm] for cell [%zu]",
-                        fabs(before_water - max_water), after_water,
+                        fabs(before_water - after_water), after_water,
                         iCell);
                 }
                 if (fabs(before_carbon - after_carbon) >
@@ -1115,7 +1120,8 @@ lu_apply(void)
                         fabs(
                             before_carbon - after_carbon), max_carbon, iCell);
                 }
-                if (fabs(before_energy - after_energy) >
+                if (options.FULL_ENERGY &&
+                    fabs(before_energy - after_energy) >
                     max_energy * veg_con_map[iCell].nv_active *
                     MINCOVERAGECHANGE) {
                     log_warn(

@@ -386,6 +386,16 @@ set_output_met_data_info()
         "lumped water table position (zwt of total moisture across all layers, lumped together)");
 
     // Water Balance Terms - fluxes
+    /*flux between soil layer*/
+    snprintf(out_metadata[OUT_GWRECHARGE].varname, MAXSTRING, "%s",
+             "OUT_GWRECHARGE");
+    snprintf(out_metadata[OUT_GWRECHARGE].long_name, MAXSTRING, "%s", "GWrecharge");
+    snprintf(out_metadata[OUT_GWRECHARGE].standard_name, MAXSTRING, "%s",
+             "subsurfaceflux");
+    snprintf(out_metadata[OUT_GWRECHARGE].units, MAXSTRING, "%s", "mm");
+    snprintf(out_metadata[OUT_GWRECHARGE].description, MAXSTRING, "%s",
+             "recharge to the groundwater aquifer Q12[2]");
+
     /* recharge to the bottom layer [mm] */
     snprintf(out_metadata[OUT_RECHARGE].varname, MAXSTRING, "%s",
              "OUT_RECHARGE");
@@ -394,7 +404,7 @@ set_output_met_data_info()
              "recharge_amount");
     snprintf(out_metadata[OUT_RECHARGE].units, MAXSTRING, "%s", "mm");
     snprintf(out_metadata[OUT_RECHARGE].description, MAXSTRING, "%s",
-             "recharge to the bottom layer");
+             "recharge to the bottom layer Q12[1]");
 
     /* baseflow out of the bottom layer [mm] */
     snprintf(out_metadata[OUT_BASEFLOW].varname, MAXSTRING, "%s",

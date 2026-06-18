@@ -65,6 +65,7 @@ rout_restore(void)
     extern global_param_struct        global_param;
     extern plugin_global_param_struct plugin_global_param;
     extern plugin_option_struct       plugin_options;
+    extern option_struct              options;
     extern rout_var_struct           *rout_var;
     extern filenames_struct           filenames;
     extern metadata_struct            state_metadata[];
@@ -105,25 +106,32 @@ rout_restore(void)
 
     free(dvar);
 
-    // Restore non-renewable deficit (2D variable: ny x nx)
-    // Use fresh 2D start/count - d3count is set for the 3D dt_discharge variable
-    dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
-    check_alloc_status(dvar, "Memory allocation error");
+    if (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH &&
+        options.GWM == false) {
+        // Restore non-renewable deficit (2D variable: ny x nx)
+        dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
+        check_alloc_status(dvar, "Memory allocation error");
 
-    {
-        size_t d2start[2] = {0, 0};
-        size_t d2count[2] = {global_domain.n_ny, global_domain.n_nx};
+        {
+            size_t d2start[2] = {0, 0};
+            size_t d2count[2] = {global_domain.n_ny, global_domain.n_nx};
 
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[N_STATE_VARS +
-                                                   STATE_NONRENEW_DEFICIT].varname,
-                                    d2start, d2count, dvar);
+            get_scatter_nc_field_double(
+                &(filenames.init_state),
+                state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].varname,
+                d2start, d2count, dvar);
+        }
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            rout_var[i].nonrenew_deficit = dvar[i];
+        }
+
+        free(dvar);
     }
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        rout_var[i].nonrenew_deficit = dvar[i];
+    else {
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            rout_var[i].nonrenew_deficit = 0.0;
+        }
     }
-
-    free(dvar);
 }
 
 /******************************************

@@ -93,44 +93,46 @@ calculate_availability_local(size_t   iCell,
                         global_param.model_steps_per_day;
 
     // groundwater
-    iLayer = options.Nlayer - 1;
-    for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (veg_con[iCell][iVeg].Cv <= 0.0) {
-            continue;
-        }
-
-        for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-            if (soil_con[iCell].AreaFract[iBand] <= 0.0) {
+    if (options.GWM == false) {
+        iLayer = options.Nlayer - 1;
+        for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+            if (veg_con[iCell][iVeg].Cv <= 0.0) {
                 continue;
             }
 
-            av_gw[iVeg][iBand] =
-                all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist;
-            if (plugin_options.EFR) {
-                av_gw[iVeg][iBand] -= efr_force[iCell].moist[iVeg][iBand];
+            for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                if (soil_con[iCell].AreaFract[iBand] <= 0.0) {
+                    continue;
+                }
+
+                av_gw[iVeg][iBand] =
+                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].moist;
+                if (plugin_options.EFR) {
+                    av_gw[iVeg][iBand] -= efr_force[iCell].moist[iVeg][iBand];
+                }
+
+                resid_moist = soil_con[iCell].resid_moist[iLayer] *
+                              soil_con[iCell].depth[iLayer] * MM_PER_M;
+                av_gw[iVeg][iBand] -= resid_moist;
+
+                ice = 0;
+                for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
+                    ice +=
+                        all_vars[iCell].cell[iVeg][iBand].layer[iLayer].ice[
+                            iFrost] *
+                        soil_con[iCell].frost_fract[iFrost];
+                }
+                av_gw[iVeg][iBand] -= ice;
+
+                av_gw[iVeg][iBand] *= soil_con[iCell].AreaFract[iBand] *
+                                      veg_con[iCell][iVeg].Cv;
+
+                if (av_gw[iVeg][iBand] < 0) {
+                    av_gw[iVeg][iBand] = 0;
+                }
+
+                (*available_gw) += av_gw[iVeg][iBand];
             }
-
-            resid_moist = soil_con[iCell].resid_moist[iLayer] *
-                          soil_con[iCell].depth[iLayer] * MM_PER_M;
-            av_gw[iVeg][iBand] -= resid_moist;
-
-            ice = 0;
-            for (iFrost = 0; iFrost < options.Nfrost; iFrost++) {
-                ice +=
-                    all_vars[iCell].cell[iVeg][iBand].layer[iLayer].ice[iFrost]
-                    *
-                    soil_con[iCell].frost_fract[iFrost];
-            }
-            av_gw[iVeg][iBand] -= ice;
-
-            av_gw[iVeg][iBand] *= soil_con[iCell].AreaFract[iBand] *
-                                  veg_con[iCell][iVeg].Cv;
-
-            if (av_gw[iVeg][iBand] < 0) {
-                av_gw[iVeg][iBand] = 0;
-            }
-
-            (*available_gw) += av_gw[iVeg][iBand];
         }
     }
 
@@ -393,7 +395,7 @@ calculate_hydrology_local(size_t   iCell,
                         global_param.model_steps_per_day;
 
     // groundwater
-    if (withdrawn_gw > 0.) {
+    if (withdrawn_gw > 0. && options.GWM == false) {
         iLayer = options.Nlayer - 1;
         for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
             if (veg_con[iCell][iVeg].Cv <= 0.0) {
@@ -434,7 +436,7 @@ calculate_hydrology_local(size_t   iCell,
     }
 
     // non-renewable
-    if (returned > 0.) {
+    if (returned > 0. && options.GWM == false) {
         for (i = 0; i < plugin_options.NWUTYPES; i++) {
             iSector = wu_con_map[iCell].sidx[i];
             if (iSector == NODATA_WU) {

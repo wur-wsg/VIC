@@ -176,13 +176,18 @@ wu_alloc(void)
 void
 wu_finalize(void)
 {
-    extern domain_struct      local_domain;
-    extern wu_con_map_struct *wu_con_map;
-    extern wu_var_struct    **wu_var;
-    extern wu_con_struct     *wu_con;
-    extern wu_force_struct  **wu_force;
+    extern domain_struct        local_domain;
+    extern plugin_option_struct plugin_options;
+    extern wu_con_map_struct   *wu_con_map;
+    extern wu_var_struct      **wu_var;
+    extern wu_con_struct       *wu_con;
+    extern wu_force_struct    **wu_force;
 
-    size_t                    i;
+    size_t                      i;
+
+    if (plugin_options.REMOTE_WITH) {
+        wu_remote_report_issue_counts();
+    }
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         free(wu_con_map[i].sidx);

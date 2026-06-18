@@ -80,6 +80,7 @@ calculate_demand(size_t iCell)
     extern wu_var_struct      **wu_var;
     extern wu_force_struct    **wu_force;
     extern wu_con_map_struct   *wu_con_map;
+    extern option_struct        options;
 
     size_t                      i;
     int                         iSector;
@@ -90,16 +91,22 @@ calculate_demand(size_t iCell)
             continue;
         }
 
-        // groundwater
-        wu_var[iCell][iSector].demand_gw = wu_force[iCell][iSector].demand *
-                                           wu_force[iCell][iSector].
-                                           groundwater_frac;
+        if (options.GWM) {
+            wu_var[iCell][iSector].demand_gw = 0.0;
+            wu_var[iCell][iSector].demand_surf =
+                wu_force[iCell][iSector].demand;
+        }
+        else {
+            // groundwater
+            wu_var[iCell][iSector].demand_gw =
+                wu_force[iCell][iSector].demand *
+                wu_force[iCell][iSector].groundwater_frac;
 
-        // surface water
-        wu_var[iCell][iSector].demand_surf = wu_force[iCell][iSector].demand *
-                                             (1 -
-                                              wu_force[iCell][iSector].
-                                              groundwater_frac);
+            // surface water
+            wu_var[iCell][iSector].demand_surf =
+                wu_force[iCell][iSector].demand *
+                (1 - wu_force[iCell][iSector].groundwater_frac);
+        }
     }
 }
 

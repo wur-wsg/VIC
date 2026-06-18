@@ -191,6 +191,7 @@ calculate_hydrology_nonrenew(size_t iCell,
     extern global_param_struct global_param;
     extern domain_struct       local_domain;
     extern rout_var_struct    *rout_var;
+    extern option_struct       options;
 
     double                     available_stream_tmp;
     double                     returned_stream_tmp;
@@ -207,7 +208,7 @@ calculate_hydrology_nonrenew(size_t iCell,
                         global_param.model_steps_per_day;
 
     // non-renewable
-    if (withdrawn_nonrenew > 0.) {
+    if (withdrawn_nonrenew > 0. && options.GWM == false) {
         rout_var[iCell].nonrenew_deficit += withdrawn_nonrenew;
 
         if (rout_var[iCell].nonrenew_deficit < 0) {
@@ -216,7 +217,7 @@ calculate_hydrology_nonrenew(size_t iCell,
     }
 
     // non-renewable returns
-    if (returned > 0.) {
+    if (returned > 0. && options.GWM == false) {
         for (i = 0; i < plugin_options.NWUTYPES; i++) {
             iSector = wu_con_map[iCell].sidx[i];
             if (iSector == NODATA_WU) {

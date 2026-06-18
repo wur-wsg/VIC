@@ -136,6 +136,7 @@ wu_set_routing_order()
     extern rout_con_struct *rout_con;
     extern wu_con_struct   *wu_con;
     extern size_t          *routing_order;
+    extern int              mpi_rank;
 
     bool                   *done_tmp;
     bool                   *done_fin;
@@ -145,6 +146,15 @@ wu_set_routing_order()
 
     size_t                  i;
     size_t                  j;
+    size_t                  rank_start;
+    size_t                  blocked_upstream;
+    size_t                  blocked_command;
+    size_t                  remaining;
+    size_t                  iter;
+    size_t                  sample_i[5];
+    size_t                  sample_blocker[5];
+    char                    sample_kind[5];
+    size_t                  nsample;
 
     done_tmp = malloc(local_domain.ncells_active * sizeof(*done_tmp));
     check_alloc_status(done_tmp, "Memory allocation error.");
@@ -158,7 +168,13 @@ wu_set_routing_order()
 
     // Set cell_order_local for node
     rank = 0;
+    iter = 0;
     while (rank < local_domain.ncells_active) {
+        iter++;
+        rank_start = rank;
+        blocked_upstream = 0;
+        blocked_command = 0;
+        nsample = 0;
         for (i = 0; i < local_domain.ncells_active; i++) {
             if (done_fin[i]) {
                 continue;
@@ -174,6 +190,13 @@ wu_set_routing_order()
             }
 
             if (has_upstream) {
+                blocked_upstream++;
+                if (nsample < 5) {
+                    sample_i[nsample] = i;
+                    sample_blocker[nsample] = rout_con[i].upstream[j];
+                    sample_kind[nsample] = 'U';
+                    nsample++;
+                }
                 continue;
             }
 
@@ -186,6 +209,13 @@ wu_set_routing_order()
             }
 
             if (has_command) {
+                blocked_command++;
+                if (nsample < 5) {
+                    sample_i[nsample] = i;
+                    sample_blocker[nsample] = wu_con[i].receiving[j];
+                    sample_kind[nsample] = 'R';
+                    nsample++;
+                }
                 continue;
             }
 
@@ -202,6 +232,52 @@ wu_set_routing_order()
             if (done_tmp[i] == true) {
                 done_fin[i] = true;
             }
+        }
+
+        if (rank == rank_start) {
+            remaining = local_domain.ncells_active - rank;
+            fprintf(LOG_DEST,
+                    "wu_set_routing_order stalled (mpi_rank=%d, iter=%zu): "
+                    "remaining=%zu, blocked_by_upstream=%zu, "
+                    "blocked_by_receiving=%zu\n",
+                    mpi_rank, iter, remaining, blocked_upstream,
+                    blocked_command);
+            for (i = 0; i < nsample; i++) {
+                size_t i_local = sample_i[i];
+                size_t b_local = sample_blocker[i];
+
+                if (i_local >= local_domain.ncells_active ||
+                    b_local >= local_domain.ncells_active) {
+                    fprintf(LOG_DEST,
+                            "  sample[%zu]: cell_local=%zu blocked_by_%c "
+                            "blocker_local=%zu (out_of_local_range)\n",
+                            i, i_local, sample_kind[i], b_local);
+                    continue;
+                }
+
+                fprintf(
+                    LOG_DEST,
+                    "  sample[%zu]: cell_local=%zu cell_global=%zu "
+                    "cell_lat=%.6f cell_lon=%.6f blocked_by_%c "
+                    "blocker_local=%zu blocker_global=%zu "
+                    "blocker_lat=%.6f blocker_lon=%.6f (blocker_done=%d)\n",
+                    i,
+                    i_local,
+                    local_domain.locations[i_local].global_idx,
+                    local_domain.locations[i_local].latitude,
+                    local_domain.locations[i_local].longitude,
+                    sample_kind[i],
+                    b_local,
+                    local_domain.locations[b_local].global_idx,
+                    local_domain.locations[b_local].latitude,
+                    local_domain.locations[b_local].longitude,
+                    done_fin[b_local]);
+            }
+            log_err("wu_set_routing_order made no progress; remaining=%zu, "
+                    "blocked_by_upstream=%zu, blocked_by_receiving=%zu. "
+                    "Likely cycle/inconsistent dependency in routing and/or "
+                    "water-use receiving constraints.",
+                    remaining, blocked_upstream, blocked_command);
         }
     }
 

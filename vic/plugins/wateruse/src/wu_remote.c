@@ -27,6 +27,71 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+#define WU_REMOTE_WARN_LOG_LIMIT 20ULL
+
+static unsigned long long wu_remote_no_q_event_count = 0;
+static unsigned long long wu_remote_no_q_unique_cell_count = 0;
+static unsigned long long wu_remote_no_q_log_count = 0;
+static unsigned long long wu_remote_no_q_suppressed_logs = 0;
+static unsigned char     *wu_remote_no_q_seen_cell = NULL;
+static size_t             wu_remote_no_q_seen_ncells = 0;
+
+static void
+wu_remote_issue_tracker_init(void)
+{
+    extern domain_struct local_domain;
+
+    if (wu_remote_no_q_seen_cell != NULL &&
+        wu_remote_no_q_seen_ncells == local_domain.ncells_active) {
+        return;
+    }
+
+    if (local_domain.ncells_active == 0) {
+        wu_remote_no_q_seen_ncells = 0;
+        return;
+    }
+
+    if (wu_remote_no_q_seen_cell != NULL) {
+        free(wu_remote_no_q_seen_cell);
+        wu_remote_no_q_seen_cell = NULL;
+    }
+
+    wu_remote_no_q_seen_cell =
+        calloc(local_domain.ncells_active, sizeof(*wu_remote_no_q_seen_cell));
+    check_alloc_status(wu_remote_no_q_seen_cell, "Memory allocation error.");
+    wu_remote_no_q_seen_ncells = local_domain.ncells_active;
+}
+
+static void
+wu_remote_register_no_discharge_issue(size_t iCell,
+                                      double withdrawn_remote,
+                                      double available_discharge_tmp)
+{
+    wu_remote_issue_tracker_init();
+
+    wu_remote_no_q_event_count++;
+
+    if (iCell < wu_remote_no_q_seen_ncells &&
+        !wu_remote_no_q_seen_cell[iCell]) {
+        wu_remote_no_q_seen_cell[iCell] = 1;
+        wu_remote_no_q_unique_cell_count++;
+    }
+
+    if (wu_remote_no_q_log_count < WU_REMOTE_WARN_LOG_LIMIT) {
+        log_warn("WU remote withdrawal skipped: iCell=%zu, withdrawn_remote=%.6g mm, available_discharge_sum=%.6g m3/s",
+                 iCell, withdrawn_remote, available_discharge_tmp);
+        wu_remote_no_q_log_count++;
+
+        if (wu_remote_no_q_log_count == WU_REMOTE_WARN_LOG_LIMIT) {
+            log_warn("WU remote withdrawal warnings reached limit (%llu); suppressing further per-cell warnings",
+                     (unsigned long long) WU_REMOTE_WARN_LOG_LIMIT);
+        }
+    }
+    else {
+        wu_remote_no_q_suppressed_logs++;
+    }
+}
+
 /******************************************
 * @brief   Reset water-use from sectors
 ******************************************/
@@ -78,6 +143,7 @@ calculate_demand_remote(size_t  iCell,
     extern wu_var_struct      **wu_var;
     extern wu_con_struct       *wu_con;
     extern wu_con_map_struct   *wu_con_map;
+    extern option_struct        options;
 
     size_t                      i;
     size_t                      j;
@@ -103,15 +169,26 @@ calculate_demand_remote(size_t  iCell,
                 continue;
             }
 
-            wu_var[iCell2][iSector2].demand_remote_tmp =
-                (wu_var[iCell2][iSector2].demand_surf +
-                 wu_var[iCell2][iSector2].demand_gw) -
-                (wu_var[iCell2][iSector2].withdrawn_surf +
-                 wu_var[iCell2][iSector2].withdrawn_gw +
-                 wu_var[iCell2][iSector2].withdrawn_dam +
-                 wu_var[iCell2][iSector2].withdrawn_tremote);
-            if (wu_var[iCell2][iSector2].demand_remote_tmp < 0) {
-                wu_var[iCell2][iSector2].demand_remote_tmp = 0.;
+            if (options.GWM) {
+                double unmet_non_gw =
+                    wu_var[iCell2][iSector2].demand_surf -
+                    (wu_var[iCell2][iSector2].withdrawn_surf +
+                     wu_var[iCell2][iSector2].withdrawn_dam +
+                     wu_var[iCell2][iSector2].withdrawn_tremote);
+                wu_var[iCell2][iSector2].demand_remote_tmp =
+                    (unmet_non_gw > 0.0) ? unmet_non_gw : 0.0;
+            }
+            else {
+                wu_var[iCell2][iSector2].demand_remote_tmp =
+                    (wu_var[iCell2][iSector2].demand_surf +
+                     wu_var[iCell2][iSector2].demand_gw) -
+                    (wu_var[iCell2][iSector2].withdrawn_surf +
+                     wu_var[iCell2][iSector2].withdrawn_gw +
+                     wu_var[iCell2][iSector2].withdrawn_dam +
+                     wu_var[iCell2][iSector2].withdrawn_tremote);
+                if (wu_var[iCell2][iSector2].demand_remote_tmp < 0) {
+                    wu_var[iCell2][iSector2].demand_remote_tmp = 0.;
+                }
             }
 
             wu_var[iCell][iSector].demand_remote +=
@@ -320,6 +397,7 @@ calculate_hydrology_remote(size_t iCell,
     size_t                            iCell2;
     int                               iSector;
     int                               iSector2;
+    bool                              no_discharge_for_withdrawal;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
@@ -386,6 +464,7 @@ calculate_hydrology_remote(size_t iCell,
         returned_discharge_tmp = returned /
                                  MM_PER_M * local_domain.locations[iCell].area /
                                  global_param.dt;
+        no_discharge_for_withdrawal = false;
 
         for (iStep = 0;
              iStep < plugin_options.UH_LENGTH + rout_steps_per_dt - 1;
@@ -401,8 +480,7 @@ calculate_hydrology_remote(size_t iCell,
                         (discharge_dt / available_discharge_tmp);
                 }
                 else {
-                    log_err(
-                        "Wateruse discharge withdrawn while no discharge is available");
+                    no_discharge_for_withdrawal = true;
                 }
             }
 
@@ -426,6 +504,12 @@ calculate_hydrology_remote(size_t iCell,
             }
         }
 
+        if (no_discharge_for_withdrawal) {
+            wu_remote_register_no_discharge_issue(iCell,
+                                                  withdrawn_remote,
+                                                  available_discharge_tmp);
+        }
+
         // Recalculate discharge and stream moisture
         rout_var[iCell].discharge = 0.;
         rout_var[iCell].stream = 0.;
@@ -440,6 +524,52 @@ calculate_hydrology_remote(size_t iCell,
                 rout_var[iCell].stream += rout_var[iCell].dt_discharge[iStep];
             }
         }
+    }
+}
+
+/******************************************
+* @brief   Report remote withdrawal issue counts
+******************************************/
+void
+wu_remote_report_issue_counts(void)
+{
+    extern int      mpi_rank;
+    extern MPI_Comm MPI_COMM_VIC;
+
+    int                        status;
+    unsigned long long         global_event_count;
+    unsigned long long         global_unique_cell_count;
+    unsigned long long         global_suppressed_logs;
+
+    global_event_count = 0;
+    global_unique_cell_count = 0;
+    global_suppressed_logs = 0;
+
+    status = MPI_Reduce(&wu_remote_no_q_event_count, &global_event_count,
+                        1, MPI_UNSIGNED_LONG_LONG, MPI_SUM,
+                        VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+    status = MPI_Reduce(&wu_remote_no_q_unique_cell_count,
+                        &global_unique_cell_count,
+                        1, MPI_UNSIGNED_LONG_LONG, MPI_SUM,
+                        VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+    status = MPI_Reduce(&wu_remote_no_q_suppressed_logs,
+                        &global_suppressed_logs,
+                        1, MPI_UNSIGNED_LONG_LONG, MPI_SUM,
+                        VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+
+    if (mpi_rank == VIC_MPI_ROOT) {
+        log_warn("WU remote withdrawal issue summary: unique_cells=%llu, events=%llu, suppressed_detail_logs=%llu",
+                 global_unique_cell_count, global_event_count,
+                 global_suppressed_logs);
+    }
+
+    if (wu_remote_no_q_seen_cell != NULL) {
+        free(wu_remote_no_q_seen_cell);
+        wu_remote_no_q_seen_cell = NULL;
+        wu_remote_no_q_seen_ncells = 0;
     }
 }
 

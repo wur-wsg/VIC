@@ -54,13 +54,13 @@ plugin_set_output_met_data_info(void)
              MAXSTRING,
              "%s", "OUT_ROUTING_ERROR");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].long_name,
-             MAXSTRING, "%s", "non_renewable_deficit");
+             MAXSTRING, "%s", "routing budget error");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].standard_name,
-             MAXSTRING, "%s", "non_renewable_deficit");
+             MAXSTRING, "%s", "routing budget error");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].units, MAXSTRING,
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_ROUTING_ERROR].description,
-             MAXSTRING, "%s", "non-renewable deficit");
+             MAXSTRING, "%s", "routing budget error [mm]");
 
     if (plugin_options.ROUTING ||
         (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH)) {
