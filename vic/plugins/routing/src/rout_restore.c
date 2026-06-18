@@ -68,6 +68,8 @@ rout_restore(void)
     extern rout_var_struct           *rout_var;
     extern filenames_struct           filenames;
     extern metadata_struct            state_metadata[];
+    extern MPI_Comm                   MPI_COMM_VIC;
+    extern int                        mpi_rank;
 
     size_t                            i;
     size_t                            j;
@@ -75,6 +77,7 @@ rout_restore(void)
     size_t                            d3count[3];
     size_t                            d3start[3];
     size_t                            rout_steps_per_dt;
+    int                               status;
 
     rout_steps_per_dt = plugin_global_param.rout_steps_per_day /
                         global_param.model_steps_per_day;
@@ -105,22 +108,60 @@ rout_restore(void)
 
     free(dvar);
 
-    // Restore non-renewable deficit (2D variable: ny x nx)
-    // Use fresh 2D start/count - d3count is set for the 3D dt_discharge variable
+    // Restore non-renewable deficit (2D variable: ny x nx).
+    // Only meaningful when WATERUSE and NONRENEW_WITH (NONRENEWABLE_WITHDRAWAL
+    // in the config) are both enabled. Note: rout_restore() is only reached
+    // when ROUTING=TRUE (guarded in plugin_restore() in plugin_setup.c).
+    //
+    // When WATERUSE or NONRENEW_WITH is off (e.g. a natural run), zero-initialize
+    // silently -- no NC lookup needed, no spurious warning.
+    //
+    // When both are on, the variable may be absent from older state files.
+    // In that case emit a warning and start from zero instead of crashing.
     dvar = malloc(local_domain.ncells_active * sizeof(*dvar));
     check_alloc_status(dvar, "Memory allocation error");
 
-    {
-        size_t d2start[2] = {0, 0};
-        size_t d2count[2] = {global_domain.n_ny, global_domain.n_nx};
+    if (plugin_options.WATERUSE && plugin_options.NONRENEW_WITH) {
+        int var_found = 0;
+        if (mpi_rank == VIC_MPI_ROOT) {
+            int var_id;
+            status = nc_inq_varid(filenames.init_state.nc_id,
+                                  state_metadata[N_STATE_VARS +
+                                                 STATE_NONRENEW_DEFICIT].varname,
+                                  &var_id);
+            var_found = (status == NC_NOERR) ? 1 : 0;
+        }
+        // Broadcast to all ranks: only root opened the file and checked whether
+        // the variable exists; other ranks are unaware of the result without this.
+        status = MPI_Bcast(&var_found, 1, MPI_INT, VIC_MPI_ROOT, MPI_COMM_VIC);
+        check_mpi_status(status, "MPI error");
 
-        get_scatter_nc_field_double(&(filenames.init_state),
-                                    state_metadata[N_STATE_VARS +
-                                                   STATE_NONRENEW_DEFICIT].varname,
-                                    d2start, d2count, dvar);
+        if (var_found) {
+            size_t d2start[2] = {0, 0};
+            size_t d2count[2] = {global_domain.n_ny, global_domain.n_nx};
+
+            get_scatter_nc_field_double(&(filenames.init_state),
+                                        state_metadata[N_STATE_VARS +
+                                                       STATE_NONRENEW_DEFICIT].varname,
+                                        d2start, d2count, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                rout_var[i].nonrenew_deficit = dvar[i];
+            }
+        }
+        else {
+            log_warn("State variable \"%s\" not found in state file -- "
+                     "non-renewable groundwater deficit initialized to zero.",
+                     state_metadata[N_STATE_VARS + STATE_NONRENEW_DEFICIT].varname);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                rout_var[i].nonrenew_deficit = 0.0;
+            }
+        }
     }
-    for (i = 0; i < local_domain.ncells_active; i++) {
-        rout_var[i].nonrenew_deficit = dvar[i];
+    else {
+        // WATERUSE or NONRENEW_WITH disabled: deficit not tracked, zero silently.
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            rout_var[i].nonrenew_deficit = 0.0;
+        }
     }
 
     free(dvar);
