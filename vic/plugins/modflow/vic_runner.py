@@ -173,11 +173,19 @@ def prepare_vic(current_date, config):
     #         prefixes["STATENAME"] = os.path.join(config.paths.statefile_dir, "state_file_nat_foc_")
     #     else:
     #         prefixes["STATENAME"] = os.path.join(config.paths.statefile_dir, "state_file_nat_poc_")
-    if current_date == config.startstamp:
-        prefixes["INIT_STATE"] = os.path.join(config.paths.statefile_dir, 
-                                            "10years_spinup_g_r_20250317_.19900101_00000_Lisanne.nc")
-    else:
-        prefixes["INIT_STATE"] = os.path.join(config.paths.statefile_dir, f"{config.modestr}_{config.couplingstr}_state_file_.{init_datestr}_00000.nc")
+    cold_start = os.environ.get("VIC_MF_COLD_START", "").strip().lower() in {"1", "true", "yes", "y"}
+    if not cold_start:
+        if current_date == config.startstamp:
+            # Allow run-specific initial state injection from the launcher.
+            prefixes["INIT_STATE"] = os.environ.get(
+                "VIC_MF_INITIAL_STATE_FILE",
+                os.path.join(
+                    config.paths.statefile_dir,
+                    "10years_spinup_g_r_20250317_.19900101_00000_Lisanne.nc",
+                ),
+            )
+        else:
+            prefixes["INIT_STATE"] = os.path.join(config.paths.statefile_dir, f"{config.modestr}_{config.couplingstr}_state_file_.{init_datestr}_00000.nc")
         # if config.humanimpact:
         #     if config.foc:
         #         prefixes["INIT_STATE"] = os.path.join(config.paths.statefile_dir, f"state_human_foc_file_.{init_datestr}_00000.nc")
@@ -198,6 +206,8 @@ def prepare_vic(current_date, config):
             if prefix in line:
                 lines[i] = f"{prefix}               {value}\n"
                 break
+        if cold_start and line.lstrip().startswith("INIT_STATE"):
+            lines[i] = "#INIT_STATE\n"
     # if config.humanimpact:
     #     if config.foc:
     #         subdir = "human_foc"
@@ -268,8 +278,11 @@ def update_statefile(current_date, config, cpr_mm_month):
     currentyear = current_date.year
     currentmonth = current_date.month
 
-    cv = config.paths.vic_parameter['Cv'] #TODO: later on if cv change with time, this needs to be updated. 
-    max_moist = config.paths.capillary['max_moist']
+    # FOC state update uses numpy-style boolean indexing below.
+    # Convert xarray-backed inputs explicitly to numpy arrays to avoid
+    # xarray's unsupported 2D boolean indexing behavior.
+    cv = config.paths.vic_parameter['Cv'].values #TODO: later on if cv change with time, this needs to be updated. 
+    max_moist = config.paths.capillary['max_moist'].values
     
     
     cpr_mm_month_input = np.expand_dims(cpr_mm_month, axis=0) * cv   # create a 3d array with the shape of number of veg types, lat ,lon

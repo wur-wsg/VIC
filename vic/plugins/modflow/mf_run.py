@@ -31,11 +31,32 @@ class mfrun:
         self.outer_dvclose = 5
         self.inner_dvclose = 5
         self.top_layer1 = self.config.cal_toplayer_elevation()
-        
-        self.ts_gwrecharge = ts_gwrecharge.values
-        self.ts_discharge = ts_discharge.values
+
+        self.ts_gwrecharge = self._align_vic_field(ts_gwrecharge)
+        self.ts_discharge = self._align_vic_field(ts_discharge)
         self.ts_gwabstract = ts_gwabstract # TODO: this is int 0 because now it is designed for natrual run
         self.startinghead = self.get_startinghead()
+
+    def _align_vic_field(self, field: xr.DataArray) -> np.ndarray:
+        """Align VIC output fields to the active MODFLOW grid order."""
+        if not isinstance(field, xr.DataArray):
+            return np.asarray(field)
+
+        ibound_da = xr.open_dataarray(self.config.paths.mf_static_file('ibound'), mask_and_scale=False)
+        lat_name = next((name for name in field.coords if name.lower() == 'lat'), None)
+        lon_name = next((name for name in field.coords if name.lower() == 'lon'), None)
+
+        if lat_name is None or lon_name is None:
+            return field.values
+
+        aligned = field.sel(
+            {
+                lat_name: ibound_da['lat'].values,
+                lon_name: ibound_da['lon'].values,
+            },
+            method='nearest',
+        )
+        return aligned.values
     
     
     def get_startinghead(self) -> list:
@@ -49,6 +70,12 @@ class mfrun:
         ds_prev = xr.open_dataset(self.startinghead_path)
         startingheadl1 = ds_prev['gwl'].values[0]
         startingheadl2 = ds_prev['gwl'].values[1]
+        # TEMP INDUS TAG:
+        # Indus restart GWL currently contains NaNs over part of the grid.
+        # Replace them with 0.0 so the next stress period can initialize.
+        if getattr(self.config.paths, 'case_name', None) == 'indus':
+            startingheadl1 = np.nan_to_num(startingheadl1, nan=0.0)
+            startingheadl2 = np.nan_to_num(startingheadl2, nan=0.0)
         self.startinghead = [startingheadl1, startingheadl2]
         return self.startinghead
 
@@ -184,12 +211,13 @@ class mfrun:
                           nseg = 1,
                           stress_period_data = CPRstress_period_data
                           )
-        drn = flopy.mf6.ModflowGwfdrn(gwf,
-                                      print_input = False,
-                                      print_flows = False,
-                                      stress_period_data = DRNstress_period_data,
-                                      save_flows = True
-                                      ) 
+        if DRNstress_period_data is not None:
+            drn = flopy.mf6.ModflowGwfdrn(gwf,
+                                          print_input = False,
+                                          print_flows = False,
+                                          stress_period_data = DRNstress_period_data,
+                                          save_flows = True
+                                          ) 
         
         saverecord = [("HEAD", "ALL"), ("BUDGET", "ALL")]
         printrecord = [("HEAD", "ALL"), ("BUDGET", "ALL")]
@@ -233,13 +261,14 @@ class mfrun:
             ds.createDimension('lat', nrow)
             ds.createDimension('lon', ncol)
 
-            latitudes = ds.createVariable('latitude', np.float32, ('lat',))
-            longitudes = ds.createVariable('longitude', np.float32, ('lon',))
+            ibound_da = xr.open_dataarray(self.config.paths.mf_static_file('ibound'), mask_and_scale=False)
+            latitudes = ds.createVariable('lat', np.float32, ('lat',))
+            longitudes = ds.createVariable('lon', np.float32, ('lon',))
             layers = ds.createVariable('layer', np.int32, ('layer',))
             head = ds.createVariable('gwl', np.float32, ('layer', 'lat', 'lon'))
             
-            latitudes[:] = np.linspace(-56+1/24, 84-1/24, nrow)
-            longitudes[:] = np.linspace(-180+1/24, 180-1/24, ncol)
+            latitudes[:] = ibound_da['lat'].values
+            longitudes[:] = ibound_da['lon'].values
             layers[:] = np.arange(nlay)
             head[0] = self.layer1_head
             head[0] = np.where(np.isnan(self.config.paths.landmask), np.nan, head[0])
@@ -268,9 +297,15 @@ class PostProcessMF:
         self.baseflow_array = None
         # self.cpr_mm = self.get_cpr_array() 
 
+    def _open_cbb(self, cbb_path):
+        try:
+            return flopy.utils.CellBudgetFile(cbb_path)
+        except Exception:
+            return flopy.utils.CellBudgetFile(cbb_path, precision='double')
+
     def get_baseflow_array(self):
         cbb_path = os.path.join(self.mf_workspace_dir, self.cbbfile)
-        cbb = flopy.utils.CellBudgetFile(cbb_path)
+        cbb = self._open_cbb(cbb_path)
         riv_raw = cbb.get_data(text='RIV')
         riv = [(item['node'], item['q']) for item in riv_raw]
         ncol, nrow = self.config.Ncol, self.config.Nrow
@@ -295,25 +330,29 @@ class PostProcessMF:
             baseflow_array[row, col] = flow
         
         # extracting baseflow from the DRN package:
-        drn_raw = cbb.get_data(text='DRN')
-        drn1 = [(item['node'], item['q']) for item in drn_raw]
-
-        drainage = []
-        for i in range(len(drn1[0][0])):
-            idx = drn1[0][0][i]
-            idx0 = int(idx) - 1
-            lay = 0
-            row = idx0 // ncol
-            col = idx0 % ncol
-            flow = drn1[0][1][i]
-            rec = [lay,row,col,flow]
-            drainage.append(rec)
-
         drainage_array = np.zeros((nrow, ncol))
-        for item in drainage:
-            lay, row, col, flow = item
-            flow
-            drainage_array[row,col] = flow
+        try:
+            drn_raw = cbb.get_data(text='DRN')
+            drn1 = [(item['node'], item['q']) for item in drn_raw]
+
+            drainage = []
+            for i in range(len(drn1[0][0])):
+                idx = drn1[0][0][i]
+                idx0 = int(idx) - 1
+                lay = 0
+                row = idx0 // ncol
+                col = idx0 % ncol
+                flow = drn1[0][1][i]
+                rec = [lay,row,col,flow]
+                drainage.append(rec)
+
+            for item in drainage:
+                lay, row, col, flow = item
+                flow
+                drainage_array[row,col] = flow
+        except Exception:
+            # Temporary Indus fallback: DRN may be intentionally skipped.
+            drainage_array[:] = 0
 
         # adding the two array together:
         total_array = (baseflow_array + drainage_array) / 86400 / self.end_date.day * -1
@@ -348,7 +387,7 @@ class PostProcessMF:
 
     def get_cpr_array(self):
         cbb_path = os.path.join(self.mf_workspace_dir, self.cbbfile)
-        cbb = flopy.utils.CellBudgetFile(cbb_path)
+        cbb = self._open_cbb(cbb_path)
         cellarea = self.config.paths.cellarea
         
         evt_raw = cbb.get_data(text = 'EVT')
@@ -378,8 +417,13 @@ class PostProcessMF:
     
     def export_cpr_to_nc(self, cpr_mm_month):
         # Save to a single netCDF file with lat/lon coordinates
-        os.makedirs(self.mf_result_dir, exist_ok=True)
-        output_file = os.path.join(self.mf_result_dir, f'glob_{self.config.modestr}_{self.config.couplingstr}_cpr.nc')
+        case_name = getattr(self.config.paths, 'case_name', 'global')
+        capillary_dir = os.path.join(self.mf_result_dir, 'capillary')
+        os.makedirs(capillary_dir, exist_ok=True)
+        output_file = os.path.join(
+            capillary_dir,
+            f'{case_name}_{self.config.modestr}_{self.config.couplingstr}_capillary_rise.nc',
+        )
         
         # Create file if it doesn't exist
         if not os.path.exists(output_file):

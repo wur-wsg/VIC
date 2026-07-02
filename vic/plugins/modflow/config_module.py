@@ -22,10 +22,45 @@ LOG_DIR = os.environ.get('VIC_MF_LOG_DIR', os.path.join(SIMULATION_ROOT, 'log'))
 RESULT_DIR = os.environ.get('VIC_MF_RESULT_DIR', os.path.join(SIMULATION_ROOT, 'result'))
 STATE_DIR = os.environ.get('VIC_MF_STATE_DIR', os.path.join(SIMULATION_ROOT, 'state'))
 TMP_DIR = os.environ.get('VIC_MF_TMP_DIR', os.path.join(SIMULATION_ROOT, 'tmp'))
+GLOBAL_STEADY_HEAD_FILE = os.environ.get(
+    'VIC_MF_GLOBAL_STEADY_HEAD_FILE',
+    '/lustre/nobackup/WUR/ESG/liu297/vic_global/01oc_natural/99input_processing/output_steadystate/mf_ss_gwl_5minDRN.nc',
+)
+
+
+def _env_path(env_name, default):
+    return os.environ.get(env_name, default)
 
 @dataclass
 class Pathconfig:
     project_root: str = PROJECT_ROOT
+    case_name = 'global'
+    vic_template_filename = 'vic_global_5min_natural_template.txt'
+    vic_domain_filename = 'vic_global_5min_domain_nogl.nc'
+    vic_parameter_filename = 'vic_global_5min_params_nogl.nc'
+    vic_routing_filename = 'vic_global_5min_routing_param_wbt.nc'
+    vic_derived_param_filename = 'capillary_rise_oc_updated.nc'
+    mf_static_filenames = {
+        'clonemap': 'Clone_05min_oc.nc',
+        'dem_ini': 'dem_ini_oc.nc',
+        'aqdepth_ini': 'aqdepth_ini_oc.nc',
+        'ksat_log': 'ksat_log_oc.nc',
+        'cellarea': 'cell_area_oc.nc',
+        'qbank': 'bankfull_discharge_1979_2010_vicwur5min.nc',
+        'riv_slope1': 'riv_slope_oc.nc',
+        'z0_floodplain': 'Z0_floodplain_oc.nc',
+        'min_dem': 'min_dem_oc.nc',
+        'kq3': 'KQ3_oc.nc',
+        'conflayers': 'conflayers_oc.nc',
+        'ksat_l1_conf_log': 'ksat_l1_conf_log_oc.nc',
+        'ksat_l2_conf_log': 'ksat_l2_conf_log_oc.nc',
+        'spe_yi_inp': 'spe_yi_inp_oc.nc',
+        'landmask': 'landmask_oc.nc',
+        'initialhead': 'daily_bankfull_mf_ss_gwl_5minDRN.nc',
+        'ibound': 'ibound_oc.nc',
+        'ldd': 'ldd_oc.nc',
+        'capillary': 'capillary_rise_oc.nc',
+    }
     # paths only — do not load data yet
     def __init__(self):
         self.project_root = self.project_root
@@ -40,11 +75,16 @@ class Pathconfig:
         self.state_dir = STATE_DIR
         self.tmp_dir = TMP_DIR
 
-        self.vic_domain_dir = os.path.join(self.data_root, 'VIC', 'domain')
-        self.vic_parameter_dir = os.path.join(self.data_root, 'VIC', 'parameter')
-        self.vic_routing_dir = os.path.join(self.data_root, 'VIC', 'routing')
-        self.vic_template_dir = os.path.join(self.data_root, 'VIC', 'templates')
-        self.mf_static_dir = os.path.join(self.data_root, 'MODFLOW', 'static')
+        self.vic_domain_dir = _env_path('VIC_MF_VIC_DOMAIN_DIR',
+                                        os.path.join(self.data_root, 'VIC', 'domain', self.case_name))
+        self.vic_parameter_dir = _env_path('VIC_MF_VIC_PARAMETER_DIR',
+                                           os.path.join(self.data_root, 'VIC', 'parameter', self.case_name))
+        self.vic_routing_dir = _env_path('VIC_MF_VIC_ROUTING_DIR',
+                                         os.path.join(self.data_root, 'VIC', 'routing', self.case_name))
+        self.vic_template_dir = _env_path('VIC_MF_VIC_TEMPLATE_DIR',
+                                          os.path.join(self.data_root, 'VIC', 'templates', self.case_name))
+        self.mf_static_dir = _env_path('VIC_MF_MODFLOW_STATIC_DIR',
+                                       os.path.join(self.data_root, 'MODFLOW', 'static', self.case_name))
         self.mf_executable_dir = os.path.join(self.data_root, 'MODFLOW', 'executable')
 
         self.historical_config_dir = os.path.join(self.config_dir, 'historical')
@@ -54,15 +94,21 @@ class Pathconfig:
         self.vic_forcing_dir = os.path.join(self.tmp_dir, 'vic_forcing')
         self.modflow_workspace_dir = os.path.join(self.tmp_dir, 'modflow_workspace')
 
-        self.template_dir = os.path.join(self.vic_template_dir, 'vic_global_5min_natural_template.txt')
-        self.vic_domain_file = os.path.join(self.vic_domain_dir, 'vic_global_5min_domain_nogl.nc')
-        self.vic_parameter_file = os.path.join(self.vic_parameter_dir, 'vic_global_5min_params_nogl.nc')
-        self.vic_routing_file = os.path.join(self.vic_routing_dir, 'vic_global_5min_routing_param_wbt.nc')
-        self.vic_derived_param = os.path.join(self.mf_static_dir, 'capillary_rise_oc_updated.nc')
+        self.template_dir = _env_path('VIC_MF_TEMPLATE_FILE',
+                                      os.path.join(self.vic_template_dir, self.vic_template_filename))
+        self.vic_domain_file = _env_path('VIC_MF_VIC_DOMAIN_FILE',
+                                         os.path.join(self.vic_domain_dir, self.vic_domain_filename))
+        self.vic_parameter_file = _env_path('VIC_MF_VIC_PARAMETER_FILE',
+                                            os.path.join(self.vic_parameter_dir, self.vic_parameter_filename))
+        self.vic_routing_file = _env_path('VIC_MF_VIC_ROUTING_FILE',
+                                          os.path.join(self.vic_routing_dir, self.vic_routing_filename))
+        self.vic_derived_param = _env_path('VIC_MF_VIC_DERIVED_PARAM_FILE',
+                                           os.path.join(self.mf_static_dir, self.vic_derived_param_filename))
 
         vic_exe_default = os.path.join(self.vic_repo_root, 'vic', 'drivers', 'image', 'vic_image_coupled.exe')
         self.vic_executable = os.environ.get('VIC_EXE', vic_exe_default)
         self.mf6exe = os.environ.get('MF6_EXE', os.path.join(self.mf_executable_dir, 'mf6'))
+        self.global_steady_head_file = GLOBAL_STEADY_HEAD_FILE
 
         # Backward-compatible aliases for older code paths.
         self.cwd = self.project_root
@@ -74,6 +120,10 @@ class Pathconfig:
         self.configfile_dir = self.historical_config_dir
         # Load data
         self.load_data()
+
+    def mf_static_file(self, key):
+        return _env_path(f'VIC_MF_{key.upper()}_FILE',
+                         os.path.join(self.mf_static_dir, self.mf_static_filenames[key]))
 
     def get_mode_coupling_name(self, modestr, couplingstr):
         return f'{modestr}_{couplingstr}'
@@ -97,30 +147,60 @@ class Pathconfig:
         return os.path.join(self.modflow_result_dir, 'gwl', self.get_mode_coupling_name(modestr, couplingstr))
 
     def load_data(self):
-        self.clonemap = gdal.Open(os.path.join(self.mf_static_dir, 'Clone_05min_oc.nc'))
-        self.dem_ini = xr.open_dataarray(os.path.join(self.mf_static_dir, 'dem_ini_oc.nc')).values
-        self.aqdepth_ini = xr.open_dataarray(os.path.join(self.mf_static_dir, 'aqdepth_ini_oc.nc')).values
-        self.ksat_log = xr.open_dataarray(os.path.join(self.mf_static_dir, 'ksat_log_oc.nc')).values
-        self.cellarea = xr.open_dataarray(os.path.join(self.mf_static_dir, 'cell_area_oc.nc')).values
-        self.qbank = xr.open_dataarray(os.path.join(self.mf_static_dir, 'bankfull_discharge_1979_2010_vicwur5min.nc')).values
-        self.riv_slope1 = xr.open_dataarray(os.path.join(self.mf_static_dir, 'riv_slope_oc.nc')).values
-        self.Z0_floodplain = xr.open_dataarray(os.path.join(self.mf_static_dir, 'Z0_floodplain_oc.nc')).values
-        self.min_dem = xr.open_dataarray(os.path.join(self.mf_static_dir, 'min_dem_oc.nc')).values
-        self.KQ3 = xr.open_dataarray(os.path.join(self.mf_static_dir, 'KQ3_oc.nc')).values
-        self.conflayers = xr.open_dataarray(os.path.join(self.mf_static_dir, 'conflayers_oc.nc')).values
-        self.ksat_l1_conf_log = xr.open_dataarray(os.path.join(self.mf_static_dir, 'ksat_l1_conf_log_oc.nc')).values
-        self.ksat_l2_conf_log = xr.open_dataarray(os.path.join(self.mf_static_dir, 'ksat_l2_conf_log_oc.nc')).values
-        self.spe_yi_inp = xr.open_dataarray(os.path.join(self.mf_static_dir, 'spe_yi_inp_oc.nc')).values
-        self.landmask = xr.open_dataarray(os.path.join(self.mf_static_dir, 'landmask_oc.nc')).values
-        self.initialhead = xr.open_dataarray(os.path.join(self.mf_static_dir, 'daily_bankfull_mf_ss_gwl_5minDRN.nc')).values
-        self.ibound = xr.open_dataarray(os.path.join(self.mf_static_dir, 'ibound_oc.nc')).values
-        self.ldd = xr.open_dataarray(os.path.join(self.mf_static_dir, 'ldd_oc.nc')).values
-        self.capillary = xr.open_dataset(os.path.join(self.mf_static_dir, 'capillary_rise_oc.nc'))
+        self.clonemap = gdal.Open(self.mf_static_file('clonemap'))
+        self.dem_ini = xr.open_dataarray(self.mf_static_file('dem_ini')).values
+        self.aqdepth_ini = xr.open_dataarray(self.mf_static_file('aqdepth_ini')).values
+        self.ksat_log = xr.open_dataarray(self.mf_static_file('ksat_log')).values
+        self.cellarea = xr.open_dataarray(self.mf_static_file('cellarea')).values
+        self.qbank = xr.open_dataarray(self.mf_static_file('qbank')).values
+        self.riv_slope1 = xr.open_dataarray(self.mf_static_file('riv_slope1')).values
+        self.Z0_floodplain = xr.open_dataarray(self.mf_static_file('z0_floodplain')).values
+        self.min_dem = xr.open_dataarray(self.mf_static_file('min_dem')).values
+        self.KQ3 = xr.open_dataarray(self.mf_static_file('kq3')).values
+        self.conflayers = xr.open_dataarray(self.mf_static_file('conflayers')).values
+        self.ksat_l1_conf_log = xr.open_dataarray(self.mf_static_file('ksat_l1_conf_log')).values
+        self.ksat_l2_conf_log = xr.open_dataarray(self.mf_static_file('ksat_l2_conf_log')).values
+        self.spe_yi_inp = xr.open_dataarray(self.mf_static_file('spe_yi_inp')).values
+        self.landmask = xr.open_dataarray(self.mf_static_file('landmask')).values
+        self.initialhead = xr.open_dataarray(self.mf_static_file('initialhead')).values
+        self.ibound = xr.open_dataarray(self.mf_static_file('ibound')).values
+        self.ldd = xr.open_dataarray(self.mf_static_file('ldd')).values
+        self.capillary = xr.open_dataset(self.mf_static_file('capillary'))
         self.vic_parameter = xr.open_dataset(self.vic_parameter_file)
 
+
+class PathconfigIndus(Pathconfig):
+    case_name = 'indus'
+    vic_template_filename = 'vic_indus_natural_template.txt'
+    vic_domain_filename = 'domain_Indus.nc'
+    vic_parameter_filename = 'VIC_params_Mirca_calibrated_Indus.nc'
+    vic_routing_filename = 'old_rout.nc'
+    vic_derived_param_filename = 'capillary_rise_indus.nc'
+    mf_static_filenames = {
+        'clonemap': 'Clone_05min_indus.nc',
+        'dem_ini': 'dem_ini_indus.nc',
+        'aqdepth_ini': 'aqdepth_ini_indus.nc',
+        'ksat_log': 'ksat_log_indus.nc',
+        'cellarea': 'cell_area_indus.nc',
+        'qbank': 'bankfull_discharge_indus.nc',
+        'riv_slope1': 'riv_slope_indus.nc',
+        'z0_floodplain': 'Z0_floodplain_indus_updated.nc',
+        'min_dem': 'min_dem_indus.nc',
+        'kq3': 'KQ3_indus.nc',
+        'conflayers': 'conflayers_indus.nc',
+        'ksat_l1_conf_log': 'ksat_l1_conf_log_indus.nc',
+        'ksat_l2_conf_log': 'ksat_l2_conf_log_indus.nc',
+        'spe_yi_inp': 'spe_yi_inp_indus.nc',
+        'landmask': 'landmask_indus.nc',
+        'initialhead': 'initial_head_indus.nc',
+        'ibound': 'ibound_indus_updated.nc',
+        'ldd': 'ldd_indus_updated.nc',
+        'capillary': 'capillary_rise_indus.nc',
+    }
+
 class config:
-    def __init__(self): #without specifying the input, the default input will be used as below: 
-        self.paths = Pathconfig()
+    def __init__(self, pathconfig_cls=Pathconfig): #without specifying the input, the default input will be used as below: 
+        self.paths = pathconfig_cls()
         self.startstamp =  datetime(1979, 1, 1)
         # Initialize time series arrays to zeros (fast default, correct shapes)
         lm_shape = self.paths.landmask.shape
@@ -215,9 +295,8 @@ class config:
         return self.aqdepth
     
     def cal_toplayer_elevation(self):
-
-        self.top_layer1 = self.dem
-        self.top_layer = np.where(np.isnan(self.top_layer1),0, self.top_layer1)
+        self.top_layer1 = np.where(np.isnan(self.dem), 0, self.dem)
+        self.top_layer = self.top_layer1
         return self.top_layer1
     
     def cal_botlayer_elevation(self):
@@ -232,7 +311,28 @@ class config:
         self.botm = [bot_layer1, bot_layer2]
         return self.botm
     
+    def _get_non_global_steady_head(self):
+        if hasattr(self, '_non_global_steady_head'):
+            return self._non_global_steady_head
+
+        ibound_da = xr.open_dataarray(self.paths.mf_static_file('ibound'), mask_and_scale=False)
+        gwd = xr.open_dataset(self.paths.global_steady_head_file, mask_and_scale=False)['gwd']
+        subset = gwd.sel(
+            latitude=ibound_da['lat'].values,
+            longitude=ibound_da['lon'].values,
+            method='nearest',
+        )
+        self._non_global_steady_head = subset.values
+        return self._non_global_steady_head
+
     def get_initial_head(self): #this is only for the first time step. 
+        if getattr(self.paths, 'case_name', 'global') != 'global':
+            steady = self._get_non_global_steady_head()
+            startinghead_layer1 = np.where(np.isnan(steady[0]), 0, steady[0])
+            startinghead_layer2 = np.where(np.isnan(steady[1]), 0, steady[1])
+            self.startinghead = [startinghead_layer1, startinghead_layer2]
+            return self.startinghead
+
         startinghead_layer1 = self.paths.initialhead[0]
         startinghead_layer1 = np.where(np.isnan(startinghead_layer1),0, startinghead_layer1)
         startinghead_layer2 = self.paths.initialhead[1]
@@ -300,9 +400,9 @@ class config:
         cellids = [(0, i, j) for i in range(nrow) for j in range(ncol)]
         # Create stress_period_data as a list of lists (leave it for mf6)
         RCHstress_period_data = []
-        for cellid, value in zip(cellids, recharge_inp.flatten()):
-            if np.isnan(value) or value ==0 :
-            # if np.isnan(value) or value ==0:
+        for cellid, value, ibound in zip(cellids, recharge_inp.flatten(), self.ibound.flatten()):
+            # Temporary tightening for domain consistency: only write RCH on active MODFLOW cells.
+            if np.isnan(value) or value == 0 or ibound <= 0:
                 continue
             cellid_1, cellid_2, cellid_3 = cellid
             RCHstress_period_data.append([cellid_1, cellid_2, cellid_3, value])
@@ -360,16 +460,19 @@ class config:
         nrow, ncol = self.paths.landmask.shape
         cellids = [(0, i, j) for i in range(nrow) for j in range(ncol)]
         RIVstress_period_data = []
-        for cellid, stage, rbot, cond, landmask in zip(cellids, riv_head_comb.flatten(), riv_bot_comb.flatten(), riv_cond_comb.flatten(), self.paths.landmask.flatten()): 
+        for cellid, stage, rbot, cond, landmask, ibound in zip(cellids, riv_head_comb.flatten(), riv_bot_comb.flatten(), riv_cond_comb.flatten(), self.paths.landmask.flatten(), self.ibound.flatten()): 
             # Skip cellids with NaN values in stage or rbot
-            # if np.isnan(stage) or np.isnan(rbot) or np.isnan(cond) or cond == 0 or bdmask_ind == 0 or bdmask_ind == -1:
-            if np.isnan(stage) or np.isnan(rbot) or np.isnan(cond) or cond == 0 or np.isnan(landmask):
+            # Temporary tightening for domain consistency: only write RIV on active MODFLOW cells.
+            if np.isnan(stage) or np.isnan(rbot) or np.isnan(cond) or cond == 0 or np.isnan(landmask) or ibound <= 0:
                 continue
             cellid_1, cellid_2, cellid_3 = cellid
             RIVstress_period_data.append([cellid_1, cellid_2, cellid_3, stage, cond, rbot])
         return RIVstress_period_data
     
     def get_drn_param(self):
+        # Temporary solution for Indus: skip DRN until the Indus-specific drain setup is rebuilt.
+        if getattr(self.paths, 'case_name', 'global') == 'indus':
+            return None
         if not hasattr(self, 'aqdepth'):
             self.cal_aqdepth()
         if not hasattr(self, 'stor'):
@@ -406,22 +509,29 @@ class config:
 
     def get_chd_input(self):
         nrow, ncol = self.ibound.shape
-        cellids = [(0, i, j) for i in range(nrow) for j in range(ncol)]
         CHDstress_period_data = []
+
+        if getattr(self.paths, 'case_name', 'global') != 'global':
+            steady = self._get_non_global_steady_head()
+            for layer in range(2):
+                cellids = [(layer, i, j) for i in range(nrow) for j in range(ncol)]
+                for cellid, icell, head in zip(cellids, self.ibound.flatten(), steady[layer].flatten()):
+                    if icell != 2 or np.isnan(head):
+                        continue
+                    cellid_1, cellid_2, cellid_3 = cellid
+                    CHDstress_period_data.append([cellid_1, cellid_2, cellid_3, float(head)])
+            return CHDstress_period_data
+
+        cellids = [(0, i, j) for i in range(nrow) for j in range(ncol)]
         for cellid, icell in zip(cellids, self.ibound.flatten()):
             cellid_1, cellid_2, cellid_3 = cellid
             if icell ==2:
                 CHDstress_period_data.append([cellid_1, cellid_2, cellid_3, 0])
-            else:
-                continue
-        nrow, ncol = self.ibound.shape
         cellids = [(1, i, j) for i in range(nrow) for j in range(ncol)]
         for cellid, icell in zip(cellids, self.ibound.flatten()):
             cellid_1, cellid_2, cellid_3 = cellid
             if icell == 2:
                 CHDstress_period_data.append([cellid_1, cellid_2, cellid_3, 0])
-            else:
-                continue
         return CHDstress_period_data      
     
     def get_cpr_param(self): # TODO: not yet generated 
@@ -443,6 +553,11 @@ class config:
     
         
 
+class config_indus(config):
+    def __init__(self):
+        super().__init__(pathconfig_cls=PathconfigIndus)
+
+
 #%%
 config_global_nat_poc = config()
 config_global_nat_poc.set_foc(False)
@@ -459,3 +574,9 @@ config_global_human_poc.set_humanimpact(True)
 config_global_human_foc = config()
 config_global_human_foc.set_foc(True)
 config_global_human_foc.set_humanimpact(True)
+
+def build_indus_config(humanimpact=False, foc=False):
+    cfg = config_indus()
+    cfg.set_foc(foc)
+    cfg.set_humanimpact(humanimpact)
+    return cfg

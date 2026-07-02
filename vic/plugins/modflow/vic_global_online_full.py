@@ -22,6 +22,26 @@ from time import time
 #%env LD_LIBRARY_PATH=/shared/legacyapps/netcdf/gcc/64/4.6.1/lib:$LD_LIBRARY_PATH   
 
 
+def select_config(case_name, mode, coupling):
+    config_lookup = {
+        ('global', 'nat', 'foc'): config_module.config_global_nat_foc,
+        ('global', 'nat', 'poc'): config_module.config_global_nat_poc,
+        ('global', 'human', 'foc'): config_module.config_global_human_foc,
+        ('global', 'human', 'poc'): config_module.config_global_human_poc,
+    }
+    if case_name == 'indus':
+        return config_module.build_indus_config(
+            humanimpact=(mode == 'human'),
+            foc=(coupling == 'foc'),
+        )
+    try:
+        return config_lookup[(case_name, mode, coupling)]
+    except KeyError as exc:
+        raise ValueError(
+            f"Invalid combination of case={case_name}, mode={mode}, coupling={coupling}"
+        ) from exc
+
+
 
 def run_vic_modflow_coupled(start_date, end_date, config=None):
     """
@@ -103,12 +123,14 @@ if __name__ == "__main__":
     # Named flags (preferred)
     parser.add_argument("--start-date", dest="start_date", type=str, help="Start date YYYY-MM-DD")
     parser.add_argument("--end-date", dest="end_date", type=str, help="End date YYYY-MM-DD")
+    parser.add_argument("--case", dest="case_name", type=str, choices=["global", "indus"], help="Simulation case")
     parser.add_argument("--mode", dest="mode", type=str, choices=["nat", "human"], help="Simulation mode")
     parser.add_argument("--coupling", dest="coupling", type=str, choices=["foc", "poc"], help="Coupling type")
     parser.add_argument("--vic-out-suffix", dest="vic_out_suffix", type=str, help="Suffix after '<mode>_<coupling>_' for VIC OUTFILE")
     # Positional (backward compatibility)
     parser.add_argument("pos_start_date", nargs="?", default="1979-01-01")
     parser.add_argument("pos_end_date", nargs="?", default="2010-01-01")
+    parser.add_argument("pos_case_name", nargs="?", choices=["global", "indus"], default="global")
     parser.add_argument("pos_mode", nargs="?", choices=["nat", "human"], default="nat")
     parser.add_argument("pos_coupling", nargs="?", choices=["foc", "poc"], default="foc")
     parser.add_argument("pos_vic_out_suffix", nargs="?", default="5min_nogl")
@@ -118,6 +140,7 @@ if __name__ == "__main__":
     # Resolve values: prefer named flags, fall back to positional
     start_date_str = args.start_date or args.pos_start_date
     end_date_str = args.end_date or args.pos_end_date
+    case_name = args.case_name or args.pos_case_name
     mode = args.mode or args.pos_mode
     coupling = args.coupling or args.pos_coupling
     vic_out_suffix = (args.vic_out_suffix or args.pos_vic_out_suffix)
@@ -125,17 +148,7 @@ if __name__ == "__main__":
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
     end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
-    # Select configuration based on mode and coupling
-    if mode == "nat" and coupling == "foc":
-        config = config_module.config_global_nat_foc
-    elif mode == "nat" and coupling == "poc":
-        config = config_module.config_global_nat_poc
-    elif mode == "human" and coupling == "foc":
-        config = config_module.config_global_human_foc
-    elif mode == "human" and coupling == "poc":
-        config = config_module.config_global_human_poc
-    else:
-        raise ValueError("Invalid combination of mode and coupling")
+    config = select_config(case_name, mode, coupling)
     
     # Apply VIC output suffix from CLI
     config.set_vic_out_suffix(vic_out_suffix)
@@ -146,6 +159,7 @@ if __name__ == "__main__":
     print("Simulation Period:", flush=True)
     print(f"Start: {start_date.strftime('%Y-%m-%d')}", flush=True)
     print(f"End:   {end_date.strftime('%Y-%m-%d')}", flush=True)
+    print(f"Case:  {case_name}", flush=True)
     print(f"Mode:  {mode}", flush=True)
     print(f"Coupling: {coupling}", flush=True)
     print(f"VIC OUTFILE suffix: {vic_out_suffix}", flush=True)
@@ -158,4 +172,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error during simulation: {str(e)}")
         raise
-
