@@ -75,4 +75,9 @@ void lu_put_data(size_t);
 void lu_put_data(size_t);
 void lu_finalize(void);
 
+void lu_set_state_meta_data_info(void);
+void lu_set_nc_state_var_info(nc_file_struct *, size_t);
+void lu_store(nc_file_struct *);
+void lu_restore(void);
+
 #endif
