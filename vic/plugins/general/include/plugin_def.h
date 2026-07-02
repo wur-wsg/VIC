@@ -54,6 +54,8 @@ enum {
     STATE_IRR_RECEIVED,                 /**< irrigation received water [mm] */
     STATE_IRR_OFFSET,                   /**< irrigation season start offset counter [-] */
     STATE_IRR_PREV_CV,                  /**< irrigation previous vegetation coverage [-] */
+    // land-use
+    STATE_LU_CV,                        /**< landuse vegetation coverage [-] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_STATE_VARS                 /**< used as a loop counter*/

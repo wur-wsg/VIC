@@ -262,6 +262,9 @@ plugin_restore(void)
     if (plugin_options.IRRIGATION) {
         irr_restore();
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_restore();
+    }
 }
 
 /******************************************

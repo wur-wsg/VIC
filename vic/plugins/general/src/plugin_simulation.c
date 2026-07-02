@@ -234,4 +234,7 @@ plugin_store(nc_file_struct *state_file)
     if (plugin_options.IRRIGATION) {
         irr_store(state_file);
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_store(state_file);
+    }
 }

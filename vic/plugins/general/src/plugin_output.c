@@ -249,6 +249,9 @@ plugin_set_state_meta_data_info(void)
     if (plugin_options.IRRIGATION) {
         irr_set_state_meta_data_info();
     }
+    if (plugin_options.FORCE_LANDUSE) {
+        lu_set_state_meta_data_info();
+    }
 }
 
 /******************************************
@@ -350,6 +353,9 @@ plugin_set_nc_state_var_info(nc_file_struct *nc)
         }
         if (plugin_options.IRRIGATION) {
             irr_set_nc_state_var_info(nc, i);
+        }
+        if (plugin_options.FORCE_LANDUSE) {
+            lu_set_nc_state_var_info(nc, i);
         }
 
         if (nc->nc_vars[i].nc_dims > MAXDIMS) {
