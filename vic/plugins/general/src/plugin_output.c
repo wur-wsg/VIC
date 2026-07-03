@@ -252,6 +252,9 @@ plugin_set_state_meta_data_info(void)
     if (plugin_options.FORCE_LANDUSE) {
         lu_set_state_meta_data_info();
     }
+    if (plugin_options.DAMS) {
+        dam_set_state_meta_data_info();
+    }
 }
 
 /******************************************
@@ -284,6 +287,9 @@ plugin_add_state_dim(char           *filename,
     }
     if (plugin_options.IRRIGATION) {
         irr_add_state_dim(filename, nc_state_file);
+    }
+    if (plugin_options.DAMS) {
+        dam_add_state_dim(filename, nc_state_file);
     }
 }
 
@@ -356,6 +362,9 @@ plugin_set_nc_state_var_info(nc_file_struct *nc)
         }
         if (plugin_options.FORCE_LANDUSE) {
             lu_set_nc_state_var_info(nc, i);
+        }
+        if (plugin_options.DAMS) {
+            dam_set_nc_state_var_info(nc, i);
         }
 
         if (nc->nc_vars[i].nc_dims > MAXDIMS) {

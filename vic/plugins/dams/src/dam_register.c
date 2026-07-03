@@ -281,15 +281,27 @@ local_dam_register(dam_con_struct *dam_con,
                    dam_var_struct *dam_var,
                    size_t          iCell)
 {
+    extern option_struct options;
+    extern global_param_struct global_param;
     extern dmy_struct *dmy;
     extern size_t      current;
+    bool               new_month = false;
 
     if (current > 0) {
         if (dmy[current].month != dmy[current - 1].month) {
-            // Set dam active
-            if (dmy[current].year >= dam_con->year) {
-                dam_var->active = true;
-            }
+            new_month = true;
+        }
+    }
+    else if (options.INIT_STATE) {
+        if (dmy[current].day == 1 && dmy[current].dayseconds < global_param.dt) {
+            new_month = true;
+        }
+    }
+
+    if (new_month) {
+        // Set dam active
+        if (dmy[current].year >= dam_con->year) {
+            dam_var->active = true;
         }
     }
 
@@ -304,23 +316,42 @@ global_dam_register(dam_con_struct *dam_con,
                     dam_var_struct *dam_var,
                     size_t          iCell)
 {
+    extern option_struct options;
     extern plugin_option_struct plugin_options;
+    extern global_param_struct  global_param;
     extern dmy_struct          *dmy;
     extern size_t               current;
+    bool                        new_month = false;
+    bool                        new_year = false;
 
     if (current > 0) {
         if (dmy[current].month != dmy[current - 1].month) {
-            dam_register_history(dam_var);
-            if (dmy[current].year != dmy[current - 1].year) {
-                dam_register_operation_start(dam_var);
+            new_month = true;
+        }
+        if (dmy[current].year != dmy[current - 1].year) {
+            new_year = true;
+        }
+    }
+    else if (options.INIT_STATE) {
+        if (dmy[current].day == 1 && dmy[current].dayseconds < global_param.dt) {
+            new_month = true;
+            if (dmy[current].month == 1) {
+                new_year = true;
             }
-            if (dmy[current].month == dam_var->op_month) {
-                // Set dam active
-                if (dmy[current].year >= dam_con->year) {
-                    dam_var->active = true;
-                }
-                dam_register_operation(dam_con, dam_var);
+        }
+    }
+
+    if (new_month) {
+        dam_register_history(dam_var);
+        if (new_year) {
+            dam_register_operation_start(dam_var);
+        }
+        if (dmy[current].month == dam_var->op_month) {
+            // Set dam active
+            if (dmy[current].year >= dam_con->year) {
+                dam_var->active = true;
             }
+            dam_register_operation(dam_con, dam_var);
         }
     }
 
