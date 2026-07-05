@@ -56,6 +56,20 @@ enum {
     STATE_IRR_PREV_CV,                  /**< irrigation previous vegetation coverage [-] */
     // land-use
     STATE_LU_CV,                        /**< landuse vegetation coverage [-] */
+    // dams
+    STATE_DAM_ACTIVE,                   /**< dam active flag [-] */
+    STATE_DAM_OP_MONTH,                 /**< dam operational month [-] */
+    STATE_DAM_STORAGE,                  /**< dam storage [hm3] */
+    STATE_DAM_TOTAL_INFLOW,             /**< dam accumulated inflow [hm3] */
+    STATE_DAM_TOTAL_DEMAND,             /**< dam accumulated demand [hm3] */
+    STATE_DAM_TOTAL_EFR,                /**< dam accumulated environmental requirments [hm3] */
+    STATE_DAM_REGISTER_STEPS,           /**< dam number of accumulation steps [-] */
+    STATE_DAM_MONTHS_RUNNING,           /**< dam number of months history is registered [-] */
+    STATE_DAM_HISTORY_INFLOW,           /**< dam historical inflow array [hm3] */
+    STATE_DAM_HISTORY_DEMAND,           /**< dam historical demand array [hm3] */
+    STATE_DAM_HISTORY_EFR,              /**< dam historical environmental requirment array [hm3] */
+    STATE_DAM_OP_RELEASE,               /**< dam calculated release array [hm3] */
+    STATE_DAM_OP_STORAGE,               /**< dam calculated storage array [hm3] */
     // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
     // used as a loop counter and must be >= the largest value in this enum
     PLUGIN_N_STATE_VARS                 /**< used as a loop counter*/

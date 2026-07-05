@@ -257,7 +257,7 @@ plugin_restore(void)
         rout_restore();
     }
     if (plugin_options.DAMS) {
-        log_warn("DAM state restore not implemented yet...");
+        dam_restore();
     }
     if (plugin_options.IRRIGATION) {
         irr_restore();
