@@ -132,6 +132,19 @@ dam_add_state_dim(char *filename, nc_file_struct *nc_state_file)
 }
 
 /******************************************
+* @brief   Set state file dimension size
+******************************************/
+void
+dam_set_nc_state_file_info(nc_file_struct *nc_state_file)
+{
+    extern plugin_option_struct plugin_options;
+
+    nc_state_file->dam_size = plugin_options.NDAMTYPES;
+    nc_state_file->dam_hist_size = MONTHS_PER_YEAR * DAM_HIST_YEARS;
+    nc_state_file->dam_month_size = MONTHS_PER_YEAR;
+}
+
+/******************************************
 * @brief   Set state variable NC dimensions for dam variables
 ******************************************/
 void
