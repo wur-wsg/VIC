@@ -138,6 +138,7 @@ void global_dam_run(size_t);
 void dam_finalize(void);
 
 void dam_set_state_meta_data_info(void);
+void dam_set_nc_state_file_info(nc_file_struct *);
 void dam_set_nc_state_var_info(nc_file_struct *, size_t);
 void dam_add_state_dim(char *, nc_file_struct *);
 void dam_store(nc_file_struct *);

@@ -271,6 +271,9 @@ plugin_set_nc_state_file_info(nc_file_struct *nc_state_file)
     if (plugin_options.IRRIGATION) {
         irr_set_nc_state_file_info(nc_state_file);
     }
+    if (plugin_options.DAMS) {
+        dam_set_nc_state_file_info(nc_state_file);
+    }
 }
 
 /******************************************
