@@ -86,8 +86,7 @@ vic_populate_model_state(dmy_struct *dmy_current)
                         all_vars[i].veg_var[iVeg][iBand].roughness =
                             veg_lib[i][veg_class].roughness[prev_month];
                         all_vars[i].veg_var[iVeg][iBand].Wdmax =
-                            veg_lib[i][veg_class].LAI[prev_month] *
-                            param.VEG_LAI_WATER_FACTOR;
+                            veg_lib[i][veg_class].Wdmax[prev_month];
                     }
                 }
             }
