@@ -51,6 +51,47 @@ vic_populate_model_state(dmy_struct *dmy_current)
     // read the model state from the netcdf file if there is one
     if (options.INIT_STATE) {
         vic_restore();
+
+        // veg_var fields (LAI, fcanopy, etc.) are not stored in the state file
+        // and default to 0 on restore. plugin_update_step_vars() runs before
+        // update_step_vars() on the first timestep, so lu_apply would see LAI==0
+        // and incorrectly flush canopy water (Wdew) to soil moisture whenever
+        // land-use coverage (Cv) changes are active, corrupting the water balance.
+        // Seed veg_var from the previous month's climatological veg_lib values;
+        // update_step_vars() will overwrite these on the first model timestep.
+        extern veg_lib_struct     **veg_lib;
+        extern veg_con_map_struct  *veg_con_map;
+
+        size_t iVeg;
+        size_t iBand;
+        int    veg_class;
+        int    prev_month = (int)dmy_current->month - 2;
+        if (prev_month < 0) {
+            prev_month += 12;
+        }
+
+        for (i = 0; i < local_domain.ncells_active; i++) {
+            for (iVeg = 0; iVeg < veg_con_map[i].nv_active; iVeg++) {
+                veg_class = veg_con[i][iVeg].veg_class;
+                if (veg_class < options.NVEGTYPES) {
+                    for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
+                        all_vars[i].veg_var[iVeg][iBand].LAI =
+                            veg_lib[i][veg_class].LAI[prev_month];
+                        all_vars[i].veg_var[iVeg][iBand].fcanopy =
+                            veg_lib[i][veg_class].fcanopy[prev_month];
+                        all_vars[i].veg_var[iVeg][iBand].albedo =
+                            veg_lib[i][veg_class].albedo[prev_month];
+                        all_vars[i].veg_var[iVeg][iBand].displacement =
+                            veg_lib[i][veg_class].displacement[prev_month];
+                        all_vars[i].veg_var[iVeg][iBand].roughness =
+                            veg_lib[i][veg_class].roughness[prev_month];
+                        all_vars[i].veg_var[iVeg][iBand].Wdmax =
+                            veg_lib[i][veg_class].LAI[prev_month] *
+                            param.VEG_LAI_WATER_FACTOR;
+                    }
+                }
+            }
+        }
     }
     else {
         // else generate a default state
