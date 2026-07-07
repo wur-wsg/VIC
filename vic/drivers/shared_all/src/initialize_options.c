@@ -94,6 +94,7 @@ initialize_options()
     options.VEGPARAM_LAI = false;
     // state options
     options.STATE_FORMAT = UNSET_FILE_FORMAT;
+    options.STATE_COMPRESS = -1;  // -1 = not set; falls back to COMPRESS value
     options.INIT_STATE = false;
     options.SAVE_STATE = false;
     // output options

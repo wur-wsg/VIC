@@ -289,7 +289,8 @@ typedef struct {
     bool ORGANIC_FRACT;  /**< TRUE = organic matter fraction of each layer is read from the soil parameter file; otherwise set to 0.0. */
 
     // state options
-    unsigned short int STATE_FORMAT;  /**< TRUE = model state file is binary (default) */
+    unsigned short int STATE_FORMAT;   /**< state file format (NETCDF3_CLASSIC, NETCDF4, etc.) */
+    int                STATE_COMPRESS; /**< deflate compression level for state file (0=none, 1-9) */
     bool INIT_STATE;     /**< TRUE = initialize model state from file */
     bool SAVE_STATE;     /**< TRUE = save state file */
 
