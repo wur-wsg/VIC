@@ -339,6 +339,14 @@ get_global_param(FILE *gp)
                             "NETCDF3_64BIT_OFFSET, NETCDF4_CLASSIC, or NETCDF4.");
                 }
             }
+            else if (strcasecmp("STATE_COMPRESS", optstr) == 0) {
+                sscanf(cmdstr, "%*s %s", flgstr);
+                options.STATE_COMPRESS = atoi(flgstr);
+                if (options.STATE_COMPRESS < 0 || options.STATE_COMPRESS > 9) {
+                    log_err("STATE_COMPRESS must be between 0 (no compression) "
+                            "and 9.");
+                }
+            }
 
             /*************************************
                Define forcing files
@@ -541,7 +549,12 @@ get_global_param(FILE *gp)
                 ; // do nothing
             }
             else if (strcasecmp("COMPRESS", optstr) == 0) {
-                ; // do nothing
+                // Use COMPRESS as fallback default for STATE_COMPRESS if
+                // STATE_COMPRESS has not been explicitly set yet
+                sscanf(cmdstr, "%*s %s", flgstr);
+                if (options.STATE_COMPRESS == -1) {
+                    options.STATE_COMPRESS = atoi(flgstr);
+                }
             }
             else if (strcasecmp("OUT_FORMAT", optstr) == 0) {
                 ; // do nothing
@@ -1006,6 +1019,10 @@ get_global_param(FILE *gp)
     // Default file formats (if unset)
     if (options.SAVE_STATE && options.STATE_FORMAT == UNSET_FILE_FORMAT) {
         options.STATE_FORMAT = NETCDF4_CLASSIC;
+    }
+    // Resolve STATE_COMPRESS sentinel: if still -1 (never set), default to 0
+    if (options.STATE_COMPRESS == -1) {
+        options.STATE_COMPRESS = 0;
     }
 
     /******************************************

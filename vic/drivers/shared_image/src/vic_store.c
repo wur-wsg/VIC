@@ -1922,6 +1922,18 @@ initialize_state_file(char           *filename,
             check_nc_status(status, "Error defining state variable %s in %s",
                             state_metadata[i].varname, filename);
 
+            // Apply deflate compression for NETCDF4 formats when COMPRESS or STATE_COMPRESS > 0
+            if (options.STATE_COMPRESS > 0 &&
+                (options.STATE_FORMAT == NETCDF4 ||
+                 options.STATE_FORMAT == NETCDF4_CLASSIC)) {
+                status = nc_def_var_deflate(nc_state_file->nc_id,
+                                            nc_state_file->nc_vars[i].nc_varid,
+                                            true, true, options.STATE_COMPRESS);
+                check_nc_status(status,
+                                "Error setting compression on state variable %s in %s",
+                                state_metadata[i].varname, filename);
+            }
+
             // set the fill value attribute
             if (nc_state_file->nc_vars[i].nc_type == NC_DOUBLE) {
                 status = nc_put_att_double(nc_state_file->nc_id,
