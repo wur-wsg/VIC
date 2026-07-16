@@ -16,6 +16,22 @@ from matplotlib import pyplot as plt
 import shutil
 import netCDF4 as nc
 
+
+SECONDS_PER_DAY = 86400.0
+
+
+def modflow_rate_to_vic_discharge(flow_m3_day):
+    """Convert signed MODFLOW exchange rates to VIC discharge in m3/s."""
+    return -np.asarray(flow_m3_day) / SECONDS_PER_DAY
+
+
+def daily_volume_rate_to_monthly_depth(rate_m3_day, cell_area_m2, days_in_month):
+    """Integrate a positive daily volume rate and convert it to mm/month."""
+    if days_in_month <= 0:
+        raise ValueError("days_in_month must be positive")
+    return np.asarray(rate_m3_day) * days_in_month / np.asarray(cell_area_m2) * 1000.0
+
+
 #%%
 class mfrun:
     def __init__(self, config_instance, current_date: datetime, ts_gwrecharge: xr.DataArray, ts_discharge: xr.DataArray, ts_gwabstract: int):  #TODO: tw_gwabstract is int 0 because now it is designed for natrual run 
@@ -355,7 +371,9 @@ class PostProcessMF:
             drainage_array[:] = 0
 
         # adding the two array together:
-        total_array = (baseflow_array + drainage_array) / 86400 / self.end_date.day * -1
+        # MODFLOW budget q is a rate because TDIS uses DAYS. VIC expects
+        # discharge in m3/s, so month length must not be applied here.
+        total_array = modflow_rate_to_vic_discharge(baseflow_array + drainage_array)
         total_array = np.where(abs(total_array) > 1e8, 0, total_array)
         total_array = np.where(np.isnan(self.config.paths.landmask), np.nan, total_array)
         return total_array
@@ -409,9 +427,16 @@ class PostProcessMF:
 
         for item in cpr:
             lay, row, col, flow = item
-            cpr_array[row,col] = flow * -1  # this is m3/month, outflow (negative), so we need to multiply -1 to convert it into positive value. 
+            cpr_array[row,col] = flow * -1  # m3/day; convert EVT outflow to a positive rate.
 
-        cpr_mm_month = cpr_array/cellarea *1000  # convert it into mm/month prepare to update it to the vic statefile. 
+        # EVT budget q is m3/day. Integrate over the stress-period month
+        # before adding the resulting water depth to the monthly VIC state.
+        _, days_in_month = calendar.monthrange(self.current_date.year, self.current_date.month)
+        cpr_mm_month = daily_volume_rate_to_monthly_depth(
+            cpr_array,
+            cellarea,
+            days_in_month,
+        )
    
         return cpr_mm_month
     
