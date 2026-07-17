@@ -27,6 +27,27 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+#define ROUT_LEAKAGE_WARN_LOG_LIMIT 20ULL
+#define ROUT_BALANCE_ERROR_THRESH 1e-10
+
+static unsigned long long rout_leakage_warn_log_count = 0;
+
+static void
+warn_unmet_river_leakage(size_t iCell, double requested, double available,
+                         double actual, double unmet)
+{
+    if (rout_leakage_warn_log_count < ROUT_LEAKAGE_WARN_LOG_LIMIT) {
+        log_warn("River leakage was not fully met: iCell=%zu, requested=%.6g m3/s, available=%.6g m3/s, actual=%.6g m3/s, unmet=%.6g m3/s",
+                 iCell, requested, available, actual, unmet);
+        rout_leakage_warn_log_count++;
+
+        if (rout_leakage_warn_log_count == ROUT_LEAKAGE_WARN_LOG_LIMIT) {
+            log_warn("Unmet river leakage warnings reached limit (%llu); suppressing further per-cell warnings",
+                     (unsigned long long) ROUT_LEAKAGE_WARN_LOG_LIMIT);
+        }
+    }
+}
+
 /******************************************
 * @brief   Run routing on master node (random decomposition)
 ******************************************/
@@ -69,6 +90,11 @@ rout_random_run()
 
     size_t                            iCell;
     double                            inflow;
+    double                            leakage_requested;
+    double                            leakage_available;
+    double                            leakage_actual;
+    double                            leakage_unmet;
+    double                            discharge_scale;
     double                           *dt_inflow;
     double                           *dt_runoff;
     size_t                            rout_steps_per_dt;
@@ -242,8 +268,14 @@ rout_random_run()
             /* INFLOW*/
             // Gather inflow from VIC
             inflow = 0.0;
+            leakage_requested = 0.0;
             if (plugin_options.FORCE_ROUTING) {
-                inflow += force_global[iCell];
+                if (force_global[iCell] >= 0.0) {
+                    inflow += force_global[iCell];
+                }
+                else {
+                    leakage_requested = -force_global[iCell];
+                }
             }
 
             // Calculate delta-time inflow (equal contribution)
@@ -281,17 +313,42 @@ rout_random_run()
                 }
             }
 
+            /* Negative routing forcing is a river withdrawal, not negative inflow. */
+            leakage_available = dis_global[iCell];
+            leakage_actual = 0.0;
+            if (leakage_requested > 0.0 && leakage_available > 0.0) {
+                leakage_actual = fmin(leakage_requested, leakage_available);
+                discharge_scale =
+                    (leakage_available - leakage_actual) /
+                    leakage_available;
+                dis_global[iCell] = 0.0;
+                for (j = 0; j < rout_steps_per_dt; j++) {
+                    dt_dis_global[iCell][j] *= discharge_scale;
+                    dis_global[iCell] += dt_dis_global[iCell][j];
+                }
+                leakage_actual = leakage_available - dis_global[iCell];
+            }
+            leakage_unmet = leakage_requested - leakage_actual;
+            if (leakage_unmet > ROUT_BALANCE_ERROR_THRESH) {
+                warn_unmet_river_leakage(iCell, leakage_requested,
+                                         leakage_available, leakage_actual,
+                                         leakage_unmet);
+            }
+
             // Check water balance
-            if (abs(prev_stream + (inflow_global[iCell] + run_global[iCell]) -
-                    (dis_global[iCell] + stream_global[iCell])) >
-                DBL_EPSILON) {
+            if (fabs(prev_stream +
+                     (inflow_global[iCell] + run_global[iCell]) -
+                     (dis_global[iCell] + stream_global[iCell] +
+                      leakage_actual)) >
+                ROUT_BALANCE_ERROR_THRESH) {
                 log_err(
                     "Discharge water balance error [%.4f]. "
                     "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
                     prev_stream + (inflow_global[iCell] + run_global[iCell]) -
-                    (dis_global[iCell] + stream_global[iCell]),
+                    (dis_global[iCell] + stream_global[iCell] +
+                     leakage_actual),
                     (inflow_global[iCell] + run_global[iCell]),
-                    dis_global[iCell],
+                    dis_global[iCell] + leakage_actual,
                     prev_stream,
                     stream_global[iCell]);
             }

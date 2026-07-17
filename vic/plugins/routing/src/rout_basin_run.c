@@ -27,6 +27,27 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+#define ROUT_LEAKAGE_WARN_LOG_LIMIT 20ULL
+#define ROUT_BALANCE_ERROR_THRESH 1e-10
+
+static unsigned long long rout_leakage_warn_log_count = 0;
+
+static void
+warn_unmet_river_leakage(size_t iCell, double requested, double available,
+                         double actual, double unmet)
+{
+    if (rout_leakage_warn_log_count < ROUT_LEAKAGE_WARN_LOG_LIMIT) {
+        log_warn("River leakage was not fully met: iCell=%zu, requested=%.6g m3/s, available=%.6g m3/s, actual=%.6g m3/s, unmet=%.6g m3/s",
+                 iCell, requested, available, actual, unmet);
+        rout_leakage_warn_log_count++;
+
+        if (rout_leakage_warn_log_count == ROUT_LEAKAGE_WARN_LOG_LIMIT) {
+            log_warn("Unmet river leakage warnings reached limit (%llu); suppressing further per-cell warnings",
+                     (unsigned long long) ROUT_LEAKAGE_WARN_LOG_LIMIT);
+        }
+    }
+}
+
 /******************************************
 * @brief   Run routing on local node (basin decomposition)
 ******************************************/
@@ -41,6 +62,11 @@ rout_basin_run(size_t iCell)
     extern rout_force_struct         *rout_force;
 
     double                            inflow;
+    double                            leakage_requested;
+    double                            leakage_available;
+    double                            leakage_actual;
+    double                            leakage_unmet;
+    double                            discharge_scale;
     double                           *dt_inflow;
     double                           *dt_runoff;
     size_t                            rout_steps_per_dt;
@@ -86,8 +112,14 @@ rout_basin_run(size_t iCell)
     /* INFLOW*/
     // Gather inflow from forcing
     inflow = 0.0;
+    leakage_requested = 0.0;
     if (plugin_options.FORCE_ROUTING) {
-        inflow += rout_force[iCell].discharge;
+        if (rout_force[iCell].discharge >= 0.0) {
+            inflow += rout_force[iCell].discharge;
+        }
+        else {
+            leakage_requested = -rout_force[iCell].discharge;
+        }
     }
 
     // Calculate delta-time inflow (equal contribution)
@@ -122,16 +154,39 @@ rout_basin_run(size_t iCell)
         }
     }
 
+    /* Negative routing forcing is a river withdrawal, not negative inflow. */
+    leakage_available = rout_var[iCell].discharge;
+    leakage_actual = 0.0;
+    if (leakage_requested > 0.0 && leakage_available > 0.0) {
+        leakage_actual = fmin(leakage_requested, leakage_available);
+        discharge_scale =
+            (leakage_available - leakage_actual) / leakage_available;
+        rout_var[iCell].discharge = 0.0;
+        for (i = 0; i < rout_steps_per_dt; i++) {
+            rout_var[iCell].dt_discharge[i] *= discharge_scale;
+            rout_var[iCell].discharge += rout_var[iCell].dt_discharge[i];
+        }
+        leakage_actual = leakage_available - rout_var[iCell].discharge;
+    }
+    leakage_unmet = leakage_requested - leakage_actual;
+    if (leakage_unmet > ROUT_BALANCE_ERROR_THRESH) {
+        warn_unmet_river_leakage(iCell, leakage_requested,
+                                 leakage_available, leakage_actual,
+                                 leakage_unmet);
+    }
+
     // Check water balance
-    if (abs(prev_stream + (rout_var[iCell].inflow + rout_var[iCell].runoff) -
-            (rout_var[iCell].discharge + rout_var[iCell].stream)) >
-        DBL_EPSILON) {
+    if (fabs(prev_stream + (rout_var[iCell].inflow + rout_var[iCell].runoff) -
+             (rout_var[iCell].discharge + rout_var[iCell].stream +
+              leakage_actual)) >
+        ROUT_BALANCE_ERROR_THRESH) {
         log_err("Discharge water balance error [%.4f]. "
                 "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
                 prev_stream + (rout_var[iCell].inflow + rout_var[iCell].runoff) -
-                (rout_var[iCell].discharge + rout_var[iCell].stream),
+                (rout_var[iCell].discharge + rout_var[iCell].stream +
+                 leakage_actual),
                 (rout_var[iCell].inflow + rout_var[iCell].runoff),
-                rout_var[iCell].discharge,
+                rout_var[iCell].discharge + leakage_actual,
                 prev_stream,
                 rout_var[iCell].stream);
     }
