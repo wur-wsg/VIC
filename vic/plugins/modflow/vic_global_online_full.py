@@ -43,7 +43,90 @@ def select_config(case_name, mode, coupling):
 
 
 
-def run_vic_modflow_coupled(start_date, end_date, config=None, vic_processes=8):
+def validate_restart_inputs(start_date, config):
+    """Require every persisted component needed to continue an online run."""
+    if start_date == config.startstamp:
+        raise ValueError(
+            f"Restart date {start_date:%Y-%m-%d} is the configured initial model date"
+        )
+
+    state_file = os.path.join(
+        config.paths.statefile_dir,
+        f"{config.modestr}_{config.couplingstr}_state_file_."
+        f"{start_date:%Y%m%d}_00000.nc",
+    )
+    previous_date = start_date - relativedelta(days=1)
+    head_file = os.path.join(
+        config.paths.get_gwl_dir(config.modestr, config.couplingstr),
+        f"{config.mfname}_gwl_{previous_date:%Y%m%d}.nc",
+    )
+    forcing_file = config.paths.get_vic_forcing_file(
+        config.modestr,
+        config.couplingstr,
+        start_date.year,
+    )
+    missing = [
+        str(path)
+        for path in (state_file, head_file, forcing_file)
+        if not os.path.isfile(path)
+    ]
+    if missing:
+        raise FileNotFoundError(
+            "Online restart inputs are incomplete:\n  " + "\n  ".join(missing)
+        )
+
+    with nc.Dataset(state_file) as dataset:
+        if "STATE_DISCHARGE_DT" not in dataset.variables:
+            raise ValueError(f"Routing state is missing from restart file {state_file}")
+    with nc.Dataset(head_file) as dataset:
+        if "gwl" not in dataset.variables:
+            raise ValueError(f"Groundwater head is missing from restart file {head_file}")
+    with nc.Dataset(forcing_file) as dataset:
+        if "time" not in dataset.variables or "discharge_mf" not in dataset.variables:
+            raise ValueError(f"Routing forcing variables are missing from {forcing_file}")
+        time = dataset.variables["time"]
+        timestamp = nc.date2num(
+            start_date,
+            units=time.units,
+            calendar=getattr(time, "calendar", "standard"),
+        )
+        matches = np.flatnonzero(np.isclose(time[:], timestamp, rtol=0, atol=1.0e-6))
+        if matches.size != 1:
+            raise ValueError(
+                f"Expected one routing forcing record for {start_date:%Y-%m-%d} "
+                f"in {forcing_file}, found {matches.size}"
+            )
+        forcing = np.ma.filled(
+            np.ma.asarray(dataset.variables["discharge_mf"][matches[0]]),
+            np.nan,
+        )
+        # Routing forcing follows the VIC land domain, which can exclude
+        # groundwater boundary cells that remain active in MODFLOW ibound.
+        active = np.isfinite(np.asarray(config.paths.landmask))
+        if forcing.shape != active.shape:
+            raise ValueError(
+                f"Routing forcing shape {forcing.shape} does not match active grid "
+                f"shape {active.shape} in {forcing_file}"
+            )
+        if not np.isfinite(forcing[active]).all():
+            raise ValueError(
+                f"Routing forcing for {start_date:%Y-%m-%d} is not finite over "
+                f"active cells in {forcing_file}"
+            )
+
+    print("Validated online restart continuity inputs:", flush=True)
+    print(f"  VIC state: {state_file}", flush=True)
+    print(f"  MODFLOW head: {head_file}", flush=True)
+    print(f"  Routing forcing: {forcing_file}", flush=True)
+
+
+def run_vic_modflow_coupled(
+    start_date,
+    end_date,
+    config=None,
+    vic_processes=8,
+    restart=False,
+):
     """
     Run coupled VIC-MODFLOW simulation for a given time period
     
@@ -51,6 +134,8 @@ def run_vic_modflow_coupled(start_date, end_date, config=None, vic_processes=8):
         start_date (datetime): Start date of simulation
         end_date (datetime): End date of simulation
         config: Configuration object containing simulation parameters
+        vic_processes (int): MPI ranks used by each monthly VIC run
+        restart (bool): Continue from persisted coupled state without resetting forcing
     """
     # fallback to default config if not explicitly provided
     if config is None:
@@ -64,7 +149,10 @@ def run_vic_modflow_coupled(start_date, end_date, config=None, vic_processes=8):
         
         # Initialize extra forcing file for first timestep
         if current_date == start_date:
-            vr.create_extra_forcing_file(current_date, config)
+            if restart:
+                validate_restart_inputs(current_date, config)
+            else:
+                vr.create_extra_forcing_file(current_date, config)
 
         print(f"Running VIC-MODFLOW coupled model for {current_date.strftime('%Y-%m')}", flush=True)
 
@@ -142,6 +230,14 @@ if __name__ == "__main__":
         default=8,
         help="Number of MPI processes used for each monthly VIC invocation",
     )
+    parser.add_argument(
+        "--restart",
+        action="store_true",
+        help=(
+            "Continue from persisted VIC state, MODFLOW head, and routing forcing; "
+            "never recreate the forcing file"
+        ),
+    )
     # Positional (backward compatibility)
     parser.add_argument("pos_start_date", nargs="?", default="1979-01-01")
     parser.add_argument("pos_end_date", nargs="?", default="2010-01-01")
@@ -183,6 +279,7 @@ if __name__ == "__main__":
     print(f"VIC OUTFILE suffix: {vic_out_suffix}", flush=True)
     print(f"Pumping mode: {args.pumping_mode}", flush=True)
     print(f"VIC processes: {args.vic_processes}", flush=True)
+    print(f"Restart: {args.restart}", flush=True)
     print("="*50 + "\n", flush=True)
     print(f"Starting simulation at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
 
@@ -192,6 +289,7 @@ if __name__ == "__main__":
             end_date,
             config,
             vic_processes=args.vic_processes,
+            restart=args.restart,
         )
         print("Simulation completed successfully!")
     except Exception as e:
