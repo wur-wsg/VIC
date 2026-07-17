@@ -26,6 +26,16 @@ GLOBAL_STEADY_HEAD_FILE = os.environ.get(
     'VIC_MF_GLOBAL_STEADY_HEAD_FILE',
     '/lustre/nobackup/WUR/ESG/liu297/vic_global/01oc_natural/99input_processing/output_steadystate/mf_ss_gwl_5minDRN.nc',
 )
+INDUS_PUMPING_CAPACITY_FILE = os.environ.get(
+    'VIC_MF_PUMPING_CAPACITY_FILE',
+    os.path.join(
+        DATA_ROOT,
+        'MODFLOW',
+        'dynamic',
+        'indus',
+        'pumpingCapacity_1979-2014_ssp126_fixed_p95_timefixed_indus_rawindex.nc',
+    ),
+)
 
 
 def _env_path(env_name, default):
@@ -193,10 +203,14 @@ class PathconfigIndus(Pathconfig):
         'spe_yi_inp': 'spe_yi_inp_indus.nc',
         'landmask': 'landmask_indus.nc',
         'initialhead': 'initial_head_indus.nc',
-        'ibound': 'ibound_indus_updated.nc',
+        'ibound': 'ibound_indus_normalized.nc',
         'ldd': 'ldd_indus_updated.nc',
         'capillary': 'capillary_rise_indus.nc',
     }
+
+    def __init__(self):
+        super().__init__()
+        self.pumping_capacity_file = INDUS_PUMPING_CAPACITY_FILE
 
 class config:
     def __init__(self, pathconfig_cls=Pathconfig): #without specifying the input, the default input will be used as below: 
@@ -208,6 +222,7 @@ class config:
         self.ts_discharge = np.zeros(lm_shape, dtype=np.float64)   # m3/s
         self.humanimpact = False # whether to vic simulation options for human impact is turned on
         self.foc = None  # Initialize foc as None - must be explicitly set using set_foc()
+        self.pumping_mode = 'off'
         # VIC output file base name suffix (after mode_coupling): e.g., '5min_nogl'
         self.vic_out_suffix = '5min_nogl'
         #self.mfname = self._get_mfname()  # Set initial model name
@@ -234,19 +249,34 @@ class config:
         if foc is None:
             raise ValueError("Focus type must be True or False.")
         self.foc = foc
+        self._refresh_model_identity()
+
+    def _refresh_model_identity(self):
+        """Keep mode, coupling, and MODFLOW names synchronized."""
+        if self.foc is None:
+            return
         self.couplingstr = "foc" if self.foc else "poc"
         self.modestr = 'human' if self.humanimpact else 'nat'
         self.mfname = f'mf_{self.modestr}_{self.couplingstr}'
 
-
     def set_humanimpact(self, humanimpact): # whether to vic simulation options for human impact is turned on
         self.humanimpact = humanimpact
+        self._refresh_model_identity()
+
+    def set_pumping_mode(self, pumping_mode):
+        if pumping_mode not in {'off', 'uncapped', 'capped'}:
+            raise ValueError('pumping_mode must be off, uncapped, or capped')
+        if pumping_mode != 'off' and not self.humanimpact:
+            raise ValueError('Groundwater pumping can only be enabled for a human-impact run')
+        if pumping_mode == 'capped' and not hasattr(self.paths, 'pumping_capacity_file'):
+            raise ValueError('Capped pumping requires a case-specific pumping capacity file')
+        self.pumping_mode = pumping_mode
 
     def _get_mfname(self):
         """Internal method to determine model name based on coupling type and human impact."""
-        if self.humanimpact:
-            return 'human_foc' if self.foc else 'human_poc'
-        return 'mf_nat_foc' if self.foc else 'mf_nat_poc'
+        couplingstr = 'foc' if self.foc else 'poc'
+        modestr = 'human' if self.humanimpact else 'nat'
+        return f'mf_{modestr}_{couplingstr}'
     
     def set_vic_out_suffix(self, suffix: str):
         """Set the VIC output filename suffix used for OUTFILE and path checks."""
@@ -510,16 +540,29 @@ class config:
     def get_chd_input(self):
         nrow, ncol = self.ibound.shape
         CHDstress_period_data = []
+        chd_mask = self.ibound == 2
 
         if getattr(self.paths, 'case_name', 'global') != 'global':
             steady = self._get_non_global_steady_head()
             for layer in range(2):
+                invalid = chd_mask & ~np.isfinite(steady[layer])
+                if np.any(invalid):
+                    raise ValueError(
+                        f'Non-global layer {layer + 1} has {int(invalid.sum())} '
+                        'ibound == 2 cells without a finite global steady-state head'
+                    )
                 cellids = [(layer, i, j) for i in range(nrow) for j in range(ncol)]
                 for cellid, icell, head in zip(cellids, self.ibound.flatten(), steady[layer].flatten()):
-                    if icell != 2 or np.isnan(head):
+                    if icell != 2:
                         continue
                     cellid_1, cellid_2, cellid_3 = cellid
                     CHDstress_period_data.append([cellid_1, cellid_2, cellid_3, float(head)])
+            expected = 2 * int(chd_mask.sum())
+            if len(CHDstress_period_data) != expected:
+                raise RuntimeError(
+                    f'Expected {expected} non-global CHD records, '
+                    f'created {len(CHDstress_period_data)}'
+                )
             return CHDstress_period_data
 
         cellids = [(0, i, j) for i in range(nrow) for j in range(ncol)]

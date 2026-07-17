@@ -11,6 +11,7 @@ import support_function as sf
 import calendar
 import xarray as xr
 import multiprocessing
+from pumping import apply_dynamic_capacity, prepare_uncapped_abstraction
 #%%
 def create_extra_forcing_file(current_date, config):    
     domain_file_path = config.paths.vic_domain_file
@@ -272,6 +273,104 @@ def PostProcessVIC(config, current_date) -> tuple[xr.DataArray, xr.DataArray]:
     #     ts_gwabstract = np.zeros_like(ts_gwrecharge)
     
     return ts_gwrecharge, ts_discharge
+
+
+def PostProcessVICPumping(config, current_date) -> xr.DataArray:
+    """Build this month's positive MODFLOW pumping demand in m3/day."""
+    output_file = os.path.join(
+        config.paths.get_vic_result_dir(config.modestr, config.couplingstr),
+        f"{config.modestr}_{config.couplingstr}_{config.vic_out_suffix}."
+        f"{current_date.year}-{current_date.month:02d}.nc",
+    )
+    with xr.open_dataarray(
+        config.paths.mf_static_file('ibound'),
+        mask_and_scale=False,
+    ) as data:
+        ibound_da = data.load()
+    if not config.humanimpact:
+        return xr.zeros_like(ibound_da, dtype=np.float64).rename('groundwater_abstraction')
+    with xr.open_dataset(output_file) as dataset:
+        unmet_demand, abstraction = prepare_uncapped_abstraction(
+            dataset,
+            config.paths.cellarea,
+            config.ibound == 1,
+            calendar.monthrange(current_date.year, current_date.month)[1],
+        )
+        unmet_demand = unmet_demand.load()
+        abstraction = abstraction.load()
+    export_unmet_water_demand(config, current_date, unmet_demand)
+    if config.pumping_mode == 'off':
+        return xr.zeros_like(abstraction)
+    if config.pumping_mode == 'capped':
+        abstraction = apply_dynamic_capacity(
+            abstraction,
+            config.paths.pumping_capacity_file,
+            current_date,
+        )
+    total = float(abstraction.sum().item())
+    active_cells = int((abstraction > 0).sum().item())
+    print(
+        f'Prepared {config.pumping_mode} groundwater pumping for '
+        f'{current_date:%Y-%m}: {active_cells} cells, {total:.6g} m3/day',
+        flush=True,
+    )
+    return abstraction
+
+
+def export_unmet_water_demand(config, current_date, unmet_demand) -> None:
+    """Append the human-run unmet demand diagnostic without feeding it back."""
+    output_dir = config.paths.modflow_result_dir
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, 'unmet_water_demand.nc')
+    if not os.path.exists(output_file):
+        with nc.Dataset(output_file, 'w', format='NETCDF4') as dataset:
+            dataset.createDimension('time', None)
+            dataset.createDimension('lat', unmet_demand.sizes['lat'])
+            dataset.createDimension('lon', unmet_demand.sizes['lon'])
+            time = dataset.createVariable('time', 'f8', ('time',))
+            lat = dataset.createVariable('lat', 'f8', ('lat',))
+            lon = dataset.createVariable('lon', 'f8', ('lon',))
+            variable = dataset.createVariable(
+                'unmet_water_demand',
+                'f4',
+                ('time', 'lat', 'lon'),
+                zlib=True,
+                complevel=2,
+                fill_value=np.nan,
+            )
+            time.units = 'days since 1970-01-01 00:00:00'
+            time.calendar = 'standard'
+            lat[:] = unmet_demand.lat.values
+            lon[:] = unmet_demand.lon.values
+            lat.units = 'degrees_north'
+            lon.units = 'degrees_east'
+            variable.units = 'mm/month'
+            variable.long_name = 'water demand not met by VIC actual supply sources'
+            variable.formula = 'max(OUT_DEMAND - sum(actual supply sources), 0)'
+            dataset.description = (
+                'Monthly unmet human water demand diagnostic; this field is not '
+                'fed back to VIC state or demand bookkeeping.'
+            )
+            dataset.pumping_mode = config.pumping_mode
+    with nc.Dataset(output_file, 'a') as dataset:
+        if dataset.getncattr('pumping_mode') != config.pumping_mode:
+            raise ValueError(
+                f'{output_file} was created for pumping mode '
+                f'{dataset.getncattr("pumping_mode")}, not {config.pumping_mode}'
+            )
+        if not np.array_equal(dataset.variables['lat'][:], unmet_demand.lat.values):
+            raise ValueError(f'Latitude mismatch in {output_file}')
+        if not np.array_equal(dataset.variables['lon'][:], unmet_demand.lon.values):
+            raise ValueError(f'Longitude mismatch in {output_file}')
+        time = dataset.variables['time']
+        timestamp = nc.date2num(current_date, units=time.units, calendar=time.calendar)
+        matches = np.flatnonzero(np.isclose(time[:], timestamp, rtol=0, atol=1.0e-6))
+        if matches.size > 1:
+            raise ValueError(f'Duplicate time records for {current_date:%Y-%m} in {output_file}')
+        index = int(matches[0]) if matches.size == 1 else len(time)
+        time[index] = timestamp
+        dataset.variables['unmet_water_demand'][index] = unmet_demand.values.astype(np.float32)
+    print(f'Wrote unmet water demand for {current_date:%Y-%m} to {output_file}', flush=True)
 
 
 def update_statefile(current_date, config, cpr_mm_month):

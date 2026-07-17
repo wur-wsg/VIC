@@ -34,7 +34,7 @@ def daily_volume_rate_to_monthly_depth(rate_m3_day, cell_area_m2, days_in_month)
 
 #%%
 class mfrun:
-    def __init__(self, config_instance, current_date: datetime, ts_gwrecharge: xr.DataArray, ts_discharge: xr.DataArray, ts_gwabstract: int):  #TODO: tw_gwabstract is int 0 because now it is designed for natrual run 
+    def __init__(self, config_instance, current_date: datetime, ts_gwrecharge: xr.DataArray, ts_discharge: xr.DataArray, ts_gwabstract):
         self.current_date = current_date
         self.last_end_date = current_date - relativedelta(days = 1)
         self.end_date = current_date + relativedelta(months=1) - relativedelta(days = 1)
@@ -50,7 +50,7 @@ class mfrun:
 
         self.ts_gwrecharge = self._align_vic_field(ts_gwrecharge)
         self.ts_discharge = self._align_vic_field(ts_discharge)
-        self.ts_gwabstract = ts_gwabstract # TODO: this is int 0 because now it is designed for natrual run
+        self.ts_gwabstract = self._align_vic_field(ts_gwabstract)
         self.startinghead = self.get_startinghead()
 
     def _align_vic_field(self, field: xr.DataArray) -> np.ndarray:
@@ -110,6 +110,26 @@ class mfrun:
         perioddata = [days,nstp,tsmult]
         return perioddata
 
+    def get_wel_stress_period_data(self):
+        pumping = np.asarray(self.ts_gwabstract, dtype=float).squeeze()
+        expected_shape = self.config.ibound.shape
+        if pumping.shape != expected_shape:
+            raise ValueError(
+                f'Groundwater pumping shape {pumping.shape} does not match {expected_shape}'
+            )
+        if np.any(~np.isfinite(pumping)):
+            raise ValueError('Groundwater pumping contains non-finite values')
+        if np.any(pumping < 0):
+            raise ValueError('Groundwater pumping must be a non-negative extraction rate')
+        pumping_cells = self.config.ibound == 1
+        if np.any((pumping > 0) & ~pumping_cells):
+            raise ValueError('Positive groundwater pumping is only allowed on ibound == 1 cells')
+        rows, cols = np.where(pumping_cells & (pumping > 0))
+        return [
+            [((0, int(row), int(col))), -float(pumping[row, col])]
+            for row, col in zip(rows, cols)
+        ]
+
     def run_modflow(self):
         ws = self.config.paths.get_modflow_workspace_dir(self.config.mfname)
         if not os.path.exists(ws):
@@ -124,6 +144,7 @@ class mfrun:
         #config_indus_ubuntu.paths.set_ts_gwabstract(self.ts_gwabstract[0]) #TODO
         RCHstress_period_data = self.config.get_rch_param(self.current_date)
         RIVstress_period_data = self.config.get_riv_param()
+        WELstress_period_data = self.get_wel_stress_period_data()
         if self.config.foc:
             CPRstress_period_data = self.config.get_cpr_param()
         else:
@@ -213,6 +234,15 @@ class mfrun:
                                       stress_period_data = RCHstress_period_data,
                                       save_flows = True
                                       )
+        if WELstress_period_data:
+            wel = flopy.mf6.ModflowGwfwel(
+                gwf,
+                stress_period_data=WELstress_period_data,
+                print_input=True,
+                print_flows=True,
+                save_flows=True,
+                pname='WEL',
+            )
         riv = flopy.mf6.ModflowGwfriv(gwf,
                                       stress_period_data = RIVstress_period_data,
                                       save_flows = True
@@ -286,10 +316,12 @@ class mfrun:
             latitudes[:] = ibound_da['lat'].values
             longitudes[:] = ibound_da['lon'].values
             layers[:] = np.arange(nlay)
-            head[0] = self.layer1_head
-            head[0] = np.where(np.isnan(self.config.paths.landmask), np.nan, head[0])
-            head[1] = self.layer2_head
-            head[1] = np.where(np.isnan(self.config.paths.landmask), np.nan, head[1])
+            if getattr(self.config.paths, 'case_name', 'global') == 'global':
+                active_domain = ~np.isnan(self.config.paths.landmask)
+            else:
+                active_domain = self.config.idomain > 0
+            head[0] = np.where(active_domain, self.layer1_head, np.nan)
+            head[1] = np.where(active_domain, self.layer2_head, np.nan)
 
             ds.description = f'Transient groundwater head for {self.end_date.strftime("%Y-%m-%d")}, partially online coupled with VIC-WUR 5min natural run'
             head.units = 'm'
