@@ -87,6 +87,9 @@ enum {
     OUT_DISCHARGE,                      /**< river (outflow) discharge [m3 s-1] */
     OUT_STREAM_MOIST,                   /**< river (in-cell) stream moisture [mm] */
     OUT_NONREN_DEFICIT,                 /**< non-renewable storage deficit [mm] */
+    OUT_RIVER_LEAKAGE_REQUESTED,        /**< requested river leakage [m3 s-1] */
+    OUT_RIVER_LEAKAGE_ACTUAL,           /**< actual river leakage [m3 s-1] */
+    OUT_RIVER_LEAKAGE_UNMET,            /**< unmet river leakage [m3 s-1] */
     // land-use
     OUT_CV,                             /**< vegetation coverage fraction [-] */
     // efr

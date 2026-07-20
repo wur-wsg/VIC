@@ -169,6 +169,9 @@ rout_basin_run(size_t iCell)
         leakage_actual = leakage_available - rout_var[iCell].discharge;
     }
     leakage_unmet = leakage_requested - leakage_actual;
+    rout_var[iCell].leakage_requested = leakage_requested;
+    rout_var[iCell].leakage_actual = leakage_actual;
+    rout_var[iCell].leakage_unmet = leakage_unmet;
     if (leakage_unmet > ROUT_BALANCE_ERROR_THRESH) {
         warn_unmet_river_leakage(iCell, leakage_requested,
                                  leakage_available, leakage_actual,

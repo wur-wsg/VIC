@@ -60,6 +60,9 @@ typedef struct {
     double stream;              /**< river (in-cell) stream moisture [m3 s-1] */
     double nonrenew_deficit;    /**< non-renewable storage deficit [mm] */
     double discharge;           /**< river (outflow) discharge [m3 s-1] */
+    double leakage_requested;   /**< requested river leakage [m3 s-1] */
+    double leakage_actual;      /**< actual river leakage [m3 s-1] */
+    double leakage_unmet;       /**< unmet river leakage [m3 s-1] */
     double *dt_discharge;       /**< routing sub-step discharge [m3 s-1] */
 } rout_var_struct;
 

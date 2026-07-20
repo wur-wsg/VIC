@@ -76,6 +76,9 @@ rout_random_run()
     double                           *stream_global;
     double                           *inflow_global;
     double                           *force_global;
+    double                           *leakage_requested_global;
+    double                           *leakage_actual_global;
+    double                           *leakage_unmet_global;
 
     size_t                           *nup_local;
     size_t                          **up_local;
@@ -87,6 +90,9 @@ rout_random_run()
     double                           *stream_local;
     double                           *inflow_local;
     double                           *force_local;
+    double                           *leakage_requested_local;
+    double                           *leakage_actual_local;
+    double                           *leakage_unmet_local;
 
     size_t                            iCell;
     double                            inflow;
@@ -139,6 +145,15 @@ rout_random_run()
     inflow_global =
         malloc(global_domain.ncells_active * sizeof(*inflow_global));
     check_alloc_status(inflow_global, "Memory allocation error");
+    leakage_requested_global = calloc(global_domain.ncells_active,
+                                      sizeof(*leakage_requested_global));
+    check_alloc_status(leakage_requested_global, "Memory allocation error");
+    leakage_actual_global = calloc(global_domain.ncells_active,
+                                   sizeof(*leakage_actual_global));
+    check_alloc_status(leakage_actual_global, "Memory allocation error");
+    leakage_unmet_global = calloc(global_domain.ncells_active,
+                                  sizeof(*leakage_unmet_global));
+    check_alloc_status(leakage_unmet_global, "Memory allocation error");
 
 
     for (i = 0; i < global_domain.ncells_active; i++) {
@@ -174,6 +189,15 @@ rout_random_run()
     check_alloc_status(stream_local, "Memory allocation error");
     inflow_local = malloc(local_domain.ncells_active * sizeof(*inflow_local));
     check_alloc_status(inflow_local, "Memory allocation error");
+    leakage_requested_local = malloc(local_domain.ncells_active *
+                                     sizeof(*leakage_requested_local));
+    check_alloc_status(leakage_requested_local, "Memory allocation error");
+    leakage_actual_local = malloc(local_domain.ncells_active *
+                                  sizeof(*leakage_actual_local));
+    check_alloc_status(leakage_actual_local, "Memory allocation error");
+    leakage_unmet_local = malloc(local_domain.ncells_active *
+                                 sizeof(*leakage_unmet_local));
+    check_alloc_status(leakage_unmet_local, "Memory allocation error");
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         up_local[i] = malloc(MAX_UPSTREAM * sizeof(*up_local[i]));
@@ -329,6 +353,9 @@ rout_random_run()
                 leakage_actual = leakage_available - dis_global[iCell];
             }
             leakage_unmet = leakage_requested - leakage_actual;
+            leakage_requested_global[iCell] = leakage_requested;
+            leakage_actual_global[iCell] = leakage_actual;
+            leakage_unmet_global[iCell] = leakage_unmet;
             if (leakage_unmet > ROUT_BALANCE_ERROR_THRESH) {
                 warn_unmet_river_leakage(iCell, leakage_requested,
                                          leakage_available, leakage_actual,
@@ -361,6 +388,9 @@ rout_random_run()
     scatter_double(stream_global, stream_local);
     scatter_double(inflow_global, inflow_local);
     scatter_double(dis_global, dis_local);
+    scatter_double(leakage_requested_global, leakage_requested_local);
+    scatter_double(leakage_actual_global, leakage_actual_local);
+    scatter_double(leakage_unmet_global, leakage_unmet_local);
 
     // Set discharge
     for (i = 0; i < local_domain.ncells_active; i++) {
@@ -370,6 +400,9 @@ rout_random_run()
         rout_var[i].discharge = dis_local[i];
         rout_var[i].stream = stream_local[i];
         rout_var[i].inflow = inflow_local[i];
+        rout_var[i].leakage_requested = leakage_requested_local[i];
+        rout_var[i].leakage_actual = leakage_actual_local[i];
+        rout_var[i].leakage_unmet = leakage_unmet_local[i];
     }
 
     // Free
@@ -392,6 +425,9 @@ rout_random_run()
     free(dis_global);
     free(stream_global);
     free(inflow_global);
+    free(leakage_requested_global);
+    free(leakage_actual_global);
+    free(leakage_unmet_global);
 
     for (i = 0; i < local_domain.ncells_active; i++) {
         free(up_local[i]);
@@ -408,6 +444,9 @@ rout_random_run()
     free(dis_local);
     free(stream_local);
     free(inflow_local);
+    free(leakage_requested_local);
+    free(leakage_actual_local);
+    free(leakage_unmet_local);
 
     if (plugin_options.FORCE_ROUTING) {
         free(force_global);

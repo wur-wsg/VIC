@@ -92,6 +92,39 @@ rout_set_output_met_data_info(void)
              "%s", "mm");
     snprintf(out_metadata[N_OUTVAR_TYPES + OUT_NONREN_DEFICIT].description,
              MAXSTRING, "%s", "non-renewable deficit");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_REQUESTED].varname,
+             MAXSTRING, "%s", "OUT_RIVER_LEAKAGE_REQUESTED");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_REQUESTED].long_name,
+             MAXSTRING, "%s", "river_leakage_requested");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_REQUESTED].standard_name,
+             MAXSTRING, "%s", "requested river leakage");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_REQUESTED].units,
+             MAXSTRING, "%s", "m3 s-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_REQUESTED].description,
+             MAXSTRING, "%s", "river leakage requested by groundwater coupling");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_ACTUAL].varname,
+             MAXSTRING, "%s", "OUT_RIVER_LEAKAGE_ACTUAL");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_ACTUAL].long_name,
+             MAXSTRING, "%s", "river_leakage_actual");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_ACTUAL].standard_name,
+             MAXSTRING, "%s", "actual river leakage");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_ACTUAL].units,
+             MAXSTRING, "%s", "m3 s-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_ACTUAL].description,
+             MAXSTRING, "%s", "river leakage removed from routed discharge");
+
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_UNMET].varname,
+             MAXSTRING, "%s", "OUT_RIVER_LEAKAGE_UNMET");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_UNMET].long_name,
+             MAXSTRING, "%s", "river_leakage_unmet");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_UNMET].standard_name,
+             MAXSTRING, "%s", "unmet river leakage");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_UNMET].units,
+             MAXSTRING, "%s", "m3 s-1");
+    snprintf(out_metadata[N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_UNMET].description,
+             MAXSTRING, "%s", "requested river leakage not met by routed discharge");
 }
 
 /******************************************
@@ -109,6 +142,9 @@ rout_history(int           varid,
     case  N_OUTVAR_TYPES + OUT_STREAM_RUNOFF:
     case  N_OUTVAR_TYPES + OUT_STREAM_INFLOW:
     case  N_OUTVAR_TYPES + OUT_DISCHARGE:
+    case  N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_REQUESTED:
+    case  N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_ACTUAL:
+    case  N_OUTVAR_TYPES + OUT_RIVER_LEAKAGE_UNMET:
         (*agg_type) = AGG_TYPE_AVG;
         break;
     }
@@ -138,4 +174,12 @@ rout_put_data(size_t iCell)
                     OUT_STREAM_INFLOW][0] = rout_var[iCell].inflow;
     out_data[iCell][N_OUTVAR_TYPES +
                     OUT_STREAM_RUNOFF][0] = rout_var[iCell].runoff;
+    out_data[iCell][N_OUTVAR_TYPES +
+                    OUT_RIVER_LEAKAGE_REQUESTED][0] =
+        rout_var[iCell].leakage_requested;
+    out_data[iCell][N_OUTVAR_TYPES +
+                    OUT_RIVER_LEAKAGE_ACTUAL][0] =
+        rout_var[iCell].leakage_actual;
+    out_data[iCell][N_OUTVAR_TYPES +
+                    OUT_RIVER_LEAKAGE_UNMET][0] = rout_var[iCell].leakage_unmet;
 }
