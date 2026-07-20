@@ -224,6 +224,13 @@ if __name__ == "__main__":
         help="Groundwater pumping treatment for human-impact runs",
     )
     parser.add_argument(
+        "--pumping-source",
+        dest="pumping_source",
+        choices=["unmet-residual", "nonrenewable-proxy"],
+        default="unmet-residual",
+        help="VIC diagnostic used as the uncapped MODFLOW pumping target",
+    )
+    parser.add_argument(
         "--vic-processes",
         dest="vic_processes",
         type=int,
@@ -261,6 +268,7 @@ if __name__ == "__main__":
 
     config = select_config(case_name, mode, coupling)
     config.set_pumping_mode(args.pumping_mode)
+    config.set_pumping_source(args.pumping_source)
     if args.vic_processes <= 0:
         raise ValueError('--vic-processes must be positive')
     
@@ -278,6 +286,7 @@ if __name__ == "__main__":
     print(f"Coupling: {coupling}", flush=True)
     print(f"VIC OUTFILE suffix: {vic_out_suffix}", flush=True)
     print(f"Pumping mode: {args.pumping_mode}", flush=True)
+    print(f"Pumping source: {args.pumping_source}", flush=True)
     print(f"VIC processes: {args.vic_processes}", flush=True)
     print(f"Restart: {args.restart}", flush=True)
     print("="*50 + "\n", flush=True)

@@ -223,6 +223,7 @@ class config:
         self.humanimpact = False # whether to vic simulation options for human impact is turned on
         self.foc = None  # Initialize foc as None - must be explicitly set using set_foc()
         self.pumping_mode = 'off'
+        self.pumping_source = 'unmet-residual'
         # VIC output file base name suffix (after mode_coupling): e.g., '5min_nogl'
         self.vic_out_suffix = '5min_nogl'
         #self.mfname = self._get_mfname()  # Set initial model name
@@ -271,6 +272,17 @@ class config:
         if pumping_mode == 'capped' and not hasattr(self.paths, 'pumping_capacity_file'):
             raise ValueError('Capped pumping requires a case-specific pumping capacity file')
         self.pumping_mode = pumping_mode
+
+    def set_pumping_source(self, pumping_source):
+        if pumping_source not in {'unmet-residual', 'nonrenewable-proxy'}:
+            raise ValueError(
+                'pumping_source must be unmet-residual or nonrenewable-proxy'
+            )
+        if pumping_source != 'unmet-residual' and not self.humanimpact:
+            raise ValueError(
+                'Non-renewable proxy pumping can only be used for a human-impact run'
+            )
+        self.pumping_source = pumping_source
 
     def _get_mfname(self):
         """Internal method to determine model name based on coupling type and human impact."""

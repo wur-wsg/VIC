@@ -7,6 +7,7 @@ import xarray as xr
 
 
 DEMAND_VARIABLE = 'OUT_DEMAND'
+NONRENEWABLE_VARIABLE = 'OUT_WI_NREN_SECT'
 SUPPLY_VARIABLES = (
     'OUT_WI_SURF_SECT',
     'OUT_WI_DAM_SECT',
@@ -92,6 +93,43 @@ def prepare_uncapped_abstraction(dataset, cell_area, pumping_mask, days_in_month
         'formula': 'max(OUT_DEMAND - sum(actual supply sources), 0) / 1000 * cell_area / days_in_month',
     }
     return unmet_mm, abstraction
+
+
+def prepare_nonrenewable_proxy_abstraction(
+        dataset, cell_area, pumping_mask, days_in_month):
+    """Convert VIC's fulfilled non-renewable proxy withdrawal to m3/day."""
+    if days_in_month <= 0:
+        raise ValueError('days_in_month must be positive')
+    proxy_mm = _monthly_sector_total(dataset, NONRENEWABLE_VARIABLE).fillna(0)
+    pumping_mask = np.asarray(pumping_mask, dtype=bool)
+    if pumping_mask.shape != proxy_mm.shape:
+        raise ValueError(
+            f'pumping_mask must match VIC grid {proxy_mm.shape}; found {pumping_mask.shape}'
+        )
+    minimum = float(proxy_mm.min(skipna=True).item())
+    if minimum < -NEGATIVE_RESIDUAL_TOLERANCE_MM:
+        raise ValueError(f'Non-renewable proxy withdrawal is negative ({minimum:.6g} mm)')
+    proxy_mm = proxy_mm.clip(min=0).where(pumping_mask)
+    proxy_mm.name = 'unmet_water_demand'
+    proxy_mm.attrs = {
+        'units': 'mm/month',
+        'long_name': 'VIC demand fulfilled by the non-renewable proxy source',
+        'formula': 'sum_wu_class(OUT_WI_NREN_SECT)',
+    }
+    cell_area = np.asarray(cell_area, dtype=float)
+    if cell_area.shape != proxy_mm.shape:
+        raise ValueError(
+            f'cell_area must match VIC grid {proxy_mm.shape}; found {cell_area.shape}'
+        )
+    abstraction = proxy_mm * 1.0e-3 * cell_area / days_in_month
+    abstraction = abstraction.fillna(0).astype(np.float64)
+    abstraction.name = 'groundwater_abstraction'
+    abstraction.attrs = {
+        'units': 'm3/day',
+        'long_name': 'monthly mean VIC non-renewable proxy withdrawal assigned to pumping',
+        'formula': 'sum_wu_class(OUT_WI_NREN_SECT) / 1000 * cell_area / days_in_month',
+    }
+    return proxy_mm, abstraction
 
 
 def calculate_uncapped_abstraction(dataset, cell_area, pumping_mask, days_in_month):

@@ -11,7 +11,11 @@ import support_function as sf
 import calendar
 import xarray as xr
 import multiprocessing
-from pumping import apply_dynamic_capacity, prepare_uncapped_abstraction
+from pumping import (
+    apply_dynamic_capacity,
+    prepare_nonrenewable_proxy_abstraction,
+    prepare_uncapped_abstraction,
+)
 #%%
 def create_extra_forcing_file(current_date, config):    
     domain_file_path = config.paths.vic_domain_file
@@ -290,7 +294,12 @@ def PostProcessVICPumping(config, current_date) -> xr.DataArray:
     if not config.humanimpact:
         return xr.zeros_like(ibound_da, dtype=np.float64).rename('groundwater_abstraction')
     with xr.open_dataset(output_file) as dataset:
-        unmet_demand, abstraction = prepare_uncapped_abstraction(
+        prepare = (
+            prepare_nonrenewable_proxy_abstraction
+            if config.pumping_source == 'nonrenewable-proxy'
+            else prepare_uncapped_abstraction
+        )
+        unmet_demand, abstraction = prepare(
             dataset,
             config.paths.cellarea,
             config.ibound == 1,
@@ -310,7 +319,8 @@ def PostProcessVICPumping(config, current_date) -> xr.DataArray:
     total = float(abstraction.sum().item())
     active_cells = int((abstraction > 0).sum().item())
     print(
-        f'Prepared {config.pumping_mode} groundwater pumping for '
+        f'Prepared {config.pumping_mode} groundwater pumping from '
+        f'{config.pumping_source} for '
         f'{current_date:%Y-%m}: {active_cells} cells, {total:.6g} m3/day',
         flush=True,
     )
@@ -345,18 +355,24 @@ def export_unmet_water_demand(config, current_date, unmet_demand) -> None:
             lat.units = 'degrees_north'
             lon.units = 'degrees_east'
             variable.units = 'mm/month'
-            variable.long_name = 'water demand not met by VIC actual supply sources'
-            variable.formula = 'max(OUT_DEMAND - sum(actual supply sources), 0)'
+            variable.long_name = unmet_demand.attrs['long_name']
+            variable.formula = unmet_demand.attrs['formula']
             dataset.description = (
-                'Monthly unmet human water demand diagnostic; this field is not '
-                'fed back to VIC state or demand bookkeeping.'
+                'Monthly groundwater pumping-target diagnostic before capacity '
+                'capping; this field is not fed back to VIC bookkeeping.'
             )
             dataset.pumping_mode = config.pumping_mode
+            dataset.pumping_source = config.pumping_source
     with nc.Dataset(output_file, 'a') as dataset:
         if dataset.getncattr('pumping_mode') != config.pumping_mode:
             raise ValueError(
                 f'{output_file} was created for pumping mode '
                 f'{dataset.getncattr("pumping_mode")}, not {config.pumping_mode}'
+            )
+        if dataset.getncattr('pumping_source') != config.pumping_source:
+            raise ValueError(
+                f'{output_file} was created for pumping source '
+                f'{dataset.getncattr("pumping_source")}, not {config.pumping_source}'
             )
         if not np.array_equal(dataset.variables['lat'][:], unmet_demand.lat.values):
             raise ValueError(f'Latitude mismatch in {output_file}')
