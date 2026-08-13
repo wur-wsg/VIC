@@ -324,6 +324,20 @@
           "expected_text": "not implemented",
           "text_found": true,
           "passed": true
+        },
+        "comment_after_legacy_force_type": {
+          "expected_failure": false,
+          "returncode": 0,
+          "expected_text": null,
+          "text_found": false,
+          "passed": true
+        },
+        "comment_after_monthly_force_type": {
+          "expected_failure": false,
+          "returncode": 0,
+          "expected_text": null,
+          "text_found": false,
+          "passed": true
         }
       }
     },
