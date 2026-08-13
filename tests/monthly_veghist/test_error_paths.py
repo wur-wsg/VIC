@@ -217,6 +217,14 @@ def main():
          "not implemented"),
     ]
 
+    # Trailing comments are legal on FORCE_TYPE lines and must not be mistaken
+    # for a frequency token now that the layout is chosen by token count.
+    # Both of these are expected to SUCCEED.
+    comment_cases = [
+        ("comment_after_legacy_force_type", "WIND"),
+        ("comment_after_monthly_force_type", "LAI"),
+    ]
+
     for name, mutate, expect_text in config_cases:
         result_dir = os.path.join(work, "result_%s" % name)
         os.makedirs(result_dir, exist_ok=True)
@@ -235,6 +243,36 @@ def main():
             "returncode": rc,
             "expected_text": expect_text,
             "text_found": found,
+            "passed": ok,
+        }
+        if not ok:
+            failures.append(name)
+
+    for name, variable in comment_cases:
+        result_dir = os.path.join(work, "result_%s" % name)
+        os.makedirs(result_dir, exist_ok=True)
+        gfile = os.path.join(work, "global_%s.txt" % name)
+
+        lines = []
+        for line in open(base_global):
+            tokens = line.split()
+            if (len(tokens) > 1 and tokens[0] == "FORCE_TYPE"
+                    and tokens[1] == variable):
+                line = line.rstrip("\n") + "   # trailing comment\n"
+            lines.append(line)
+        text = "".join(lines).replace(
+            os.path.join(case, "result_monthly"), result_dir)
+        with open(gfile, "w") as handle:
+            handle.write(text)
+
+        rc, log = run_vic(args.exe, gfile,
+                          os.path.join(work, "log_%s.txt" % name), env)
+        ok = rc == 0
+        results[name] = {
+            "expected_failure": False,
+            "returncode": rc,
+            "expected_text": None,
+            "text_found": False,
             "passed": ok,
         }
         if not ok:

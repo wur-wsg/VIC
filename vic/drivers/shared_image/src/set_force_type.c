@@ -25,6 +25,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *****************************************************************************/
 
+#include <ctype.h>
+
 #include <vic_driver_shared_image.h>
 
 /******************************************************************************
@@ -43,6 +45,8 @@ set_force_type(char *cmdstr)
     char                       ncvarname[MAXSTRING];
     char                       ncfreq[MAXSTRING];
     char                       ncfilename[MAXSTRING];
+    char                       cmdcopy[MAXSTRING];
+    char                      *comment;
     int                        type = SKIP;
     int                        freq = FORCE_FREQ_STEP;
     int                        ntokens;
@@ -54,13 +58,34 @@ set_force_type(char *cmdstr)
     /** Initialize flgstr **/
     snprintf(flgstr, MAXSTRING, "%s", "NULL");
 
+    // Trailing comments are an established convention on FORCE_TYPE lines, and
+    // the layout below is chosen by token count, so a comment would otherwise
+    // be mistaken for a frequency or a path.  Cut the line at the first token
+    // that starts with '#'.
+    snprintf(cmdcopy, MAXSTRING, "%s", cmdstr);
+    comment = strchr(cmdcopy, '#');
+    while (comment != NULL) {
+        if (comment == cmdcopy || isspace((unsigned char) *(comment - 1))) {
+            *comment = '\0';
+            break;
+        }
+        comment = strchr(comment + 1, '#');
+    }
+
     // Two accepted layouts, distinguished by the number of tokens so that
     // pre-existing global parameter files keep working unchanged:
     //   3 tokens: FORCE_TYPE <VAR> <nc_varname> <path_prefix>          (STEP)
     //   4 tokens: FORCE_TYPE <VAR> <nc_varname> <FREQ> <path_prefix>
-    ntokens = sscanf(cmdstr, "%*s %s %s %s %s", optstr, ncvarname, ncfreq,
+    ntokens = sscanf(cmdcopy, "%*s %s %s %s %s", optstr, ncvarname, ncfreq,
                      ncfilename);
-    if (ntokens < 3) {
+    if (ntokens < 1) {
+        log_err("FORCE_TYPE requires a variable name.  Got: %s", cmdstr);
+    }
+    else if (ntokens == 1 && strcasecmp("SKIP", optstr) == 0) {
+        // "FORCE_TYPE SKIP" marks an unused column and carries no file
+        ;
+    }
+    else if (ntokens < 3) {
         log_err("FORCE_TYPE requires at least a variable name, a netCDF "
                 "variable name and a file path prefix.  Got: %s", cmdstr);
     }
