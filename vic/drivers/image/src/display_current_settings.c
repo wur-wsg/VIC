@@ -248,6 +248,9 @@ display_current_settings(int mode)
         if (global_param.forceyear[file_num] > 0) {
             fprintf(LOG_DEST, "Forcing File %d:\t\t%s*\n", file_num + 1,
                     filenames.f_path_pfx[file_num]);
+            fprintf(LOG_DEST, "FORCEFREQ\t\t%s\n",
+                    global_param.forcefreq[file_num] ==
+                    FORCE_FREQ_MONTH ? "MONTH" : "STEP");
             fprintf(LOG_DEST, "FORCEYEAR\t\t%d\n",
                     global_param.forceyear[file_num]);
             fprintf(LOG_DEST, "FORCEMONTH\t\t%d\n",

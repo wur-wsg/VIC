@@ -34,22 +34,41 @@
 void
 set_force_type(char *cmdstr)
 {
-    extern param_set_struct param_set;
-    extern filenames_struct filenames;
+    extern param_set_struct    param_set;
+    extern filenames_struct    filenames;
+    extern global_param_struct global_param;
 
-    char                    optstr[MAXSTRING];
-    char                    flgstr[MAXSTRING];
-    char                    ncvarname[MAXSTRING];
-    char                    ncfilename[MAXSTRING];
-    int                     type = SKIP;
+    char                       optstr[MAXSTRING];
+    char                       flgstr[MAXSTRING];
+    char                       ncvarname[MAXSTRING];
+    char                       ncfreq[MAXSTRING];
+    char                       ncfilename[MAXSTRING];
+    int                        type = SKIP;
+    int                        freq = FORCE_FREQ_STEP;
+    int                        ntokens;
 
     snprintf(ncvarname, MAXSTRING, "%s", "MISSING");
+    snprintf(ncfreq, MAXSTRING, "%s", "MISSING");
     snprintf(ncfilename, MAXSTRING, "%s", "MISSING");
 
     /** Initialize flgstr **/
     snprintf(flgstr, MAXSTRING, "%s", "NULL");
 
-    sscanf(cmdstr, "%*s %s %s %s", optstr, ncvarname, ncfilename);
+    // Two accepted layouts, distinguished by the number of tokens so that
+    // pre-existing global parameter files keep working unchanged:
+    //   3 tokens: FORCE_TYPE <VAR> <nc_varname> <path_prefix>          (STEP)
+    //   4 tokens: FORCE_TYPE <VAR> <nc_varname> <FREQ> <path_prefix>
+    ntokens = sscanf(cmdstr, "%*s %s %s %s %s", optstr, ncvarname, ncfreq,
+                     ncfilename);
+    if (ntokens < 3) {
+        log_err("FORCE_TYPE requires at least a variable name, a netCDF "
+                "variable name and a file path prefix.  Got: %s", cmdstr);
+    }
+    else if (ntokens == 3) {
+        // Legacy layout: the third token is the path prefix, not a frequency
+        snprintf(ncfilename, MAXSTRING, "%s", ncfreq);
+        snprintf(ncfreq, MAXSTRING, "%s", "STEP");
+    }
 
     /***************************************
        Get meteorological data forcing info
@@ -120,6 +139,37 @@ set_force_type(char *cmdstr)
         log_err("Undefined forcing variable type %s",
                 optstr);
     }
+
+    /***************************************
+       Get the forcing frequency
+    ***************************************/
+
+    if (strcasecmp("STEP", ncfreq) == 0) {
+        freq = FORCE_FREQ_STEP;
+    }
+    else if (strcasecmp("MONTH", ncfreq) == 0) {
+        freq = FORCE_FREQ_MONTH;
+    }
+    else if (strcasecmp("DAY", ncfreq) == 0 ||
+             strcasecmp("YEAR", ncfreq) == 0) {
+        log_err("Forcing frequency %s is recognized but not implemented for "
+                "FORCE_TYPE (it is only available for PLUGIN_FORCE_TYPE).  "
+                "Use STEP or MONTH.", ncfreq);
+    }
+    else {
+        log_err("Undefined forcing frequency %s for FORCE_TYPE %s.  "
+                "Valid frequencies are STEP and MONTH.", ncfreq, optstr);
+    }
+
+    // MONTH is only meaningful for the vegetation-history variables, which are
+    // the only ones read through a (time, veg_class, lat, lon) record.
+    if (freq == FORCE_FREQ_MONTH &&
+        !(type == LAI || type == FCANOPY || type == ALBEDO)) {
+        log_err("Forcing frequency MONTH is only supported for LAI, FCANOPY "
+                "and ALBEDO; it was requested for %s.", optstr);
+    }
+
+    global_param.forcefreq[type] = freq;
 
     param_set.TYPE[type].SUPPLIED = type;
     param_set.FORCE_INDEX[type] = type;

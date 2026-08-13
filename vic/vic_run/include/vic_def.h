@@ -325,6 +325,9 @@ typedef struct {
     unsigned int forceskip[MAX_FORCE_FILES];   /**< number of model time steps to skip at
                                                   the start of the forcing file */
     unsigned short int forceyear[MAX_FORCE_FILES];  /**< year forcing files start */
+    unsigned short int forcefreq[MAX_FORCE_FILES];  /**< frequency at which each forcing file
+                                                       supplies records (FORCE_FREQ_STEP or
+                                                       FORCE_FREQ_MONTH) */
     size_t nrecs;                /**< Number of time steps simulated */
     unsigned short int startday;  /**< Starting day of the simulation */
     unsigned short int startmonth;  /**< Starting month of the simulation */

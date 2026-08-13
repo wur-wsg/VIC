@@ -100,7 +100,7 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
     MPI_Datatype   *mpi_types;
 
     // nitems has to equal the number of elements in global_param_struct
-    nitems = 32;
+    nitems = 33;
     blocklengths = malloc(nitems * sizeof(*blocklengths));
     check_alloc_status(blocklengths, "Memory allocation error.");
 
@@ -198,6 +198,11 @@ create_MPI_global_struct_type(MPI_Datatype *mpi_type)
 
     // unsigned short int forceyear[MAX_FORCE_FILES];
     offsets[i] = offsetof(global_param_struct, forceyear);
+    blocklengths[i] = MAX_FORCE_FILES;
+    mpi_types[i++] = MPI_UNSIGNED_SHORT;
+
+    // unsigned short int forcefreq[MAX_FORCE_FILES];
+    offsets[i] = offsetof(global_param_struct, forcefreq);
     blocklengths[i] = MAX_FORCE_FILES;
     mpi_types[i++] = MPI_UNSIGNED_SHORT;
 
@@ -2385,6 +2390,8 @@ main(int    argc,
         // problem with alignment would show there
         global.forceskip[0] = 4321;
         global.forceskip[1] = 8765;
+        global.forcefreq[0] = FORCE_FREQ_MONTH;
+        global.forcefreq[MAX_FORCE_FILES - 1] = FORCE_FREQ_MONTH;
         // last element of global
         global.time_origin_num = -12345.6789;
 
@@ -2437,6 +2444,11 @@ main(int    argc,
     assert(global.forceskip[0] == 4321);
     printf("%d: global.forceskip == %d\n", mpi_rank, global.forceskip[1]);
     assert(global.forceskip[1] == 8765);
+    printf("%d: global.forcefreq[0] == %hu\n", mpi_rank, global.forcefreq[0]);
+    assert(global.forcefreq[0] == FORCE_FREQ_MONTH);
+    printf("%d: global.forcefreq[last] == %hu\n", mpi_rank,
+           global.forcefreq[MAX_FORCE_FILES - 1]);
+    assert(global.forcefreq[MAX_FORCE_FILES - 1] == FORCE_FREQ_MONTH);
     printf("%d: global.time_origin_num == %f\n", mpi_rank,
            global.time_origin_num);
     assert(global.time_origin_num == -12345.6789);

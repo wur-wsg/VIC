@@ -63,6 +63,7 @@ initialize_global()
         global_param.forcesec[i] = 0;
         global_param.forceskip[i] = 0;
         global_param.forceoffset[i] = 0;
+        global_param.forcefreq[i] = FORCE_FREQ_STEP;
     }
     global_param.stateyear = 0;
     global_param.statemonth = 0;

@@ -28,6 +28,216 @@
 #include <plugin.h>
 
 /******************************************************************************
+ * @brief    Plausibility bounds for vegetation-history forcing.
+ * @details  Values outside these bounds (and non-finite values such as an
+ *           unmasked _FillValue) are treated as invalid on active tiles.  LAI
+ *           is bounded generously; the intent is to catch fill values on the
+ *           order of 1e36, not to police the science.
+ *****************************************************************************/
+#define VEGHIST_LAI_MAX 20.0
+
+/******************************************************************************
+ * @brief    Maximum number of per-tile invalid veg-history warnings to log.
+ * @details  A global 5-minute domain has millions of tiles, so an unbounded
+ *           warning stream would bury the rest of the log.  The running total
+ *           is reported once at the end of the simulation regardless.
+ *****************************************************************************/
+#define VEGHIST_INVALID_WARN_LOG_LIMIT 20ULL
+
+static unsigned long long veghist_invalid_warn_count = 0;
+static unsigned long long veghist_invalid_total_count = 0;
+
+/******************************************************************************
+ * @brief    Is this vegetation-history forcing value usable?
+ *****************************************************************************/
+static bool
+veghist_value_is_valid(double             value,
+                       unsigned short int type)
+{
+    if (!isfinite(value)) {
+        return false;
+    }
+
+    switch (type) {
+    case LAI:
+        return (value >= 0.0 && value <= VEGHIST_LAI_MAX);
+    case FCANOPY:
+    case ALBEDO:
+        return (value >= 0.0 && value <= 1.0);
+    default:
+        return true;
+    }
+}
+
+/******************************************************************************
+ * @brief    Warn (rate-limited) about an invalid veg-history value.
+ * @details  The caller leaves veg_hist at the parameter climatology that
+ *           vic_force() already wrote, so the affected tile falls back to
+ *           climatology for this time step.
+ *****************************************************************************/
+static void
+warn_invalid_veghist(unsigned short int type,
+                     size_t             iCell,
+                     size_t             veg_class,
+                     size_t             time_index,
+                     double             value)
+{
+    extern domain_struct    local_domain;
+    extern param_set_struct param_set;
+
+    veghist_invalid_total_count++;
+
+    if (veghist_invalid_warn_count < VEGHIST_INVALID_WARN_LOG_LIMIT) {
+        log_warn(
+            "Invalid vegetation-history forcing for %s: io_idx=%zu, "
+            "veg_class=%zu, time index=%zu, value=%.6g; falling back to the "
+            "parameter climatology for this time step",
+            param_set.TYPE[type].varname,
+            local_domain.locations[iCell].io_idx, veg_class, time_index,
+            value);
+        veghist_invalid_warn_count++;
+
+        if (veghist_invalid_warn_count == VEGHIST_INVALID_WARN_LOG_LIMIT) {
+            log_warn("Invalid vegetation-history forcing warnings reached "
+                     "limit (%llu); suppressing further per-tile warnings.  A "
+                     "running total is reported at the end of the simulation",
+                     (unsigned long long) VEGHIST_INVALID_WARN_LOG_LIMIT);
+        }
+    }
+}
+
+/******************************************************************************
+ * @brief    Record index of the monthly veg-history forcing for this date.
+ * @details  Monthly files are validated at startup to hold exactly twelve
+ *           records, January through December of the file's year, so the
+ *           record index is simply the zero-based calendar month.  Keeping
+ *           this a pure function of the current date (rather than an
+ *           accumulating counter) is what makes a run restarted mid-month
+ *           reproduce a continuous run exactly.
+ *****************************************************************************/
+static size_t
+monthly_force_index(dmy_struct *dmy_current)
+{
+    return (size_t) (dmy_current->month - 1);
+}
+
+/******************************************************************************
+ * @brief    Store one vegetation-history value in veg_hist.
+ *****************************************************************************/
+static void
+set_veghist_value(unsigned short int type,
+                  size_t             iCell,
+                  int                vidx,
+                  size_t             j,
+                  double             value)
+{
+    extern veg_hist_struct **veg_hist;
+
+    switch (type) {
+    case LAI:
+        veg_hist[iCell][vidx].LAI[j] = value;
+        break;
+    case FCANOPY:
+        veg_hist[iCell][vidx].fcanopy[j] = value;
+        break;
+    case ALBEDO:
+        veg_hist[iCell][vidx].albedo[j] = value;
+        break;
+    default:
+        log_err("set_veghist_value called for forcing type %hu, which is not a "
+                "vegetation-history variable", type);
+    }
+}
+
+/******************************************************************************
+ * @brief    Read one vegetation-history forcing variable into veg_hist.
+ * @details  Handles both STEP frequency (one record per snow sub-step, the
+ *           historical behaviour) and MONTH frequency (one record per calendar
+ *           month, shared by every sub-step of every day in that month).  For
+ *           MONTH the record is read once and broadcast to all NF sub-steps,
+ *           which both keeps the value constant within the month and cuts the
+ *           number of netCDF reads by a factor of NF.
+ *****************************************************************************/
+static void
+read_veghist_forcing(unsigned short int type,
+                     dmy_struct        *dmy_current,
+                     double            *dvar)
+{
+    extern size_t              NF;
+    extern global_param_struct global_param;
+    extern domain_struct       global_domain;
+    extern domain_struct       local_domain;
+    extern filenames_struct    filenames;
+    extern option_struct       options;
+    extern param_set_struct    param_set;
+    extern veg_con_map_struct *veg_con_map;
+
+    size_t                     d4start[4];
+    size_t                     d4count[4];
+    size_t                     i;
+    size_t                     j;
+    size_t                     v;
+    size_t                     rec;
+    size_t                     nrec;
+    int                        vidx;
+    bool                       monthly;
+
+    monthly = (global_param.forcefreq[type] == FORCE_FREQ_MONTH);
+
+    // only the time and veg_class slices change; the rest is constant
+    d4start[2] = 0;
+    d4start[3] = 0;
+    d4count[0] = 1;
+    d4count[1] = 1;
+    d4count[2] = global_domain.n_ny;
+    d4count[3] = global_domain.n_nx;
+
+    // A monthly record covers the whole model step, so it is read once and
+    // applied to every sub-step instead of once per sub-step.
+    nrec = monthly ? 1 : NF;
+
+    for (rec = 0; rec < nrec; rec++) {
+        if (monthly) {
+            d4start[0] = monthly_force_index(dmy_current);
+        }
+        else {
+            d4start[0] = global_param.forceskip[type] +
+                         global_param.forceoffset[type] + rec;
+        }
+
+        for (v = 0; v < options.NVEGTYPES; v++) {
+            d4start[1] = v;
+            get_scatter_nc_field_double(&(filenames.forcing[type]),
+                                        param_set.TYPE[type].varname,
+                                        d4start, d4count, dvar);
+
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                vidx = veg_con_map[i].vidx[v];
+                if (vidx == NODATA_VEG) {
+                    continue;
+                }
+
+                if (!veghist_value_is_valid(dvar[i], type)) {
+                    // Leave the parameter climatology that vic_force() already
+                    // wrote into veg_hist for this tile and time step.
+                    warn_invalid_veghist(type, i, v, d4start[0], dvar[i]);
+                    continue;
+                }
+
+                if (monthly) {
+                    for (j = 0; j < NF; j++) {
+                        set_veghist_value(type, i, vidx, j, dvar[i]);
+                    }
+                }
+                else {
+                    set_veghist_value(type, i, vidx, rec, dvar[i]);
+                }
+            }
+        }
+    }
+}
+
+/******************************************************************************
  * @brief    Read atmospheric forcing data.
  *****************************************************************************/
 void
@@ -62,8 +272,6 @@ vic_force(void)
     int                        status;
     size_t                     d3count[3];
     size_t                     d3start[3];
-    size_t                     d4count[4];
-    size_t                     d4start[4];
     double                    *Tfactor;
 
     // allocate memory for variables to be read
@@ -292,78 +500,19 @@ vic_force(void)
     }
 
     // Read veg_hist file
-    if (options.LAI_SRC == FROM_VEGHIST ||
-        options.FCAN_SRC == FROM_VEGHIST ||
-        options.ALB_SRC == FROM_VEGHIST) {
-        // only the time slice changes for the met file reads. The rest is constant
-        d4start[2] = 0;
-        d4start[3] = 0;
-        d4count[0] = 1;
-        d4count[1] = 1;
-        d4count[2] = global_domain.n_ny;
-        d4count[3] = global_domain.n_nx;
+    // Leaf Area Index: LAI
+    if (options.LAI_SRC == FROM_VEGHIST) {
+        read_veghist_forcing(LAI, &(dmy[current]), dvar);
+    }
 
-        // Leaf Area Index: LAI
-        if (options.LAI_SRC == FROM_VEGHIST) {
-            for (j = 0; j < NF; j++) {
-                d4start[0] = global_param.forceskip[LAI] +
-                             global_param.forceoffset[LAI] + j;
-                for (v = 0; v < options.NVEGTYPES; v++) {
-                    d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[LAI]),
-                                                param_set.TYPE[LAI].varname,
-                                                d4start, d4count, dvar);
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        vidx = veg_con_map[i].vidx[v];
-                        if (vidx != NODATA_VEG) {
-                            veg_hist[i][vidx].LAI[j] = (double) dvar[i];
-                        }
-                    }
-                }
-            }
-        }
+    // Partial veg cover fraction: fcanopy
+    if (options.FCAN_SRC == FROM_VEGHIST) {
+        read_veghist_forcing(FCANOPY, &(dmy[current]), dvar);
+    }
 
-        // Partial veg cover fraction: fcanopy
-        if (options.FCAN_SRC == FROM_VEGHIST) {
-            for (j = 0; j < NF; j++) {
-                d4start[0] = global_param.forceskip[FCANOPY] +
-                             global_param.forceoffset[FCANOPY] + j;
-                for (v = 0; v < options.NVEGTYPES; v++) {
-                    d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[FCANOPY]),
-                                                param_set.TYPE[FCANOPY].varname,
-                                                d4start, d4count,
-                                                dvar);
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        vidx = veg_con_map[i].vidx[v];
-                        if (vidx != NODATA_VEG) {
-                            veg_hist[i][vidx].fcanopy[j] = (double) dvar[i];
-                        }
-                    }
-                }
-            }
-        }
-
-        // Albedo: albedo
-        if (options.ALB_SRC == FROM_VEGHIST) {
-            for (j = 0; j < NF; j++) {
-                d4start[0] = global_param.forceskip[ALBEDO] +
-                             global_param.forceoffset[ALBEDO] + j;
-                for (v = 0; v < options.NVEGTYPES; v++) {
-                    d4start[1] = v;
-                    get_scatter_nc_field_double(&(filenames.forcing[ALBEDO]),
-                                                param_set.TYPE[ALBEDO].varname,
-                                                d4start, d4count,
-                                                dvar);
-                    for (i = 0; i < local_domain.ncells_active; i++) {
-                        vidx = veg_con_map[i].vidx[v];
-                        if (vidx != NODATA_VEG) {
-                            veg_hist[i][vidx].albedo[j] = (double) dvar[i];
-                        }
-                    }
-                }
-            }
-        }
+    // Albedo: albedo
+    if (options.ALB_SRC == FROM_VEGHIST) {
+        read_veghist_forcing(ALBEDO, &(dmy[current]), dvar);
     }
 
     for (f = 0; f < N_FORCING_TYPES; f++) {
@@ -380,8 +529,23 @@ vic_force(void)
             }
         }
 
-        // Update the offset counter
-        global_param.forceoffset[f] += NF;
+        // Update the offset counter.  Monthly forcing does not use the offset
+        // counter at all: its record index is derived directly from the
+        // current date (see monthly_force_index), so that a restart mid-month
+        // lands on the same record as a continuous run.
+        if (global_param.forcefreq[f] != FORCE_FREQ_MONTH) {
+            global_param.forceoffset[f] += NF;
+        }
+    }
+
+    // Report the running total of invalid veg-history values once, at the end
+    // of the simulation, so that rate-limited warnings cannot hide the scale
+    // of a bad forcing dataset.
+    if (current == global_param.nrecs - 1 && veghist_invalid_total_count > 0) {
+        log_warn("Vegetation-history forcing contained %llu invalid values on "
+                 "active tiles over the whole simulation; each fell back to "
+                 "the parameter climatology for its time step",
+                 veghist_invalid_total_count);
     }
 
 
@@ -518,16 +682,35 @@ get_forcing_file_info(param_set_struct *param_set,
     extern global_param_struct global_param;
     extern filenames_struct    filenames;
 
-    double                     nc_times[2];
+    double                     nc_times[MONTHS_PER_YEAR];
     double                     nc_time_origin;
     size_t                     start = 0;
     size_t                     count = 2;
+    size_t                     ntimes;
+    size_t                     m;
     char                      *nc_unit_chars = NULL;
     char                      *calendar_char = NULL;
     unsigned short int         time_units;
     unsigned short int         calendar;
     dmy_struct                 nc_origin_dmy;
     dmy_struct                 nc_start_dmy;
+    dmy_struct                 nc_rec_dmy;
+    bool                       monthly;
+
+    monthly = (global_param.forcefreq[file_num] == FORCE_FREQ_MONTH);
+
+    if (monthly) {
+        // A monthly file must hold exactly one full calendar year, so that the
+        // record index is the zero-based calendar month with no negotiation.
+        ntimes = get_nc_dimension(&(filenames.forcing[file_num]), "time");
+        if (ntimes != MONTHS_PER_YEAR) {
+            log_err("Monthly forcing file %s has %zu time records; exactly %d "
+                    "(January through December) are required",
+                    filenames.forcing[file_num].nc_filename, ntimes,
+                    MONTHS_PER_YEAR);
+        }
+        count = MONTHS_PER_YEAR;
+    }
 
     // read time info from netcdf file
     get_nc_field_double(&(filenames.forcing[file_num]), "time", &start, &count,
@@ -555,32 +738,61 @@ get_forcing_file_info(param_set_struct *param_set,
     global_param.forceday[file_num] = nc_start_dmy.day;
     global_param.forcesec[file_num] = nc_start_dmy.dayseconds;
 
-    // calculate timestep in forcing file
-    if (time_units == TIME_UNITS_DAYS) {
-        param_set->force_steps_per_day[file_num] =
-            (size_t) nearbyint(1. / (nc_times[1] - nc_times[0]));
-    }
-    else if (time_units == TIME_UNITS_HOURS) {
-        param_set->force_steps_per_day[file_num] =
-            (size_t) nearbyint(HOURS_PER_DAY / (nc_times[1] - nc_times[0]));
-    }
-    else if (time_units == TIME_UNITS_MINUTES) {
-        param_set->force_steps_per_day[file_num] =
-            (size_t) nearbyint(MIN_PER_DAY / (nc_times[1] - nc_times[0]));
-    }
-    else if (time_units == TIME_UNITS_SECONDS) {
-        param_set->force_steps_per_day[file_num] =
-            (size_t) nearbyint(SEC_PER_DAY / (nc_times[1] - nc_times[0]));
-    }
+    if (monthly) {
+        // Validate the contract: twelve records, January through December of a
+        // single year, in order.  Checking each record's decoded month at once
+        // covers duplicated, missing and out-of-order records, and does so
+        // without assuming any particular month length (the decoding is done
+        // by the calendar-aware num2date).
+        for (m = 0; m < MONTHS_PER_YEAR; m++) {
+            num2date(nc_time_origin, nc_times[m], 0., calendar, time_units,
+                     &nc_rec_dmy);
+            if (nc_rec_dmy.year != nc_start_dmy.year ||
+                nc_rec_dmy.month != (unsigned short int) (m + 1)) {
+                log_err("Monthly forcing file %s must contain the twelve "
+                        "months of year %hu in order; record %zu decodes to "
+                        "%04hu-%02hu.  Duplicated, missing or out-of-order "
+                        "records are not allowed",
+                        filenames.forcing[file_num].nc_filename,
+                        nc_start_dmy.year, m, nc_rec_dmy.year,
+                        nc_rec_dmy.month);
+            }
+        }
 
-    // check that this forcing file will work
-    if (param_set->force_steps_per_day[file_num] !=
-        global_param.snow_steps_per_day) {
-        log_err("Forcing file timestep must match the snow model timestep.  "
-                "Snow model timesteps per day is set to %zu and the forcing "
-                "file timestep is set to %zu",
-                global_param.snow_steps_per_day,
-                param_set->force_steps_per_day[file_num])
+        // Monthly files have no meaningful "steps per day".  Leaving this at
+        // zero also makes make_dmy() skip its forceskip calculation, which is
+        // only valid for fixed-length forcing intervals; the monthly record
+        // index is derived from the date instead (see monthly_force_index).
+        param_set->force_steps_per_day[file_num] = 0;
+    }
+    else {
+        // calculate timestep in forcing file
+        if (time_units == TIME_UNITS_DAYS) {
+            param_set->force_steps_per_day[file_num] =
+                (size_t) nearbyint(1. / (nc_times[1] - nc_times[0]));
+        }
+        else if (time_units == TIME_UNITS_HOURS) {
+            param_set->force_steps_per_day[file_num] =
+                (size_t) nearbyint(HOURS_PER_DAY / (nc_times[1] - nc_times[0]));
+        }
+        else if (time_units == TIME_UNITS_MINUTES) {
+            param_set->force_steps_per_day[file_num] =
+                (size_t) nearbyint(MIN_PER_DAY / (nc_times[1] - nc_times[0]));
+        }
+        else if (time_units == TIME_UNITS_SECONDS) {
+            param_set->force_steps_per_day[file_num] =
+                (size_t) nearbyint(SEC_PER_DAY / (nc_times[1] - nc_times[0]));
+        }
+
+        // check that this forcing file will work
+        if (param_set->force_steps_per_day[file_num] !=
+            global_param.snow_steps_per_day) {
+            log_err("Forcing file timestep must match the snow model timestep. "
+                    " Snow model timesteps per day is set to %zu and the "
+                    "forcing file timestep is set to %zu",
+                    global_param.snow_steps_per_day,
+                    param_set->force_steps_per_day[file_num])
+        }
     }
     if (calendar != global_param.calendar) {
         log_err("Calendar in forcing file (%s) does not match the calendar of "

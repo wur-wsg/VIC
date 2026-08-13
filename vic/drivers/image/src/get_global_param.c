@@ -45,8 +45,11 @@ get_global_param(FILE *gp)
     char                       optstr[MAXSTRING];
     char                       flgstr[MAXSTRING];
     char                       flgstr2[MAXSTRING];
+    char                       probe_filename[MAXSTRING];
     size_t                     file_num;
     int                        status;
+    int                        probe_ncid;
+    int                        probe_year;
     unsigned int               tmpstartdate;
     unsigned int               tmpenddate;
     unsigned short int         lastday[MONTHS_PER_YEAR];
@@ -836,9 +839,60 @@ get_global_param(FILE *gp)
                         filenames.forcing[file_num].nc_filename);
         get_forcing_file_info(&param_set, file_num);
 
-        param_set.FORCE_DT[file_num] = SEC_PER_DAY /
-                                       (double) param_set.force_steps_per_day[
-            file_num];
+        if (global_param.forcefreq[file_num] == FORCE_FREQ_MONTH) {
+            // Monthly forcing has no fixed sub-daily interval; force_steps_per_day
+            // is deliberately zero for it, so the usual conversion would divide
+            // by zero.
+            param_set.FORCE_DT[file_num] = MISSING;
+        }
+        else {
+            param_set.FORCE_DT[file_num] = SEC_PER_DAY /
+                                           (double) param_set.
+                                           force_steps_per_day[file_num];
+        }
+    }
+
+    // Monthly forcing is only read through the FROM_VEGHIST path.  Declaring
+    // MONTH for a variable whose source is not FROM_VEGHIST would silently do
+    // nothing, so refuse it here rather than let it pass unnoticed.
+    if (global_param.forcefreq[LAI] == FORCE_FREQ_MONTH &&
+        options.LAI_SRC != FROM_VEGHIST) {
+        log_err("FORCE_TYPE LAI was given frequency MONTH, but LAI_SRC is not "
+                "FROM_VEGHIST, so the monthly file would never be read.");
+    }
+    if (global_param.forcefreq[FCANOPY] == FORCE_FREQ_MONTH &&
+        options.FCAN_SRC != FROM_VEGHIST) {
+        log_err("FORCE_TYPE FCANOPY was given frequency MONTH, but FCAN_SRC is "
+                "not FROM_VEGHIST, so the monthly file would never be read.");
+    }
+    if (global_param.forcefreq[ALBEDO] == FORCE_FREQ_MONTH &&
+        options.ALB_SRC != FROM_VEGHIST) {
+        log_err("FORCE_TYPE ALBEDO was given frequency MONTH, but ALB_SRC is "
+                "not FROM_VEGHIST, so the monthly file would never be read.");
+    }
+
+    // Yearly forcing files are opened lazily, as the simulation crosses each
+    // new year.  Probe every year up front so that a missing file fails during
+    // initialization instead of hundreds of time steps into a long run.
+    // Only possible when the end date is given explicitly; with NRECS the last
+    // year is not known until make_dmy() runs.
+    for (file_num = 0;
+         global_param.endyear != 0 && file_num < N_FORCING_TYPES;
+         file_num++) {
+        if (strcmp(filenames.f_path_pfx[file_num], "MISSING") == 0) {
+            continue;
+        }
+        for (probe_year = global_param.startyear + 1;
+             probe_year <= global_param.endyear; probe_year++) {
+            snprintf(probe_filename, MAXSTRING, "%s%4d.nc",
+                     filenames.f_path_pfx[file_num], probe_year);
+            status = nc_open(probe_filename, NC_NOWRITE, &probe_ncid);
+            check_nc_status(status, "Error opening %s (needed because the "
+                            "simulation spans year %d)", probe_filename,
+                            probe_year);
+            status = nc_close(probe_ncid);
+            check_nc_status(status, "Error closing %s", probe_filename);
+        }
     }
 
     // Validate result directory

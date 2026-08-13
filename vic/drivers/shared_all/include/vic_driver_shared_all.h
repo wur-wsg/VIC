@@ -106,6 +106,21 @@ enum
     N_FORCING_TYPES  /**< Number of forcing types */
 };
 
+/******************************************************************************
+ * @brief   Forcing Variable Frequencies
+ * @details Frequency at which a forcing file supplies new records.  STEP is the
+ *          historical (and default) behaviour: one record per snow time step.
+ *          MONTH supplies one record per calendar month and is only valid for
+ *          the vegetation-history variables (LAI, FCANOPY, ALBEDO).
+ *****************************************************************************/
+enum
+{
+    FORCE_FREQ_STEP,   /**< one record per snow model time step (default) */
+    FORCE_FREQ_MONTH,  /**< one record per calendar month */
+    // Last value of enum - DO NOT ADD ANYTHING BELOW THIS LINE!!
+    // used as a loop counter and must be >= the largest value in this enum
+    N_FORCE_FREQS      /**< Number of forcing frequencies */
+};
 
 /******************************************************************************
  * @brief   Output Variable Types
