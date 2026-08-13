@@ -1,0 +1,412 @@
+{
+  "workdir": "/lustre/nobackup/WUR/ESG/liu297/vic_coupled/Simulation/monthly_veghist_test/suite",
+  "exe": "/lustre/nobackup/WUR/ESG/liu297/vic_coupled/VIC_monthly_veghist/vic/drivers/image/vic_image.exe",
+  "stages": {
+    "build_case": {
+      "returncode": 0,
+      "passed": true
+    },
+    "run_monthly": {
+      "returncode": 0,
+      "passed": true
+    },
+    "run_daily": {
+      "returncode": 0,
+      "passed": true
+    },
+    "monthly_vs_daily_equivalence": {
+      "passed": true,
+      "variables": {
+        "OUT_LAI": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_FCANOPY": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ALBEDO": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LATENT": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SENSIBLE": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_EVAP": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_RUNOFF": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_BASEFLOW": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_WATER_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ENERGY_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        }
+      }
+    },
+    "sensitivity_of_equivalence_test": {
+      "value_constant_within_each_month": true,
+      "all_twelve_months_distinct": true,
+      "january_differs_between_years": true,
+      "passed": true
+    },
+    "mpi_1_vs_4_ranks": {
+      "returncode": 0,
+      "passed": true,
+      "variables": {
+        "OUT_LAI": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_FCANOPY": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ALBEDO": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LATENT": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SENSIBLE": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_EVAP": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_RUNOFF": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_BASEFLOW": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_WATER_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ENERGY_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        }
+      }
+    },
+    "restart_continuity": {
+      "returncode": 0,
+      "passed": true,
+      "break_points": [
+        "2003-07-15 (mid-month)",
+        "2004-01-01 (year end)"
+      ],
+      "variables": {
+        "OUT_LAI": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_FCANOPY": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ALBEDO": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LATENT": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SENSIBLE": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_EVAP": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_RUNOFF": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_BASEFLOW": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_WATER_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ENERGY_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        }
+      }
+    },
+    "error_paths": {
+      "returncode": 0,
+      "passed": true,
+      "cases": {
+        "missing_month": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "exactly 12",
+          "text_found": true,
+          "passed": true
+        },
+        "duplicate_month": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "in order",
+          "text_found": true,
+          "passed": true
+        },
+        "out_of_order_month": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "in order",
+          "text_found": true,
+          "passed": true
+        },
+        "calendar_mismatch": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "calendar",
+          "text_found": true,
+          "passed": true
+        },
+        "wrong_veg_class": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": null,
+          "text_found": false,
+          "passed": true
+        },
+        "fillvalue_on_active_tile": {
+          "expected_failure": false,
+          "returncode": 0,
+          "expected_text": "falling back to the parameter climatology",
+          "text_found": true,
+          "passed": true
+        },
+        "month_on_precip": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "only supported for LAI",
+          "text_found": true,
+          "passed": true
+        },
+        "month_without_veghist_src": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "not FROM_VEGHIST",
+          "text_found": true,
+          "passed": true
+        },
+        "unknown_frequency": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "Undefined forcing frequency",
+          "text_found": true,
+          "passed": true
+        },
+        "day_frequency_not_implemented": {
+          "expected_failure": true,
+          "returncode": 1,
+          "expected_text": "not implemented",
+          "text_found": true,
+          "passed": true
+        }
+      }
+    },
+    "backward_compatibility_vs_baseline": {
+      "baseline_exe": "/tmp/claude-17595343/-lustre-nobackup-WUR-ESG-liu297-vic-coupled-VIC/4d9242e0-bc93-4137-a850-ffaf648ca864/scratchpad/vic_base/vic/drivers/image/vic_image.exe",
+      "returncode": 0,
+      "passed": true,
+      "variables": {
+        "OUT_LAI": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_FCANOPY": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ALBEDO": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LWNET": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_LATENT": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_SENSIBLE": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_EVAP": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_RUNOFF": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_BASEFLOW": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_WATER_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        },
+        "OUT_ENERGY_ERROR": {
+          "status": "BITWISE_IDENTICAL",
+          "bitwise_identical": true,
+          "n_compared": 11696,
+          "max_abs_diff": 0.0
+        }
+      }
+    }
+  },
+  "status": "PASS",
+  "failing_stages": []
+}
