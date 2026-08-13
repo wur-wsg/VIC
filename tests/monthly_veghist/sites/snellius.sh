@@ -20,8 +20,18 @@ module load 2024
 module load foss/2024a netCDF/4.9.2-gompi-2024a netCDF-Fortran/4.6.1-gompi-2024a
 
 # MPI launcher. srun takes -n where mpirun takes -np.
-export VIC_TEST_MPI_RUN="srun -n"
-export VIC_TEST_MPI_RUN_MULTI="srun -n"
+#
+# srun is the production launcher, but it needs an allocation: on a login node
+# it would either queue or fail. This case is tiny and costs nothing to run
+# interactively, and a correctness check on a login node is worth having
+# without spending SBU, so fall back to mpirun when there is no job around us.
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    export VIC_TEST_MPI_RUN="srun -n"
+    export VIC_TEST_MPI_RUN_MULTI="srun -n"
+else
+    export VIC_TEST_MPI_RUN="mpirun -np"
+    export VIC_TEST_MPI_RUN_MULTI="mpirun --oversubscribe -np"
+fi
 
 # No template inputs here on purpose. The synthetic case is built on Anunna
 # from its Indus parameter set and copied across as data; regenerating it from
