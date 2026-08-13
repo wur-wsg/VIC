@@ -27,11 +27,25 @@ import os
 import numpy as np
 import xarray as xr
 
-# Known-good full-size inputs used purely as a structural template (read-only).
-SRC_DOMAIN = ("/lustre/nobackup/WUR/ESG/liu297/vic_coupled/Data/VIC/domain/"
-              "indus/domain_Indus.nc")
-SRC_PARAMS = ("/lustre/nobackup/WUR/ESG/liu297/vic_coupled/Data/VIC/parameter/"
-              "indus/VIC_params_Modis_calibrated_Indus.nc")
+def template_inputs(args):
+    """Known-good full-size inputs, used read-only as a structural template.
+
+    These are machine-specific, so they come from the site profile rather than
+    from this file.  See sites/anunna.sh.
+    """
+    domain = args.template_domain or os.environ.get("VIC_TEST_TEMPLATE_DOMAIN")
+    params = args.template_params or os.environ.get("VIC_TEST_TEMPLATE_PARAMS")
+    missing = [name for name, value in
+               (("--template-domain / VIC_TEST_TEMPLATE_DOMAIN", domain),
+                ("--template-params / VIC_TEST_TEMPLATE_PARAMS", params))
+               if not value]
+    if missing:
+        raise SystemExit(
+            "Missing template input(s): %s\n"
+            "Source a site profile first, e.g. `source sites/anunna.sh`.\n"
+            "Sites without the template inputs (Snellius) should copy a case "
+            "built elsewhere rather than regenerating it." % ", ".join(missing))
+    return domain, params
 
 # 2003 is a common year and 2004 a leap year, so a two-year case exercises the
 # December-to-January rollover, a 28-day February and a 29-day February.
@@ -78,9 +92,9 @@ def pick_active_box(domain):
                        % (NLAT, NLON))
 
 
-def write_domain_and_params(outdir):
-    src_dom = xr.open_dataset(SRC_DOMAIN)
-    src_par = xr.open_dataset(SRC_PARAMS)
+def write_domain_and_params(outdir, src_domain, src_params):
+    src_dom = xr.open_dataset(src_domain)
+    src_par = xr.open_dataset(src_params)
 
     i0, j0 = pick_active_box(src_dom)
     sel = dict(lat=slice(i0, i0 + NLAT), lon=slice(j0, j0 + NLON))
@@ -304,12 +318,19 @@ def write_global(path, *, domain, params, met, veghist, freq, resultdir,
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--outdir", required=True)
+    parser.add_argument("--template-domain", default=None,
+                        help="defaults to $VIC_TEST_TEMPLATE_DOMAIN")
+    parser.add_argument("--template-params", default=None,
+                        help="defaults to $VIC_TEST_TEMPLATE_PARAMS")
     args = parser.parse_args()
+
+    src_domain, src_params = template_inputs(args)
 
     outdir = os.path.abspath(args.outdir)
     os.makedirs(outdir, exist_ok=True)
 
-    domain, params, nveg, lat, lon = write_domain_and_params(outdir)
+    domain, params, nveg, lat, lon = write_domain_and_params(
+        outdir, src_domain, src_params)
     met = write_met_forcing(outdir, lat, lon)
     monthly, daily = write_veghist(outdir, nveg, lat, lon)
 

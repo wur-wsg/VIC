@@ -24,8 +24,8 @@ import numpy as np
 import xarray as xr
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-NCO_LIB = "/home/WUR/liu297/miniconda3/envs/nco_env/lib"
-PYTHON = sys.executable
+sys.path.insert(0, HERE)
+import site_config  # noqa: E402
 
 COMPARE_VARS = [
     "OUT_LAI", "OUT_FCANOPY", "OUT_ALBEDO", "OUT_SWNET", "OUT_LWNET",
@@ -34,17 +34,51 @@ COMPARE_VARS = [
 ]
 
 
-def env_with_libs():
-    env = dict(os.environ)
-    env["LD_LIBRARY_PATH"] = NCO_LIB + ":" + env.get("LD_LIBRARY_PATH", "")
-    return env
-
-
-def run(cmd, log_path, env):
+def run(cmd, log_path):
     with open(log_path, "w") as log:
-        proc = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT,
-                              env=env)
+        proc = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
     return proc.returncode
+
+
+def retarget_case(case):
+    """Point a copied case's global parameter files at their new location.
+
+    The generated global files carry absolute paths, so a case built on one
+    site and copied to another would otherwise still refer to the first site's
+    directories.  The old case directory is recovered from the DOMAIN line
+    rather than assumed, and every occurrence of it is rewritten.
+
+    Returns the old directory if anything was rewritten, else None.
+    """
+    globals_ = sorted(glob.glob(os.path.join(case, "global_*.txt")))
+    if not globals_:
+        raise SystemExit("No global_*.txt found in %s" % case)
+
+    old = None
+    for line in open(globals_[0]):
+        tokens = line.split()
+        if tokens and tokens[0] == "DOMAIN":
+            old = os.path.dirname(tokens[1])
+            break
+    if old is None:
+        raise SystemExit("No DOMAIN line found in %s" % globals_[0])
+    if os.path.abspath(old) == os.path.abspath(case):
+        return None
+
+    for path in globals_:
+        text = open(path).read()
+        with open(path, "w") as handle:
+            handle.write(text.replace(old, case))
+
+    # VIC does not create its RESULT_DIR, and reports the failure as a
+    # misleading "Permission denied" on the output file rather than as a
+    # missing directory.  A copied case usually arrives without them.
+    for path in globals_:
+        for line in open(path):
+            tokens = line.split()
+            if tokens and tokens[0] == "RESULT_DIR":
+                os.makedirs(tokens[1], exist_ok=True)
+    return old
 
 
 def open_result(result_dir):
@@ -133,26 +167,46 @@ def main():
     parser.add_argument("--exe", required=True)
     parser.add_argument("--baseline-exe", default=None)
     parser.add_argument("--json", default=None)
+    parser.add_argument(
+        "--skip-case", action="store_true",
+        help="reuse the case already in <workdir>/case instead of building it. "
+             "Use this on a site that has no template inputs: build the case "
+             "once, copy it across, and both sites then run an identical case.")
     args = parser.parse_args()
+
+    for label, path in (("--exe", args.exe),
+                        ("--baseline-exe", args.baseline_exe)):
+        if path and not os.path.isfile(path):
+            # Worth catching here: a missing binary surfaces from the launcher
+            # as a rank-start failure, which reads like an MPI problem.
+            raise SystemExit("%s does not exist: %s" % (label, path))
 
     work = os.path.abspath(args.workdir)
     case = os.path.join(work, "case")
     os.makedirs(work, exist_ok=True)
-    env = env_with_libs()
-    summary = {"workdir": work, "exe": args.exe, "stages": {}}
+    summary = {"workdir": work, "exe": args.exe,
+               "site": site_config.describe(), "stages": {}}
 
     # 1. build the case
-    rc = run([PYTHON, os.path.join(HERE, "make_synthetic_case.py"),
-              "--outdir", case], os.path.join(work, "log_case.txt"), env)
-    summary["stages"]["build_case"] = {"returncode": rc, "passed": rc == 0}
-    if rc != 0:
-        return finish(summary, args, failed=True)
+    if args.skip_case:
+        if not os.path.isdir(case):
+            raise SystemExit("--skip-case given but %s does not exist" % case)
+        old = retarget_case(case)
+        summary["stages"]["build_case"] = {
+            "skipped": True, "passed": True, "retargeted_from": old}
+    else:
+        rc = run([site_config.python_interpreter(),
+                  os.path.join(HERE, "make_synthetic_case.py"),
+                  "--outdir", case], os.path.join(work, "log_case.txt"))
+        summary["stages"]["build_case"] = {"returncode": rc, "passed": rc == 0}
+        if rc != 0:
+            return finish(summary, args, failed=True)
 
     # 2. run monthly and daily
     for tag in ("monthly", "daily"):
-        rc = run(["mpirun", "-np", "1", args.exe, "-g",
-                  os.path.join(case, "global_%s.txt" % tag)],
-                 os.path.join(work, "log_%s.txt" % tag), env)
+        rc = run(site_config.mpi_command(
+                     args.exe, os.path.join(case, "global_%s.txt" % tag)),
+                 os.path.join(work, "log_%s.txt" % tag))
         summary["stages"]["run_%s" % tag] = {"returncode": rc,
                                              "passed": rc == 0}
         if rc != 0:
@@ -174,8 +228,8 @@ def main():
         os.path.join(case, "result_monthly"), mpi_dir)
     with open(gfile, "w") as handle:
         handle.write(text)
-    rc = run(["mpirun", "-np", "4", "--oversubscribe", args.exe, "-g", gfile],
-             os.path.join(work, "log_monthly_mpi4.txt"), env)
+    rc = run(site_config.mpi_command(args.exe, gfile, nranks=4),
+             os.path.join(work, "log_monthly_mpi4.txt"))
     if rc == 0:
         ok, detail = bitwise_compare(os.path.join(case, "result_monthly"),
                                      mpi_dir)
@@ -186,9 +240,9 @@ def main():
 
     # 4. restart continuity
     restart_json = os.path.join(work, "restart.json")
-    rc = run([PYTHON, os.path.join(HERE, "test_restart_continuity.py"),
+    rc = run([site_config.python_interpreter(), os.path.join(HERE, "test_restart_continuity.py"),
               "--case", case, "--exe", args.exe, "--json", restart_json],
-             os.path.join(work, "log_restart.txt"), env)
+             os.path.join(work, "log_restart.txt"))
     detail = json.load(open(restart_json)) if os.path.exists(restart_json) else {}
     summary["stages"]["restart_continuity"] = {
         "returncode": rc, "passed": rc == 0,
@@ -197,9 +251,9 @@ def main():
 
     # 5. error paths
     errors_json = os.path.join(work, "errorpaths.json")
-    rc = run([PYTHON, os.path.join(HERE, "test_error_paths.py"),
+    rc = run([site_config.python_interpreter(), os.path.join(HERE, "test_error_paths.py"),
               "--case", case, "--exe", args.exe, "--json", errors_json],
-             os.path.join(work, "log_errorpaths.txt"), env)
+             os.path.join(work, "log_errorpaths.txt"))
     detail = json.load(open(errors_json)) if os.path.exists(errors_json) else {}
     summary["stages"]["error_paths"] = {
         "returncode": rc, "passed": rc == 0, "cases": detail.get("cases", {})}
@@ -213,8 +267,8 @@ def main():
             os.path.join(case, "result_daily"), base_dir)
         with open(gfile, "w") as handle:
             handle.write(text)
-        rc = run(["mpirun", "-np", "1", args.baseline_exe, "-g", gfile],
-                 os.path.join(work, "log_daily_baseline.txt"), env)
+        rc = run(site_config.mpi_command(args.baseline_exe, gfile),
+                 os.path.join(work, "log_daily_baseline.txt"))
         if rc == 0:
             ok, detail = bitwise_compare(base_dir,
                                          os.path.join(case, "result_daily"))

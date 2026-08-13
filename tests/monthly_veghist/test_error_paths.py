@@ -24,22 +24,14 @@ import sys
 import numpy as np
 import xarray as xr
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import site_config  # noqa: E402
+
 YEAR = 2003
 
 
-def env_with_libs():
-    env = dict(os.environ)
-    env["LD_LIBRARY_PATH"] = (
-        "/home/WUR/liu297/miniconda3/envs/nco_env/lib:"
-        + env.get("LD_LIBRARY_PATH", ""))
-    return env
-
-
-def run_vic(exe, global_file, log_path, env):
-    with open(log_path, "w") as log:
-        proc = subprocess.run(["mpirun", "-np", "1", exe, "-g", global_file],
-                              stdout=log, stderr=subprocess.STDOUT, env=env)
-    return proc.returncode, open(log_path).read()
+def run_vic(exe, global_file, log_path):
+    return site_config.run_vic(exe, global_file, log_path)
 
 
 def write_global(base_global, dst, replacements, drop_prefixes=()):
@@ -159,7 +151,7 @@ def main():
     good_prefix = os.path.join(case, "veghist_monthly_")
     work = os.path.join(case, "error_paths")
     os.makedirs(work, exist_ok=True)
-    env = env_with_libs()
+
 
     results = {}
     failures = []
@@ -180,7 +172,7 @@ def main():
             handle.write(text)
 
         rc, log = run_vic(args.exe, gfile,
-                          os.path.join(work, "log_%s.txt" % name), env)
+                          os.path.join(work, "log_%s.txt" % name))
         ok = (rc != 0) if expect_rc else (rc == 0)
         if expect_text and expect_text.lower() not in log.lower():
             ok = False
@@ -235,7 +227,7 @@ def main():
             handle.write(text)
 
         rc, log = run_vic(args.exe, gfile,
-                          os.path.join(work, "log_%s.txt" % name), env)
+                          os.path.join(work, "log_%s.txt" % name))
         found = expect_text.lower() in log.lower()
         ok = rc != 0 and found
         results[name] = {
@@ -266,7 +258,7 @@ def main():
             handle.write(text)
 
         rc, log = run_vic(args.exe, gfile,
-                          os.path.join(work, "log_%s.txt" % name), env)
+                          os.path.join(work, "log_%s.txt" % name))
         ok = rc == 0
         results[name] = {
             "expected_failure": False,

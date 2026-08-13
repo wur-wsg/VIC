@@ -114,42 +114,82 @@ make model \
 
 ## 4. 运行测试套件
 
-Python 用 `vic_global` 环境：
+**所有机器相关的事实都在 `sites/<name>.sh` 里**，脚本本身不含任何具体路径。
+换一台机器 = 写一个新的 site profile，不用改代码。
 
 ```bash
-/home/WUR/liu297/miniconda3/envs/vic_global/bin/python run_all.py \
-  --workdir /lustre/nobackup/WUR/ESG/liu297/vic_coupled/Simulation/monthly_veghist_test/suite \
-  --exe    <VIC_ROOT>/vic/drivers/image/vic_image.exe \
-  --baseline-exe <BASELINE_VIC>/vic/drivers/image/vic_image.exe \
-  --json   <workdir>/monthly_veghist_summary.json
+source sites/anunna.sh          # 或 sites/snellius.sh
+
+$VIC_TEST_PYTHON run_all.py \
+  --workdir $VIC_TEST_WORKDIR/suite \
+  --exe     <VIC_ROOT>/vic/drivers/image/vic_image.exe \
+  --json    $VIC_TEST_WORKDIR/suite/monthly_veghist_summary.json
 ```
 
 `--baseline-exe` 可选，指向改动前 commit（`c0350feb`）编译出的可执行文件，
 用来证明旧 daily 接口逐位不变。
 
+site profile 提供的变量：
+
+| 变量 | 含义 |
+|---|---|
+| `VIC_TEST_PYTHON` | 分析环境的绝对解释器路径（绝不用裸 `python3`） |
+| `VIC_TEST_MPI_RUN` | 启动器前缀，Anunna 是 `mpirun -np`，Snellius 是 `srun -n` |
+| `VIC_TEST_MPI_RUN_MULTI` | 多 rank 用的前缀（Anunna login 节点需要 `--oversubscribe`） |
+| `VIC_TEST_TEMPLATE_DOMAIN/PARAMS` | 生成合成 case 的模板输入，**只 Anunna 有** |
+| `VIC_TEST_WORKDIR` | 测试输出根目录 |
+| `LD_LIBRARY_PATH` / `module load` | netCDF 运行时，两站方式不同 |
+
+生效的 site 事实会被写进 summary JSON 的 `site` 段，跨站点比对时可以直接看到
+两边到底跑在什么环境上。
+
 Slurm 提交：
 
 ```bash
-sbatch smoke_monthly_veghist.slurm
+VIC_TEST_SITE=anunna VIC_EXE=<VIC_ROOT>/vic/drivers/image/vic_image.exe \
+  sbatch smoke_monthly_veghist.slurm
 ```
 
-若本地 slurm 客户端不可用：
+若 Anunna 本地 slurm 客户端不可用：
 
 ```bash
-ssh -o BatchMode=yes login201 /shared/apps/slurm/24.11.6/bin/sbatch \
-  <VIC_ROOT>/tests/monthly_veghist/smoke_monthly_veghist.slurm
+ssh -o BatchMode=yes login201 /shared/apps/slurm/24.11.6/bin/sbatch <path>
 ```
+
+### 跨站点验证（bootstrap-snellius step 5）
+
+Anunna 是 MPICH 3.1.3，Snellius 是 OpenMPI 5.0.3——这是 MPI 实现的更换而不是
+版本升级，runbook 明确要求在两站跑同一个 case 做数值比对。做法：
+
+1. 在 Anunna 生成 case（只有 Anunna 有模板输入）：
+   ```bash
+   source sites/anunna.sh
+   $VIC_TEST_PYTHON make_synthetic_case.py --outdir <somewhere>/case
+   ```
+2. 把 `case/` 传到 Snellius（约 2.8 MB；**case 是数据，数据才走文件传输**，
+   代码走 git SHA——见 vic-infra ADR-0003）；
+3. 两边都用 `--skip-case` 跑：
+   ```bash
+   source sites/snellius.sh
+   $VIC_TEST_PYTHON run_all.py --workdir <dir> --exe <exe> --skip-case --json <out>
+   ```
+   `--skip-case` 会自动把 global parameter 文件里的绝对路径重定向到新位置，
+   并创建 `RESULT_DIR`（VIC 不会自己建，而且报的是误导性的 "Permission denied"）。
+4. 比较两份 summary JSON。套件内部所有比对本来就是 bitwise 的，
+   所以跨站点差异会直接暴露出来。
 
 ### 各脚本用途
 
 | 脚本 | 作用 |
 |---|---|
-| `make_synthetic_case.py` | 生成最小 synthetic case（4×4 cell、14 veg_class、2003+2004），含 monthly 与 daily-expanded 两套等价 forcing，以及两个 global parameter 文件 |
+| `sites/*.sh` | 站点事实的唯一存放处 |
+| `site_config.py` | 从环境变量读站点事实（命名避开 stdlib 的 `site` 模块） |
+| `make_synthetic_case.py` | 生成最小 synthetic case（4×4 cell、14 veg_class、2003+2004），含 monthly 与 daily-expanded 两套等价 forcing |
 | `compare_outputs.py` | monthly vs daily-expanded 逐日比对，输出 JSON |
 | `test_restart_continuity.py` | 连续运行 vs 分段 restart（月中 + 年末断点）比对 |
-| `test_error_paths.py` | 10 个畸形输入/配置用例，验证是否按契约失败 |
+| `test_error_paths.py` | 12 个畸形输入/配置用例，验证是否按契约失败 |
 | `run_all.py` | 串起以上全部，输出单个 JSON 摘要 |
-| `smoke_monthly_veghist.slurm` | Slurm 封装 |
+| `smoke_monthly_veghist.slurm` | Slurm 封装，按 `VIC_TEST_SITE` 选 profile |
 
 合成 case 的 domain 与 parameter 是从既有 Indus 参数集**只读**裁剪出来的，
 因此保证内部自洽；原始文件不会被修改。

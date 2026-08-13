@@ -27,6 +27,9 @@ import sys
 import numpy as np
 import xarray as xr
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import site_config  # noqa: E402
+
 VARIABLES = [
     "OUT_LAI", "OUT_FCANOPY", "OUT_ALBEDO", "OUT_SWNET", "OUT_LATENT",
     "OUT_SENSIBLE", "OUT_EVAP", "OUT_RUNOFF", "OUT_BASEFLOW",
@@ -59,12 +62,8 @@ def rewrite_global(src, dst, replacements, extra_lines=""):
         handle.writelines(out)
 
 
-def run_vic(exe, global_file, log_path, env):
-    with open(log_path, "w") as log:
-        proc = subprocess.run(["mpirun", "-np", "1", exe, "-g", global_file],
-                              stdout=log, stderr=subprocess.STDOUT, env=env)
-    if proc.returncode != 0:
-        raise RuntimeError("VIC failed for %s; see %s" % (global_file, log_path))
+def run_vic(exe, global_file, log_path):
+    site_config.run_vic(exe, global_file, log_path, check=True)
 
 
 def open_result(result_dir):
@@ -87,11 +86,6 @@ def main():
     base_global = os.path.join(case, "global_monthly.txt")
     state_dir = os.path.join(case, "state_restart")
     os.makedirs(state_dir, exist_ok=True)
-
-    env = dict(os.environ)
-    env["LD_LIBRARY_PATH"] = (
-        "/home/WUR/liu297/miniconda3/envs/nco_env/lib:"
-        + env.get("LD_LIBRARY_PATH", ""))
 
     # --- segmented run -----------------------------------------------------
     previous_state = None
@@ -128,7 +122,7 @@ def main():
         seg_global = os.path.join(case, "global_seg%d.txt" % idx)
         rewrite_global(base_global, seg_global, replacements, extra)
         run_vic(args.exe, seg_global,
-                os.path.join(case, "log_seg%d.txt" % idx), env)
+                os.path.join(case, "log_seg%d.txt" % idx))
         previous_state = previous_state_next
 
     # --- compare against the continuous run --------------------------------

@@ -1,6 +1,14 @@
 {
   "workdir": "/lustre/nobackup/WUR/ESG/liu297/vic_coupled/Simulation/monthly_veghist_test/suite",
   "exe": "/lustre/nobackup/WUR/ESG/liu297/vic_coupled/VIC_monthly_veghist/vic/drivers/image/vic_image.exe",
+  "site": {
+    "python": "/home/WUR/liu297/miniconda3/envs/vic_global/bin/python",
+    "mpi_run": "mpirun -np",
+    "mpi_run_multi": "mpirun --oversubscribe -np",
+    "ld_library_path": "/home/WUR/liu297/miniconda3/envs/nco_env/lib:",
+    "template_domain": "/lustre/nobackup/WUR/ESG/liu297/vic_coupled/Data/VIC/domain/indus/domain_Indus.nc",
+    "template_params": "/lustre/nobackup/WUR/ESG/liu297/vic_coupled/Data/VIC/parameter/indus/VIC_params_Modis_calibrated_Indus.nc"
+  },
   "stages": {
     "build_case": {
       "returncode": 0,
