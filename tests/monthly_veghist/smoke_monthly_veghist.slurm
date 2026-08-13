@@ -34,7 +34,24 @@
 
 set -euo pipefail
 
-TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Locating ourselves is not as simple as dirname "$0": sbatch copies the script
+# into a node-local spool directory before running it, so BASH_SOURCE points at
+# the copy and the sites/ directory is not next to it. Prefer an explicit
+# override, fall back to BASH_SOURCE when it really is the checkout, and ask
+# Slurm for the submitted path otherwise.
+if [ -n "${VIC_TEST_DIR:-}" ]; then
+    TEST_DIR="${VIC_TEST_DIR}"
+elif [ -d "$(dirname "${BASH_SOURCE[0]}")/sites" ]; then
+    TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+elif [ -n "${SLURM_JOB_ID:-}" ]; then
+    SUBMITTED=$(scontrol show job "${SLURM_JOB_ID}" \
+                | tr ' ' '\n' | awk -F= '/^Command=/{print $2}')
+    TEST_DIR="$(cd "$(dirname "${SUBMITTED}")" && pwd)"
+else
+    echo "Cannot locate the test directory; set VIC_TEST_DIR." >&2
+    exit 1
+fi
+
 SITE="${VIC_TEST_SITE:-anunna}"
 SITE_FILE="${TEST_DIR}/sites/${SITE}.sh"
 
