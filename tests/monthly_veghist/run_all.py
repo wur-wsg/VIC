@@ -62,23 +62,24 @@ def retarget_case(case):
             break
     if old is None:
         raise SystemExit("No DOMAIN line found in %s" % globals_[0])
-    if os.path.abspath(old) == os.path.abspath(case):
-        return None
+    moved = os.path.abspath(old) != os.path.abspath(case)
+    if moved:
+        for path in globals_:
+            text = open(path).read()
+            with open(path, "w") as handle:
+                handle.write(text.replace(old, case))
 
-    for path in globals_:
-        text = open(path).read()
-        with open(path, "w") as handle:
-            handle.write(text.replace(old, case))
-
-    # VIC does not create its RESULT_DIR, and reports the failure as a
-    # misleading "Permission denied" on the output file rather than as a
-    # missing directory.  A copied case usually arrives without them.
+    # Unconditionally, not only when the case moved: a case that is already at
+    # the right path can still have had its result directories cleaned out
+    # between runs.  VIC does not create RESULT_DIR itself, and reports the
+    # failure as a misleading "Permission denied" on the output file rather
+    # than as a missing directory.
     for path in globals_:
         for line in open(path):
             tokens = line.split()
             if tokens and tokens[0] == "RESULT_DIR":
                 os.makedirs(tokens[1], exist_ok=True)
-    return old
+    return old if moved else None
 
 
 def open_result(result_dir):
