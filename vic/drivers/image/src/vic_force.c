@@ -131,7 +131,8 @@ vic_force(void)
                                     param_set.TYPE[PREC].varname,
                                     d3start, d3count, dvar);
         for (i = 0; i < local_domain.ncells_active; i++) {
-            force[i].prec[j] = (double) dvar[i];
+            // Convert from kg m-2 s-1 (mm/s) to mm/step
+            force[i].prec[j] = (double) dvar[i] * global_param.snow_dt;
         }
     }
 
@@ -408,8 +409,8 @@ vic_force(void)
         for (j = 0; j < NF; j++) {
             // pressure in Pa
             force[i].pressure[j] *= PA_PER_KPA;
-            // vapor pressure in Pa
-            force[i].vp[j] *= PA_PER_KPA;
+            // calculate vapor pressure in Pa from relative humidity (%)
+            force[i].vp[j] = (force[i].vp[j] / 100.0) * svp(force[i].air_temp[j]);
             // vapor pressure deficit in Pa
             force[i].vpd[j] = svp(force[i].air_temp[j]) - force[i].vp[j];
             if (force[i].vpd[j] < 0) {
