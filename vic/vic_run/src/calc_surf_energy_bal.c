@@ -1123,7 +1123,13 @@ error_print_surf_energy_bal(double  Ts,
     fprintf(LOG_DEST, "*resid_moist = %f\n", *resid_moist);
 
     fprintf(LOG_DEST, "*root = %f\n", *root);
-    fprintf(LOG_DEST, "*CanopLayerBnd = %f\n", *CanopLayerBnd);
+    // CanopLayerBnd is allocated only when options.CARBON is set; without CARBON
+    // it is NULL, so this diagnostic dump must not dereference it. Before this
+    // guard, a genuine root_brent non-convergence under TFALLBACK FALSE reached
+    // this printer and segfaulted here instead of reporting the failing cell.
+    if (options.CARBON) {
+        fprintf(LOG_DEST, "*CanopLayerBnd = %f\n", *CanopLayerBnd);
+    }
 
     /* meteorological forcing terms */
     fprintf(LOG_DEST, "UnderStory = %i\n", UnderStory);
