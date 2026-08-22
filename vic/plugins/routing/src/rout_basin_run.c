@@ -28,7 +28,8 @@
 #include <plugin.h>
 
 #define ROUT_LEAKAGE_WARN_LOG_LIMIT 20ULL
-#define ROUT_BALANCE_ERROR_THRESH 1e-10
+#define ROUT_BALANCE_ERROR_THRESH 1e-10  /* relative */
+#define ROUT_BALANCE_ABS_THRESH 1e-6     /* m3/s */
 
 static unsigned long long rout_leakage_warn_log_count = 0;
 
@@ -172,18 +173,20 @@ rout_basin_run(size_t iCell)
     rout_var[iCell].leakage_requested = leakage_requested;
     rout_var[iCell].leakage_actual = leakage_actual;
     rout_var[iCell].leakage_unmet = leakage_unmet;
-    if (leakage_unmet > ROUT_BALANCE_ERROR_THRESH) {
+    if (leakage_unmet > ROUT_BALANCE_ABS_THRESH) {
         warn_unmet_river_leakage(iCell, leakage_requested,
                                  leakage_available, leakage_actual,
                                  leakage_unmet);
     }
 
     // Check water balance
-    if (fabs(prev_stream + (rout_var[iCell].inflow + rout_var[iCell].runoff) -
-             (rout_var[iCell].discharge + rout_var[iCell].stream +
-              leakage_actual)) >
-        ROUT_BALANCE_ERROR_THRESH) {
-        log_err("Discharge water balance error [%.4f]. "
+    if (!assert_close_double(prev_stream +
+                             (rout_var[iCell].inflow + rout_var[iCell].runoff),
+                             rout_var[iCell].discharge + rout_var[iCell].stream +
+                             leakage_actual,
+                             ROUT_BALANCE_ERROR_THRESH,
+                             ROUT_BALANCE_ABS_THRESH)) {
+        log_err("Discharge water balance error [%.6e]. "
                 "in: %.4f out: %.4f prev_storage: %.4f cur_storage %.4f",
                 prev_stream + (rout_var[iCell].inflow + rout_var[iCell].runoff) -
                 (rout_var[iCell].discharge + rout_var[iCell].stream +
