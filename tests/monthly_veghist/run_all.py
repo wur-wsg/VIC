@@ -6,8 +6,9 @@ Stages:
   2. monthly vs daily-expanded equivalence      -- expects bitwise equality
   3. 1-rank vs 4-rank MPI consistency           -- expects bitwise equality
   4. continuous vs restarted run                -- expects bitwise equality
-  5. malformed-input error paths                -- expects specific failures
-  6. backward compatibility against a baseline binary, if one is supplied
+  5. spin-up cycle, where the clock jumps backwards
+  6. malformed-input error paths                -- expects specific failures
+  7. backward compatibility against a baseline binary, if one is supplied
 
 Usage:
     python run_all.py --workdir <dir> --exe <vic_image.exe> \
@@ -250,7 +251,19 @@ def main():
         "break_points": detail.get("break_points"),
         "variables": detail.get("variables", {})}
 
-    # 5. error paths
+    # 5. spin-up cycle: the clock jumps backwards
+    spinup_json = os.path.join(work, "spinup.json")
+    rc = run([site_config.python_interpreter(),
+              os.path.join(HERE, "test_spinup_cycle.py"),
+              "--case", case, "--exe", args.exe, "--json", spinup_json],
+             os.path.join(work, "log_spinup.txt"))
+    detail = json.load(open(spinup_json)) if os.path.exists(spinup_json) else {}
+    summary["stages"]["spinup_cycle"] = {
+        "returncode": rc, "passed": rc == 0,
+        "state_from": detail.get("state_from"),
+        "variables": detail.get("variables", {})}
+
+    # 6. error paths
     errors_json = os.path.join(work, "errorpaths.json")
     rc = run([site_config.python_interpreter(), os.path.join(HERE, "test_error_paths.py"),
               "--case", case, "--exe", args.exe, "--json", errors_json],
@@ -259,7 +272,7 @@ def main():
     summary["stages"]["error_paths"] = {
         "returncode": rc, "passed": rc == 0, "cases": detail.get("cases", {})}
 
-    # 6. backward compatibility
+    # 7. backward compatibility
     if args.baseline_exe:
         base_dir = os.path.join(case, "result_daily_baseline")
         os.makedirs(base_dir, exist_ok=True)

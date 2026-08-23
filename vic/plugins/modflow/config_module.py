@@ -472,7 +472,7 @@ class config:
 
         riv_bot_bkfl = min_dem2 - riv_depth_bkfl
 
-        riv_depth_avg1 = (riv_manning * self.ts_discharge) / (riv_width * riv_slope_used ** 0.5) ** (3.0 / 5.0)
+        riv_depth_avg1 = ((riv_manning * self.ts_discharge) / (riv_width * riv_slope_used ** 0.5)) ** (3.0 / 5.0)
         riv_depth_avg = np.where(riv_depth_avg1 < 0.01, 0, riv_depth_avg1)
         riv_depth_avg = np.where(np.isnan(riv_depth_avg), 0, riv_depth_avg)
 
