@@ -27,6 +27,58 @@
 #include <vic_driver_image.h>
 #include <plugin.h>
 
+/* Numerical guard, not a physical parameter: pack SWE below this threshold
+ * [m] is treated as zero when computing the pack heat capacity, so lu_apply
+ * merges the pack energy into the surface layer instead of dividing a full
+ * migrated cold content by a near-zero capacity (pack_temp -> -1e7..-1e9 C
+ * when snow_ice lands at SNOW_MAX_SURFACE_SWE + epsilon). Kept as a
+ * compile-time constant rather than a param entry because it only bounds
+ * this bookkeeping step and is not meant to be tuned per simulation. */
+#define LU_PACK_MIN_SWQ 1.0e-4  /* m SWE = 0.1 mm */
+
+#define LU_PACK_GUARD_LOG_LIMIT 20ULL
+
+static unsigned long long lu_pack_guard_event_count = 0;
+static unsigned long long lu_pack_guard_log_count = 0;
+static unsigned long long lu_pack_guard_suppressed_logs = 0;
+
+/******************************************
+* @brief   Log activation of the pack heat-capacity guard (rate-limited)
+******************************************/
+static void
+lu_register_pack_capacity_guard(size_t iCell,
+                                size_t iVeg,
+                                size_t iBand,
+                                double snow_pack_swq)
+{
+    extern domain_struct local_domain;
+
+    lu_pack_guard_event_count++;
+
+    if (lu_pack_guard_log_count < LU_PACK_GUARD_LOG_LIMIT) {
+        log_warn("LU pack heat-capacity guard: snow_pack_swq=%.6g m below "
+                 "%.6g m treated as zero; cell global_idx=%zu (lat=%.4f, "
+                 "lon=%.4f), iVeg=%zu, iBand=%zu",
+                 snow_pack_swq, (double) LU_PACK_MIN_SWQ,
+                 local_domain.locations[iCell].global_idx,
+                 local_domain.locations[iCell].latitude,
+                 local_domain.locations[iCell].longitude,
+                 iVeg, iBand);
+        lu_pack_guard_log_count++;
+
+        if (lu_pack_guard_log_count == LU_PACK_GUARD_LOG_LIMIT) {
+            log_warn("LU pack heat-capacity guard warnings reached limit "
+                     "(%llu); suppressing further warnings (events so far: "
+                     "%llu)",
+                     (unsigned long long) LU_PACK_GUARD_LOG_LIMIT,
+                     lu_pack_guard_event_count);
+        }
+    }
+    else {
+        lu_pack_guard_suppressed_logs++;
+    }
+}
+
 /******************************************
 * @brief   Get the heat capacities to calculate energy transfer
 ******************************************/
@@ -69,6 +121,11 @@ get_heat_capacities(size_t   iCell,
         snow_pack_swq = snow_ice - snow_surf_swq;
 
         if (Cv[iVeg] > 0) {
+            if (snow_pack_swq > 0. && snow_pack_swq < LU_PACK_MIN_SWQ) {
+                lu_register_pack_capacity_guard(iCell, iVeg, iBand,
+                                                snow_pack_swq);
+                snow_pack_swq = 0.;
+            }
             snow_surf_capacity[iVeg] = CONST_VCPICE_WQ * snow_surf_swq;
             snow_pack_capacity[iVeg] = CONST_VCPICE_WQ * snow_pack_swq;
 

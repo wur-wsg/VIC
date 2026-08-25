@@ -713,9 +713,10 @@ distribute_energy_balance_terms(size_t   iCell,
                                           snow_pack_capacity[iVeg];
         }
         else {
-            if (new_pack_tempEnergy[iVeg] > 0) {
-                new_surf_tempEnergy[iVeg] += new_pack_tempEnergy[iVeg];
-            }
+            /* No pack layer to hold this energy: transfer it (positive or
+             * negative) to the surface layer, so cold content is not
+             * silently dropped. */
+            new_surf_tempEnergy[iVeg] += new_pack_tempEnergy[iVeg];
         }
 
         if (snow_surf_capacity[iVeg] > 0) {
@@ -723,9 +724,9 @@ distribute_energy_balance_terms(size_t   iCell,
                                           snow_surf_capacity[iVeg];
         }
         else {
-            if (new_surf_tempEnergy[iVeg] > 0) {
-                new_TEnergy[iVeg][0] += new_surf_tempEnergy[iVeg];
-            }
+            /* No snow surface layer: transfer the energy (positive or
+             * negative) to the top soil node. */
+            new_TEnergy[iVeg][0] += new_surf_tempEnergy[iVeg];
         }
 
         for (iNode = 0; iNode < options.Nnode; iNode++) {
