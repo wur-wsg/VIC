@@ -255,7 +255,7 @@ int snow_melt(double, double, double, double, double *, double, double *,
               double, double, double, double, double, double *, double *,
               double *, double *, double *, double *, double *, double *,
               double *, double *, double *, double *, int, int, int,
-              snow_data_struct *);
+              soil_con_struct *, snow_data_struct *);
 double SnowPackEnergyBalance(double, va_list);
 void soil_carbon_balance(soil_con_struct *, energy_bal_struct *,
                          cell_data_struct *, veg_var_struct *);

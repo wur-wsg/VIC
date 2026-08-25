@@ -26,6 +26,55 @@
 
 #include <vic_run.h>
 
+/* Numerical guard, not a physical parameter: pack SWE below this threshold
+ * [m] is treated as zero when partitioning the two-layer snow pack, and the
+ * pack cold content is merged into the surface layer instead of being
+ * divided by a near-zero heat capacity (pack_temp -> -1e7..-1e9 C when the
+ * pack layer lands at epsilon above zero after redistribution against
+ * SNOW_MAX_SURFACE_SWE). Same value and shape as LU_PACK_MIN_SWQ in
+ * vic/plugins/landuse/src/lu_support.c; compile-time constant because it
+ * only bounds this bookkeeping step and is not meant to be tuned. */
+#define SNOW_PACK_MIN_SWQ 1.0e-4  /* m SWE = 0.1 mm */
+
+#define SNOW_PACK_GUARD_LOG_LIMIT 20ULL
+
+static unsigned long long snow_pack_guard_event_count = 0;
+static unsigned long long snow_pack_guard_log_count = 0;
+static unsigned long long snow_pack_guard_suppressed_logs = 0;
+
+/******************************************************************************
+ * @brief    Log activation of the pack heat-capacity guard (rate-limited)
+ *****************************************************************************/
+static void
+snow_register_pack_guard(soil_con_struct *soil_con,
+                         int              iveg,
+                         int              band,
+                         double           PackSwq,
+                         const char      *site)
+{
+    snow_pack_guard_event_count++;
+
+    if (snow_pack_guard_log_count < SNOW_PACK_GUARD_LOG_LIMIT) {
+        log_warn("Snow pack heat-capacity guard (%s): PackSwq=%.6g m below "
+                 "%.6g m treated as zero; cell lat=%.4f lon=%.4f, iveg=%d, "
+                 "band=%d",
+                 site, PackSwq, (double) SNOW_PACK_MIN_SWQ,
+                 soil_con->lat, soil_con->lng, iveg, band);
+        snow_pack_guard_log_count++;
+
+        if (snow_pack_guard_log_count == SNOW_PACK_GUARD_LOG_LIMIT) {
+            log_warn("Snow pack heat-capacity guard warnings reached limit "
+                     "(%llu); suppressing further warnings (events so far: "
+                     "%llu)",
+                     (unsigned long long) SNOW_PACK_GUARD_LOG_LIMIT,
+                     snow_pack_guard_event_count);
+        }
+    }
+    else {
+        snow_pack_guard_suppressed_logs++;
+    }
+}
+
 /******************************************************************************
  * @brief    Calculate snow accumulation and melt using an energy balance
  *           approach for a two layer snow model
@@ -66,6 +115,7 @@ snow_melt(double            Le,
           int               UNSTABLE_SNOW,
           int               iveg,
           int               band,
+          soil_con_struct  *soil_con,
           snow_data_struct *snow)
 {
     extern option_struct     options;
@@ -75,6 +125,10 @@ snow_melt(double            Le,
     double                   DeltaPackCC; /* Change in cold content of the pack */
     double                   DeltaPackSwq; /* Change in snow water equivalent of the
                                               pack (m) */
+    double                   dSwq; /* SWE transferred between surface and pack
+                                      layers (m) */
+    double                   dCC; /* Cold content transferred between surface
+                                     and pack layers (J) */
     double                   Ice; /* Ice content of snow pack (m)*/
     double                   InitialSwq; /* Initial snow water equivalent (m) */
     double                   MassBalanceError; /* Mass balance error (m) */
@@ -149,6 +203,16 @@ snow_melt(double            Le,
     else {
         SurfaceSwq += SnowFall;
         SurfaceCC += SnowFallCC;
+    }
+    if (PackSwq > 0.0 && PackSwq < SNOW_PACK_MIN_SWQ) {
+        /* Near-zero pack layer: merge mass and cold content (either sign)
+         * into the surface layer instead of dividing by its capacity. */
+        snow_register_pack_guard(soil_con, iveg, band, PackSwq,
+                                 "snowfall distribution");
+        SurfaceSwq += PackSwq;
+        SurfaceCC += PackCC;
+        PackSwq = 0.0;
+        PackCC = 0.0;
     }
     if (SurfaceSwq > 0.0) {
         snow->surf_temp = SurfaceCC / (CONST_VCPICE_WQ * SurfaceSwq);
@@ -412,7 +476,7 @@ snow_melt(double            Le,
         PackSwq += snow->pack_water;  /* refreeze all water and update*/
         Ice += snow->pack_water;
         snow->pack_water = 0.0;
-        if (PackSwq > 0.0) {
+        if (PackSwq >= SNOW_PACK_MIN_SWQ) {
             PackCC = PackSwq * CONST_VCPICE_WQ * snow->pack_temp +
                      PackRefreezeEnergy;
             snow->pack_temp = PackCC / (CONST_VCPICE_WQ * PackSwq);
@@ -421,6 +485,11 @@ snow_melt(double            Le,
             }
         }
         else {
+            /* Near-zero (or zero) pack layer: skip the capacity division. */
+            if (PackSwq > 0.0) {
+                snow_register_pack_guard(soil_con, iveg, band, PackSwq,
+                                         "pack refreeze");
+            }
             snow->pack_temp = 0.0;
         }
     }
@@ -457,23 +526,38 @@ snow_melt(double            Le,
         SurfaceCC = CONST_VCPICE_WQ * snow->surf_temp * SurfaceSwq;
         PackCC = CONST_VCPICE_WQ * snow->pack_temp * PackSwq;
         if (SurfaceSwq > param.SNOW_MAX_SURFACE_SWE) {
-            PackCC += SurfaceCC *
-                      (SurfaceSwq - param.SNOW_MAX_SURFACE_SWE) / SurfaceSwq;
-            SurfaceCC -= SurfaceCC *
-                         (SurfaceSwq - param.SNOW_MAX_SURFACE_SWE) / SurfaceSwq;
-            PackSwq += SurfaceSwq - param.SNOW_MAX_SURFACE_SWE;
-            SurfaceSwq -= SurfaceSwq - param.SNOW_MAX_SURFACE_SWE;
+            dSwq = SurfaceSwq - param.SNOW_MAX_SURFACE_SWE;
+            dCC = SurfaceCC * dSwq / SurfaceSwq;
+            PackCC += dCC;
+            SurfaceCC -= dCC;
+            PackSwq += dSwq;
+            SurfaceSwq -= dSwq;
         }
         else if (SurfaceSwq < param.SNOW_MAX_SURFACE_SWE) {
-            PackCC -= PackCC *
-                      (param.SNOW_MAX_SURFACE_SWE - SurfaceSwq) / PackSwq;
-            SurfaceCC += PackCC *
-                         (param.SNOW_MAX_SURFACE_SWE - SurfaceSwq) / PackSwq;
-            PackSwq -= param.SNOW_MAX_SURFACE_SWE - SurfaceSwq;
-            SurfaceSwq += param.SNOW_MAX_SURFACE_SWE - SurfaceSwq;
+            dSwq = param.SNOW_MAX_SURFACE_SWE - SurfaceSwq;
+            dCC = PackCC * dSwq / PackSwq;
+            PackCC -= dCC;
+            SurfaceCC += dCC;
+            PackSwq -= dSwq;
+            SurfaceSwq += dSwq;
         }
-        snow->pack_temp = PackCC / (CONST_VCPICE_WQ * PackSwq);
-        snow->surf_temp = SurfaceCC / (CONST_VCPICE_WQ * SurfaceSwq);
+        if (PackSwq < SNOW_PACK_MIN_SWQ) {
+            /* Near-zero pack layer left after redistribution: merge mass
+             * and cold content (either sign) into the surface layer
+             * instead of dividing by its near-zero capacity. */
+            snow_register_pack_guard(soil_con, iveg, band, PackSwq,
+                                     "layer redistribution");
+            SurfaceCC += PackCC;
+            SurfaceSwq += PackSwq;
+            PackCC = 0.0;
+            PackSwq = 0.0;
+            snow->pack_temp = 0.0;
+            snow->surf_temp = SurfaceCC / (CONST_VCPICE_WQ * SurfaceSwq);
+        }
+        else {
+            snow->pack_temp = PackCC / (CONST_VCPICE_WQ * PackSwq);
+            snow->surf_temp = SurfaceCC / (CONST_VCPICE_WQ * SurfaceSwq);
+        }
     }
     else {
         PackSwq = 0.0;
