@@ -91,9 +91,12 @@ distribute_paddy_balance_terms(size_t  iCell,
     nVegs = 0;
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         if (irr_con[iCell][iIrr].paddy) {
+            /* Dead band only on the shrinking side: any growing tile (> 0)
+             * participates as a receiver, so shrinkage above the dead band
+             * can never be gathered without a tile to distribute it to. */
             if (Cv_change[irr_con[iCell][iIrr].veg_index] <
                 -MINCOVERAGECHANGE ||
-                Cv_change[irr_con[iCell][iIrr].veg_index] > MINCOVERAGECHANGE) {
+                Cv_change[irr_con[iCell][iIrr].veg_index] > 0) {
                 iVegs[nVegs] = irr_con[iCell][iIrr].veg_index;
                 nVegs++;
             }
@@ -105,10 +108,10 @@ distribute_paddy_balance_terms(size_t  iCell,
         nVegs++;
     }
 
-    // Get available area to redistribute
+    // Get available area to redistribute (all growing tiles, no dead band)
     Cv_avail = 0.0;
     for (i = 0; i < nVegs; i++) {
-        if (Cv_change[iVegs[i]] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVegs[i]] > 0) {
             Cv_avail += Cv_change[iVegs[i]];
         }
     }
@@ -150,7 +153,7 @@ distribute_paddy_balance_terms(size_t  iCell,
 
     // set
     for (i = 0; i < nVegs; i++) {
-        if (Cv_change[iVegs[i]] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVegs[i]] > 0) {
             red_frac = Cv_old[iVegs[i]] / Cv_new[iVegs[i]];
             add_frac = (Cv_change[iVegs[i]] / Cv_avail) / Cv_new[iVegs[i]];
 
@@ -313,10 +316,14 @@ distribute_water_balance_terms(size_t  iCell,
                                        Cv_change_tmp);
     }
 
-    // Get available area to redistribute
+    // Get available area to redistribute. Note: every growing tile (> 0)
+    // counts, the dead band only applies to the shrinking (gather) side.
+    // Otherwise a shrinkage above the dead band combined with growth spread
+    // over tiles all below it would gather water without ever
+    // redistributing it (see the balance check below).
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change_tmp[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change_tmp[iVeg] > 0) {
             Cv_avail += Cv_change_tmp[iVeg];
         }
     }
@@ -355,7 +362,7 @@ distribute_water_balance_terms(size_t  iCell,
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change_tmp[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change_tmp[iVeg] > 0) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change_tmp[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -520,10 +527,10 @@ distribute_carbon_balance_terms(size_t  iCell,
 
     before_carbon = calculate_total_carbon(iCell, iBand, Cv_old, Cv_change);
 
-    // Get available area to redistribute
+    // Get available area to redistribute (all growing tiles, no dead band)
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] > 0) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -547,7 +554,7 @@ distribute_carbon_balance_terms(size_t  iCell,
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] > 0) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -654,10 +661,10 @@ distribute_energy_balance_terms(size_t   iCell,
                                            orig_pack_tempEnergy, orig_TEnergy,
                                            Cv_old, Cv_change);
 
-    // Get available area to redistribute
+    // Get available area to redistribute (all growing tiles, no dead band)
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] > 0) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -680,7 +687,7 @@ distribute_energy_balance_terms(size_t   iCell,
 
     // set
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] > 0) {
             red_frac = Cv_old[iVeg] / Cv_new[iVeg];
             add_frac = (Cv_change[iVeg] / Cv_avail) / Cv_new[iVeg];
 
@@ -822,10 +829,10 @@ distribute_irrigation_balance_terms(size_t  iCell,
 
     before_moist = calculate_total_irrigation(iCell, iBand, Cv_old, Cv_change);
 
-    // Get available area to redistribute
+    // Get available area to redistribute (all growing tiles, no dead band)
     Cv_avail = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
-        if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+        if (Cv_change[iVeg] > 0) {
             Cv_avail += Cv_change[iVeg];
         }
     }
@@ -835,7 +842,7 @@ distribute_irrigation_balance_terms(size_t  iCell,
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         iVeg = irr_con[iCell][iIrr].veg_index;
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
-            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_change[iVeg] > 0) {
             leftover += irr[iIrr][iBand].leftover * Cv_old[iVeg];
         }
     }
@@ -845,7 +852,7 @@ distribute_irrigation_balance_terms(size_t  iCell,
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         iVeg = irr_con[iCell][iIrr].veg_index;
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
-            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_change[iVeg] > 0) {
             irr[iIrr][iBand].leftover = 0.0;
         }
     }
@@ -949,6 +956,12 @@ lu_apply(void)
     size_t                      iBand;
     size_t                      veg_class;
 
+    bool                        has_shrink;
+    bool                        has_grow;
+    size_t                      nDeadbandAsymCells;
+
+    nDeadbandAsymCells = 0;
+
     Cv_old = malloc(options.NVEGTYPES * sizeof(*Cv_old));
     check_alloc_status(Cv_old, "Memory allocation error");
     Cv_new = malloc(options.NVEGTYPES * sizeof(*Cv_new));
@@ -1024,9 +1037,23 @@ lu_apply(void)
                      locstr);
         }
 
+        has_shrink = false;
+        has_grow = false;
         for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
             Cv_new[iVeg] = veg_con[iCell][iVeg].Cv;
             Cv_change[iVeg] = Cv_new[iVeg] - Cv_old[iVeg];
+            if (Cv_change[iVeg] < -MINCOVERAGECHANGE) {
+                has_shrink = true;
+            }
+            else if (Cv_change[iVeg] > MINCOVERAGECHANGE) {
+                has_grow = true;
+            }
+        }
+        if (has_shrink && !has_grow) {
+            // A symmetric dead band would gather state from the shrinking
+            // tiles without any tile to distribute it to; count for the
+            // summary diagnostic below
+            nDeadbandAsymCells++;
         }
 
         // Adjust
@@ -1139,6 +1166,13 @@ lu_apply(void)
                 }
             }
         }
+    }
+
+    if (nDeadbandAsymCells > 0) {
+        log_warn("lu_apply: [%zu] cells have coverage shrinkage above "
+                 "MINCOVERAGECHANGE but no growth above it; state was "
+                 "redistributed over all growing tiles",
+                 nDeadbandAsymCells);
     }
 
     free(Cv_change);

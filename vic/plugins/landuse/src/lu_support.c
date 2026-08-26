@@ -440,8 +440,10 @@ calculate_total_water(size_t  iCell,
 
     total = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+        /* Must match the tile set that distribute_*_balance_terms touches:
+         * dead band on the shrinking side only, all growing tiles count. */
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
-            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_change[iVeg] > 0) {
             total += veg_var[iVeg][iBand].Wdew * Cv[iVeg];
             total += snow[iVeg][iBand].pack_water * Cv[iVeg];
             total += snow[iVeg][iBand].surf_water * Cv[iVeg];
@@ -481,8 +483,10 @@ calculate_total_carbon(size_t  iCell,
 
     total = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+        /* Must match the tile set that distribute_*_balance_terms touches:
+         * dead band on the shrinking side only, all growing tiles count. */
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
-            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_change[iVeg] > 0) {
             total += veg_var[iVeg][iBand].AnnualNPP * Cv[iVeg];
             total += veg_var[iVeg][iBand].AnnualNPPPrev * Cv[iVeg];
             total += cell[iVeg][iBand].CLitter * Cv[iVeg];
@@ -515,8 +519,10 @@ calculate_total_energy(size_t   iCell,
 
     total = 0.0;
     for (iVeg = 0; iVeg < veg_con_map[iCell].nv_active; iVeg++) {
+        /* Must match the tile set that distribute_*_balance_terms touches:
+         * dead band on the shrinking side only, all growing tiles count. */
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
-            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_change[iVeg] > 0) {
             total += surf_tempEnergy[iVeg] * Cv[iVeg];
             total += pack_tempEnergy[iVeg] * Cv[iVeg];
             for (iNode = 0; iNode < options.Nnode; iNode++) {
@@ -561,8 +567,10 @@ calculate_total_irrigation(size_t  iCell,
     total = 0.0;
     for (iIrr = 0; iIrr < irr_con_map[iCell].ni_active; iIrr++) {
         iVeg = irr_con[iCell][iIrr].veg_index;
+        /* Must match the tile set that distribute_*_balance_terms touches:
+         * dead band on the shrinking side only, all growing tiles count. */
         if (Cv_change[iVeg] < -MINCOVERAGECHANGE ||
-            Cv_change[iVeg] > MINCOVERAGECHANGE) {
+            Cv_change[iVeg] > 0) {
             total += irr[iIrr][iBand].leftover * Cv[iVeg];
         }
     }
