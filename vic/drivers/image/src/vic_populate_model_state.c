@@ -52,15 +52,22 @@ vic_populate_model_state(dmy_struct *dmy_current)
     if (options.INIT_STATE) {
         vic_restore();
 
-        // veg_var fields (LAI, fcanopy, etc.) are not stored in the state file
-        // and default to 0 on restore. plugin_update_step_vars() runs before
-        // update_step_vars() on the first timestep, so lu_apply would see LAI==0
-        // and incorrectly flush canopy water (Wdew) to soil moisture whenever
-        // land-use coverage (Cv) changes are active, corrupting the water balance.
-        // Seed veg_var from the previous month's climatological veg_lib values;
-        // update_step_vars() will overwrite these on the first model timestep.
+        // Most veg_var fields (fcanopy, albedo, etc.) are not stored in the
+        // state file and default to 0 on restore. plugin_update_step_vars()
+        // runs before update_step_vars() on the first timestep, so lu_apply
+        // would see LAI==0 and incorrectly flush canopy water (Wdew) to soil
+        // moisture whenever land-use coverage (Cv) changes are active,
+        // corrupting the water balance. LAI itself is restored from
+        // STATE_VEG_LAI when the state file provides it (in which case the
+        // seeding below must not overwrite it); the other fields are seeded
+        // from the previous month's climatological veg_lib values, which
+        // update_step_vars() overwrites on the first model timestep. Note
+        // that under LAI_SRC == FROM_VEGHIST veg_lib carries no LAI data
+        // (it is never filled), so the LAI fallback seeds 0 there — only
+        // STATE_VEG_LAI gives a correct restart value in that configuration.
         extern veg_lib_struct     **veg_lib;
         extern veg_con_map_struct  *veg_con_map;
+        extern bool                 state_veg_lai_restored;
 
         size_t iVeg;
         size_t iBand;
@@ -75,8 +82,10 @@ vic_populate_model_state(dmy_struct *dmy_current)
                 veg_class = veg_con[i][iVeg].veg_class;
                 if (veg_class < options.NVEGTYPES) {
                     for (iBand = 0; iBand < options.SNOW_BAND; iBand++) {
-                        all_vars[i].veg_var[iVeg][iBand].LAI =
-                            veg_lib[i][veg_class].LAI[prev_month];
+                        if (!state_veg_lai_restored) {
+                            all_vars[i].veg_var[iVeg][iBand].LAI =
+                                veg_lib[i][veg_class].LAI[prev_month];
+                        }
                         all_vars[i].veg_var[iVeg][iBand].fcanopy =
                             veg_lib[i][veg_class].fcanopy[prev_month];
                         all_vars[i].veg_var[iVeg][iBand].albedo =

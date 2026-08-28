@@ -40,6 +40,10 @@ lu_forcing(void)
     extern option_struct              options;
     extern veg_con_map_struct        *veg_con_map;
     extern lu_force_struct           *lu_force;
+    extern size_t                     current;
+    extern dmy_struct                *dmy;
+
+    bool                              apply;
 
     double                           *dvar;
 
@@ -91,7 +95,25 @@ lu_forcing(void)
             }
         }
 
-        lu_apply();
+        /* On an INIT_STATE restart the restored STATE_LU_CV already holds
+         * this year's redistributed coverage, and a continuous run would not
+         * call lu_apply() mid-year. Applying here anyway overwrites restored
+         * snow states (snow.MELTING via calculate_derived_water_states) and
+         * re-normalizes Cv, so the restart trajectory diverges from the
+         * continuous one. Only apply at step 0 when the continuous run would
+         * have too: at a cold start, or when the restart lands exactly on a
+         * year boundary (the step a continuous run applies the new year's
+         * coverage). */
+        apply = true;
+        if (current == 0 && options.INIT_STATE &&
+            !(dmy[current].month == 1 && dmy[current].day == 1 &&
+              dmy[current].dayseconds == 0)) {
+            apply = false;
+        }
+
+        if (apply) {
+            lu_apply();
+        }
     }
 
     free(dvar);

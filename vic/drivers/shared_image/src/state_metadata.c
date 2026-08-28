@@ -85,6 +85,17 @@ set_state_meta_data_info()
     snprintf(state_metadata[STATE_CANOPY_WATER].description, MAXSTRING, "%s",
              "amount of water stored in the vegetation canopy");
 
+    // STATE_VEG_LAI
+    snprintf(state_metadata[STATE_VEG_LAI].varname, MAXSTRING, "%s",
+             "STATE_VEG_LAI");
+    snprintf(state_metadata[STATE_VEG_LAI].long_name, MAXSTRING, "%s",
+             "veg_lai");
+    snprintf(state_metadata[STATE_VEG_LAI].standard_name, MAXSTRING, "%s",
+             "leaf_area_index");
+    snprintf(state_metadata[STATE_VEG_LAI].units, MAXSTRING, "%s", "m2 m-2");
+    snprintf(state_metadata[STATE_VEG_LAI].description, MAXSTRING, "%s",
+             "leaf area index of the vegetation tile");
+
     if (options.CARBON) {
         // STATE_ANNUALNPP
         snprintf(state_metadata[STATE_ANNUALNPP].varname, MAXSTRING, "%s",
@@ -282,6 +293,21 @@ set_state_meta_data_info()
     snprintf(state_metadata[STATE_SNOW_CANOPY].units, MAXSTRING, "%s", "m");
     snprintf(state_metadata[STATE_SNOW_CANOPY].description, MAXSTRING, "%s",
              "snow interception storage in canopy");
+
+    // STATE_SNOW_TMP_INT_STORAGE
+    snprintf(state_metadata[STATE_SNOW_TMP_INT_STORAGE].varname, MAXSTRING,
+             "%s", "STATE_SNOW_TMP_INT_STORAGE");
+    snprintf(state_metadata[STATE_SNOW_TMP_INT_STORAGE].long_name, MAXSTRING,
+             "%s", "snow_tmp_int_storage");
+    snprintf(state_metadata[STATE_SNOW_TMP_INT_STORAGE].standard_name,
+             MAXSTRING, "%s",
+             "canopy_snow_interception_temporary_storage");
+    snprintf(state_metadata[STATE_SNOW_TMP_INT_STORAGE].units, MAXSTRING, "%s",
+             "m");
+    snprintf(state_metadata[STATE_SNOW_TMP_INT_STORAGE].description, MAXSTRING,
+             "%s",
+             "temporary canopy interception storage carried between time "
+             "steps by snow_intercept");
 
     // STATE_SOIL_NODE_TEMP
     snprintf(state_metadata[STATE_SOIL_NODE_TEMP].varname, MAXSTRING, "%s",

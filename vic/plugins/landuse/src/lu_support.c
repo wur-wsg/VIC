@@ -259,7 +259,7 @@ calculate_derived_water_states(size_t iCell,
         // snow[iVeg][iBand].coverage;
         // snow[iVeg][iBand].max_snow_depth;
         // snow[iVeg][iBand].snow_distrib_slope;
-        // snow[iVeg][iBand].tmp_int_storage;
+        // snow[iVeg][iBand].tmp_int_storage; // restored from STATE_SNOW_TMP_INT_STORAGE, not redistributed here
 
         // depth & snow & MELTING
         snow[iVeg][iBand].snow = false;

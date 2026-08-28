@@ -27,6 +27,38 @@
 #include <vic_driver_shared_image.h>
 #include <plugin.h>
 
+/* True when STATE_VEG_LAI was present in the initial state file and restored;
+ * vic_populate_model_state() then skips the climatological LAI seeding. */
+bool state_veg_lai_restored = false;
+
+/******************************************************************************
+ * @brief    Check whether a variable exists in the initial state file.
+ *
+ * Used for state variables added after older state files were written, so a
+ * restart from such a file can fall back instead of aborting.
+ *****************************************************************************/
+static bool
+state_var_in_file(char *varname)
+{
+    extern filenames_struct filenames;
+    extern int              mpi_rank;
+    extern MPI_Comm         MPI_COMM_VIC;
+
+    int                     varid;
+    int                     found;
+    int                     status;
+
+    found = 0;
+    if (mpi_rank == VIC_MPI_ROOT) {
+        status = nc_inq_varid(filenames.init_state.nc_id, varname, &varid);
+        found = (status == NC_NOERR);
+    }
+    status = MPI_Bcast(&found, 1, MPI_INT, VIC_MPI_ROOT, MPI_COMM_VIC);
+    check_mpi_status(status, "MPI error.");
+
+    return found;
+}
+
 /******************************************************************************
  * @brief    Read initial model state.
  *****************************************************************************/
@@ -185,6 +217,33 @@ vic_restore(void)
                 }
             }
         }
+    }
+
+    // leaf area index: veg_var[veg][band].LAI
+    state_veg_lai_restored = state_var_in_file(
+        state_metadata[STATE_VEG_LAI].varname);
+    if (state_veg_lai_restored) {
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (k = 0; k < options.SNOW_BAND; k++) {
+                d4start[1] = k;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_VEG_LAI].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    v = veg_con_map[i].vidx[m];
+                    if (v >= 0) {
+                        all_vars[i].veg_var[v][k].LAI = dvar[i];
+                    }
+                }
+            }
+        }
+    }
+    else {
+        log_warn("State file does not contain %s (written by an older "
+                 "version); falling back to climatological veg_lib seeding "
+                 "of LAI",
+                 state_metadata[STATE_VEG_LAI].varname);
     }
 
     if (options.CARBON) {
@@ -460,6 +519,32 @@ vic_restore(void)
                 }
             }
         }
+    }
+
+    // canopy interception carry-over: snow[veg][band].tmp_int_storage
+    if (state_var_in_file(state_metadata[STATE_SNOW_TMP_INT_STORAGE].varname)) {
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (k = 0; k < options.SNOW_BAND; k++) {
+                d4start[1] = k;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[
+                                                STATE_SNOW_TMP_INT_STORAGE].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    v = veg_con_map[i].vidx[m];
+                    if (v >= 0) {
+                        all_vars[i].snow[v][k].tmp_int_storage = dvar[i];
+                    }
+                }
+            }
+        }
+    }
+    else {
+        log_warn("State file does not contain %s (written by an older "
+                 "version); canopy interception carry-over storage starts "
+                 "at zero",
+                 state_metadata[STATE_SNOW_TMP_INT_STORAGE].varname);
     }
 
     // grid cell-averaged albedo: gridcell_avg.avg_albedo

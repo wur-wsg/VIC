@@ -316,6 +316,7 @@ enum
     STATE_SOIL_MOISTURE,               /**<  total soil moisture */
     STATE_SOIL_ICE,                    /**<  ice content */
     STATE_CANOPY_WATER,                /**<  dew storage: tmpval = veg_var[veg][band].Wdew; */
+    STATE_VEG_LAI,                     /**<  leaf area index: veg_var[veg][band].LAI */
     STATE_ANNUALNPP,                   /**<  cumulative NPP: tmpval = veg_var[veg][band].AnnualNPP; */
     STATE_ANNUALNPPPREV,               /**<  previous NPP: tmpval = veg_var[veg][band].AnnualNPPPrev; */
     STATE_CLITTER,                     /**<  litter carbon: tmpval = cell[veg][band].CLitter; */
@@ -332,6 +333,7 @@ enum
     STATE_SNOW_DENSITY,                /**<  snow density: snow[veg][band].density */
     STATE_SNOW_COLD_CONTENT,           /**<  snow cold content: snow[veg][band].coldcontent */
     STATE_SNOW_CANOPY,                 /**<  snow canopy storage: snow[veg][band].snow_canopy */
+    STATE_SNOW_TMP_INT_STORAGE,        /**<  canopy interception carry-over: snow[veg][band].tmp_int_storage */
     STATE_SOIL_NODE_TEMP,              /**<  soil node temperatures: energy[veg][band].T[nidx] */
     STATE_FOLIAGE_TEMPERATURE,         /**<  Foliage temperature: energy[veg][band].Tfoliage */
     STATE_ENERGY_LONGUNDEROUT,         /**<  Outgoing longwave from understory: energy[veg][band].LongUnderOut */
