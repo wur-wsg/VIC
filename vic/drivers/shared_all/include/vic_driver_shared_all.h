@@ -339,6 +339,9 @@ enum
     STATE_FOLIAGE_TEMPERATURE,         /**<  Foliage temperature: energy[veg][band].Tfoliage */
     STATE_ENERGY_LONGUNDEROUT,         /**<  Outgoing longwave from understory: energy[veg][band].LongUnderOut */
     STATE_ENERGY_SNOW_FLUX,            /**<  Thermal flux through the snow pack: energy[veg][band].snow_flux */
+    STATE_ENERGY_GRND_FLUX,            /**<  Ground heat flux: energy[veg][band].grnd_flux */
+    STATE_ENERGY_DELTAH,               /**<  Surface heat storage change: energy[veg][band].deltaH */
+    STATE_ENERGY_FUSION,               /**<  Fusion energy: energy[veg][band].fusion */
     STATE_LAKE_SOIL_MOISTURE,          /**<  total soil moisture */
     STATE_LAKE_SOIL_ICE,               /**<  ice content */
     STATE_LAKE_CLITTER,                /**<  litter carbon: tmpval = lake_var.soil.CLitter; */

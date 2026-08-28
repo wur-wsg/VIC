@@ -377,6 +377,47 @@ set_state_meta_data_info()
              "%s",
              "thermal flux through snowpack");
 
+    // STATE_ENERGY_GRND_FLUX
+    snprintf(state_metadata[STATE_ENERGY_GRND_FLUX].varname, MAXSTRING, "%s",
+             "STATE_ENERGY_GRND_FLUX");
+    snprintf(state_metadata[STATE_ENERGY_GRND_FLUX].long_name, MAXSTRING, "%s",
+             "energy_grnd_flux");
+    snprintf(state_metadata[STATE_ENERGY_GRND_FLUX].standard_name, MAXSTRING,
+             "%s", "ground_heat_flux");
+    snprintf(state_metadata[STATE_ENERGY_GRND_FLUX].units, MAXSTRING, "%s",
+             "W m-2");
+    snprintf(state_metadata[STATE_ENERGY_GRND_FLUX].description, MAXSTRING,
+             "%s",
+             "ground heat flux (carried between steps as the surface energy "
+             "balance initial iterate when no snow pack is present)");
+
+    // STATE_ENERGY_DELTAH
+    snprintf(state_metadata[STATE_ENERGY_DELTAH].varname, MAXSTRING, "%s",
+             "STATE_ENERGY_DELTAH");
+    snprintf(state_metadata[STATE_ENERGY_DELTAH].long_name, MAXSTRING, "%s",
+             "energy_deltaH");
+    snprintf(state_metadata[STATE_ENERGY_DELTAH].standard_name, MAXSTRING,
+             "%s", "surface_heat_storage_change");
+    snprintf(state_metadata[STATE_ENERGY_DELTAH].units, MAXSTRING, "%s",
+             "W m-2");
+    snprintf(state_metadata[STATE_ENERGY_DELTAH].description, MAXSTRING, "%s",
+             "rate of change in heat storage of the surface layer (carried "
+             "between steps as part of the surface energy balance initial "
+             "iterate)");
+
+    // STATE_ENERGY_FUSION
+    snprintf(state_metadata[STATE_ENERGY_FUSION].varname, MAXSTRING, "%s",
+             "STATE_ENERGY_FUSION");
+    snprintf(state_metadata[STATE_ENERGY_FUSION].long_name, MAXSTRING, "%s",
+             "energy_fusion");
+    snprintf(state_metadata[STATE_ENERGY_FUSION].standard_name, MAXSTRING,
+             "%s", "ice_fusion_energy");
+    snprintf(state_metadata[STATE_ENERGY_FUSION].units, MAXSTRING, "%s",
+             "W m-2");
+    snprintf(state_metadata[STATE_ENERGY_FUSION].description, MAXSTRING, "%s",
+             "energy of soil ice fusion (carried between steps as part of "
+             "the surface energy balance initial iterate)");
+
     // STATE_GRIDCELL_AVG_ALBEDO
     snprintf(state_metadata[STATE_AVG_ALBEDO].varname, MAXSTRING, "%s",
              "STATE_AVG_ALBEDO");

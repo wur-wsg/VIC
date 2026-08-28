@@ -809,6 +809,83 @@ vic_store(dmy_struct *dmy_state,
         }
     }
 
+    // Ground heat flux: energy[veg][band].grnd_flux
+    // Like snow_flux above: carried between steps as the initial iterate of
+    // the surface energy balance when no snow pack is present.
+    nc_var = &(nc_state_file.nc_vars[STATE_ENERGY_GRND_FLUX]);
+    for (m = 0; m < options.NVEGTYPES; m++) {
+        d4start[0] = m;
+        for (k = 0; k < options.SNOW_BAND; k++) {
+            d4start[1] = k;
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                v = veg_con_map[i].vidx[m];
+                if (v >= 0) {
+                    dvar[i] = (double) all_vars[i].energy[v][k].grnd_flux;
+                }
+                else {
+                    dvar[i] = nc_state_file.d_fillvalue;
+                }
+            }
+            gather_put_nc_field_double(nc_state_file.nc_id,
+                                       nc_var->nc_varid,
+                                       nc_state_file.d_fillvalue,
+                                       d4start, nc_var->nc_counts, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                dvar[i] = nc_state_file.d_fillvalue;
+            }
+        }
+    }
+
+    // Surface heat storage change: energy[veg][band].deltaH
+    nc_var = &(nc_state_file.nc_vars[STATE_ENERGY_DELTAH]);
+    for (m = 0; m < options.NVEGTYPES; m++) {
+        d4start[0] = m;
+        for (k = 0; k < options.SNOW_BAND; k++) {
+            d4start[1] = k;
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                v = veg_con_map[i].vidx[m];
+                if (v >= 0) {
+                    dvar[i] = (double) all_vars[i].energy[v][k].deltaH;
+                }
+                else {
+                    dvar[i] = nc_state_file.d_fillvalue;
+                }
+            }
+            gather_put_nc_field_double(nc_state_file.nc_id,
+                                       nc_var->nc_varid,
+                                       nc_state_file.d_fillvalue,
+                                       d4start, nc_var->nc_counts, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                dvar[i] = nc_state_file.d_fillvalue;
+            }
+        }
+    }
+
+    // Fusion energy: energy[veg][band].fusion
+    nc_var = &(nc_state_file.nc_vars[STATE_ENERGY_FUSION]);
+    for (m = 0; m < options.NVEGTYPES; m++) {
+        d4start[0] = m;
+        for (k = 0; k < options.SNOW_BAND; k++) {
+            d4start[1] = k;
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                v = veg_con_map[i].vidx[m];
+                if (v >= 0) {
+                    dvar[i] = (double) all_vars[i].energy[v][k].fusion;
+                }
+                else {
+                    dvar[i] = nc_state_file.d_fillvalue;
+                }
+            }
+            gather_put_nc_field_double(nc_state_file.nc_id,
+                                       nc_var->nc_varid,
+                                       nc_state_file.d_fillvalue,
+                                       d4start, nc_var->nc_counts, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                dvar[i] = nc_state_file.d_fillvalue;
+            }
+        }
+    }
+
     // Grid cell averaged albedo
     nc_var = &(nc_state_file.nc_vars[STATE_AVG_ALBEDO]);
     for (i = 0; i < local_domain.ncells_active; i++) {
@@ -1503,6 +1580,9 @@ set_nc_state_var_info(nc_file_struct *nc)
         case STATE_FOLIAGE_TEMPERATURE:
         case STATE_ENERGY_LONGUNDEROUT:
         case STATE_ENERGY_SNOW_FLUX:
+        case STATE_ENERGY_GRND_FLUX:
+        case STATE_ENERGY_DELTAH:
+        case STATE_ENERGY_FUSION:
             // 4d vars [veg, band, j, i]
             nc->nc_vars[i].nc_dims = 4;
             nc->nc_vars[i].nc_dimids[0] = nc->veg_dimid;

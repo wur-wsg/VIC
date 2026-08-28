@@ -655,6 +655,57 @@ vic_restore(void)
         }
     }
 
+    // Ground heat flux / surface heat storage change / fusion energy:
+    // together they form the surface energy balance initial iterate when no
+    // snow pack is present (surface_fluxes.c), the counterpart of snow_flux
+    // above. Optional for state files written by older versions.
+    if (state_var_in_file(state_metadata[STATE_ENERGY_GRND_FLUX].varname)) {
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (k = 0; k < options.SNOW_BAND; k++) {
+                d4start[1] = k;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[
+                                                STATE_ENERGY_GRND_FLUX].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    v = veg_con_map[i].vidx[m];
+                    if (v >= 0) {
+                        all_vars[i].energy[v][k].grnd_flux = dvar[i];
+                    }
+                }
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[
+                                                STATE_ENERGY_DELTAH].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    v = veg_con_map[i].vidx[m];
+                    if (v >= 0) {
+                        all_vars[i].energy[v][k].deltaH = dvar[i];
+                    }
+                }
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[
+                                                STATE_ENERGY_FUSION].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    v = veg_con_map[i].vidx[m];
+                    if (v >= 0) {
+                        all_vars[i].energy[v][k].fusion = dvar[i];
+                    }
+                }
+            }
+        }
+    }
+    else {
+        log_warn("State file does not contain %s/%s/%s (written by an older "
+                 "version); the surface energy balance initial iterate "
+                 "starts from zero on snow-free tiles",
+                 state_metadata[STATE_ENERGY_GRND_FLUX].varname,
+                 state_metadata[STATE_ENERGY_DELTAH].varname,
+                 state_metadata[STATE_ENERGY_FUSION].varname);
+    }
+
     if (options.LAKES) {
         // total soil moisture
         for (j = 0; j < options.Nlayer; j++) {
