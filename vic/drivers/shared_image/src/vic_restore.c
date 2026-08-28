@@ -487,6 +487,33 @@ vic_restore(void)
         }
     }
 
+    // snow depth: snow[veg][band].depth
+    state_snow_depth_restored = state_var_in_file(
+        state_metadata[STATE_SNOW_DEPTH].varname);
+    if (state_snow_depth_restored) {
+        for (m = 0; m < options.NVEGTYPES; m++) {
+            d4start[0] = m;
+            for (k = 0; k < options.SNOW_BAND; k++) {
+                d4start[1] = k;
+                get_scatter_nc_field_double(&(filenames.init_state),
+                                            state_metadata[STATE_SNOW_DEPTH].varname,
+                                            d4start, d4count, dvar);
+                for (i = 0; i < local_domain.ncells_active; i++) {
+                    v = veg_con_map[i].vidx[m];
+                    if (v >= 0) {
+                        all_vars[i].snow[v][k].depth = dvar[i];
+                    }
+                }
+            }
+        }
+    }
+    else {
+        log_warn("State file does not contain %s (written by an older "
+                 "version); snow depth will be re-derived from swq and "
+                 "density",
+                 state_metadata[STATE_SNOW_DEPTH].varname);
+    }
+
     // snow cold content: snow[veg][band].coldcontent
     for (m = 0; m < options.NVEGTYPES; m++) {
         d4start[0] = m;

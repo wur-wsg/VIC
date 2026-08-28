@@ -28,6 +28,11 @@
 
 #include <vic_driver_shared_all.h>
 
+/* Snow depth was restored from the state file (STATE_SNOW_DEPTH); keep it
+ * instead of re-deriving it below. Cold starts and old state files leave
+ * this false. */
+bool state_snow_depth_restored = false;
+
 /******************************************************************************
  * @brief    Compute the state variables (energy balance, water balance,
  *           and snow components) that are derived from the variables that
@@ -111,11 +116,16 @@ compute_derived_state_vars(all_vars_struct *all_vars,
     /******************************************
        Compute derived soil snow state vars
     ******************************************/
-    for (veg = 0; veg < Nveg + options.Nbare; veg++) {
-        for (band = 0; band < options.SNOW_BAND; band++) {
-            if (snow[veg][band].density > 0.) {
-                snow[veg][band].depth = CONST_RHOFW * snow[veg][band].swq /
-                                        snow[veg][band].density;
+    /* The inverse division below does not bit-exactly reproduce the depth
+     * the continuous run carried (density itself was derived from depth), so
+     * skip it when depth came out of the state file directly. */
+    if (!state_snow_depth_restored) {
+        for (veg = 0; veg < Nveg + options.Nbare; veg++) {
+            for (band = 0; band < options.SNOW_BAND; band++) {
+                if (snow[veg][band].density > 0.) {
+                    snow[veg][band].depth = CONST_RHOFW * snow[veg][band].swq /
+                                            snow[veg][band].density;
+                }
             }
         }
     }

@@ -269,6 +269,18 @@ set_state_meta_data_info()
     snprintf(state_metadata[STATE_SNOW_DENSITY].description, MAXSTRING, "%s",
              "snowpack density");
 
+    // STATE_SNOW_DEPTH
+    snprintf(state_metadata[STATE_SNOW_DEPTH].varname, MAXSTRING, "%s",
+             "STATE_SNOW_DEPTH");
+    snprintf(state_metadata[STATE_SNOW_DEPTH].long_name, MAXSTRING, "%s",
+             "snow_depth");
+    snprintf(state_metadata[STATE_SNOW_DEPTH].standard_name, MAXSTRING, "%s",
+             "thickness_of_snowfall_amount");
+    snprintf(state_metadata[STATE_SNOW_DEPTH].units, MAXSTRING, "%s", "m");
+    snprintf(state_metadata[STATE_SNOW_DEPTH].description, MAXSTRING, "%s",
+             "depth of the snow pack (stored so restarts do not re-derive "
+             "it from swq and density)");
+
     // STATE_SNOW_COLD_CONTENT
     snprintf(state_metadata[STATE_SNOW_COLD_CONTENT].varname, MAXSTRING, "%s",
              "STATE_SNOW_COLD_CONTENT");

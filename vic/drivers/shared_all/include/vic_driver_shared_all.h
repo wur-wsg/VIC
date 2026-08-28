@@ -331,6 +331,7 @@ enum
     STATE_SNOW_PACK_TEMP,              /**<  snow pack temperature: snow[veg][band].pack_temp */
     STATE_SNOW_PACK_WATER,             /**<  snow pack water: snow[veg][band].pack_water */
     STATE_SNOW_DENSITY,                /**<  snow density: snow[veg][band].density */
+    STATE_SNOW_DEPTH,                  /**<  snow depth: snow[veg][band].depth */
     STATE_SNOW_COLD_CONTENT,           /**<  snow cold content: snow[veg][band].coldcontent */
     STATE_SNOW_CANOPY,                 /**<  snow canopy storage: snow[veg][band].snow_canopy */
     STATE_SNOW_TMP_INT_STORAGE,        /**<  canopy interception carry-over: snow[veg][band].tmp_int_storage */
@@ -623,6 +624,10 @@ void collect_wb_terms(cell_data_struct, veg_var_struct, snow_data_struct,
                       double **);
 void compute_derived_state_vars(all_vars_struct *, soil_con_struct *,
                                 veg_con_struct *);
+/* set by drivers that restore snow depth from the state file, so
+ * compute_derived_state_vars keeps it instead of re-deriving it from
+ * swq/density (the inverse division is not bit-exact) */
+extern bool state_snow_depth_restored;
 void compute_lake_params(lake_con_struct *, soil_con_struct);
 void compute_treeline(force_data_struct *, dmy_struct *, double, double *,
                       bool *);

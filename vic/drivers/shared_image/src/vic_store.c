@@ -597,6 +597,32 @@ vic_store(dmy_struct *dmy_state,
     }
 
 
+    // snow depth: snow[veg][band].depth
+    nc_var = &(nc_state_file.nc_vars[STATE_SNOW_DEPTH]);
+    for (m = 0; m < options.NVEGTYPES; m++) {
+        d4start[0] = m;
+        for (k = 0; k < options.SNOW_BAND; k++) {
+            d4start[1] = k;
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                v = veg_con_map[i].vidx[m];
+                if (v >= 0) {
+                    dvar[i] = (double) all_vars[i].snow[v][k].depth;
+                }
+                else {
+                    dvar[i] = nc_state_file.d_fillvalue;
+                }
+            }
+            gather_put_nc_field_double(nc_state_file.nc_id,
+                                       nc_var->nc_varid,
+                                       nc_state_file.d_fillvalue,
+                                       d4start, nc_var->nc_counts, dvar);
+            for (i = 0; i < local_domain.ncells_active; i++) {
+                dvar[i] = nc_state_file.d_fillvalue;
+            }
+        }
+    }
+
+
     // snow cold content: snow[veg][band].coldcontent
     nc_var = &(nc_state_file.nc_vars[STATE_SNOW_COLD_CONTENT]);
     for (m = 0; m < options.NVEGTYPES; m++) {
@@ -1470,6 +1496,7 @@ set_nc_state_var_info(nc_file_struct *nc)
         case STATE_SNOW_PACK_TEMP:
         case STATE_SNOW_PACK_WATER:
         case STATE_SNOW_DENSITY:
+        case STATE_SNOW_DEPTH:
         case STATE_SNOW_COLD_CONTENT:
         case STATE_SNOW_CANOPY:
         case STATE_SNOW_TMP_INT_STORAGE:
