@@ -396,11 +396,16 @@ def update_statefile(current_date, config, cpr_mm_month):
     # FOC state update uses numpy-style boolean indexing below.
     # Convert xarray-backed inputs explicitly to numpy arrays to avoid
     # xarray's unsupported 2D boolean indexing behavior.
-    cv = config.paths.vic_parameter['Cv'].values #TODO: later on if cv change with time, this needs to be updated. 
+    cv = np.nan_to_num(config.paths.vic_parameter['Cv'].values) #TODO: later on if cv change with time, this needs to be updated. 
     max_moist = config.paths.capillary['max_moist'].values
-    
-    
-    cpr_mm_month_input = np.expand_dims(cpr_mm_month, axis=0) * cv   # create a 3d array with the shape of number of veg types, lat ,lon
+    present = cv > 0   # tiles that exist in the cell; absent tiles hold the state fill value and are never read by VIC
+
+    # STATE_SOIL_MOISTURE is the moisture of each tile in mm; the grid-cell
+    # mean VIC reports is sum(Cv * tile). The capillary rise is a depth over
+    # the whole cell, so every present tile receives the full cpr_mm_month.
+    # (Multiplying by Cv here made the cell receive cpr * sum(Cv^2): 22-23 %
+    # of the EVT water was lost, verified on the 2026-09-13 FOC smoke.)
+    cpr_mm_month_input = np.where(present, np.expand_dims(cpr_mm_month, axis=0), 0.0)   # (veg, lat, lon)
     
     
 
@@ -430,12 +435,15 @@ def update_statefile(current_date, config, cpr_mm_month):
             print(f'there are cells in layer {layer+1} saturated')
             excess_water = sum_soil_moisture[layer] - max_moist[layer]
             excess_water[excess_water<0] = 0
-            # let the current layer soil moisture be the max moisture
+            # let the current layer soil moisture be the max moisture, on the
+            # tiles that exist (writing into absent tiles turns their fill
+            # value into a number)
             for i in range(cv.shape[0]):
-                state_soil_moisture_new[i, layer, :, :][checksaturation] = max_moist[layer][checksaturation]
+                tile = checksaturation & present[i]
+                state_soil_moisture_new[i, layer, :, :][tile] = max_moist[layer][tile]
             # add the extra to the upper layer
                 if layer > 0:
-                    state_soil_moisture_new[i, layer-1, :, :][checksaturation] += excess_water[checksaturation]
+                    state_soil_moisture_new[i, layer-1, :, :][tile] += excess_water[tile]
                 else:
                     print(f'layer {layer+1} is the top layer, no where to add the excess water')
                             
