@@ -597,12 +597,21 @@ class config:
 
         
         nrow, ncol = self.paths.landmask.shape
+        # The DIS is a uniform delrow x delcol square on every cell, so MODFLOW
+        # multiplies the EVT rate by that square, not by the true cell area.
+        # Scale the rate by cellarea / (delrow * delcol), exactly as
+        # recharge_inp is scaled, so the EVT volume equals rate x true area and
+        # the depth get_cpr_array returns (volume / true area) is the rate again.
+        # Unscaled, the returned capillary rise was rate x 85.6 km2 / true area,
+        # 1/cos(lat), 6.7x at 81 N (global FOC smoke, 2026-09-13).
+        dis_cell_area = self.delrow * self.delcol
+        cellarea = np.asarray(self.paths.cellarea, dtype=np.float64).reshape(nrow, ncol)
         cellids = [(0, i, j) for i in range(nrow) for j in range(ncol)]        
-        for cellid,surface,rate,distinction,landmask  in zip(cellids,cpsurface.flatten(),cprate.flatten(),cpdistinct.flatten(),self.paths.landmask.flatten()):
+        for cellid,surface,rate,distinction,landmask,area  in zip(cellids,cpsurface.flatten(),cprate.flatten(),cpdistinct.flatten(),self.paths.landmask.flatten(),cellarea.flatten()):
             cellid_1, cellid_2, cellid_3 = cellid
             if np.isnan(surface) or np.isnan(rate) or np.isnan(distinction) or np.isnan(landmask) or rate==0:
                 continue
-            CPRstress_period_data.append([(cellid_1, cellid_2, cellid_3), surface, rate, distinction])
+            CPRstress_period_data.append([(cellid_1, cellid_2, cellid_3), surface, rate * area / dis_cell_area, distinction])
         
         return CPRstress_period_data
     

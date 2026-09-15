@@ -2,9 +2,10 @@
 cell-mean depth MODFLOW removed.
 
 STATE_SOIL_MOISTURE is per tile (mm); the cell mean is sum(Cv * tile). So a
-capillary rise of cpr mm must raise every present tile by cpr, leave absent
-tiles (Cv == 0, state fill value) untouched, leave other snow bands untouched,
-and when layer 3 saturates the excess must move to layer 2 without loss.
+capillary rise of cpr mm must raise every present tile in every present snow
+band by cpr, leave absent tiles and absent bands (state fill value) untouched,
+cap only cells that received capillary rise, and when layer 3 saturates move
+the excess to layer 2 without loss.
 
 Run:  python -m pytest vic/plugins/modflow/tests/test_update_statefile.py
 """
@@ -26,9 +27,9 @@ FILL = 9.96920996838687e+36
 def _make_case(tmp_path):
     nveg, nband, nlay, nlat, nlon = 2, 2, 3, 2, 2
     cv = np.zeros((nveg, nlat, nlon))
-    cv[:, 0, 0] = [0.7, 0.3]     # two tiles
-    cv[:, 0, 1] = [1.0, 0.0]     # one tile, one absent
-    cv[:, 1, 0] = [0.5, 0.5]     # no capillary rise this month
+    cv[:, 0, 0] = [0.7, 0.3]     # two tiles, two bands
+    cv[:, 0, 1] = [1.0, 0.0]     # one tile, one absent; second band absent
+    cv[:, 1, 0] = [0.5, 0.5]     # no capillary rise, and layer 3 already above max_moist
     cv[:, 1, 1] = [0.6, 0.4]     # will saturate layer 3
     cpr = np.array([[5.0, 3.0], [0.0, 50.0]])
     max_moist = np.zeros((nlay, nlat, nlon))
@@ -40,7 +41,9 @@ def _make_case(tmp_path):
     state[:, :, 1, :, :] = 300.0
     state[:, :, 2, :, :] = 60.0
     state[:, :, 2, 1, 1] = 90.0            # 90 + 50 = 140 > 100 -> excess 40 to layer 2
+    state[:, :, 2, 1, 0] = 110.0           # above max_moist on its own (ice); must be left alone
     state[1, :, :, 0, 1] = FILL             # absent tile
+    state[:, 1, :, 0, 1] = FILL             # absent band
 
     statefile_dir = str(tmp_path)
     fname = os.path.join(statefile_dir, 'nat_foc_state_file_.19790201_00000.nc')
@@ -59,46 +62,57 @@ def _make_case(tmp_path):
     return fname, config, cv, cpr, state, max_moist
 
 
-def _cell_mean(arr, cv):
-    """Cv-weighted mean over tiles for band 0, per layer -> (nlay, nlat, nlon)."""
-    a = np.where(np.isnan(arr[:, 0]), 0.0, arr[:, 0])
+def _band_mean(arr, cv, band):
+    """Cv-weighted mean over tiles for one band, per layer -> (nlay, nlat, nlon)."""
+    a = np.where(np.isnan(arr[:, band]), 0.0, arr[:, band])
     return np.einsum('vlyx,vyx->lyx', a, cv)
 
 
-def test_capillary_rise_is_conserved_per_cell(tmp_path):
+def _run(tmp_path):
     fname, config, cv, cpr, before, max_moist = _make_case(tmp_path)
-    vic_runner.update_statefile(datetime(1979, 1, 1), config, cpr)
-    with nc.Dataset(fname) as ds:
-        after = np.ma.filled(ds.variables['STATE_SOIL_MOISTURE'][:].astype(float), np.nan)
-    before_nan = np.where(before == FILL, np.nan, before)
-
-    delta = _cell_mean(after, cv) - _cell_mean(before_nan, cv)
-    # what the cell received, summed over layers, equals the capillary rise
-    np.testing.assert_allclose(delta.sum(axis=0), cpr, atol=1e-9)
-    # unsaturated cells: all of it sits in layer 3
-    np.testing.assert_allclose(delta[2, 0, :], cpr[0, :], atol=1e-9)
-    # the saturating cell: layer 3 capped at max_moist, the excess moved up
-    np.testing.assert_allclose(_cell_mean(after, cv)[2, 1, 1], max_moist[2, 1, 1], atol=1e-9)
-    np.testing.assert_allclose(delta[1, 1, 1], 140.0 - 100.0, atol=1e-9)
-    # the cell without capillary rise is untouched
-    np.testing.assert_array_equal(after[:, :, :, 1, 0], before_nan[:, :, :, 1, 0])
-
-
-def test_absent_tiles_and_other_bands_untouched(tmp_path):
-    fname, config, cv, cpr, before, _ = _make_case(tmp_path)
     vic_runner.update_statefile(datetime(1979, 1, 1), config, cpr)
     with nc.Dataset(fname) as ds:
         raw = ds.variables['STATE_SOIL_MOISTURE']
         raw.set_auto_mask(False)
-        after = raw[:]
-    assert np.all(after[1, :, :, 0, 1] == FILL)                       # absent tile still fill
-    np.testing.assert_array_equal(after[:, 1], before[:, 1])          # band 1 untouched
-    assert np.all(after[before != FILL] < 1e30)                       # no fill leaked into present tiles
+        after_raw = raw[:]
+    after = np.where(after_raw == FILL, np.nan, after_raw)
+    before_nan = np.where(before == FILL, np.nan, before)
+    return cv, cpr, before, before_nan, after, after_raw, max_moist
+
+
+def test_capillary_rise_is_conserved_per_cell_and_band(tmp_path):
+    cv, cpr, before, before_nan, after, _, max_moist = _run(tmp_path)
+    for band in range(2):
+        delta = _band_mean(after, cv, band) - _band_mean(before_nan, cv, band)
+        band_exists = ~np.isnan(before_nan[0, band, 2])           # cell (0,1) has no band 1
+        expected = np.where(band_exists, cpr, 0.0)
+        # what each present band received, summed over layers, equals the capillary rise
+        np.testing.assert_allclose(delta.sum(axis=0), expected, atol=1e-9)
+        # unsaturated cells: all of it sits in layer 3
+        np.testing.assert_allclose(delta[2, 0, :], expected[0, :], atol=1e-9)
+        # the saturating cell: layer 3 capped at max_moist, the excess moved up
+        np.testing.assert_allclose(_band_mean(after, cv, band)[2, 1, 1], max_moist[2, 1, 1], atol=1e-9)
+        np.testing.assert_allclose(delta[1, 1, 1], 140.0 - 100.0, atol=1e-9)
+
+
+def test_cells_without_capillary_rise_are_left_alone(tmp_path):
+    cv, cpr, before, before_nan, after, _, _ = _run(tmp_path)
+    # cell (1,0): no capillary rise and layer 3 already above max_moist -> untouched, not capped
+    np.testing.assert_array_equal(after[:, :, :, 1, 0], before_nan[:, :, :, 1, 0])
+
+
+def test_absent_tiles_and_bands_keep_fill(tmp_path):
+    cv, cpr, before, before_nan, after, after_raw, _ = _run(tmp_path)
+    assert np.all(after_raw[1, :, :, 0, 1] == FILL)                    # absent tile still fill
+    assert np.all(after_raw[:, 1, :, 0, 1] == FILL)                    # absent band still fill
+    assert np.all(after_raw[before != FILL] < 1e30)                    # no fill leaked into present entries
+    assert np.array_equal(after_raw == FILL, before == FILL)           # fill pattern unchanged
 
 
 if __name__ == '__main__':
     import tempfile
-    for t in (test_capillary_rise_is_conserved_per_cell, test_absent_tiles_and_other_bands_untouched):
+    for t in (test_capillary_rise_is_conserved_per_cell_and_band, test_cells_without_capillary_rise_are_left_alone,
+              test_absent_tiles_and_bands_keep_fill):
         with tempfile.TemporaryDirectory() as d:
             t(__import__('pathlib').Path(d))
             print(t.__name__, 'ok')

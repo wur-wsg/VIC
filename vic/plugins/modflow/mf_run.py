@@ -455,7 +455,7 @@ class PostProcessMF:
             rec = [lay,row,col,flow]
             cpr.append(rec)
 
-        cpr_array = np.full((nrow, ncol), 0)
+        cpr_array = np.full((nrow, ncol), 0.0)   # float: an int array truncated the m3/day
 
         for item in cpr:
             lay, row, col, flow = item

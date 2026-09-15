@@ -390,6 +390,15 @@ def export_unmet_water_demand(config, current_date, unmet_demand) -> None:
 
 
 def update_statefile(current_date, config, cpr_mm_month):
+    """Write the month's capillary rise (mm over the cell) into STATE_SOIL_MOISTURE.
+
+    Layer 3 of every present tile in every snow band receives the full depth;
+    where the Cv-weighted moisture of a band then exceeds max_moist the layer is
+    capped and the excess moves one layer up. Only cells that received
+    capillary rise this month are capped: VIC's own state can exceed max_moist
+    (the variable includes ice) and that is not this function's business.
+    Absent tiles and absent bands keep their fill value.
+    """
     currentyear = current_date.year
     currentmonth = current_date.month
 
@@ -399,60 +408,48 @@ def update_statefile(current_date, config, cpr_mm_month):
     cv = np.nan_to_num(config.paths.vic_parameter['Cv'].values) #TODO: later on if cv change with time, this needs to be updated. 
     max_moist = config.paths.capillary['max_moist'].values
     present = cv > 0   # tiles that exist in the cell; absent tiles hold the state fill value and are never read by VIC
+    cpr = np.nan_to_num(np.asarray(cpr_mm_month, dtype=np.float64))
+    active = cpr > 0   # cells that received capillary rise this month
 
     # STATE_SOIL_MOISTURE is the moisture of each tile in mm; the grid-cell
     # mean VIC reports is sum(Cv * tile). The capillary rise is a depth over
     # the whole cell, so every present tile receives the full cpr_mm_month.
     # (Multiplying by Cv here made the cell receive cpr * sum(Cv^2): 22-23 %
     # of the EVT water was lost, verified on the 2026-09-13 FOC smoke.)
-    cpr_mm_month_input = np.where(present, np.expand_dims(cpr_mm_month, axis=0), 0.0)   # (veg, lat, lon)
-    
-    
+    cpr_mm_month_input = np.where(present, np.expand_dims(cpr, axis=0), 0.0)   # (veg, lat, lon)
 
     stateyear, statemonth, stateday = (current_date+relativedelta(months=1)).year, (current_date+relativedelta(months=1)).month, 1
     
     # Read the state file
     statefile_dir = config.paths.statefile_dir
     state_file = os.path.join(statefile_dir, f"{config.modestr}_{config.couplingstr}_state_file_.{stateyear:04d}{statemonth:02d}{stateday:02d}_00000.nc")
-    
-    
-    
-    
-    with nc.Dataset(state_file,'r') as state:
-        state_soil_moisture = state.variables['STATE_SOIL_MOISTURE'][:,0,:,:,:]
 
-        #state_soil_moisture = np.flip(state_soil_moisture,axis = 2)
-    num_layers = state_soil_moisture.shape[1]
-    sum_soil_moisture = np.zeros((num_layers, state_soil_moisture.shape[2], state_soil_moisture.shape[3])) # create a 3d array to store the sum of soil moisture for each veg type
-    state_soil_moisture_new = state_soil_moisture.copy()
-    state_soil_moisture_new[:,2,:,:] = state_soil_moisture [:,2,:,:]+ cpr_mm_month_input
-    for layer in range(2, -1, -1):  # loop through the soil layers from bottom to top
-        sum_soil_moisture[layer] = np.nansum(state_soil_moisture_new[:, layer, :, :] * cv, axis=0) # sum up the soil moisture for each veg type
-
-        #check if the soil moist is saturated.  
-        checksaturation = (sum_soil_moisture[layer]> max_moist[layer]) #true if it is saturated
-        if checksaturation.any():
-            print(f'there are cells in layer {layer+1} saturated')
-            excess_water = sum_soil_moisture[layer] - max_moist[layer]
-            excess_water[excess_water<0] = 0
-            # let the current layer soil moisture be the max moisture, on the
-            # tiles that exist (writing into absent tiles turns their fill
-            # value into a number)
-            for i in range(cv.shape[0]):
-                tile = checksaturation & present[i]
-                state_soil_moisture_new[i, layer, :, :][tile] = max_moist[layer][tile]
-            # add the extra to the upper layer
-                if layer > 0:
-                    state_soil_moisture_new[i, layer-1, :, :][tile] += excess_water[tile]
-                else:
-                    print(f'layer {layer+1} is the top layer, no where to add the excess water')
-                            
-        else:
-            print(f'layer {layer+1} is not saturated')
-            break     
-    #write the soil moisture back to the state file
-    with nc.Dataset(state_file,'a') as state:
-        state.variables['STATE_SOIL_MOISTURE'][:,0,:,:,:] = state_soil_moisture_new
+    with nc.Dataset(state_file, 'a') as state:
+        var = state.variables['STATE_SOIL_MOISTURE']          # (veg, snow_band, nlayer, lat, lon)
+        num_bands, num_layers = var.shape[1], var.shape[2]
+        for band in range(num_bands):                          # one band at a time: ~2.4 GB per slice on the global grid
+            sm = var[:, band, :, :, :]                           # masked where the tile or band is absent
+            exists = ~np.ma.getmaskarray(sm)                     # (veg, layer, lat, lon)
+            new = sm.copy()
+            new[:, 2, :, :] = sm[:, 2, :, :] + np.where(exists[:, 2], cpr_mm_month_input, 0.0)
+            for layer in range(num_layers - 1, -1, -1):          # bottom to top
+                filled = np.ma.filled(new[:, layer, :, :], 0.0)
+                sum_soil_moisture = np.sum(filled * cv, axis=0)  # Cv-weighted moisture of this band
+                checksaturation = (sum_soil_moisture > max_moist[layer]) & active
+                if not checksaturation.any():
+                    print(f'band {band+1} layer {layer+1} is not saturated')
+                    break
+                print(f'band {band+1}: there are cells in layer {layer+1} saturated')
+                excess_water = sum_soil_moisture - max_moist[layer]
+                excess_water[excess_water < 0] = 0
+                for i in range(cv.shape[0]):
+                    tile = checksaturation & present[i] & exists[i, layer]
+                    new[i, layer, :, :][tile] = max_moist[layer][tile]
+                    if layer > 0:
+                        new[i, layer-1, :, :][tile] += excess_water[tile]
+                    else:
+                        print(f'layer {layer+1} is the top layer, no where to add the excess water')
+            var[:, band, :, :, :] = new
     
     print("updated the state file for the next time step")
     
