@@ -282,7 +282,8 @@ calculate_derived_water_states(size_t iCell,
             if (snow[iVeg][iBand].last_snow == 0 ||
                 snow[iVeg][iBand].density <= 0.) {
                 snow[iVeg][iBand].density = new_snow_density(
-                    force->air_temp[NR] + soil_con->Tfactor[iBand]);
+                    force[iCell].air_temp[NR] +
+                    soil_con[iCell].Tfactor[iBand]);
             }
             snow[iVeg][iBand].depth = CONST_RHOFW * snow[iVeg][iBand].swq /
                                       snow[iVeg][iBand].density;
